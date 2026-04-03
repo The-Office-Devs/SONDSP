@@ -1,0 +1,43 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        order_inserts: true
+        jdbc:
+          batch_size: 100
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      dialect: org.hibernate.dialect.SQLServer2012Dialect
+      jdbc:
+        batch_size: 50
+        order_inserts: true
+        order_updates: true
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+  flyway:
+    enabled: false
+  main:
+    allow-circular-references: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maxLifeTime: 600000
+      maximumPoolSize: 6
+      idle-timeout: 20000
+  web:
+    error:
+      include-message: never
+      include-stacktrace: never
+      whitelabel:
+        enabled: false
+      include-exception: false
+server:
+  port: 8081
