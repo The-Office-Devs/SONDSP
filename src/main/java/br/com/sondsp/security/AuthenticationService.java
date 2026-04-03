@@ -44,6 +44,7 @@ public class AuthenticationService implements UserDetailsService {
             return new ResponseEntity<>(new UserSelfDetailsDTO(
                     user.getName(),
                     user.getUsername(),
+                    user.getRegistration(),
                     user.getRole().getRoleName(),
                     this.getToken(user)
             ), HttpStatus.OK);
@@ -72,7 +73,7 @@ public class AuthenticationService implements UserDetailsService {
 
     public ResponseEntity<?> registerUser(RegisterDTO registerDTO) {
         try{
-            if(this.verifyIfUserExists(registerDTO.username(), registerDTO.email()))
+            if(Boolean.TRUE.equals(this.verifyIfUserExists(registerDTO.username(), registerDTO.email())))
                 throw new UsernameNotFoundException("Credentials already exists");
 
             Users user = this.buildUser(registerDTO);

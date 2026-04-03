@@ -1,4 +1,9 @@
 package br.com.sondsp.dtos;
 
-public record UsersDetailsDTO(Integer idUser, String name, String username, String email) {
+public record UsersDetailsDTO(
+        Integer idUser,
+        String username,
+        String name,
+        String registration,
+        String email) {
 }

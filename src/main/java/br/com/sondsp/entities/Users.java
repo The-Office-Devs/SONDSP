@@ -18,28 +18,34 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tblUsers")
+@Table(name = "tblUsuario")
 public class Users implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "idUsuario")
     private Integer idUser;
 
     @Column(name = "username")
     private String username;
 
+    @Column(name = "matricula")
+    private String registration;
+
     @Column(name = "email")
     private String email;
 
-    @Column(name = "name")
+    @Column(name = "nome")
     private String name;
+
+    @Column(name = "cpf")
+    private String cpf;
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRoles role;
 
-    @Column(name = "senha")
+    @Column(name = "password")
     private String password;
 
     @Column(name = "status")
@@ -80,10 +86,12 @@ public class Users implements UserDetails {
     public static Users buildUserWithRegisterDTO(RegisterDTO registerDTO, String encodedPassword) {
         return Users
                 .builder()
-                .username(registerDTO.username())
-                .email(registerDTO.email())
                 .name(registerDTO.name())
+                .username(registerDTO.username())
+                .cpf(registerDTO.cpf())
                 .password(encodedPassword)
+                .registration(registerDTO.registration())
+                .email(registerDTO.email())
                 .role(UserRoles.valueOf(registerDTO.role()))
                 .status(true)
                 .build();
@@ -94,6 +102,7 @@ public class Users implements UserDetails {
                 .builder()
                 .idUser(user.getIdUser())
                 .username(userUpdated.username())
+                .registration(userUpdated.registration())
                 .email(userUpdated.email())
                 .name(userUpdated.name())
                 .password(user.getPassword())
