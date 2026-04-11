@@ -67,9 +67,6 @@ public class Users implements UserDetails {
             case TEACHER -> {
                 return List.of(new SimpleGrantedAuthority("ROLE_TEACHER"));
             }
-            case STUDENT -> {
-                return List.of(new SimpleGrantedAuthority("ROLE_STUDENT"));
-            }
             default -> {
                 return null;
             }
