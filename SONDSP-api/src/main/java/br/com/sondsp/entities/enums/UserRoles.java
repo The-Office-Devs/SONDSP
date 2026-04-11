@@ -4,8 +4,7 @@ public enum UserRoles {
     ADMINISTRATOR,
     SCHOOL_ADMINISTRATOR,
     COORDINATOR,
-    TEACHER,
-    STUDENT;
+    TEACHER;
 
     public String getRoleName() {
         return switch (this) {
@@ -13,7 +12,6 @@ public enum UserRoles {
             case SCHOOL_ADMINISTRATOR -> "School Administrator";
             case COORDINATOR -> "Coordinator";
             case TEACHER -> "Teacher";
-            case STUDENT -> "Student";
         };
     }
 }
