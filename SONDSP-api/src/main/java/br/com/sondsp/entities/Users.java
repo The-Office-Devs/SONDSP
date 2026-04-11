@@ -35,9 +35,6 @@ public class Users implements UserDetails {
     @Column(name = "nome")
     private String name;
 
-    @Column(name = "cpf")
-    private String cpf;
-
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRoles role;
@@ -84,7 +81,6 @@ public class Users implements UserDetails {
         return Users
                 .builder()
                 .name(registerDTO.name())
-                .cpf(registerDTO.cpf())
                 .password(encodedPassword)
                 .registration(registerDTO.registration())
                 .email(registerDTO.email())

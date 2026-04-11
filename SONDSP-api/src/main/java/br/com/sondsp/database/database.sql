@@ -24,14 +24,12 @@ CREATE TABLE tblAluno (
 CREATE TABLE tblUsuario (
     idUsuario SERIAL PRIMARY KEY,
     nome VARCHAR(255),
-    cpf VARCHAR(14),
     matricula VARCHAR(50),
-    username VARCHAR(100),
     role VARCHAR(50),
     email VARCHAR(255),
     status BOOLEAN,
     password VARCHAR(255),
-    UNIQUE (cpf, email, matricula)
+    UNIQUE (email, matricula)
 );
 
 CREATE TABLE tblUsuarioTurma (
