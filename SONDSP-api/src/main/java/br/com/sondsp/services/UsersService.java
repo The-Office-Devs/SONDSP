@@ -49,16 +49,7 @@ public class UsersService {
     }
 
     private void validateUserForm(UserForm newUser, Users oldUser) {
-        this.validateUsername(newUser, oldUser);
         this.validateEmail(newUser, oldUser);
-    }
-
-    private void validateUsername(UserForm newUser, Users oldUser) {
-        if(!(newUser.username().equals(oldUser.getUsername()))) {
-            boolean usernameExists = this.usersRepository.existsByUsername(newUser.username());
-            if(usernameExists)
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
-        }
     }
 
     private void validateEmail(UserForm newUser, Users oldUser) {

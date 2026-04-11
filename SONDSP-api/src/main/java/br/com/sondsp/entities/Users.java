@@ -26,9 +26,6 @@ public class Users implements UserDetails {
     @Column(name = "idUsuario")
     private Integer idUser;
 
-    @Column(name = "username")
-    private String username;
-
     @Column(name = "matricula")
     private String registration;
 
@@ -87,7 +84,6 @@ public class Users implements UserDetails {
         return Users
                 .builder()
                 .name(registerDTO.name())
-                .username(registerDTO.username())
                 .cpf(registerDTO.cpf())
                 .password(encodedPassword)
                 .registration(registerDTO.registration())
@@ -101,7 +97,6 @@ public class Users implements UserDetails {
         return Users
                 .builder()
                 .idUser(user.getIdUser())
-                .username(userUpdated.username())
                 .registration(userUpdated.registration())
                 .email(userUpdated.email())
                 .name(userUpdated.name())
@@ -111,5 +106,8 @@ public class Users implements UserDetails {
                 .build();
     }
 
-
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 }

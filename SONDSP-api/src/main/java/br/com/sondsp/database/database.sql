@@ -30,6 +30,7 @@ CREATE TABLE tblUsuario (
     role VARCHAR(50),
     email VARCHAR(255),
     status BOOLEAN,
+    password VARCHAR(255),
     UNIQUE (cpf, email, matricula)
 );
 

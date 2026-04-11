@@ -31,8 +31,8 @@ public class AuthenticationService implements UserDetailsService {
     private TokenService tokenService;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return usersRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return usersRepository.findByEmail(email);
     }
 
     public ResponseEntity<?> loginUser(AuthenticationDTO authenticationDTO) {
@@ -43,7 +43,6 @@ public class AuthenticationService implements UserDetailsService {
 
             return new ResponseEntity<>(new UserSelfDetailsDTO(
                     user.getName(),
-                    user.getUsername(),
                     user.getRegistration(),
                     user.getRole().getRoleName(),
                     this.getToken(user)
@@ -73,7 +72,7 @@ public class AuthenticationService implements UserDetailsService {
 
     public ResponseEntity<?> registerUser(RegisterDTO registerDTO) {
         try{
-            if(Boolean.TRUE.equals(this.verifyIfUserExists(registerDTO.username(), registerDTO.email())))
+            if(Boolean.TRUE.equals(this.verifyIfUserExists(registerDTO.email())))
                 throw new UsernameNotFoundException("Credentials already exists");
 
             Users user = this.buildUser(registerDTO);
@@ -84,8 +83,8 @@ public class AuthenticationService implements UserDetailsService {
         }
     }
 
-    public Boolean verifyIfUserExists(String username, String email) {
-        return usersRepository.findByUsernameOrEmail(username, email) != null;
+    public Boolean verifyIfUserExists(String email) {
+        return usersRepository.findByEmail(email) != null;
     }
 
     public Users buildUser(RegisterDTO registerDTO) {

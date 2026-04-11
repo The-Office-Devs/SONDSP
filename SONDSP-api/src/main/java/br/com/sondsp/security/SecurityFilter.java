@@ -30,8 +30,8 @@ public class SecurityFilter extends OncePerRequestFilter {
         try{
             String token = this.recoverToken(request);
             if (token != null) {
-                String username = this.tokenService.validateToken(token);
-                UserDetails userDetails = usersRepository.findByUsername(username);
+                String email = this.tokenService.validateToken(token);
+                UserDetails userDetails = usersRepository.findByEmail(email);
 
                 if (userDetails == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 

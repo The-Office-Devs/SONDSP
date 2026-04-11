@@ -11,13 +11,11 @@ import java.util.List;
 @Repository
 public interface UsersRepository extends JpaRepository<Users, Integer> {
 
-    UserDetails findByUsername(String username);
+    UserDetails findByEmail(String email);
 
     List<UsersDetailsDTO> findAllByStatus(Boolean status);
 
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
-
-    Users findByUsernameOrEmail(String username, String email);
 }
