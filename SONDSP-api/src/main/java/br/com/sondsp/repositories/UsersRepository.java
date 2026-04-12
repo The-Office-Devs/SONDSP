@@ -15,7 +15,5 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
 
     List<UsersDetailsDTO> findAllByStatus(Boolean status);
 
-    boolean existsByUsername(String username);
-
     boolean existsByEmail(String email);
 }

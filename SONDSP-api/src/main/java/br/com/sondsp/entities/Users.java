@@ -10,7 +10,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -35,9 +37,17 @@ public class Users implements UserDetails {
     @Column(name = "nome")
     private String name;
 
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private UserRoles role;
+    @ManyToOne
+    @JoinColumn(name = "id_role")
+    private Roles role;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "tblUsuarioPermissoes",
+            joinColumns = @JoinColumn(name = "idUsuario"),
+            inverseJoinColumns = @JoinColumn(name = "idPermissao")
+    )
+    private Set<Permissions> permissions = new HashSet<>();
 
     @Column(name = "password")
     private String password;
@@ -47,46 +57,24 @@ public class Users implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        switch (this.role) {
-            case ADMINISTRATOR -> {
-                return List.of(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
-            }
-            case SCHOOL_ADMINISTRATOR -> {
-                return List.of(
-                        new SimpleGrantedAuthority("ROLE_SCHOOL_ADMINISTRATOR"),
-                        new SimpleGrantedAuthority("ROLE_COORDINATOR"),
-                        new SimpleGrantedAuthority("ROLE_TEACHER")
-                );
-            }
-            case COORDINATOR -> {
-                return List.of(
-                        new SimpleGrantedAuthority("ROLE_COORDINATOR"),
-                        new SimpleGrantedAuthority("ROLE_TEACHER")
-                );
-            }
-            case TEACHER -> {
-                return List.of(new SimpleGrantedAuthority("ROLE_TEACHER"));
-            }
-            default -> {
-                return null;
-            }
-        }
+        String roleName = "ROLE_" + this.role.getName().toUpperCase();
+        return List.of(new SimpleGrantedAuthority(roleName));
     }
 
-
-    public static Users buildUserWithRegisterDTO(RegisterDTO registerDTO, String encodedPassword) {
+    public static Users buildUserWithRegisterDTO(RegisterDTO registerDTO, String encodedPassword, Roles role, Set<Permissions> permissions) {
         return Users
                 .builder()
                 .name(registerDTO.name())
                 .password(encodedPassword)
                 .registration(registerDTO.registration())
                 .email(registerDTO.email())
-                .role(UserRoles.valueOf(registerDTO.role()))
+                .role(role)
                 .status(true)
+                .permissions(permissions)
                 .build();
     }
 
-    public static Users updateUserWithUserForm(Users user, UserForm userUpdated) {
+    public static Users updateUserWithUserForm(Users user, UserForm userUpdated, Roles role, Set<Permissions> permissions) {
         return Users
                 .builder()
                 .idUser(user.getIdUser())
@@ -94,8 +82,9 @@ public class Users implements UserDetails {
                 .email(userUpdated.email())
                 .name(userUpdated.name())
                 .password(user.getPassword())
-                .role(UserRoles.valueOf(userUpdated.role()))
+                .role(role)
                 .status(userUpdated.status())
+                .permissions(permissions)
                 .build();
     }
 
