@@ -26,3 +26,4 @@ SONDSP: Sondagem Educacional
 - Sempre atualize sua branch com `dev` antes de começar e antes de abrir o PR.
 - Não suba arquivos grandes ou desnecessários (ex: pastas de build, `.expo`).
 - Se tiver dúvida, pergunte antes de fazer merge.
+
