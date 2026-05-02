@@ -38,12 +38,12 @@ public class Users implements UserDetails {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "id_role")
+    @JoinColumn(name = "idRole")
     private Roles role;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "tblUsuarioPermissoes",
+            name = "tblPermissaoUsuario",
             joinColumns = @JoinColumn(name = "idUsuario"),
             inverseJoinColumns = @JoinColumn(name = "idPermissao")
     )

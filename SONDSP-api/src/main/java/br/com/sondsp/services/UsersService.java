@@ -1,6 +1,8 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.dtos.UsersDetailsDTO;
+import br.com.sondsp.dtos.RegisterDTO;
+import br.com.sondsp.dtos.UserDetailsDTO;
+import br.com.sondsp.dtos.UsersListDetailsDTO;
 import br.com.sondsp.entities.Permissions;
 import br.com.sondsp.entities.Roles;
 import br.com.sondsp.entities.Users;
@@ -12,10 +14,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -43,6 +47,16 @@ public class UsersService {
         }
     }
 
+    public ResponseEntity<?> activeUser(RegisterDTO registerDTO){
+        try {
+            //Users userToUpdate = this.usersRepository.findUsers
+            //validateUserForm(registerDTO, userToUpdate);
+
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     public ResponseEntity<?> deleteUser(Integer idUser) {
         try{
             Users userToDelete = getUserById(idUser);
@@ -55,8 +69,20 @@ public class UsersService {
         }
     }
 
-    public List<UsersDetailsDTO> getAllUsers() {
+    public List<UsersListDetailsDTO> getAllUsers() {
         return this.usersRepository.findAllByStatus(true);
+    }
+
+    public UserDetailsDTO getUserDetails(Integer idUser) {
+        Users user = this.getUserById(idUser);
+        return new UserDetailsDTO(
+                user.getIdUser(),
+                user.getName(),
+                user.getRegistration(),
+                user.getEmail(),
+                user.getRole().getName(),
+                this.getPermissionsNameList(user.getPermissions())
+        );
     }
 
     private void validateUserForm(UserForm newUser, Users oldUser) {
@@ -82,5 +108,9 @@ public class UsersService {
 
     public Set<Permissions> getUserPermissions(List<String> permissions){
         return this.permissionsRepository.findAllByPermissionIn(permissions);
+    }
+
+    public List<String> getPermissionsNameList(Set<Permissions> permissions){
+        return permissions.stream().map(Permissions::getPermission).collect(Collectors.toList());
     }
 }

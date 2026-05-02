@@ -25,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
@@ -63,7 +64,8 @@ public class AuthenticationService implements UserDetailsService {
                     user.getName(),
                     user.getRegistration(),
                     user.getRole().getName(),
-                    this.getToken(user)
+                    this.getToken(user),
+                    this.getPermissionsNameList(user.getPermissions())
             ), HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
@@ -121,5 +123,9 @@ public class AuthenticationService implements UserDetailsService {
 
     public Set<Permissions> getUserPermissions(List<String> permissions){
         return this.permissionsRepository.findAllByPermissionIn(permissions);
+    }
+
+    public List<String> getPermissionsNameList(Set<Permissions> permissions){
+        return permissions.stream().map(Permissions::getPermission).collect(Collectors.toList());
     }
 }

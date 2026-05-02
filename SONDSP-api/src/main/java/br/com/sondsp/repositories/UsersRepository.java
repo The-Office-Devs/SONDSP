@@ -1,6 +1,6 @@
 package br.com.sondsp.repositories;
 
-import br.com.sondsp.dtos.UsersDetailsDTO;
+import br.com.sondsp.dtos.UsersListDetailsDTO;
 import br.com.sondsp.entities.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +13,7 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
 
     UserDetails findByEmail(String email);
 
-    List<UsersDetailsDTO> findAllByStatus(Boolean status);
+    List<UsersListDetailsDTO> findAllByStatus(Boolean status);
 
     boolean existsByEmail(String email);
 }
