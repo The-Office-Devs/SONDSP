@@ -48,3 +48,17 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.named('bootRun') {
+    // Carrega o arquivo .env se ele existir na raiz do projeto
+    if (file(".env").exists()) {
+        file(".env").readLines().each { line ->
+            if (!line.isEmpty() && !line.startsWith("#")) {
+                def parts = line.split("=", 2)
+                if (parts.length == 2) {
+                    environment parts[0].trim(), parts[1].trim()
+                }
+            }
+        }
+    }
+}
