@@ -2,7 +2,7 @@
 
 O *SONDSP* é um sistema de aplicação e gerenciamento de sondagens educacionais voltado para crianças do Ensino Fundamental I na cidade de São Paulo. O objetivo do projeto é auxiliar professores e profissionais da educação a acompanhar o desenvolvimento pedagógico dos alunos de forma ágil e centralizada.
 
-## 🛠️ Tecnologias Principais
+## Tecnologias Principais
 * **Back-end:** Java / Spring Boot / PostgreSQL / Docker (localizado em `/SONDSP-api`)
 * **Front-end:** React Native / Expo (localizado em `/SONDSP-frontend`)
 
@@ -38,5 +38,5 @@ O repositório possui duas branches de integração contínua:
 ## Documentação do Projeto
 O projeto SONDSP adota uma estrutura descentralizada de documentação. Cada parte do sistema possui suas especificidades documentadas em sua respectiva pasta `/doc`:
 
-* **Back-end:** As especificações de API e arquitetura do servidor estão em [`/SONDSP-api/doc`](./SONDSP-api/doc).
-* **Front-end:** A documentação da interface e fluxo do aplicativo está em [`/SONDSP-frontend/doc`](./SONDSP-frontend/doc).
+* **Back-end:** Toda a documentação de arquitetura, rotas e APIs do servidor está localizada no diretório [`/SONDSP-api/doc/`](./SONDSP-api/doc/).
+* **Front-end:** Toda a documentação de interface, fluxos e componentes do aplicativo está localizada no diretório [`/SONDSP-frontend/doc/`](./SONDSP-frontend/doc/).
