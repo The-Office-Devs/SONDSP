@@ -32,3 +32,10 @@ Utlização de exemplo:
     @ApiResponse(responseCode = "[código]", description = "Aluno com o id informado não encontrado")
 })
 ```
+
+# Banco de Dados
+O banco de dados é versionado via migrations. A bilioteca responsável por fazer o gerenciamento das migrations é a "flyway". Para utilizar, é necessário criar o script da migration na pasta `./src/main/resources/db/migration/`.
+
+O arquivo deve serguir a seguinte nomenclatura: "V[n]__mensagem.sql". Lembre-se de derrubar o servidor antes de criar o arquivo de migration, pois o flyway tentará aplicar ele toda vez que for salvo e o servidor estiver de pé.
+
+## Nomenclatura de objetos
