@@ -39,6 +39,9 @@ spring:
       whitelabel:
         enabled: false
       include-exception: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
 server:
   port: 8081
 jwt:
