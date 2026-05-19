@@ -51,7 +51,7 @@ CREATE TABLE usuario_x_turma (
   id_turma   INTEGER      NOT NULL,
   atuacao   VARCHAR(255) NOT NULL,
 
-  CONSTRAINT c_pk_usuario_turma         PRIMARY KEY (id_usuario, idTurma),
+  CONSTRAINT c_pk_usuario_turma         PRIMARY KEY (id_usuario, id_turma),
   CONSTRAINT c_fk_usuario_turma_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id),
   CONSTRAINT c_fk_usuario_turma_turma   FOREIGN KEY (id_turma)   REFERENCES turma (id)
 );
@@ -109,7 +109,7 @@ CREATE TABLE permissao_x_usuario (
   id_permissao INTEGER NOT NULL,
   id_usuario   INTEGER NOT NULL,
 
-  CONSTRAINT c_pk_permissao_usuario            PRIMARY KEY (id_permissao, idUsuario),
+  CONSTRAINT c_pk_permissao_usuario            PRIMARY KEY (id_permissao, id_usuario),
   CONSTRAINT c_fk_permissao_usuario_usuario    FOREIGN KEY (id_usuario)   REFERENCES usuario (id),
   CONSTRAINT c_fk_permissao_usuario_permissao  FOREIGN KEY (id_permissao) REFERENCES permissao (id)
 );

@@ -39,3 +39,12 @@ O banco de dados é versionado via migrations. A bilioteca responsável por faze
 O arquivo deve serguir a seguinte nomenclatura: "V[n]__mensagem.sql". Lembre-se de derrubar o servidor antes de criar o arquivo de migration, pois o flyway tentará aplicar ele toda vez que for salvo e o servidor estiver de pé.
 
 ## Nomenclatura de objetos
+O banco de dados possui regras de nomenclatura para facilitar a busca dos dados e garantir conformidade com os padrões de desenvolvimento:
+- Tabelas possuem o nome da entidade, ex: "aluno"
+- Tabelas de relacionamento possuem o nome de ambas as entidades separados por "x", ex: aluno_x_turma
+- Nomes de todos os objetos no banco são escritos em snake case: id_aluno
+- Nomes de atributos nao referenciam a propria tabela, ex: Na tabela aluno, o id é "id", mas tabelas que possuem FK para o aluno.id possuem o nome de id_aluno
+- Outros tipos de objetos no banco possuem seu tipo em seu nome:
+  - Sequences "tabela_atributo_seq", ex: "aluno_id_seq" (padrão criado automaticamente pelo postgres)
+  - Constraints "c_tipo_tabela", ex: "c_pk_aluno" ou "c_ck_indice"
+  - Triggers: "t_nome", ex: "t_log_aluno"
