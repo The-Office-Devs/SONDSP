@@ -3,14 +3,13 @@ spring:
     properties:
       hibernate:
         order_inserts: true
+        order_updates: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           batch_size: 100
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-      dialect: org.hibernate.dialect.SQLServer2012Dialect
-      jdbc:
-        batch_size: 50
         order_inserts: true
         order_updates: true
   servlet:
@@ -20,9 +19,9 @@ spring:
   main:
     allow-circular-references: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://db.xhlevrhoytrxeglnvcjf.supabase.co:6543/postgres
     username: postgres
-    password: 1234
+    password: "${DB_PASSWORD:postgres}"
     driver-class-name: org.postgresql.Driver
     hikari:
       maxLifeTime: 600000

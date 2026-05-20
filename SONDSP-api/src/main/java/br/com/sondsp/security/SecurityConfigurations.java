@@ -32,6 +32,7 @@ public class SecurityConfigurations {
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/register").hasAuthority("ROLE_ADMINISTRATOR")
                         .requestMatchers("/api/**").hasAuthority("ROLE_ADMINISTRATOR")
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
