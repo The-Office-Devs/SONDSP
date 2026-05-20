@@ -92,15 +92,29 @@ public class AuthenticationService implements UserDetailsService {
 
     public ResponseEntity<?> registerUser(RegisterDTO registerDTO) {
         try{
-            if(Boolean.TRUE.equals(this.verifyIfUserExists(registerDTO.email())))
-                throw new UsernameNotFoundException("Credentials already exists");
+            Users user = this.verifyIfUserExists(registerDTO.email())
+                ? this.activeUser(registerDTO)
+                : this.buildUserWithEncryptedPassword(registerDTO, this.getUserPermissions(registerDTO.permissions()));
 
-            Users user = this.buildUserWithEncryptedPassword(registerDTO, this.getUserPermissions(registerDTO.permissions()));
             return ResponseEntity.ok().body(this.usersRepository.save(user).getIdUser());
         }
         catch(Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    public Users activeUser(RegisterDTO registerDTO){
+        Users user = this.usersRepository.getByEmail(registerDTO.email());
+        if (!user.getStatus()) {
+            return this.updateUserDetails(registerDTO, user, this.getUserPermissions(registerDTO.permissions()));
+
+        } else {
+            throw new UsernameNotFoundException("Credentials already exists");
+        }
+    }
+
+    public Users updateUserDetails(RegisterDTO registerDTO, Users user, Set<Permissions> permissions){
+        return Users.updateUserWithRegisterDTO(registerDTO, user, permissions);
     }
 
     public Boolean verifyIfUserExists(String email) {
@@ -109,7 +123,7 @@ public class AuthenticationService implements UserDetailsService {
 
     public Users buildUserWithEncryptedPassword(RegisterDTO registerDTO, Set<Permissions> permissions) {
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
-        return Users.buildUserWithRegisterDTO(
+        return Users.buildUserWithRegisterDTOAndEncodedPassword(
                 registerDTO,
                 encryptedPassword,
                 getRole(registerDTO.role()),

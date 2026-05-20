@@ -61,7 +61,7 @@ public class Users implements UserDetails {
         return List.of(new SimpleGrantedAuthority(roleName));
     }
 
-    public static Users buildUserWithRegisterDTO(RegisterDTO registerDTO, String encodedPassword, Roles role, Set<Permissions> permissions) {
+    public static Users buildUserWithRegisterDTOAndEncodedPassword(RegisterDTO registerDTO, String encodedPassword, Roles role, Set<Permissions> permissions) {
         return Users
                 .builder()
                 .name(registerDTO.name())
@@ -73,6 +73,20 @@ public class Users implements UserDetails {
                 .permissions(permissions)
                 .build();
     }
+
+    public static Users updateUserWithRegisterDTO(RegisterDTO registerDTO, Users user, Roles role, Set<Permissions> permissions) {
+        return Users
+                .builder()
+                .name(registerDTO.name())
+                .password(user.password)
+                .registration(registerDTO.registration())
+                .email(user.email)
+                .role(role)
+                .status(true)
+                .permissions(permissions)
+                .build();
+    }
+
 
     public static Users updateUserWithUserForm(Users user, UserForm userUpdated, Roles role, Set<Permissions> permissions) {
         return Users

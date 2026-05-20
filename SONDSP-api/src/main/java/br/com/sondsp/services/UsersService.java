@@ -13,6 +13,7 @@ import br.com.sondsp.repositories.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,7 +33,7 @@ public class UsersService {
     public ResponseEntity<?> updateUser(Integer idUser, UserForm user) {
         try{
             Users userToUpdate = getUserById(idUser);
-            validateUserForm(user, userToUpdate);
+            validateEmail(user, userToUpdate);
             Users userUpdated = Users.updateUserWithUserForm(
                     userToUpdate,
                     user,
@@ -43,16 +44,6 @@ public class UsersService {
             return ResponseEntity.ok("Usuario "+ userName +" atualizado com sucesso!");
         }
         catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    public ResponseEntity<?> activeUser(RegisterDTO registerDTO){
-        try {
-            //Users userToUpdate = this.usersRepository.findUsers
-            //validateUserForm(registerDTO, userToUpdate);
-
-        } catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -83,10 +74,6 @@ public class UsersService {
                 user.getRole().getName(),
                 this.getPermissionsNameList(user.getPermissions())
         );
-    }
-
-    private void validateUserForm(UserForm newUser, Users oldUser) {
-        this.validateEmail(newUser, oldUser);
     }
 
     private void validateEmail(UserForm newUser, Users oldUser) {

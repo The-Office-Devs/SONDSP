@@ -12,8 +12,11 @@ import java.util.List;
 public interface UsersRepository extends JpaRepository<Users, Integer> {
 
     UserDetails findByEmail(String email);
+    Users getByEmail(String email);
 
     List<UsersListDetailsDTO> findAllByStatus(Boolean status);
 
     boolean existsByEmail(String email);
+
+    Boolean findByEmailAndStatus(String email, Boolean status);
 }

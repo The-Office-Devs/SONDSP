@@ -20,11 +20,6 @@ public class UsersController {
         return this.usersService.updateUser(idUser, user);
     }
 
-    @PutMapping("/active-user/{idUser}")
-    public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
-        return this.usersService.activeUser(registerDTO);
-    }
-
     @DeleteMapping("/delete/{idUser}")
     public ResponseEntity<?> deleteUser(@PathVariable Integer idUser){
         return this.usersService.deleteUser(idUser);
