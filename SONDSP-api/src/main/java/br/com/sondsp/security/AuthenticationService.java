@@ -4,6 +4,7 @@ import br.com.sondsp.dtos.AuthenticationDTO;
 import br.com.sondsp.dtos.RegisterDTO;
 import br.com.sondsp.dtos.UserSelfDetailsDTO;
 import br.com.sondsp.entities.Permissions;
+import br.com.sondsp.entities.Role;
 import br.com.sondsp.entities.Roles;
 import br.com.sondsp.entities.Users;
 import br.com.sondsp.repositories.PermissionsRepository;
@@ -58,8 +59,8 @@ public class AuthenticationService implements UserDetailsService {
     public ResponseEntity<?> loginUser(AuthenticationDTO authenticationDTO) {
         try{
             Users user = this.authenticateUser(authenticationDTO);
-            if(user == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password.");
-            if(!user.getStatus()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário Inativado.");
+            if(user == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou Senha incorretos.");
+            if(!user.getStatus()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário Inativo.");
             return new ResponseEntity<>(new UserSelfDetailsDTO(
                     user.getName(),
                     user.getRegistration(),
@@ -114,7 +115,8 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public Users updateUserDetails(RegisterDTO registerDTO, Users user, Set<Permissions> permissions){
-        return Users.updateUserWithRegisterDTO(registerDTO, user, permissions);
+        Roles userRole = getRole(registerDTO.role());
+        return Users.updateUserWithRegisterDTO(registerDTO, user, userRole, permissions);
     }
 
     public Boolean verifyIfUserExists(String email) {
@@ -141,5 +143,9 @@ public class AuthenticationService implements UserDetailsService {
 
     public List<String> getPermissionsNameList(Set<Permissions> permissions){
         return permissions.stream().map(Permissions::getPermission).collect(Collectors.toList());
+    }
+
+    public ResponseEntity<?> firstAccess(String email){
+        return new ResponseEntity<>("Method not allowed", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

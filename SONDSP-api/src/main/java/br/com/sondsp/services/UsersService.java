@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -74,6 +75,14 @@ public class UsersService {
                 user.getRole().getName(),
                 this.getPermissionsNameList(user.getPermissions())
         );
+    }
+
+    public ResponseEntity<?> changePassword(String email, String password){
+        return new ResponseEntity<>("Method not allowed", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public ResponseEntity<?> activateUser(String rf, String email, String password){
+        return new ResponseEntity<>("Method not allowed", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private void validateEmail(UserForm newUser, Users oldUser) {
