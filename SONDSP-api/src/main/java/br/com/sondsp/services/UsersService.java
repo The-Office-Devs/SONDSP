@@ -3,9 +3,9 @@ package br.com.sondsp.services;
 import br.com.sondsp.dtos.RegisterDTO;
 import br.com.sondsp.dtos.UserDetailsDTO;
 import br.com.sondsp.dtos.UsersListDetailsDTO;
-import br.com.sondsp.entities.Permissions;
-import br.com.sondsp.entities.Roles;
-import br.com.sondsp.entities.Users;
+import br.com.sondsp.entities.Permission;
+import br.com.sondsp.entities.Role;
+import br.com.sondsp.entities.User;
 import br.com.sondsp.form.UserForm;
 import br.com.sondsp.repositories.PermissionsRepository;
 import br.com.sondsp.repositories.RolesRepository;
@@ -33,9 +33,9 @@ public class UsersService {
 
     public ResponseEntity<?> updateUser(Integer idUser, UserForm user) {
         try{
-            Users userToUpdate = getUserById(idUser);
+            User userToUpdate = getUserById(idUser);
             validateEmail(user, userToUpdate);
-            Users userUpdated = Users.updateUserWithUserForm(
+            User userUpdated = User.updateUserWithUserForm(
                     userToUpdate,
                     user,
                     this.getRole(user.role()),
@@ -51,7 +51,7 @@ public class UsersService {
 
     public ResponseEntity<?> deleteUser(Integer idUser) {
         try{
-            Users userToDelete = getUserById(idUser);
+            User userToDelete = getUserById(idUser);
             userToDelete.setStatus(false);
             this.usersRepository.save(userToDelete);
             return ResponseEntity.ok("Usuario "+ userToDelete.getName() +" atualizado com sucesso!");
@@ -66,9 +66,9 @@ public class UsersService {
     }
 
     public UserDetailsDTO getUserDetails(Integer idUser) {
-        Users user = this.getUserById(idUser);
+        User user = this.getUserById(idUser);
         return new UserDetailsDTO(
-                user.getIdUser(),
+                user.getId(),
                 user.getName(),
                 user.getRegistration(),
                 user.getEmail(),
@@ -85,7 +85,7 @@ public class UsersService {
         return new ResponseEntity<>("Method not allowed", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private void validateEmail(UserForm newUser, Users oldUser) {
+    private void validateEmail(UserForm newUser, User oldUser) {
         if(!(newUser.email().equals(oldUser.getEmail()))) {
             boolean emailExists = this.usersRepository.existsByEmail(newUser.email());
             if(emailExists)
@@ -93,20 +93,20 @@ public class UsersService {
         }
     }
 
-    private Users getUserById(Integer idUser){
+    private User getUserById(Integer idUser){
         return usersRepository.findById(idUser)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    private Roles getRole(String role){
+    private Role getRole(String role){
         return this.rolesRepository.getRoleByName(role);
     }
 
-    public Set<Permissions> getUserPermissions(List<String> permissions){
+    public Set<Permission> getUserPermissions(List<String> permissions){
         return this.permissionsRepository.findAllByPermissionIn(permissions);
     }
 
-    public List<String> getPermissionsNameList(Set<Permissions> permissions){
-        return permissions.stream().map(Permissions::getPermission).collect(Collectors.toList());
+    public List<String> getPermissionsNameList(Set<Permission> permissions){
+        return permissions.stream().map(Permission::getPermission).collect(Collectors.toList());
     }
 }

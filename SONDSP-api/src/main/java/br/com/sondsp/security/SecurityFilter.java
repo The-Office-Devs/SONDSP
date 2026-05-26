@@ -1,6 +1,6 @@
 package br.com.sondsp.security;
 
-import br.com.sondsp.entities.Users;
+import br.com.sondsp.entities.User;
 import br.com.sondsp.repositories.UsersRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,7 +35,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
                 if (userDetails == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
-                if (userDetails instanceof Users user) {
+                if (userDetails instanceof User user) {
                     if (!user.getStatus()) {
                         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário inativo");
                     }

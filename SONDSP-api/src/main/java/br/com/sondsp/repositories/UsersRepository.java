@@ -1,7 +1,7 @@
 package br.com.sondsp.repositories;
 
 import br.com.sondsp.dtos.UsersListDetailsDTO;
-import br.com.sondsp.entities.Users;
+import br.com.sondsp.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UsersRepository extends JpaRepository<Users, Integer> {
+public interface UsersRepository extends JpaRepository<User, Integer> {
 
     UserDetails findByEmail(String email);
-    Users getByEmail(String email);
+    User getByEmail(String email);
 
     List<UsersListDetailsDTO> findAllByStatus(Boolean status);
 

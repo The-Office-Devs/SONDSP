@@ -18,7 +18,7 @@ public class Activity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_criador", referencedColumnName = "id")
-    private Users creator;
+    private User creator;
 
     @Column(name = "nome")
     private String name;

@@ -18,7 +18,7 @@ public class Survey {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_aplicador", referencedColumnName = "id")
-    private Users administrator;
+    private User administrator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_estudante", referencedColumnName = "id")

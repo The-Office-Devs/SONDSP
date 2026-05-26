@@ -3,10 +3,9 @@ package br.com.sondsp.security;
 import br.com.sondsp.dtos.AuthenticationDTO;
 import br.com.sondsp.dtos.RegisterDTO;
 import br.com.sondsp.dtos.UserSelfDetailsDTO;
-import br.com.sondsp.entities.Permissions;
+import br.com.sondsp.entities.Permission;
 import br.com.sondsp.entities.Role;
-import br.com.sondsp.entities.Roles;
-import br.com.sondsp.entities.Users;
+import br.com.sondsp.entities.User;
 import br.com.sondsp.repositories.PermissionsRepository;
 import br.com.sondsp.repositories.RolesRepository;
 import br.com.sondsp.repositories.UsersRepository;
@@ -58,9 +57,9 @@ public class AuthenticationService implements UserDetailsService {
 
     public ResponseEntity<?> loginUser(AuthenticationDTO authenticationDTO) {
         try{
-            Users user = this.authenticateUser(authenticationDTO);
+            User user = this.authenticateUser(authenticationDTO);
             if(user == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou Senha incorretos.");
-            if(!user.getStatus()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário Inativo.");
+            if(Boolean.FALSE.equals(user.getStatus())) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário Inativo.");
             return new ResponseEntity<>(new UserSelfDetailsDTO(
                     user.getName(),
                     user.getRegistration(),
@@ -73,39 +72,39 @@ public class AuthenticationService implements UserDetailsService {
         }
     }
 
-    public Users authenticateUser(AuthenticationDTO authenticationDTO) {
+    public User authenticateUser(AuthenticationDTO authenticationDTO) {
         try{
             UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
                     authenticationDTO.login(),
                     authenticationDTO.password()
             );
             Authentication auth = authenticationManager.authenticate(usernamePassword);
-            return (Users) auth.getPrincipal();
+            return (User) auth.getPrincipal();
         }
         catch (Exception e){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password.");
         }
     }
 
-    public String getToken(Users user) {
+    public String getToken(User user) {
         return tokenService.generateToken(user);
     }
 
     public ResponseEntity<?> registerUser(RegisterDTO registerDTO) {
         try{
-            Users user = this.verifyIfUserExists(registerDTO.email())
+            User user = this.verifyIfUserExists(registerDTO.email())
                 ? this.activeUser(registerDTO)
                 : this.buildUserWithEncryptedPassword(registerDTO, this.getUserPermissions(registerDTO.permissions()));
 
-            return ResponseEntity.ok().body(this.usersRepository.save(user).getIdUser());
+            return ResponseEntity.ok().body(this.usersRepository.save(user).getId());
         }
         catch(Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    public Users activeUser(RegisterDTO registerDTO){
-        Users user = this.usersRepository.getByEmail(registerDTO.email());
+    public User activeUser(RegisterDTO registerDTO){
+        User user = this.usersRepository.getByEmail(registerDTO.email());
         if (!user.getStatus()) {
             return this.updateUserDetails(registerDTO, user, this.getUserPermissions(registerDTO.permissions()));
 
@@ -114,18 +113,18 @@ public class AuthenticationService implements UserDetailsService {
         }
     }
 
-    public Users updateUserDetails(RegisterDTO registerDTO, Users user, Set<Permissions> permissions){
-        Roles userRole = getRole(registerDTO.role());
-        return Users.updateUserWithRegisterDTO(registerDTO, user, userRole, permissions);
+    public User updateUserDetails(RegisterDTO registerDTO, User user, Set<Permission> permissions){
+        Role userRole = getRole(registerDTO.role());
+        return User.updateUserWithRegisterDTO(registerDTO, user, userRole, permissions);
     }
 
     public Boolean verifyIfUserExists(String email) {
         return usersRepository.findByEmail(email) != null;
     }
 
-    public Users buildUserWithEncryptedPassword(RegisterDTO registerDTO, Set<Permissions> permissions) {
+    public User buildUserWithEncryptedPassword(RegisterDTO registerDTO, Set<Permission> permissions) {
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
-        return Users.buildUserWithRegisterDTOAndEncodedPassword(
+        return User.buildUserWithRegisterDTOAndEncodedPassword(
                 registerDTO,
                 encryptedPassword,
                 getRole(registerDTO.role()),
@@ -133,16 +132,16 @@ public class AuthenticationService implements UserDetailsService {
         );
     }
 
-    private Roles getRole(String role){
+    private Role getRole(String role){
         return this.rolesRepository.getRoleByName(role);
     }
 
-    public Set<Permissions> getUserPermissions(List<String> permissions){
+    public Set<Permission> getUserPermissions(List<String> permissions){
         return this.permissionsRepository.findAllByPermissionIn(permissions);
     }
 
-    public List<String> getPermissionsNameList(Set<Permissions> permissions){
-        return permissions.stream().map(Permissions::getPermission).collect(Collectors.toList());
+    public List<String> getPermissionsNameList(Set<Permission> permissions){
+        return permissions.stream().map(Permission::getPermission).collect(Collectors.toList());
     }
 
     public ResponseEntity<?> firstAccess(String email){

@@ -72,47 +72,53 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-//        switch (this.role) {
-//            case ADMINISTRATOR -> {
-//                return List.of(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
-//            }
-//            case SCHOOL_ADMINISTRATOR -> {
-//                return List.of(
-//                        new SimpleGrantedAuthority("ROLE_SCHOOL_ADMINISTRATOR"),
-//                        new SimpleGrantedAuthority("ROLE_COORDINATOR"),
-//                        new SimpleGrantedAuthority("ROLE_TEACHER")
-//                );
-//            }
-//            case COORDINATOR -> {
-//                return List.of(
-//                        new SimpleGrantedAuthority("ROLE_COORDINATOR"),
-//                        new SimpleGrantedAuthority("ROLE_TEACHER")
-//                );
-//            }
-//            case TEACHER -> {
-//                return List.of(new SimpleGrantedAuthority("ROLE_TEACHER"));
-//            }
-//            default -> {
-//                return null;
-//            }
-//        }
-        return null;
+        String roleName = "ROLE_" + this.role.getName().toUpperCase();
+        return List.of(new SimpleGrantedAuthority(roleName));
     }
 
-
-    public static User buildUserWithRegisterDTO(RegisterDTO registerDTO, String encodedPassword) {
+    public static User buildUserWithRegisterDTOAndEncodedPassword(
+            RegisterDTO registerDTO,
+            String encodedPassword,
+            Role role,
+            Set<Permission> permissions
+    ) {
         return User
                 .builder()
                 .name(registerDTO.name())
                 .password(encodedPassword)
                 .registration(registerDTO.registration())
                 .email(registerDTO.email())
-                //.role(UserRoles.valueOf(registerDTO.role()))
+                .role(role)
                 .status(true)
+                .permissions(permissions)
                 .build();
     }
 
-    public static User updateUserWithUserForm(User user, UserForm userUpdated) {
+    public static User updateUserWithRegisterDTO(
+            RegisterDTO registerDTO,
+            User user,
+            Role role,
+            Set<Permission> permissions
+    ) {
+        return User
+                .builder()
+                .name(registerDTO.name())
+                .password(user.password)
+                .registration(registerDTO.registration())
+                .email(user.email)
+                .role(role)
+                .status(true)
+                .permissions(permissions)
+                .build();
+    }
+
+
+    public static User updateUserWithUserForm(
+            User user,
+            UserForm userUpdated,
+            Role role,
+            Set<Permission> permissions
+    ) {
         return User
                 .builder()
                 .id(user.getId())
@@ -120,8 +126,9 @@ public class User implements UserDetails {
                 .email(userUpdated.email())
                 .name(userUpdated.name())
                 .password(user.getPassword())
-                //.role(UserRoles.valueOf(userUpdated.role()))
+                .role(role)
                 .status(userUpdated.status())
+                .permissions(permissions)
                 .build();
     }
 

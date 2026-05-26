@@ -1,6 +1,6 @@
 package br.com.sondsp.security;
 
-import br.com.sondsp.entities.Users;
+import br.com.sondsp.entities.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -19,7 +19,7 @@ public class TokenService {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(Users user) {
+    public String generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
