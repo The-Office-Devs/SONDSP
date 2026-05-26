@@ -2,6 +2,7 @@ package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.RegisterDTO;
 import br.com.sondsp.form.UserForm;
+import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,14 @@ public class UsersController {
 
     @Autowired
     private UsersService usersService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
+        return this.authenticationService.registerUser(registerDTO);
+    }
 
     @PutMapping("/update/{idUser}")
     public ResponseEntity<?> updateUser(@PathVariable Integer idUser, @RequestBody UserForm user){

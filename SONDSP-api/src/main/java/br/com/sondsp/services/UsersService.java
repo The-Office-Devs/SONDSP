@@ -127,7 +127,7 @@ public class UsersService {
     }
 
     public List<String> getPermissionsNameList(Set<Permission> permissions){
-        return permissions.stream().map(Permission::getPermission).collect(Collectors.toList());
+        return permissions.stream().map(Permission::getPermission).toList();
     }
 
     public String encodePassword(String password){

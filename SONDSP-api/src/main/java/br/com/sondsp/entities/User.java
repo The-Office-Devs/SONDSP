@@ -33,7 +33,7 @@ public class User implements UserDetails {
     @Column(name = "matricula")
     private String registration;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_funcao", referencedColumnName = "id")
     private Role role;
 
