@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -78,11 +79,30 @@ public class UsersService {
     }
 
     public ResponseEntity<?> changePassword(String email, String password){
-        return new ResponseEntity<>("Method not allowed", HttpStatus.INTERNAL_SERVER_ERROR);
+        User user = this.usersRepository.getByEmail(email);
+        if(user == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email Inválido.");
+
+        if (Boolean.TRUE.equals(user.getStatus())){
+            user.setPassword(this.encodePassword(password));
+            return new ResponseEntity<>(this.usersRepository.save(user), HttpStatus.OK);
+
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário Inativado.");
+        }
     }
 
     public ResponseEntity<?> activateUser(String rf, String email, String password){
-        return new ResponseEntity<>("Method not allowed", HttpStatus.INTERNAL_SERVER_ERROR);
+        User user = this.usersRepository.getByEmailAndRegistration(email, rf);
+        if(user == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email inválido.");
+
+        if(Boolean.FALSE.equals(user.getStatus())){
+            user.setPassword(this.encodePassword(password));
+            user.setStatus(true);
+            return new ResponseEntity<>(this.usersRepository.save(user), HttpStatus.OK);
+
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário já foi ativado.");
+        }
     }
 
     private void validateEmail(UserForm newUser, User oldUser) {
@@ -108,5 +128,9 @@ public class UsersService {
 
     public List<String> getPermissionsNameList(Set<Permission> permissions){
         return permissions.stream().map(Permission::getPermission).collect(Collectors.toList());
+    }
+
+    public String encodePassword(String password){
+        return new BCryptPasswordEncoder().encode(password);
     }
 }

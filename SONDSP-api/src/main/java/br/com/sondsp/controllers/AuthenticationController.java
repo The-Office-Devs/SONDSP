@@ -28,6 +28,11 @@ public class AuthenticationController {
         return this.authenticationService.registerUser(registerDTO);
     }
 
+    @PostMapping("/send-change-password-email")
+    public ResponseEntity<?> sendChangePasswordEmail(@RequestBody String email){
+        return this.authenticationService.sendChangePasswordEmail(email);
+    }
+
     @PostMapping("/first-access")
     public ResponseEntity<?> firstAccess(@RequestBody String email){
         return this.authenticationService.firstAccess(email);

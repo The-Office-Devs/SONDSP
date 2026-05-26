@@ -1,4 +1,4 @@
 package br.com.sondsp.dtos;
 
-public record AuthenticationDTO(String login, String password) {
+public record AuthenticationDTO(String login, String password, Boolean keepMeSigned) {
 }

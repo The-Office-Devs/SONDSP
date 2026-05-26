@@ -29,7 +29,7 @@ public class SecurityConfigurations {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth").permitAll()
                         .requestMatchers("/auth/register").hasAuthority("ROLE_ADMINISTRATOR")
                         .requestMatchers("/api/**").hasAuthority("ROLE_ADMINISTRATOR")
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()

@@ -57,6 +57,7 @@ public class AuthenticationService implements UserDetailsService {
 
     public ResponseEntity<?> loginUser(AuthenticationDTO authenticationDTO) {
         try{
+            ///TODO: IMPLEMENTS KEEPMESIGNED
             User user = this.authenticateUser(authenticationDTO);
             if(user == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou Senha incorretos.");
             if(Boolean.FALSE.equals(user.getStatus())) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário Inativo.");
@@ -92,7 +93,7 @@ public class AuthenticationService implements UserDetailsService {
 
     public ResponseEntity<?> registerUser(RegisterDTO registerDTO) {
         try{
-            User user = this.verifyIfUserExists(registerDTO.email())
+            User user = Boolean.TRUE.equals(this.verifyIfUserExists(registerDTO.email()))
                 ? this.activeUser(registerDTO)
                 : this.buildUserWithEncryptedPassword(registerDTO, this.getUserPermissions(registerDTO.permissions()));
 
@@ -145,6 +146,21 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public ResponseEntity<?> firstAccess(String email){
+        User user = usersRepository.getByEmail(email);
+        if(user == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email inválido.");
+
+        if (Boolean.FALSE.equals(user.getStatus())) {
+            return this.sendFirstAccessEmail(email);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário Inativo.");
+        }
+    }
+
+    public ResponseEntity<?> sendFirstAccessEmail(String email){
+        return new ResponseEntity<>("Method not allowed", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public ResponseEntity<?> sendChangePasswordEmail(String email){
         return new ResponseEntity<>("Method not allowed", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

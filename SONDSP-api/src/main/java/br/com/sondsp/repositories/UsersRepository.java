@@ -12,7 +12,10 @@ import java.util.List;
 public interface UsersRepository extends JpaRepository<User, Integer> {
 
     UserDetails findByEmail(String email);
+
     User getByEmail(String email);
+
+    User getByEmailAndRegistration(String email, String registration);
 
     List<UsersListDetailsDTO> findAllByStatus(Boolean status);
 
