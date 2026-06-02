@@ -1,7 +1,6 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.AuthenticationDTO;
-import br.com.sondsp.dtos.RegisterDTO;
 import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;

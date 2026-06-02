@@ -1,7 +1,6 @@
 package br.com.sondsp.entities;
 
 import br.com.sondsp.dtos.RegisterDTO;
-import br.com.sondsp.entities.enums.UserRoles;
 import br.com.sondsp.form.UserForm;
 import jakarta.persistence.*;
 import lombok.*;

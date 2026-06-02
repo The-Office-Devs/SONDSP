@@ -10,26 +10,21 @@ Para utilizar a biblioteca da forma mais comum, as anotações a seguir são dis
 
 ### Operation
 A anotação `Operation` permite passar as informações da operação realizada. Sua utilização básica:
-@Operation(description = "Descrição do endpoint")
-
-Utlização de exemplo:
-
-`@Operation(description = "Retorna o aluno com base no ID")`
-
-### ApiResponse(s)
-Essa anotação na verdade é um conjunto de duas anotações, ApiResponse e ApiResponses, que definem o que cada resposta significa.
 ```
-@ApiResponses(value = {
-    @ApiResponse(responseCode = "[código]", description = "Mensagem da resposta"),
-    @ApiResponse(responseCode = "[código]", description = "Mensagem da resposta")
-})
+@Operation(description = "Descrição do endpoint", responses = {})
+```
+
+### ApiResponse
+Essa anotação define o que cada resposta significa.
+```
+@ApiResponse(responseCode = "[código]", description = "Mensagem da resposta"), 
 ```
 
 Utlização de exemplo:
 ```
-@ApiResponses(value = {
+@Operation(description = "Retorna o aluno com base no id passado", responses = {
     @ApiResponse(responseCode = "200", description = "Aluno retornado"),
-    @ApiResponse(responseCode = "[código]", description = "Aluno com o id informado não encontrado")
+    @ApiResponse(responseCode = "404", description = "Aluno com o id informado não encontrado")
 })
 ```
 

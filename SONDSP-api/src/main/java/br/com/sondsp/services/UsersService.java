@@ -1,6 +1,5 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.dtos.RegisterDTO;
 import br.com.sondsp.dtos.UserDetailsDTO;
 import br.com.sondsp.dtos.UsersListDetailsDTO;
 import br.com.sondsp.entities.Permission;
@@ -13,16 +12,12 @@ import br.com.sondsp.repositories.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
