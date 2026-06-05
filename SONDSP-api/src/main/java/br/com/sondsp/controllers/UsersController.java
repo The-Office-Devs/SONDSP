@@ -38,7 +38,7 @@ public class UsersController {
     public ResponseEntity<?> listUser(){
         return ResponseEntity.ok(this.usersService.getAllUsers());
     }
-    
+
     @GetMapping("/details/{idUser}")
     public ResponseEntity<?> detailsUser(@PathVariable Integer idUser){
         return ResponseEntity.ok(this.usersService.getUserDetails(idUser));
