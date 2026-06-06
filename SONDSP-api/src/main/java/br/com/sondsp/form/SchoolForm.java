@@ -1,4 +1,10 @@
 package br.com.sondsp.form;
 
-public record SchoolForm(String name) {
+import jakarta.validation.constraints.NotEmpty;
+
+import static br.com.sondsp.util.SystemMessages.EMPTY_NAME;
+
+public record SchoolForm(
+        @NotEmpty(message = EMPTY_NAME)
+        String name) {
 }

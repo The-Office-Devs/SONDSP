@@ -1,40 +1,52 @@
 package br.com.sondsp.services;
 
 import br.com.sondsp.entities.School;
+import br.com.sondsp.filters.SchoolFilter;
 import br.com.sondsp.form.SchoolForm;
 import br.com.sondsp.repositories.SchoolRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static br.com.sondsp.util.SystemMessages.SCHOOL_NOT_FOUND;
 
 @Service
 @AllArgsConstructor
 public class SchoolService {
-    private SchoolRepository schoolRepository;
+    private SchoolRepository repository;
 
-    public ResponseEntity<?> createSchool(SchoolForm school) {
-        return school.name().isBlank() ? ResponseEntity.badRequest().body("Deve ser passado um nome para a escola.") :
-                new ResponseEntity<>(schoolRepository.save(new School(school.name())), HttpStatus.OK);
+    public School createSchool(SchoolForm school) {
+        return new School(school);
     }
 
-    public ResponseEntity<?> getSchoolsByName(String name) { return ResponseEntity.ok(schoolRepository.getByNameContaining(name)); }
-
-    public ResponseEntity<?> getAllSchools() { return ResponseEntity.ok(schoolRepository.findAll()); }
-
-    public ResponseEntity<?> updateSchool(Integer id, SchoolForm school) {
-        try {
-            School updatedSchool = schoolRepository.save(School.updateSchoolWithSchoolForm(getSchoolById(id), school));
-
-            return ResponseEntity.ok("Escola " + updatedSchool.getName());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public School getSchool(Integer id) {
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(SCHOOL_NOT_FOUND));
     }
 
-    private School getSchoolById(Integer id) {
-        return schoolRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "School not found"));
+    public List<School> getSchools(SchoolFilter filter) {
+        Specification<School> spec = buildFilter(filter);
+        return repository.findAll(spec);
+    }
+
+    private Specification<School> buildFilter(SchoolFilter filter) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (filter.name() != null && !filter.name().isBlank()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder
+                        .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public School updateSchool(Integer id, SchoolForm school) {
+        return repository.save(School.updateSchoolWithSchoolForm(getSchool(id), school));
     }
 }

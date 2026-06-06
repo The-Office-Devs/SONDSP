@@ -1,66 +1,126 @@
 package br.com.sondsp.controllers;
 
-import br.com.sondsp.dtos.RegisterDTO;
+import br.com.sondsp.dtos.StandardErrorDTO;
+import br.com.sondsp.dtos.UserDTO;
+import br.com.sondsp.dtos.UsersListDTO;
+import br.com.sondsp.filters.UserFilter;
+import br.com.sondsp.form.RegisterForm;
 import br.com.sondsp.form.UserForm;
 import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.UsersService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/api/users")
+@RequestMapping("/user")
 public class UsersController {
 
     @Autowired
-    private UsersService usersService;
+    private UsersService service;
 
     @Autowired
     private AuthenticationService authenticationService;
 
-    @PostMapping("/register")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuário registrado com sucesso."),
-        @ApiResponse(responseCode = "400", description = "Erro ao registrar o usuário.")
+    @PostMapping()
+    @Operation(description = "Registra um novo usuário", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário registrado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)
+                    )
+            )
     })
-    public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
-        return this.authenticationService.registerUser(registerDTO);
+    public ResponseEntity<?> register(@RequestBody RegisterForm form){
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(authenticationService.registerUser(form)));
     }
 
-    @PutMapping("/update/{idUser}")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso."),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado.")
+    @GetMapping("/{id}")
+    @Operation(description = "Retorna o usuário com o id passado.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário retornado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)
+                    )
+            )
+    })
+    public ResponseEntity<?> getUserById(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(service.getUser(id)));
+    }
+
+    @GetMapping()
+    @Operation(
+            description = "Retorna todos os usuários com base no filtro passado. Se nenhum filtro for passado, retorna todos os usuários.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Retorna os usuários encontrados",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = UsersListDTO.class))
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<?> listUser(@RequestBody UserFilter filter){
+        return ResponseEntity.status(HttpStatus.OK).body(service.getUsers(filter).stream().map(UsersListDTO::new));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(description = "Atualiza o usuário com o id passado.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário atualizado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário não encontrado.",
+                    content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = StandardErrorDTO.class)
+                    )
+            )
     })
     public ResponseEntity<?> updateUser(@PathVariable Integer idUser, @RequestBody UserForm user){
-        return this.usersService.updateUser(idUser, user);
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(service.updateUser(idUser, user)));
     }
 
-    @DeleteMapping("/delete/{idUser}")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuário desativado com sucesso."),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado.")
+    @DeleteMapping("/{idUser}")
+    @Operation(description = "Desativa o usuário com o ID passado.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário desativado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário não encontrado.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = StandardErrorDTO.class)
+                    )
+            )
     })
     public ResponseEntity<?> deleteUser(@PathVariable Integer idUser){
-        return this.usersService.deleteUser(idUser);
-    }
-
-    @GetMapping("/list")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Todos as usuários retornados.")
-    })
-    public ResponseEntity<?> listUser(){
-        return ResponseEntity.ok(this.usersService.getAllUsers());
-    }
-    
-    @GetMapping("/details/{idUser}")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuário retornado com sucesso.")
-    })
-    public ResponseEntity<?> detailsUser(@PathVariable Integer idUser){
-        return ResponseEntity.ok(this.usersService.getUserDetails(idUser));
+        service.deleteUser(idUser);
+        return ResponseEntity.status(HttpStatus.OK).body("Usuário desativado com sucesso.");
     }
 }

@@ -20,8 +20,8 @@ public class School {
     @Column(name = "nome")
     private String name;
 
-    public School(String name) {
-        this.name = name;
+    public School(SchoolForm school) {
+        this.name = school.name();
     }
 
     public static School updateSchoolWithSchoolForm(School school, SchoolForm updatedSchool) {

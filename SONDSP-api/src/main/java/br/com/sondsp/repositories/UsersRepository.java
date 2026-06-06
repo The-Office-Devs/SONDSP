@@ -1,25 +1,17 @@
 package br.com.sondsp.repositories;
 
-import br.com.sondsp.dtos.UsersListDetailsDTO;
 import br.com.sondsp.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface UsersRepository extends JpaRepository<User, Integer> {
+public interface UsersRepository extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
-    UserDetails findByEmail(String email);
+    User findByEmail(String email);
 
-    User getByEmail(String email);
-
-    User getByEmailAndRegistration(String email, String registration);
-
-    List<UsersListDetailsDTO> findAllByStatus(Boolean status);
+    User findByEmailAndRegistration(String email, String registration);
 
     boolean existsByEmail(String email);
 
-    Boolean findByEmailAndStatus(String email, Boolean status);
 }

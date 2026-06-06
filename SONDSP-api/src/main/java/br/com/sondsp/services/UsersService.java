@@ -1,128 +1,126 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.dtos.UserDetailsDTO;
-import br.com.sondsp.dtos.UsersListDetailsDTO;
-import br.com.sondsp.entities.Permission;
-import br.com.sondsp.entities.Role;
 import br.com.sondsp.entities.User;
+import br.com.sondsp.filters.UserFilter;
+import br.com.sondsp.form.ActivationForm;
+import br.com.sondsp.form.ChangePasswordForm;
 import br.com.sondsp.form.UserForm;
-import br.com.sondsp.repositories.PermissionsRepository;
-import br.com.sondsp.repositories.RolesRepository;
 import br.com.sondsp.repositories.UsersRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
+import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
 public class UsersService {
+    private UsersRepository repository;
 
-    private UsersRepository usersRepository;
-    private RolesRepository rolesRepository;
-    private PermissionsRepository permissionsRepository;
-
-    public ResponseEntity<?> updateUser(Integer idUser, UserForm user) {
-        try{
-            User userToUpdate = getUserById(idUser);
-            validateEmail(user, userToUpdate);
-            User userUpdated = User.updateUserWithUserForm(
-                    userToUpdate,
-                    user,
-                    this.getRole(user.role()),
-                    this.getUserPermissions(user.permissions())
-            );
-            String userName = this.usersRepository.save(userUpdated).getName();
-            return ResponseEntity.ok("Usuario "+ userName +" atualizado com sucesso!");
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public User getUser(Integer id) {
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
     }
 
-    public ResponseEntity<?> deleteUser(Integer idUser) {
-        try{
-            User userToDelete = getUserById(idUser);
-            userToDelete.setStatus(false);
-            this.usersRepository.save(userToDelete);
-            return ResponseEntity.ok("Usuario "+ userToDelete.getName() +" atualizado com sucesso!");
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public User getByEmail(String email) {
+        User user = repository.findByEmail(email);
+
+        if (user == null)
+            throw new EntityNotFoundException(EMAIL_NOT_FOUND);
+
+        return user;
     }
 
-    public List<UsersListDetailsDTO> getAllUsers() {
-        return this.usersRepository.findAllByStatus(true);
+    public List<User> getUsers(UserFilter filter) {
+        Specification<User> spec = buildFilter(filter);
+        return repository.findAll(spec);
     }
 
-    public UserDetailsDTO getUserDetails(Integer idUser) {
-        User user = this.getUserById(idUser);
-        return new UserDetailsDTO(
-                user.getId(),
-                user.getName(),
-                user.getRegistration(),
-                user.getEmail(),
-                user.getRole().getName(),
-                this.getPermissionsNameList(user.getPermissions())
-        );
+    public User save(User user) {
+        return repository.save(user);
     }
 
-    public ResponseEntity<?> changePassword(String email, String password){
-        User user = this.usersRepository.getByEmail(email);
-        if(user == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email Inválido.");
+    public User updateUser(Integer idUser, UserForm user) {
+        validadeUser(user);
 
-        if (Boolean.TRUE.equals(user.getStatus())){
-            user.setPassword(this.encodePassword(password));
-            return new ResponseEntity<>(this.usersRepository.save(user), HttpStatus.OK);
+        return User.updateUserWithUserForm(getUser(idUser), user);
+    }
 
+    public User changePassword(ChangePasswordForm form){
+        User user = repository.findByEmail(form.email());
+
+        if (user == null) throw new EntityNotFoundException(EMAIL_NOT_FOUND);
+
+        if (user.getStatus()){
+            user.setPassword(encodePassword(form.password()));
+
+            return repository.save(user);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário Inativado.");
+            throw new ValidationException(INACTIVATED_USER);
         }
     }
 
-    public ResponseEntity<?> activateUser(String rf, String email, String password){
-        User user = this.usersRepository.getByEmailAndRegistration(email, rf);
-        if(user == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email inválido.");
+    public User activateUser(ActivationForm form) {
+        User user = repository.findByEmailAndRegistration(form.email(), form.registration());
 
-        if(Boolean.FALSE.equals(user.getStatus())){
-            user.setPassword(this.encodePassword(password));
+        if (user == null) throw new EntityNotFoundException(EMAIL_OR_REGISTRATION_NOT_FOUND);
+
+        if (!user.getStatus()){
+            user.setPassword(encodePassword(form.password()));
             user.setStatus(true);
-            return new ResponseEntity<>(this.usersRepository.save(user), HttpStatus.OK);
-
+            return repository.save(user);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário já foi ativado.");
+            throw new ValidationException(USER_ALREADY_ACTIVE);
         }
     }
 
-    private void validateEmail(UserForm newUser, User oldUser) {
-        if(!(newUser.email().equals(oldUser.getEmail()))) {
-            boolean emailExists = this.usersRepository.existsByEmail(newUser.email());
-            if(emailExists)
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
-        }
+    public void deleteUser(Integer idUser) {
+        User userToDelete = getUser(idUser);
+        userToDelete.setStatus(false);
+        repository.save(userToDelete);
     }
 
-    private User getUserById(Integer idUser){
-        return usersRepository.findById(idUser)
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    public boolean existsByEmail(String email) {
+        return repository.existsByEmail(email);
     }
 
-    private Role getRole(String role){
-        return this.rolesRepository.getRoleByName(role);
+    private Specification<User> buildFilter(UserFilter filter) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (filter.name() != null && !filter.name().isBlank())
+                predicates.add(criteriaBuilder.like(criteriaBuilder
+                        .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+
+
+            if (filter.role() != null)
+                predicates.add(criteriaBuilder.equal(root.get("role"), filter.role()));
+
+
+            if (filter.email() != null && !filter.name().isBlank())
+                predicates.add(criteriaBuilder.like(criteriaBuilder
+                        .lower(root.get("email")), "%" + filter.email().toLowerCase() + "%"));
+
+            if (filter.status() != null)
+                predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
-    public Set<Permission> getUserPermissions(List<String> permissions){
-        return this.permissionsRepository.findAllByPermissionIn(permissions);
+    private void validadeUser(UserForm user) {
+        validateEmail(user.email());
     }
 
-    public List<String> getPermissionsNameList(Set<Permission> permissions){
-        return permissions.stream().map(Permission::getPermission).toList();
+    private void validateEmail(String email) {
+        if (repository.existsByEmail(email))
+            throw new ValidationException(EMAIL_ALREADY_EXISTS);
     }
 
     public String encodePassword(String password){
