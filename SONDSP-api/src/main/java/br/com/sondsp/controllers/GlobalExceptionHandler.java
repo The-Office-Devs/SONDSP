@@ -36,6 +36,6 @@ public class GlobalExceptionHandler {
     // Fallback para exceções não esperadas
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StandardErrorDTO> globalException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StandardErrorDTO(UNEXPECTED_ERROR));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StandardErrorDTO(UNEXPECTED_ERROR + e.getMessage()));
     }
 }

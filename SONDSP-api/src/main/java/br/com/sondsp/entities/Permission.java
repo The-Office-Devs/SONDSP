@@ -23,8 +23,8 @@ public class Permission {
     private String permission;
 
     @ManyToMany(mappedBy = "permissions")
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
     @ManyToMany(mappedBy = "permissions")
-    private Set<User> users = new HashSet<>();
+    private Set<User> users;
 }

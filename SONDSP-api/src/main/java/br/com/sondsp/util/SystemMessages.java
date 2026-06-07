@@ -2,7 +2,7 @@ package br.com.sondsp.util;
 
 public final class SystemMessages {
     // System errors
-    public static final String UNEXPECTED_ERROR = "Ocorreu um erro inesperado.";
+    public static final String UNEXPECTED_ERROR = "Ocorreu um erro inesperado: ";
 
     // Format or business logic errors
     public static final String EMAIL_ALREADY_EXISTS = "O email já está sendo utilizado.";

@@ -51,7 +51,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_permissao")
     )
-    private Set<Permission> permissions = new HashSet<>();
+    private Set<Permission> permissions;
 
     @ManyToMany
     @JoinTable(
@@ -59,7 +59,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_escola")
     )
-    private Set<School> schools = new HashSet<>();
+    private Set<School> schools;
 
     @ManyToMany
     @JoinTable(
@@ -67,7 +67,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_turma")
     )
-    private Set<SchoolClass> schoolsClasses = new HashSet<>();
+    private Set<SchoolClass> schoolsClasses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

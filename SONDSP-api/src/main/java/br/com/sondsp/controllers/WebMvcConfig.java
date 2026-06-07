@@ -9,6 +9,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer.addPathPrefix("/api", clazz -> clazz.isAnnotationPresent(RestController.class));
+        configurer.addPathPrefix("/api", clazz ->
+                clazz.isAnnotationPresent(RestController.class) &&
+                        clazz.getPackageName().startsWith("br.com.sondsp")
+        );
     }
 }
