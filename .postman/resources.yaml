@@ -1,9 +1,0 @@
-# Use this workspace to collaborate
-workspace:
-  id: 4a5384fc-656a-4ed1-8584-44a066610348
-
-localResources:
-  docs:
-    - ../SONDSP-api/doc/doc.md
-    - ../SONDSP-frontend/README.md
-    - ../README.md
