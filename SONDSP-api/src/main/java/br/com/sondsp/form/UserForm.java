@@ -1,7 +1,9 @@
 package br.com.sondsp.form;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -9,14 +11,14 @@ import static br.com.sondsp.util.SystemMessages.*;
 
 public record UserForm(
         @Email(message = INVALID_EMAIL_FORMAT)
-        @NotEmpty(message = EMPTY_EMAIL)
+        @NotBlank(message = EMPTY_EMAIL)
         String email,
-        @NotEmpty(message = EMPTY_REGISTRATION)
+        @NotBlank(message = EMPTY_REGISTRATION)
         String registration,
-        @NotEmpty(message = EMPTY_NAME)
+        @NotBlank(message = EMPTY_NAME)
         String name,
         String role,
-        @NotEmpty(message = EMPTY_STATUS)
+        @NotNull(message = EMPTY_STATUS)
         Boolean status,
         List<String> permissions) {
     public UserForm {

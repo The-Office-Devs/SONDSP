@@ -21,7 +21,7 @@ public class SchoolService {
     private SchoolRepository repository;
 
     public School createSchool(SchoolForm school) {
-        return new School(school);
+        return repository.save(new School(school));
     }
 
     public School getSchool(Integer id) {
@@ -36,6 +36,9 @@ public class SchoolService {
     private Specification<School> buildFilter(SchoolFilter filter) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+            if (filter == null)
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
             if (filter.name() != null && !filter.name().isBlank()) {
                 predicates.add(criteriaBuilder.like(criteriaBuilder

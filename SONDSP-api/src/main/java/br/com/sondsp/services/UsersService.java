@@ -16,8 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static br.com.sondsp.util.SystemMessages.*;
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 @AllArgsConstructor
@@ -46,10 +48,12 @@ public class UsersService {
         return repository.save(user);
     }
 
-    public User updateUser(Integer idUser, UserForm user) {
-        validadeUser(user);
+    public User updateUser(Integer id, UserForm userForm) {
+        User user = getUser(id);
 
-        return User.updateUserWithUserForm(getUser(idUser), user);
+        validadeUser(userForm, user);
+
+        return repository.save(User.updateUserWithUserForm(getUser(id), userForm));
     }
 
     public User changePassword(ChangePasswordForm form){
@@ -94,6 +98,9 @@ public class UsersService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            if (filter == null)
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+
             if (filter.name() != null && !filter.name().isBlank())
                 predicates.add(criteriaBuilder.like(criteriaBuilder
                         .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
@@ -102,8 +109,7 @@ public class UsersService {
             if (filter.role() != null)
                 predicates.add(criteriaBuilder.equal(root.get("role"), filter.role()));
 
-
-            if (filter.email() != null && !filter.name().isBlank())
+            if (filter.email() != null && !filter.email().isBlank())
                 predicates.add(criteriaBuilder.like(criteriaBuilder
                         .lower(root.get("email")), "%" + filter.email().toLowerCase() + "%"));
 
@@ -114,12 +120,12 @@ public class UsersService {
         };
     }
 
-    private void validadeUser(UserForm user) {
-        validateEmail(user.email());
+    private void validadeUser(UserForm userForm, User user) {
+        validateEmail(userForm.email(), user.getEmail());
     }
 
-    private void validateEmail(String email) {
-        if (repository.existsByEmail(email))
+    private void validateEmail(String newEmail, String email) {
+        if (!Objects.equals(email, newEmail) && repository.existsByEmail(newEmail))
             throw new ValidationException(EMAIL_ALREADY_EXISTS);
     }
 

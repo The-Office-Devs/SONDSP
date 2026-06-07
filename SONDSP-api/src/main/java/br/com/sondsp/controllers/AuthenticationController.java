@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
 
-@Controller
+@RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
     @Autowired
@@ -38,8 +39,8 @@ public class AuthenticationController {
                     )
             )
     })
-    public ResponseEntity<?> login(@RequestBody AuthenticationForm form) throws LoginException {
-        return ResponseEntity.status(HttpStatus.OK).body(new AuthenticationDTO(service.loginUser(form)));
+    public ResponseEntity<?> login(@Valid @RequestBody AuthenticationForm form) throws LoginException {
+        return ResponseEntity.ok().body(new AuthenticationDTO(service.loginUser(form)));
     }
 
     @PostMapping("/change-password")
@@ -53,7 +54,7 @@ public class AuthenticationController {
             )
     })
     public ResponseEntity<?> sendChangePasswordEmail(@RequestBody String email) throws Exception {
-        return ResponseEntity.status(HttpStatus.OK).body(service.sendChangePasswordEmail(email));
+        return ResponseEntity.ok().body(service.sendChangePasswordEmail(email));
     }
 
     @PostMapping("/first-access")
@@ -67,7 +68,7 @@ public class AuthenticationController {
             )
     })
     public ResponseEntity<?> firstAccess(@RequestBody String email) throws Exception {
-        return ResponseEntity.status(HttpStatus.OK).body(service.firstAccess(email));
+        return ResponseEntity.ok().body(service.firstAccess(email));
     }
 
     @PutMapping("/change-password")
@@ -81,7 +82,7 @@ public class AuthenticationController {
                     )
             )
     })
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordForm form){
-        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(usersService.changePassword(form)));
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form){
+        return ResponseEntity.ok().body(new UserDTO(usersService.changePassword(form)));
     }
 }

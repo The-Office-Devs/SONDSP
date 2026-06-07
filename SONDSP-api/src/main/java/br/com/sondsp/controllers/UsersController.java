@@ -13,13 +13,13 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/user")
 public class UsersController {
 
@@ -40,8 +40,8 @@ public class UsersController {
                     )
             )
     })
-    public ResponseEntity<?> register(@RequestBody RegisterForm form){
-        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(authenticationService.registerUser(form)));
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterForm form){
+        return ResponseEntity.ok().body(new UserDTO(authenticationService.registerUser(form)));
     }
 
     @GetMapping("/{id}")
@@ -56,7 +56,7 @@ public class UsersController {
             )
     })
     public ResponseEntity<?> getUserById(@PathVariable Integer id) {
-        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(service.getUser(id)));
+        return ResponseEntity.ok().body(new UserDTO(service.getUser(id)));
     }
 
     @GetMapping()
@@ -73,8 +73,8 @@ public class UsersController {
                     )
             }
     )
-    public ResponseEntity<?> listUser(@RequestBody UserFilter filter){
-        return ResponseEntity.status(HttpStatus.OK).body(service.getUsers(filter).stream().map(UsersListDTO::new));
+    public ResponseEntity<?> listUser(@RequestBody(required = false) UserFilter filter){
+        return ResponseEntity.ok().body(service.getUsers(filter).stream().map(UsersListDTO::new));
     }
 
     @PutMapping("/{id}")
@@ -96,11 +96,11 @@ public class UsersController {
                     )
             )
     })
-    public ResponseEntity<?> updateUser(@PathVariable Integer idUser, @RequestBody UserForm user){
-        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(service.updateUser(idUser, user)));
+    public ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody UserForm user){
+        return ResponseEntity.ok().body(new UserDTO(service.updateUser(id, user)));
     }
 
-    @DeleteMapping("/{idUser}")
+    @DeleteMapping("/{id}")
     @Operation(description = "Desativa o usuário com o ID passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -119,8 +119,8 @@ public class UsersController {
                     )
             )
     })
-    public ResponseEntity<?> deleteUser(@PathVariable Integer idUser){
-        service.deleteUser(idUser);
-        return ResponseEntity.status(HttpStatus.OK).body("Usuário desativado com sucesso.");
+    public ResponseEntity<?> deleteUser(@PathVariable Integer id){
+        service.deleteUser(id);
+        return ResponseEntity.ok().body("Usuário desativado com sucesso.");
     }
 }

@@ -12,12 +12,13 @@ public final class SystemMessages {
     // Empty properties
     public static final String EMPTY_NAME = "Deve ser passado um nome.";
     public static final String EMPTY_EMAIL = "Deve ser passado um email.";
-    public static final String EMPTY_REGISTRATION = "Deve ser passada a função.";
+    public static final String EMPTY_REGISTRATION = "Deve ser passada a matrícula.";
     public static final String EMPTY_ROLE = "Ocorreu um erro inesperado.";
     public static final String EMPTY_PERMISSIONS = "Devem ser passadas as permissões.";
     public static final String EMPTY_STATUS = "Deve ser passado o status.";
     public static final String EMPTY_PASSWORD = "Deve ser passada uma senha.";
     public static final String EMPTY_LOGIN = "Deve ser passado um email ou matrícula.";
+    public static final String EMPTY_PERMISISON = "A permissão não pode ser vazia.";
 
     // User errors
     public static final String USER_NOT_FOUND = "Usuário não foi encontrado.";

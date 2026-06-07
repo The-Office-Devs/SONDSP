@@ -3,24 +3,26 @@ package br.com.sondsp.controllers;
 import br.com.sondsp.dtos.StandardErrorDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.xml.bind.ValidationException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.security.auth.login.LoginException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static br.com.sondsp.util.SystemMessages.UNEXPECTED_ERROR;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({
-            MethodArgumentNotValidException.class,
-            ValidationException.class,
-    })
+    @ExceptionHandler(ValidationException.class)
     public ResponseEntity<StandardErrorDTO> invalidArg(Exception e) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(new StandardErrorDTO(e.getMessage()));
+        return ResponseEntity.unprocessableContent().body(new StandardErrorDTO(e.getMessage()));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -33,9 +35,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardErrorDTO(e.getMessage()));
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<StandardErrorDTO> invalidArguments(MethodArgumentNotValidException e) {
+        String errorMessage = e.getBindingResult().getAllErrors().stream().findFirst()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage).orElse(null);
+
+        return ResponseEntity.unprocessableContent().body(new StandardErrorDTO(errorMessage));
+    }
+
     // Fallback para exceções não esperadas
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StandardErrorDTO> globalException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StandardErrorDTO(UNEXPECTED_ERROR + e.getMessage()));
+        return ResponseEntity.internalServerError().body(new StandardErrorDTO(UNEXPECTED_ERROR + e.getMessage()));
     }
 }

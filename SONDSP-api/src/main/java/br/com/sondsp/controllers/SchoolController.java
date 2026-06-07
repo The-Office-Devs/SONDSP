@@ -10,13 +10,14 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/school")
 public class SchoolController {
     @Autowired
@@ -33,8 +34,8 @@ public class SchoolController {
                     )
             )
     })
-    public ResponseEntity<?> createSchool(@RequestBody SchoolForm form) {
-        return ResponseEntity.status(HttpStatus.OK).body(new SchoolDTO(service.createSchool(form)));
+    public ResponseEntity<?> createSchool(@Valid @RequestBody SchoolForm form) {
+        return ResponseEntity.ok().body(new SchoolDTO(service.createSchool(form)));
     }
 
     @GetMapping("/{id}")
@@ -57,7 +58,7 @@ public class SchoolController {
             )
     })
     public ResponseEntity<?> getSchoolById(@PathVariable Integer id) {
-        return ResponseEntity.status(HttpStatus.OK).body(new SchoolDTO(service.getSchool(id)));
+        return ResponseEntity.ok().body(new SchoolDTO(service.getSchool(id)));
     }
 
     @GetMapping()
@@ -71,8 +72,8 @@ public class SchoolController {
                     )
             )
     })
-    public ResponseEntity<?> getSchoolsByfilter(@RequestBody SchoolFilter filter) {
-        return ResponseEntity.status(HttpStatus.OK).body(service.getSchools(filter).stream().map(SchoolDTO::new));
+    public ResponseEntity<?> getSchoolsByfilter(@RequestBody(required = false) SchoolFilter filter) {
+        return ResponseEntity.ok().body(service.getSchools(filter).stream().map(SchoolDTO::new));
     }
 
     @PutMapping("/{id}")
@@ -94,7 +95,7 @@ public class SchoolController {
                     )
             )
     })
-    public ResponseEntity<?> updateSchool(@PathVariable Integer id, @RequestBody SchoolForm form) {
-        return ResponseEntity.status(HttpStatus.OK).body(new SchoolDTO(service.updateSchool(id, form)));
+    public ResponseEntity<?> updateSchool(@PathVariable Integer id, @Valid @RequestBody SchoolForm form) {
+        return ResponseEntity.ok().body(new SchoolDTO(service.updateSchool(id, form)));
     }
 }

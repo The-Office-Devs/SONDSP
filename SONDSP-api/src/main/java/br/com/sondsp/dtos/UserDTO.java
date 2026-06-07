@@ -11,7 +11,8 @@ public record UserDTO(
         String registration,
         String email,
         String role,
-        List<String> permissions) {
+        List<String> permissions,
+        Boolean status) {
     public UserDTO(User user) {
         this(
                 user.getId(),
@@ -20,7 +21,8 @@ public record UserDTO(
                 user.getEmail(),
                 user.getRole() != null ? user.getRole().getName() : null,
                 user.getPermissions() != null ?
-                        user.getPermissions().stream().map(Permission::getPermission).toList() : List.of()
+                        user.getPermissions().stream().map(Permission::getPermission).toList() : List.of(),
+                user.getStatus()
         );
     }
 }
