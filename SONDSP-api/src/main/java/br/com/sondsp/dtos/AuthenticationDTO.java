@@ -1,4 +1,14 @@
 package br.com.sondsp.dtos;
 
-public record AuthenticationDTO(String login, String password, Boolean keepMeSigned) {
+import br.com.sondsp.security.UserAuthResult;
+
+public record AuthenticationDTO(
+        String login,
+        String token) {
+    public AuthenticationDTO(UserAuthResult userAuth) {
+        this (
+                userAuth.user().getEmail(),
+                userAuth.token()
+        );
+    }
 }

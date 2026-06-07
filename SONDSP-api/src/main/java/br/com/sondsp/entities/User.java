@@ -1,7 +1,6 @@
 package br.com.sondsp.entities;
 
-import br.com.sondsp.dtos.RegisterDTO;
-import br.com.sondsp.entities.enums.UserRoles;
+import br.com.sondsp.form.RegisterForm;
 import br.com.sondsp.form.UserForm;
 import jakarta.persistence.*;
 import lombok.*;
@@ -52,7 +51,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_permissao")
     )
-    private Set<Permission> permissions = new HashSet<>();
+    private Set<Permission> permissions;
 
     @ManyToMany
     @JoinTable(
@@ -60,7 +59,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_escola")
     )
-    private Set<School> schools = new HashSet<>();
+    private Set<School> schools;
 
     @ManyToMany
     @JoinTable(
@@ -68,7 +67,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_turma")
     )
-    private Set<SchoolClass> schoolsClasses = new HashSet<>();
+    private Set<SchoolClass> schoolsClasses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -77,34 +76,34 @@ public class User implements UserDetails {
     }
 
     public static User buildUserWithRegisterDTOAndEncodedPassword(
-            RegisterDTO registerDTO,
+            RegisterForm form,
             String encodedPassword,
             Role role,
             Set<Permission> permissions
     ) {
         return User
                 .builder()
-                .name(registerDTO.name())
+                .name(form.name())
                 .password(encodedPassword)
-                .registration(registerDTO.registration())
-                .email(registerDTO.email())
+                .registration(form.registration())
+                .email(form.email())
                 .role(role)
                 .status(true)
                 .permissions(permissions)
                 .build();
     }
 
-    public static User updateUserWithRegisterDTO(
-            RegisterDTO registerDTO,
+    public static User updateUserWithRegisterForm(
+            RegisterForm form,
             User user,
             Role role,
             Set<Permission> permissions
     ) {
         return User
                 .builder()
-                .name(registerDTO.name())
+                .name(form.name())
                 .password(user.password)
-                .registration(registerDTO.registration())
+                .registration(form.registration())
                 .email(user.email)
                 .role(role)
                 .status(true)
@@ -113,22 +112,17 @@ public class User implements UserDetails {
     }
 
 
-    public static User updateUserWithUserForm(
-            User user,
-            UserForm userUpdated,
-            Role role,
-            Set<Permission> permissions
-    ) {
+    public static User updateUserWithUserForm(User user, UserForm form) {
         return User
                 .builder()
                 .id(user.getId())
-                .registration(userUpdated.registration())
-                .email(userUpdated.email())
-                .name(userUpdated.name())
+                .registration(form.registration())
+                .email(form.email())
+                .name(form.name())
                 .password(user.getPassword())
-                .role(role)
-                .status(userUpdated.status())
-                .permissions(permissions)
+                .role(user.getRole())
+                .status(form.status())
+                .permissions(user.getPermissions())
                 .build();
     }
 

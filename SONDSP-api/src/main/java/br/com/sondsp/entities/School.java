@@ -1,5 +1,6 @@
 package br.com.sondsp.entities;
 
+import br.com.sondsp.form.SchoolForm;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,5 +18,13 @@ public class School {
     private Integer id;
 
     @Column(name = "nome")
-    private String nome;
+    private String name;
+
+    public School(SchoolForm school) {
+        this.name = school.name();
+    }
+
+    public static School updateSchoolWithSchoolForm(School school, SchoolForm updatedSchool) {
+        return School.builder().id(school.getId()).name(updatedSchool.name()).build();
+    }
 }

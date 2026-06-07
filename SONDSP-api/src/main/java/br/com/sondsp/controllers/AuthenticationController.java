@@ -1,49 +1,88 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.AuthenticationDTO;
-import br.com.sondsp.dtos.RegisterDTO;
+import br.com.sondsp.dtos.UserDTO;
+import br.com.sondsp.form.AuthenticationForm;
+import br.com.sondsp.form.ChangePasswordForm;
 import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.UsersService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import javax.security.auth.login.LoginException;
+
+@RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
     @Autowired
-    private AuthenticationService authenticationService;
+    private AuthenticationService service;
 
     @Autowired
-    private UsersService  usersService;
+    private UsersService usersService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationDTO authenticationDTO){
-        return this.authenticationService.loginUser(authenticationDTO);
+    @Operation(description = "Efetua o login do usuário", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário logado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AuthenticationDTO.class)
+                    )
+            )
+    })
+    public ResponseEntity<?> login(@Valid @RequestBody AuthenticationForm form) throws LoginException {
+        return ResponseEntity.ok().body(new AuthenticationDTO(service.loginUser(form)));
     }
 
-    @PostMapping("/send-change-password-email")
-    public ResponseEntity<?> sendChangePasswordEmail(@RequestBody String email){
-        return this.authenticationService.sendChangePasswordEmail(email);
+    @PostMapping("/change-password")
+    @Operation(description = "Envia email de troca de senha", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Email enviado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json"
+                    )
+            )
+    })
+    public ResponseEntity<?> sendChangePasswordEmail(@RequestBody String email) throws Exception {
+        return ResponseEntity.ok().body(service.sendChangePasswordEmail(email));
     }
 
     @PostMapping("/first-access")
-    public ResponseEntity<?> firstAccess(@RequestBody String email){
-        return this.authenticationService.firstAccess(email);
+    @Operation(description = "Realiza o primeiro acesso do usuário.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Primeiro acesso realizado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json"
+                    )
+            )
+    })
+    public ResponseEntity<?> firstAccess(@RequestBody String email) throws Exception {
+        return ResponseEntity.ok().body(service.firstAccess(email));
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody String email, @RequestBody String password){
-        return this.usersService.changePassword(email, password);
-    }
-
-    @PostMapping("/activate-user")
-    public ResponseEntity<?> activateUser(
-            @RequestBody String rf,
-            @RequestBody String email,
-            @RequestBody String password
-    ){
-        return this.usersService.activateUser(rf, email, password);
+    @Operation(description = "Realiza a troca de senha do usuário.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Senha trocada com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)
+                    )
+            )
+    })
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form){
+        return ResponseEntity.ok().body(new UserDTO(usersService.changePassword(form)));
     }
 }
