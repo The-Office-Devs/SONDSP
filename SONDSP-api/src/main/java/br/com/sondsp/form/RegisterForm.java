@@ -21,6 +21,6 @@ public record RegisterForm(
         @NotBlank(message = EMPTY_PASSWORD)
         String password,
         @NotEmpty(message = EMPTY_PERMISSIONS)
-        List<@NotBlank(message = EMPTY_PERMISISON)String> permissions
+        List<@NotBlank(message = EMPTY_PERMISSION)String> permissions
 ) {
 }
