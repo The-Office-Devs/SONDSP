@@ -1,8 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import type { ActivateAccountFormData } from "./activate-account-schema";
+
+import { handleApiError } from "@/lib/utils";
 import { activateAccountService } from "../auth.service";
 import { toast } from "sonner";
+
+import type { ActivateAccountFormData } from "./activate-account-schema";
 import type { AxiosError } from "axios";
 
 export function useActivateAccount() {
@@ -10,11 +13,11 @@ export function useActivateAccount() {
 
   const mutation = useMutation({
     mutationFn: (data: ActivateAccountFormData) =>
-        activateAccountService({
-          rf: data.rf,
-          email: data.email,
-          password: data.newPassword
-        }),
+      activateAccountService({
+        rf: data.rf,
+        email: data.email,
+        password: data.newPassword
+      }),
 
     onSuccess: () => {
       toast.success("Conta ativada!");
@@ -24,11 +27,12 @@ export function useActivateAccount() {
       }, 1000);
     },
 
-    onError: (error: AxiosError<{ error: string }>) => {
-      const message = error.response?.data?.error ?? "Ocorreu um erro ao ativar a conta. Tente novamente.";
-      toast.error(message);
-    }
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error)
   });
 
-  return { mutate: mutation.mutate };
+  return { 
+    mutate: mutation.mutate,
+    isPending: mutation.isPending
+  };
 };

@@ -21,7 +21,7 @@ export function ActivateAccountForm({
   ui = 'desktop',
   submitClassName,
 }: Readonly<ActivateAccountFormProps>) {
-  const { mutate } = useActivateAccount();
+  const { mutate, isPending } = useActivateAccount();
 
   const form = useForm<ActivateAccountFormData>({
     resolver: zodResolver(activateAccountSchema),
@@ -65,9 +65,9 @@ export function ActivateAccountForm({
           type="submit"
           variant="secondary"
           className={cn('w-full', submitClassName)}
-          disabled={false}
+          disabled={isPending}
         >
-          Ativar conta
+          {isPending ? 'Ativando conta...' : 'Ativar conta'}
         </Button>
       </form>
     </FormProvider>

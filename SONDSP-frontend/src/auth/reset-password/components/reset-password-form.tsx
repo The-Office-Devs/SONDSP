@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useResetPassword } from "../use-reset-password";
 
 import { type ResetPasswordFormData, resetPasswordSchema } from "../reset-password-schema";
 import type { Ui } from "@/components/HookForm/types";
@@ -19,7 +19,7 @@ export function ResetPasswordForm({
   ui = 'desktop',
   submitClassName,
 }: Readonly<ResetPasswordProps>) {
-  const navigate = useNavigate();
+  const { mutate, isPending } = useResetPassword();
 
   const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -36,10 +36,10 @@ export function ResetPasswordForm({
       return;
     }
 
-    toast.success("Senha redefinida!");
-    setTimeout(() => {
-      navigate('/login');
-    }, 1000);
+    mutate({
+      email: "admin@teste.com",
+      password: data.newPassword,
+    });
   }
 
   return (
@@ -51,9 +51,9 @@ export function ResetPasswordForm({
           type="submit"
           variant="secondary"
           className={cn('w-full', submitClassName)}
-          disabled={false}
+          disabled={isPending}
         >
-          Redefinir senha
+          {isPending ? 'Redefinindo senha...' : 'Redefinir senha'}
         </Button>
       </form>
     </FormProvider>

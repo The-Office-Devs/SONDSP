@@ -56,7 +56,7 @@ export function LoginForm({
   linksStyle = 'desktop',
 }: Readonly<LoginFormProps>) {
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate, isPending, error } = useLogin();
+  const { mutate, isPending } = useLogin();
   const navigate = useNavigate();
 
   const form = useForm<LoginFormData>({
@@ -67,7 +67,7 @@ export function LoginForm({
     }
   });
 
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = (data: LoginFormData) => { 
     mutate(data);
   };
 
@@ -81,12 +81,6 @@ export function LoginForm({
 
   return (
     <>
-      {error && (
-        <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          E-mail ou senha inválidos.
-        </div>
-      )}
-
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <TextField

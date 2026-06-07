@@ -27,6 +27,11 @@ export interface LoginResponse {
   permissions: string[];
 }
 
+export interface ResetPasswordRequest {
+  email: string;
+  password: string;
+}
+
 export interface ActivateAccountRequest {
   rf: string;
   email: string;
