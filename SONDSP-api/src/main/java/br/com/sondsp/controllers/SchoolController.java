@@ -98,4 +98,28 @@ public class SchoolController {
     public ResponseEntity<?> updateSchool(@PathVariable Integer id, @Valid @RequestBody SchoolForm form) {
         return ResponseEntity.ok().body(new SchoolDTO(service.updateSchool(id, form)));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(description = "Desativa a escola com o id passado.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Escola removida com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SchoolDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Escola não encontrada.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = StandardErrorDTO.class)
+                    )
+            )
+    })
+    public ResponseEntity<?> deleteSchool(@PathVariable Integer id) {
+        service.deleteSchool(id);
+        return ResponseEntity.ok("Escola removida com sucesso.");
+    }
 }

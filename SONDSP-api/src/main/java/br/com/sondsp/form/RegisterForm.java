@@ -18,8 +18,6 @@ public record RegisterForm(
         @Email(message = INVALID_EMAIL_FORMAT)
         @NotBlank(message = EMPTY_EMAIL)
         String email,
-        @NotBlank(message = EMPTY_PASSWORD)
-        String password,
         @NotEmpty(message = EMPTY_PERMISSIONS)
         List<@NotBlank(message = EMPTY_PERMISISON)String> permissions
 ) {

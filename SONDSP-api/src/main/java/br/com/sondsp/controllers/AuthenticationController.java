@@ -4,6 +4,7 @@ import br.com.sondsp.dtos.AuthenticationDTO;
 import br.com.sondsp.dtos.UserDTO;
 import br.com.sondsp.form.AuthenticationForm;
 import br.com.sondsp.form.ChangePasswordForm;
+import br.com.sondsp.form.FirstAccessForm;
 import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,9 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
@@ -63,12 +62,13 @@ public class AuthenticationController {
                     responseCode = "200",
                     description = "Primeiro acesso realizado com sucesso.",
                     content = @Content(
-                            mediaType = "application/json"
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)
                     )
             )
     })
-    public ResponseEntity<?> firstAccess(@RequestBody String email) throws Exception {
-        return ResponseEntity.ok().body(service.firstAccess(email));
+    public ResponseEntity<?> firstAccess(@RequestBody FirstAccessForm form) {
+        return ResponseEntity.ok().body(new UserDTO(service.firstAccess(form)));
     }
 
     @PutMapping("/change-password")

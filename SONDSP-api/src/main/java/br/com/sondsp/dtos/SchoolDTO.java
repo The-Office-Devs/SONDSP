@@ -4,11 +4,16 @@ import br.com.sondsp.entities.School;
 
 public record SchoolDTO(
         Integer id,
-        String name) {
-    public SchoolDTO(School schoool) {
+        String name,
+        String principalName,
+        Boolean status
+) {
+    public SchoolDTO(School school) {
         this(
-                schoool.getId(),
-                schoool.getName()
+                school.getId(),
+                school.getName(),
+                school.getPrincipalName(),
+                school.getStatus()
         );
     }
 }

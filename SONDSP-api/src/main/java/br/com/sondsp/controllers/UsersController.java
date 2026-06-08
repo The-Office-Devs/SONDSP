@@ -41,7 +41,7 @@ public class UsersController {
             )
     })
     public ResponseEntity<?> register(@Valid @RequestBody RegisterForm form){
-        return ResponseEntity.ok().body(new UserDTO(authenticationService.registerUser(form)));
+        return ResponseEntity.ok().body(new UserDTO(service.registerUser(form)));
     }
 
     @GetMapping("/{id}")
@@ -121,6 +121,6 @@ public class UsersController {
     })
     public ResponseEntity<?> deleteUser(@PathVariable Integer id){
         service.deleteUser(id);
-        return ResponseEntity.ok().body("Usuário desativado com sucesso.");
+        return ResponseEntity.ok("Usuário desativado com sucesso.");
     }
 }
