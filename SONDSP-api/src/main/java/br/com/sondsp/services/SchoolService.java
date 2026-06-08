@@ -33,6 +33,16 @@ public class SchoolService {
         return repository.findAll(spec);
     }
 
+    public School updateSchool(Integer id, SchoolForm school) {
+        return repository.save(School.updateSchoolWithSchoolForm(getSchool(id), school));
+    }
+
+    public void deleteSchool(Integer id) {
+        School school = getSchool(id);
+        school.setStatus(true);
+        repository.save(school);
+    }
+
     private Specification<School> buildFilter(SchoolFilter filter) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -45,11 +55,15 @@ public class SchoolService {
                         .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
             }
 
+            if (filter.principalName() != null && !filter.principalName().isBlank()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder
+                        .lower(root.get("principalName")), "%" + filter.principalName().toLowerCase() + "%"));
+            }
+
+            if (filter.status() != null)
+                predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
-    }
-
-    public School updateSchool(Integer id, SchoolForm school) {
-        return repository.save(School.updateSchoolWithSchoolForm(getSchool(id), school));
     }
 }

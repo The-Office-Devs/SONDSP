@@ -69,44 +69,37 @@ public class User implements UserDetails {
     )
     private Set<SchoolClass> schoolsClasses;
 
+    public static User buildUserWithRegisterForm(RegisterForm form, Role role, Set<Permission> permissions) {
+        return User.builder()
+                .name(form.name())
+                .registration(form.registration())
+                .role(role)
+                .email(form.email())
+                .permissions(permissions)
+                .status(false)
+                .password(null)
+                .build();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String roleName = "ROLE_" + this.role.getName().toUpperCase();
         return List.of(new SimpleGrantedAuthority(roleName));
     }
 
-    public static User buildUserWithRegisterDTOAndEncodedPassword(
+    public static User updateUserWithRegisterForm(
             RegisterForm form,
-            String encodedPassword,
             Role role,
             Set<Permission> permissions
     ) {
         return User
                 .builder()
                 .name(form.name())
-                .password(encodedPassword)
                 .registration(form.registration())
                 .email(form.email())
                 .role(role)
-                .status(true)
-                .permissions(permissions)
-                .build();
-    }
-
-    public static User updateUserWithRegisterForm(
-            RegisterForm form,
-            User user,
-            Role role,
-            Set<Permission> permissions
-    ) {
-        return User
-                .builder()
-                .name(form.name())
-                .password(user.password)
-                .registration(form.registration())
-                .email(user.email)
-                .role(role)
-                .status(true)
+                .status(false)
+                .password(null)
                 .permissions(permissions)
                 .build();
     }

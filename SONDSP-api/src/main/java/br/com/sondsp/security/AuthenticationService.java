@@ -1,14 +1,13 @@
 package br.com.sondsp.security;
 
-import br.com.sondsp.entities.Permission;
-import br.com.sondsp.entities.Role;
 import br.com.sondsp.entities.User;
-import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.form.AuthenticationForm;
-import br.com.sondsp.form.RegisterForm;
+import br.com.sondsp.form.FirstAccessForm;
 import br.com.sondsp.repositories.PermissionsRepository;
 import br.com.sondsp.repositories.RolesRepository;
 import br.com.sondsp.services.UsersService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,9 +30,7 @@ import static br.com.sondsp.util.SystemMessages.*;
 public class AuthenticationService implements UserDetailsService {
 
     private final UsersService usersService;
-    private final RolesRepository rolesRepository;
     private final TokenService tokenService;
-    private final PermissionsRepository permissionsRepository;
 
     private final AuthenticationManager authenticationManager;
 
@@ -44,9 +41,7 @@ public class AuthenticationService implements UserDetailsService {
                                  PermissionsRepository permissionsRepository,
                                  @Lazy AuthenticationManager authenticationManager) {
         this.usersService = usersService;
-        this.rolesRepository = rolesRepository;
         this.tokenService = tokenService;
-        this.permissionsRepository = permissionsRepository;
         this.authenticationManager = authenticationManager;
     }
 
@@ -84,54 +79,22 @@ public class AuthenticationService implements UserDetailsService {
         return tokenService.generateToken(user);
     }
 
-    public User registerUser(RegisterForm form) {
-        User user = verifyIfUserExists(form.email())
-                ? activeUser(form)
-                : buildUserWithEncryptedPassword(form, getUserPermissions(form.permissions()));
+    public User firstAccess(FirstAccessForm form) {
+        User user = usersService.findByEmailAndRegistration(form.email(), form.registration());
 
-        return usersService.save(user);
-    }
+        if (user == null) throw new EntityNotFoundException(EMAIL_OR_REGISTRATION_NOT_FOUND);
 
-    public User activeUser(RegisterForm form){
-        User user = usersService.getByEmail(form.email());
-
-        if (!user.getStatus())
-            return User.updateUserWithRegisterForm(form, user, getRole(form.role()), getUserPermissions(form.permissions()));
-
-        throw new UserAlreadyExistsException(USER_ALREADY_EXISTS);
-    }
-
-    public Boolean verifyIfUserExists(String email) {
-        return usersService.existsByEmail(email);
-    }
-
-    public User buildUserWithEncryptedPassword(RegisterForm form, Set<Permission> permissions) {
-        String encryptedPassword = new BCryptPasswordEncoder().encode(form.password());
-
-        return User.buildUserWithRegisterDTOAndEncodedPassword(
-                form,
-                encryptedPassword,
-                getRole(form.role()),
-                permissions
-        );
-    }
-
-    private Role getRole(String role){
-        return rolesRepository.getRoleByName(role);
-    }
-
-    public Set<Permission> getUserPermissions(List<String> permissions){
-        return permissionsRepository.findAllByPermissionIn(permissions);
-    }
-
-    public User firstAccess(String email) throws Exception {
-        User user = usersService.getByEmail(email);
-
-        if (!user.getStatus()) {
-            return sendFirstAccessEmail(email);
+        if (!user.getStatus()){
+            user.setPassword(encodePassword(form.password()));
+            user.setStatus(true);
+            return usersService.save(user);
+        } else {
+            throw new ValidationException(USER_ALREADY_ACTIVE);
         }
+    }
 
-        throw new LoginException(INACTIVATED_USER);
+    public String encodePassword(String password){
+        return new BCryptPasswordEncoder().encode(password);
     }
 
     public User sendFirstAccessEmail(String email) throws Exception {

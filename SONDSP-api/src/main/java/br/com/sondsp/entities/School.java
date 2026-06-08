@@ -20,11 +20,23 @@ public class School {
     @Column(name = "nome")
     private String name;
 
+    @Column(name = "diretor")
+    private String principalName;
+
+    @Column(name = "status")
+    private Boolean status;
+
     public School(SchoolForm school) {
         this.name = school.name();
     }
 
     public static School updateSchoolWithSchoolForm(School school, SchoolForm updatedSchool) {
-        return School.builder().id(school.getId()).name(updatedSchool.name()).build();
+        return School
+                .builder()
+                .id(school.getId())
+                .name(updatedSchool.name())
+                .principalName(updatedSchool.principalName())
+                .status(updatedSchool.status())
+                .build();
     }
 }
