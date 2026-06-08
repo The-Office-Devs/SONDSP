@@ -20,7 +20,7 @@ public final class SystemMessages {
     public static final String EMPTY_PERMISSION = "Pelo menos uma permissão deve ser informada.";
 
     // User errors
-    public static final String USER_NOT_FOUND = "Usuário não foi encontrado.";
+    public static final String USER_NOT_FOUND = "o usuário não foi encontrado.";
     public static final String EMAIL_NOT_FOUND = "O email não foi encontrado.";
     public static final String EMAIL_OR_REGISTRATION_NOT_FOUND = "O email ou a matrícula são inválidos.";
     public static final String USER_ALREADY_ACTIVE = "O usuário já está ativo.";
