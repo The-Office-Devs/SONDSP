@@ -21,7 +21,7 @@ export function TextField<T extends FieldValues>({
       {({ field, invalid, fieldId }) => (
         <Input
           {...field}
-          className={cn(ui == 'mobile' && "h-12 text-base")}
+          className={cn(ui == 'mobile' && "h-12 text-base", "bg-white")}
           id={fieldId}
           aria-invalid={invalid}
           type={type}

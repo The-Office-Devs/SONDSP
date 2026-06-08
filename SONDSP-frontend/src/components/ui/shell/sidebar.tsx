@@ -8,7 +8,6 @@ import {
   LayoutGrid,
   PencilLine,
   School,
-  Settings2,
   UserRound,
   Users,
   CircleHelp,
@@ -79,17 +78,21 @@ export function ShellSidebar() {
 
           {expanded ? <SidebarSection title="Área do Administrador" icon={PencilLine} /> : null}
           <div className="space-y-1">
-            {administratorItems.map((item) => (
-              <SidebarItem
-                key={item.label}
-                icon={item.icon}
-                label={item.label}
-                expanded={expanded}
-                active={location.pathname === item.to}
-                indent={expanded}
-                onClick={() => navigate(item.to)}
-              />
-            ))}
+            {administratorItems.map((item) => {
+              const path = `/gerenciamento${item.to}`;
+
+              return (
+                <SidebarItem
+                  key={item.label}
+                  icon={item.icon}
+                  label={item.label}
+                  expanded={expanded}
+                  active={location.pathname === path}
+                  indent={expanded}
+                  onClick={() => navigate(path)}
+                />
+              );
+            })}
           </div>
 
           {expanded ? <SidebarSection title="Área de Aplicação" icon={ClipboardList} /> : null}

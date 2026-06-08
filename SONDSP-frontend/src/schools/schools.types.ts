@@ -16,10 +16,3 @@ export interface CreateSchoolRequest {
 export interface UpdateSchoolRequest {
   name: string;
 }
-
-export interface UserListItem {
-  id: number;
-  name: string;
-  registration: string;
-  email: string;
-}

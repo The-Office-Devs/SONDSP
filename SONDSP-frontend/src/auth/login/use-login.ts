@@ -25,7 +25,7 @@ export function useLogin() {
         permissions: response.permissions
       });
 
-      navigate('/escolas');
+      navigate('/gerenciamento/usuarios');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>

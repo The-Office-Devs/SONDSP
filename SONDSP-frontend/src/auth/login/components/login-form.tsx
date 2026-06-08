@@ -88,6 +88,7 @@ export function LoginForm({
             label="E-mail institucional"
             type="email"
             placeholder="nome@sondsp.gov.br"
+            hasWhiteBackground={false}
             ui={linksStyle}
           />
 

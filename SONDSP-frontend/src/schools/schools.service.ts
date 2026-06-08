@@ -3,7 +3,6 @@ import type {
   School,
   CreateSchoolRequest,
   UpdateSchoolRequest,
-  UserListItem,
 } from './schools.types';
 
 export async function listSchoolsService(): Promise<School[]> {
@@ -28,9 +27,4 @@ export async function updateSchoolService(id: number, data: UpdateSchoolRequest)
 
 export async function deleteSchoolService(id: number): Promise<void> {
   await api.delete(`/school/${id}`);
-}
-
-export async function listUsersService(): Promise<UserListItem[]> {
-  const response = await api.get<UserListItem[]>('/user');
-  return response.data;
 }

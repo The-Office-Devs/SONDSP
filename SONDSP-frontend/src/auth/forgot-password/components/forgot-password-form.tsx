@@ -44,6 +44,7 @@ export function ForgotPasswordForm({
           label="E-mail institucional"
           type="email"
           placeholder="nome@sondsp.gov.br"
+          hasWhiteBackground={false}
           ui={ui}
         />
 

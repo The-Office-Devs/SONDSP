@@ -17,7 +17,7 @@ export function SelectField<T extends FieldValues>({ name, label, options }: Sel
             id={fieldId}
             aria-invalid={invalid}
             onBlur={field.onBlur}
-            className="w-full"
+            className="w-full bg-white"
           >
             <SelectValue />
           </SelectTrigger>

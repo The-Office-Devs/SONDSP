@@ -12,6 +12,7 @@ export interface BaseFieldProps<T extends FieldValues> {
 }
 
 export interface TextFieldProps<T extends FieldValues> extends BaseFieldProps<T> {
+  hasWhiteBackground?: boolean;
   type?: 'text' | 'email' | 'password' | 'number' | 'tel'
 }
 

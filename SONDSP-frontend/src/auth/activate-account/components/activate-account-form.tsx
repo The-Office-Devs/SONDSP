@@ -48,6 +48,7 @@ export function ActivateAccountForm({
         <TextField
           name="rf"
           label="Registro Funcional (RF)"
+          hasWhiteBackground={false}
           ui={ui}
         />
 
@@ -56,6 +57,7 @@ export function ActivateAccountForm({
           label="E-mail institucional"
           type="email"
           placeholder="nome@sondsp.gov.br"
+          hasWhiteBackground={false}
           ui={ui}
         />
 

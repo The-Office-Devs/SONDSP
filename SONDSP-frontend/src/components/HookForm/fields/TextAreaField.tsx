@@ -14,6 +14,7 @@ export function TextAreaField<T extends FieldValues>({ name, label, placeholder,
           aria-invalid={invalid}
           placeholder={placeholder}
           rows={rows}
+          className="bg-white"
         />
       )}
     </FormField>

@@ -6,8 +6,8 @@ import {
   createSchoolService,
   updateSchoolService,
   deleteSchoolService,
-  listUsersService,
 } from '../schools.service';
+import { listUsersService } from '@/users/users.service';
 import type { CreateSchoolRequest, UpdateSchoolRequest } from '../schools.types';
 
 const SCHOOLS_QUERY_KEY = ['schools'] as const;
