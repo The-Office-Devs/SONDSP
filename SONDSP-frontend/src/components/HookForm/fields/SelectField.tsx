@@ -4,9 +4,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FormField } from "../FormField";
 import type { SelectFieldProps } from "../types";
 
-export function SelectField<T extends FieldValues>({ name, label, options }: SelectFieldProps<T>) {
+export function SelectField<T extends FieldValues>({ 
+  name, 
+  label, 
+  placeholder,
+  options
+}: SelectFieldProps<T>) {
   return (
-    <FormField name={name} label={label}>
+    <FormField name={name} label={label} labelClassName="text-base">
       {({ field, invalid, fieldId }) => (
         <Select
           value={field.value}
@@ -15,11 +20,11 @@ export function SelectField<T extends FieldValues>({ name, label, options }: Sel
         >
           <SelectTrigger
             id={fieldId}
+            ref={field.ref}
             aria-invalid={invalid}
             onBlur={field.onBlur}
-            className="w-full bg-white"
           >
-            <SelectValue />
+            <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
             {options.map((o) => (

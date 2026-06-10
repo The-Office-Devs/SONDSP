@@ -16,12 +16,11 @@ export function TextField<T extends FieldValues>({
     <FormField
       name={name}
       label={label}
-      labelClassName={cn(ui == 'mobile' && "text-xs font-semibold uppercase tracking-wider")}
+      labelClassName={cn("text-base", ui == 'mobile' && "text-sm font-semibold uppercase tracking-wider")}
     >
       {({ field, invalid, fieldId }) => (
         <Input
           {...field}
-          className={cn(ui == 'mobile' && "h-12 text-base", "bg-white")}
           id={fieldId}
           aria-invalid={invalid}
           type={type}

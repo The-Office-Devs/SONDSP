@@ -20,10 +20,10 @@ export function InputGroupField<T extends FieldValues>({
       name={name}
       label={label}
       id={id}
-      labelClassName={cn(ui == 'mobile' && "text-xs font-semibold uppercase tracking-wider")}
+      labelClassName={cn("text-base", ui == 'mobile' && "text-sm font-semibold uppercase tracking-wider")}
     >
       {({ field, invalid, fieldId }) => (
-        <InputGroup className={cn(ui == 'mobile' && "h-12 text-base", "bg-white")}>
+        <InputGroup>
           {prefix && (
             <InputGroupAddon align="inline-start">
               <InputGroupText>{prefix}</InputGroupText>
