@@ -6,6 +6,7 @@ import { handleApiError } from "@/lib/utils";
 import { 
   createUserService, 
   deleteUserService, 
+  getUserService, 
   listUsersService, 
   updateUserService
 } from "../users.service";
@@ -17,6 +18,14 @@ export function useUsers() {
   return useQuery({
     queryKey: USERS_QUERY_KEY,
     queryFn: listUsersService,
+  });
+}
+
+export function useUser(id: number | null) {
+  return useQuery({
+    queryKey: ["user", id],
+    queryFn: () => getUserService(id as number),
+    enabled: !!id,
   });
 }
 

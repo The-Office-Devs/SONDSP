@@ -5,9 +5,11 @@ export const usersSchema = z.object({
     .email("Digite um e-mail válido"),
   registration: z
     .string()
+    .trim()
     .min(1, { error: "" }),
   name: z
     .string()
+    .trim()
     .min(1, { error: "" }),
   role: z
     .string()
