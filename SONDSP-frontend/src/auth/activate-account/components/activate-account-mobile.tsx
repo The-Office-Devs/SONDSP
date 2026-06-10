@@ -21,7 +21,7 @@ export function ActivateAccountMobile() {
           Preencha os dados abaixo para criar sua senha de acesso ao portal.
         </p>
 
-        <ActivateAccountForm ui="mobile" submitClassName="h-12 text-base" />
+        <ActivateAccountForm ui="mobile" />
 
         <div className="mt-6">
           <button

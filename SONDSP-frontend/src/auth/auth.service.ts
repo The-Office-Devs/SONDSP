@@ -7,7 +7,7 @@ export async function loginService(data: LoginRequest): Promise<LoginResponse> {
 }
 
 export async function activateAccountService(data: ActivateAccountRequest): Promise<void> {
-  await api.post('/auth/activate-user', data);
+  await api.post('/auth/first-access', data);
 }
 
 export async function forgotPasswordService(email: string): Promise<void> {

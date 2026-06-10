@@ -1,7 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 import type { Ui } from "@/components/HookForm/types";
 import { type ActivateAccountFormData, activateAccountSchema } from "../activate-account-schema";
@@ -14,19 +12,18 @@ import { useActivateAccount } from "../use-activate-account";
 
 interface ActivateAccountFormProps {
   ui?: Ui
-  submitClassName?: string;
 }
 
 export function ActivateAccountForm({
-  ui = 'desktop',
-  submitClassName,
+  ui = 'desktop'
 }: Readonly<ActivateAccountFormProps>) {
   const { mutate, isPending } = useActivateAccount();
 
   const form = useForm<ActivateAccountFormData>({
     resolver: zodResolver(activateAccountSchema),
+    mode: "onChange",
     defaultValues: {
-      rf: "",
+      registration: "",
       email: "",
       newPassword: "",
       confirmNewPassword: ""
@@ -34,11 +31,6 @@ export function ActivateAccountForm({
   });
 
   const onSubmit = (data: ActivateAccountFormData) => {
-    if (data.newPassword !== data.confirmNewPassword) {
-      toast.error("As senhas não coincidem");
-      return;
-    }
-
     mutate(data);
   }
 
@@ -46,9 +38,8 @@ export function ActivateAccountForm({
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <TextField
-          name="rf"
+          name="registration"
           label="Registro Funcional (RF)"
-          hasWhiteBackground={false}
           ui={ui}
         />
 
@@ -57,7 +48,6 @@ export function ActivateAccountForm({
           label="E-mail institucional"
           type="email"
           placeholder="nome@sondsp.gov.br"
-          hasWhiteBackground={false}
           ui={ui}
         />
 
@@ -66,8 +56,7 @@ export function ActivateAccountForm({
         <Button
           type="submit"
           variant="secondary"
-          className={cn('w-full', submitClassName)}
-          disabled={isPending}
+          disabled={isPending || !form.formState.isValid}
         >
           {isPending ? 'Ativando conta...' : 'Ativar conta'}
         </Button>

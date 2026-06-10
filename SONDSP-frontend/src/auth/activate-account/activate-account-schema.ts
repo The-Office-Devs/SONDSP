@@ -8,8 +8,9 @@ const passwordSchema = z
   .regex(/[a-z]/, { error: "" });
 
 export const activateAccountSchema = z.object({
-  rf: z
+  registration: z
     .string()
+    .trim()
     .min(1, { error: "" }),
   email: z
     .email("Digite um e-mail válido"),
@@ -17,6 +18,10 @@ export const activateAccountSchema = z.object({
   confirmNewPassword: z
     .string()
     .min(6, { error: "" })
-});
+})
+.refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmNewPassword"],
+  });
 
 export type ActivateAccountFormData = z.infer<typeof activateAccountSchema>;

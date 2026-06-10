@@ -14,7 +14,7 @@ export function useActivateAccount() {
   const mutation = useMutation({
     mutationFn: (data: ActivateAccountFormData) =>
       activateAccountService({
-        rf: data.rf,
+        registration: data.registration,
         email: data.email,
         password: data.newPassword
       }),
