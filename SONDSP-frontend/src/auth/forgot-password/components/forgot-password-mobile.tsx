@@ -20,10 +20,7 @@ export function ForgotPasswordMobile() {
           Digite o seu e-mail para receber o link de redefinição de senha.
         </p>
 
-        <ForgotPasswordForm
-          ui="mobile"
-          submitClassName="h-12 text-base"
-        />
+        <ForgotPasswordForm ui="mobile" />
 
         <div className="mt-6">
           <button

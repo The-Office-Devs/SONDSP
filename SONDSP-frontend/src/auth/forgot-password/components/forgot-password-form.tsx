@@ -1,6 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "@/lib/utils";
 import { z } from "zod/v4";
 
 import type { Ui } from "@/components/HookForm/types";
@@ -18,17 +17,16 @@ type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 interface ForgotPasswordFormProps {
   ui?: Ui;
-  submitClassName?: string;
 }
 
 export function ForgotPasswordForm({
-  ui = 'desktop',
-  submitClassName,
+  ui = 'desktop'
 }: Readonly<ForgotPasswordFormProps>) {
   const { mutate } = useForgotPassword();
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
+    mode: "onChange",
     defaultValues: { email: "" }
   });
 
@@ -44,15 +42,13 @@ export function ForgotPasswordForm({
           label="E-mail institucional"
           type="email"
           placeholder="nome@sondsp.gov.br"
-          hasWhiteBackground={false}
           ui={ui}
         />
 
         <Button
           type="submit"
           variant="secondary"
-          className={cn('w-full', submitClassName)}
-          disabled={false}
+          disabled={!form.formState.isValid}
         >
           Enviar link de redefinição
         </Button>

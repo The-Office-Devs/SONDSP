@@ -11,7 +11,7 @@ export function useForgotPassword() {
     mutationFn: (email: string) => forgotPasswordService(email),
 
     onSuccess: () => {
-      navigate('/home');
+      navigate('/login');
       toast.success("Link de redefinição de senha enviado!");
     },
 
