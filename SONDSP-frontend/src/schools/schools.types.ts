@@ -1,6 +1,7 @@
 export interface School {
   id: number;
   name: string;
+  director: string;
 }
 
 export interface SchoolRow {

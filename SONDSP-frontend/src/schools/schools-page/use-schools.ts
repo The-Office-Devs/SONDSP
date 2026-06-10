@@ -6,6 +6,7 @@ import {
   createSchoolService,
   updateSchoolService,
   deleteSchoolService,
+  getSchoolService,
 } from '../schools.service';
 import { listUsersService } from '@/users/users.service';
 import type { CreateSchoolRequest, UpdateSchoolRequest } from '../schools.types';
@@ -17,6 +18,14 @@ export function useSchools() {
   return useQuery({
     queryKey: SCHOOLS_QUERY_KEY,
     queryFn: listSchoolsService,
+  });
+}
+
+export function useSchool(id: number | null) {
+  return useQuery({
+    queryKey: ["school", id],
+    queryFn: () => getSchoolService(id as number),
+    enabled: !!id,
   });
 }
 

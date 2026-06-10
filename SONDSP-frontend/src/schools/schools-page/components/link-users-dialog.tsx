@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
-import { Link2, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { FilterBar } from '@/components/FilterBar/FilterBar';
 import {
   Dialog,
   DialogContent,
@@ -12,13 +11,21 @@ import {
 } from '@/components/ui/dialog';
 
 import type { School } from '../../schools.types';
+import type { UserListItem } from "@/users/users.types";
 import { useUsers } from '../use-schools';
+import { DataTable, type ColumnDef, type RowAction } from '@/components/DataTable/DataTable';
 
 interface LinkUsersDialogProps {
   school: School | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+const columns: ColumnDef<UserListItem>[] = [
+  { id: "registration", header: "Registro Funcional (RF)", width: "150px" },
+  { id: "name", header: "Nome", width: "250px" },
+  { id: "role", header: "Função", width: "100px" },
+];
 
 export function LinkUsersDialog({ school, open, onOpenChange }: Readonly<LinkUsersDialogProps>) {
   const [filter, setFilter] = useState('');
@@ -39,68 +46,34 @@ export function LinkUsersDialog({ school, open, onOpenChange }: Readonly<LinkUse
     toast.success(`Usuário "${userName}" vinculado à escola "${school?.name}".`);
   };
 
+  const actions: RowAction<UserListItem>[] = [
+    { type: "link", onClick: (user) => handleLink(user.name) },
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <p className="text-sm text-slate-500">Carregando usuários...</p>
+      </div>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>Vincular Usuários</DialogTitle>
         </DialogHeader>
 
-        <div className="relative">
-          <Input
-            placeholder="Filtro Geral"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="h-10 border-slate-200 bg-white pr-10 text-sm"
-          />
-          <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
-        </div>
+        <FilterBar value={filter} onChange={setFilter} />
 
-        <div className="max-h-72 overflow-auto rounded-xl border border-slate-200">
-          <table className="min-w-full border-collapse text-sm">
-            <thead className="bg-[#0a356d] text-white">
-              <tr>
-                <th className="px-4 py-2.5 text-left font-semibold">Matrícula ↓</th>
-                <th className="px-4 py-2.5 text-left font-semibold">Nome ↓</th>
-                <th className="px-4 py-2.5 text-left font-semibold">Função</th>
-                <th className="px-4 py-2.5 text-center font-semibold">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
-                    Carregando usuários...
-                  </td>
-                </tr>
-              ) : filteredUsers.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
-                    Nenhum usuário encontrado.
-                  </td>
-                </tr>
-              ) : (
-                filteredUsers.map((user) => (
-                  <tr key={user.id} className="border-t border-slate-200">
-                    <td className="px-4 py-2.5 text-slate-900">{user.registration}</td>
-                    <td className="px-4 py-2.5 text-slate-900">{user.name}</td>
-                    <td className="px-4 py-2.5 text-slate-900">Professor</td>
-                    <td className="px-4 py-2.5 text-center">
-                      <Button
-                        size="sm"
-                        className="rounded-md bg-[#0a356d] px-4 text-white hover:bg-[#082d5d]"
-                        onClick={() => handleLink(user.name)}
-                      >
-                        <Link2 className="size-4" />
-                        Vincular
-                      </Button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <DataTable<UserListItem>
+          data={users}
+          columns={columns}
+          rowKey={(user) => user.id}
+          actions={actions}
+          emptyMessage="Nenhum usuário encontrado"
+        />
 
         <div className="flex justify-start">
           <Button
