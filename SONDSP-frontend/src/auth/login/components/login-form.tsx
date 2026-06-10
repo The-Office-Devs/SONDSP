@@ -10,14 +10,11 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { cn } from '@/lib/utils';
-
 import { loginSchema, type LoginFormData } from '../login.schema';
 import { useLogin } from '../use-login';
 import { useNavigate } from 'react-router-dom';
 
 type LoginFormProps = {
-  submitClassName?: string;
   showRemember?: boolean;
   linksStyle?: Ui;
 };
@@ -51,7 +48,6 @@ function renderLinks(style: Ui, handleForgotPassword: () => void, handleActivate
 }
 
 export function LoginForm({
-  submitClassName,
   showRemember = false,
   linksStyle = 'desktop',
 }: Readonly<LoginFormProps>) {
@@ -61,6 +57,7 @@ export function LoginForm({
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    mode: "onChange",
     defaultValues: {
       login: "",
       password: ""
@@ -88,7 +85,6 @@ export function LoginForm({
             label="E-mail institucional"
             type="email"
             placeholder="nome@sondsp.gov.br"
-            hasWhiteBackground={false}
             ui={linksStyle}
           />
 
@@ -117,8 +113,7 @@ export function LoginForm({
           <Button
             type="submit"
             variant="secondary"
-            className={cn('w-full', submitClassName)}
-            disabled={isPending}
+            disabled={isPending || !form.formState.isValid}
           >
             {isPending ? 'Entrando...' : 'Entrar'}
           </Button>

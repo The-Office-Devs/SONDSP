@@ -7,7 +7,7 @@ export function LoginMobile() {
   return (
     <MobileLayout>
       <AuthCard type="mobile">
-        <LoginForm linksStyle="mobile" submitClassName="h-12 text-base" />
+        <LoginForm linksStyle="mobile" />
       </AuthCard>
     </MobileLayout>
   );

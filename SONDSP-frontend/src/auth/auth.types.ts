@@ -33,7 +33,7 @@ export interface ResetPasswordRequest {
 }
 
 export interface ActivateAccountRequest {
-  rf: string;
+  registration: string;
   email: string;
   password: string;
 }
