@@ -37,19 +37,28 @@ export function ShellHeader() {
         <div className="flex min-w-0 flex-1 items-center">
           <div className="min-w-0">
             <h1 className="truncate text-[1.45rem] font-medium leading-tight">{displayName}</h1>
-            <p className="mt-1 text-sm text-white/65">• Perfil: {displayRole}</p>
+            <p className="mt-1 flex items-center gap-2 text-sm text-white/65">
+              <span className="h-2 w-2 rounded-full bg-white/65" />
+              <span> Função: {displayRole} </span>
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 border-l border-white/25 pl-4 text-white lg:gap-5 lg:pl-6">
-          <button type="button" className="flex items-center gap-2 text-[1.05rem] font-medium transition-opacity hover:opacity-80">
+        <div className="flex items-center gap-4 text-white lg:gap-5">
+          <button
+            type="button"
+            className="flex items-center gap-2 text-[1.05rem] font-medium transition-opacity hover:opacity-80 cursor-pointer"
+          >
             <CircleHelp className="size-8" />
             <span>Ajuda</span>
           </button>
+
+          <span className="h-10 w-px bg-white/25" aria-hidden="true" />
+
           <button
             type="button"
             onClick={handleLogout}
-            className="flex items-center gap-2 text-[1.05rem] font-medium transition-opacity hover:opacity-80"
+            className="flex items-center gap-2 text-[1.05rem] font-medium transition-opacity hover:opacity-80 cursor-pointer"
           >
             <LogOut className="size-8" />
             <span>Sair</span>
