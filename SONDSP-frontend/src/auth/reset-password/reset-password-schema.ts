@@ -10,6 +10,10 @@ const passwordSchema = z
 export const resetPasswordSchema = z.object({
   newPassword: passwordSchema,
   confirmNewPassword: z.string().min(6, { error: "" })
-});
+})
+.refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmNewPassword"],
+  });
 
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;

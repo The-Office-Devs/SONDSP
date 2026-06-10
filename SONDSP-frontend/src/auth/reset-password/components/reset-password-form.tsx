@@ -1,8 +1,6 @@
 import { FormProvider, useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { useResetPassword } from "../use-reset-password";
 
 import { type ResetPasswordFormData, resetPasswordSchema } from "../reset-password-schema";
@@ -12,17 +10,16 @@ import { NewPasswordFields } from "@/auth/components/NewPasswordFields";
 
 interface ResetPasswordProps {
   ui?: Ui
-  submitClassName?: string;
 }
 
 export function ResetPasswordForm({
-  ui = 'desktop',
-  submitClassName,
+  ui = 'desktop'
 }: Readonly<ResetPasswordProps>) {
   const { mutate, isPending } = useResetPassword();
 
   const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
+    mode: "onChange",
     defaultValues: {
       newPassword: "",
       confirmNewPassword: ""
@@ -31,11 +28,6 @@ export function ResetPasswordForm({
   });
 
   const onSubmit = (data: ResetPasswordFormData) => {
-    if (data.newPassword !== data.confirmNewPassword) {
-      toast.error("As senhas não coincidem");
-      return;
-    }
-
     mutate({
       email: "admin@teste.com",
       password: data.newPassword,
@@ -50,8 +42,7 @@ export function ResetPasswordForm({
         <Button
           type="submit"
           variant="secondary"
-          className={cn('w-full', submitClassName)}
-          disabled={isPending}
+          disabled={isPending || !form.formState.isValid}
         >
           {isPending ? 'Redefinindo senha...' : 'Redefinir senha'}
         </Button>

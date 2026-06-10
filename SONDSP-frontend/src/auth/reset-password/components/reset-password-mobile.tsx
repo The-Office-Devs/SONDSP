@@ -7,7 +7,7 @@ export function ResetPasswordMobile() {
   return (
     <MobileLayout>
       <AuthCard type="mobile">
-        <ResetPasswordForm ui="mobile" submitClassName="h-12 text-base" />
+        <ResetPasswordForm ui="mobile" />
       </AuthCard>
     </MobileLayout>
   );
