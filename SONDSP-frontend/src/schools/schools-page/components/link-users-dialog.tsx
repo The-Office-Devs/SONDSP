@@ -50,14 +50,6 @@ export function LinkUsersDialog({ school, open, onOpenChange }: Readonly<LinkUse
     { type: "link", onClick: (user) => handleLink(user.name) },
   ];
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <p className="text-sm text-slate-500">Carregando usuários...</p>
-      </div>
-    );
-  }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
