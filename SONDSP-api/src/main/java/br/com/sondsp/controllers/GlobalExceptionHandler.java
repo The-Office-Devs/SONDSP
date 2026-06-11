@@ -1,6 +1,7 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.StandardErrorDTO;
+import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.xml.bind.ValidationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -33,6 +34,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(LoginException.class)
     public ResponseEntity<StandardErrorDTO> invalidCredentials(Exception e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardErrorDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<StandardErrorDTO> userAlreadyExists(Exception e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardErrorDTO(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -114,7 +114,6 @@ public class User implements UserDetails {
                 .name(form.name())
                 .password(user.getPassword())
                 .role(user.getRole())
-                .status(form.status())
                 .permissions(user.getPermissions())
                 .build();
     }

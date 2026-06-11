@@ -6,6 +6,7 @@ public final class SystemMessages {
 
     // Format or business logic errors
     public static final String EMAIL_ALREADY_EXISTS = "O email já está sendo utilizado.";
+    public static final String REGISTRATION_ALREADY_EXISTS = "A matrícula já existe";
     public static final String INVALID_EMAIL_FORMAT = "Email inválido.";
     public static final String INACTIVATED_USER = "Usuário inátivo.";
     public static final String INVALID_YEAR = "O ano deve ser um ano letivo válido.";

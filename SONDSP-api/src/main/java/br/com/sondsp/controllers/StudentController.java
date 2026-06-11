@@ -1,17 +1,21 @@
 package br.com.sondsp.controllers;
 
+import br.com.sondsp.dtos.SchoolDTO;
 import br.com.sondsp.dtos.StandardErrorDTO;
 import br.com.sondsp.dtos.StudentDTO;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -32,6 +36,21 @@ public class StudentController {
     })
     public ResponseEntity<?> createStudent(@RequestBody StudentForm form) {
         return ResponseEntity.ok().body(new StudentDTO(service.createStudent(form)));
+    }
+
+    @PostMapping()
+    @Operation(description = "Cria alunos com base em um array.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Aluno criado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = StudentDTO.class))
+                    )
+            )
+    })
+    public ResponseEntity<?> createStudent(@RequestBody List<StudentForm> forms) {
+        return ResponseEntity.ok().body(service.createStudents(forms).stream().map(StudentDTO::new));
     }
 
     @GetMapping("/{id}")
@@ -66,7 +85,7 @@ public class StudentController {
                             description = "Alunos retornados.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = StudentDTO.class)
+                                    array = @ArraySchema(schema = @Schema(implementation = StudentDTO.class))
                             )
                     )
     })

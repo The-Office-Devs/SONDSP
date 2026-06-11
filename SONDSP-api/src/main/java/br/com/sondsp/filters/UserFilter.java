@@ -1,11 +1,11 @@
 package br.com.sondsp.filters;
 
-import br.com.sondsp.entities.Role;
-
 public record UserFilter(
         String name,
-        Role role,
+        String registration,
+        String roleName,
         String email,
-        Boolean status
+        Boolean status,
+        String search
 ) {
 }
