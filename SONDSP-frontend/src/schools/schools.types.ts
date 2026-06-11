@@ -1,19 +1,19 @@
 export interface School {
   id: number;
   name: string;
-  director: string;
+  principalName: string;
 }
 
 export interface SchoolRow {
   id: number;
   name: string;
-  director: string;
+  principalName: string;
 }
 
 export interface CreateSchoolRequest {
   name: string;
+  principalName: string;
+  status: boolean;
 }
 
-export interface UpdateSchoolRequest {
-  name: string;
-}
+export type UpdateSchoolRequest = CreateSchoolRequest;

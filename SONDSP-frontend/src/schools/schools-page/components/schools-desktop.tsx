@@ -11,7 +11,7 @@ import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 
 const columns: ColumnDef<SchoolRow>[] = [
   { id: "name", header: "Nome", width: "400px" },
-  { id: "director", header: "Diretor", width: "400px" }
+  { id: "principalName", header: "Diretor", width: "400px" }
 ];
 
 export function SchoolsDesktop() {

@@ -17,7 +17,7 @@ const USERS_QUERY_KEY = ['users'] as const;
 export function useSchools() {
   return useQuery({
     queryKey: SCHOOLS_QUERY_KEY,
-    queryFn: listSchoolsService,
+    queryFn: () => listSchoolsService(),
   });
 }
 

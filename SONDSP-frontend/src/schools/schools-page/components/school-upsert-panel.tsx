@@ -13,7 +13,8 @@ import { TextField } from '@/components/HookForm/fields/TextField';
 
 const defaultValues: SchoolFormData = {
   name: "",
-  director: ""
+  principalName: "",
+  status: true
 };
 
 type SchoolUpsertPanelProps = {
@@ -48,7 +49,8 @@ export function SchoolUpsertPanel({
     if (school) {
       form.reset({ 
         name: school.name,
-        director: school.director
+        principalName: school.principalName,
+        status: true
       });
     }
   }, [isEditMode, school, form]);
@@ -93,7 +95,7 @@ export function SchoolUpsertPanel({
           >
             <TextField name="name" label="Nome" placeholder="Nome da escola" />
 
-            <TextField name="director" label="Diretor" placeholder="Nome do diretor" />
+            <TextField name="principalName" label="Diretor" placeholder="Nome do diretor" />
 
             <div className="flex gap-2 items-end justify-end">
               {isEditMode && (
