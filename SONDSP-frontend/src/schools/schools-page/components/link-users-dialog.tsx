@@ -65,25 +65,33 @@ export function LinkUsersDialog({ school, open, onOpenChange }: Readonly<LinkUse
           <DialogTitle>Vincular Usuários</DialogTitle>
         </DialogHeader>
 
-        <FilterBar value={filter} onChange={setFilter} />
+        {isLoading ? (
+          <div className="flex items-center justify-center p-12">
+            <p className="text-sm text-slate-500">Carregando usuários...</p>
+          </div>
+        ) : (
+          <>
+            <FilterBar value={filter} onChange={setFilter} />
 
-        <DataTable<UserListItem>
-          data={users}
-          columns={columns}
-          rowKey={(user) => user.id}
-          actions={actions}
-          emptyMessage="Nenhum usuário encontrado"
-        />
+            <DataTable<UserListItem>
+              data={users}
+              columns={columns}
+              rowKey={(user) => user.id}
+              actions={actions}
+              emptyMessage="Nenhum usuário encontrado"
+            />
 
-        <div className="flex justify-start">
-          <Button
-            variant="ghost"
-            className="text-slate-600 hover:text-slate-900"
-            onClick={() => onOpenChange(false)}
-          >
-            Fechar
-          </Button>
-        </div>
+            <div className="flex justify-start">
+              <Button
+                variant="ghost"
+                className="text-slate-600 hover:text-slate-900"
+                onClick={() => onOpenChange(false)}
+              >
+                Fechar
+              </Button>
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
