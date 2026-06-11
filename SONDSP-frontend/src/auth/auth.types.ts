@@ -1,8 +1,9 @@
 export const UserRole = {
-  ADMINISTRATOR: 'Administrator',
-  SCHOOL_ADMINISTRATOR: 'School Administrator',
-  COORDINATOR: 'Coordinator',
-  TEACHER: 'Teacher',
+  'Administrador': 'Administrador',
+  'Administrador da Escola': 'Administrador da Escola',
+  'Coordenador': 'Coordenador',
+  'Professor': 'Professor',
+  'POA' : 'Professor Orientador de Área',
 } as const;
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];

@@ -5,10 +5,11 @@ import brasaoSp from '@/assets/brasao-sp.png';
 import { useAuthStore } from '@/auth/auth.store';
 
 const roleLabels: Record<string, string> = {
-  Administrator: 'Administrador',
-  'School Administrator': 'Administrador da Escola',
-  Coordinator: 'Coordenador',
-  Teacher: 'Professor',
+  'Administrador': 'Administrador',
+  'Administrador da Escola': 'Administrador da Escola',
+  'Coordenador': 'Coordenador',
+  'Professor': 'Professor',
+  'POA' : 'Professor Orientador de Área'
 };
 
 export function ShellHeader() {

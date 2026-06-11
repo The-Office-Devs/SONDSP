@@ -14,10 +14,10 @@ import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { MultiSelectField } from "@/components/HookForm/fields/MultiSelectField";
 
 const roleOptions = [
-  { value: "ADMIN", label: "Administrador" },
-  { value: "ADMIN_ESCOLA", label: "Administrador Escolar" },
+  { value: "Administrador", label: "Administrador" },
+  { value: "Administrador da Escola", label: "Administrador Escolar" },
   { value: "Coordenador", label: "Coordenador" },
-  { value: "PROFESSOR", label: "Professor" },
+  { value: "Professor", label: "Professor" },
   { value: "POA", label: "Professor Orientador de Área" }
 ];
 
@@ -33,7 +33,7 @@ const defaultValues: UsersFormData = {
   registration: "",
   name: "",
   role: "",
-  permissions: [],
+  permissions: []
 };
 
 type UserUpsertPanelProps = {
