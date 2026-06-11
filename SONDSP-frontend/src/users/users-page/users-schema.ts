@@ -6,11 +6,11 @@ export const usersSchema = z.object({
   registration: z
     .string()
     .trim()
-    .min(1, { error: "" }),
+    .min(1, "O registro funcional é obrigatório"),
   name: z
     .string()
     .trim()
-    .min(1, { error: "" }),
+    .min(1, "O nome do usuário é obrigatório"),
   role: z
     .string()
     .min(1, { error: "" }),
