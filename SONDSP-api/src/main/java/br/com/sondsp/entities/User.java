@@ -87,24 +87,6 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(roleName));
     }
 
-    public static User updateUserWithRegisterForm(
-            RegisterForm form,
-            Role role,
-            Set<Permission> permissions
-    ) {
-        return User
-                .builder()
-                .name(form.name())
-                .registration(form.registration())
-                .email(form.email())
-                .role(role)
-                .status(false)
-                .password(null)
-                .permissions(permissions)
-                .build();
-    }
-
-
     public static User updateUserWithUserForm(User user, UserForm form) {
         return User
                 .builder()

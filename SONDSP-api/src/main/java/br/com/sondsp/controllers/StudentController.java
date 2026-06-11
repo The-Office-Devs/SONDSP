@@ -38,7 +38,7 @@ public class StudentController {
         return ResponseEntity.ok().body(new StudentDTO(service.createStudent(form)));
     }
 
-    @PostMapping()
+    @PostMapping("/load")
     @Operation(description = "Cria alunos com base em um array.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -49,7 +49,7 @@ public class StudentController {
                     )
             )
     })
-    public ResponseEntity<?> createStudent(@RequestBody List<StudentForm> forms) {
+    public ResponseEntity<?> createStudents(@RequestBody List<StudentForm> forms) {
         return ResponseEntity.ok().body(service.createStudents(forms).stream().map(StudentDTO::new));
     }
 
