@@ -6,7 +6,8 @@ import { UsersMobile } from "./components/users-mobile";
 
 export function UsersPage() {
   const isDesktop = useIsDesktop();
-  useFooter('Cadastro de Usuários');
+
+  useFooter({ title: "Gerenciamento de Usuários" });
 
   return isDesktop ? <UsersDesktop /> : <UsersMobile />;
 }
