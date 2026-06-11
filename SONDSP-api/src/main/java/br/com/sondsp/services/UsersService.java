@@ -2,14 +2,18 @@ package br.com.sondsp.services;
 
 import br.com.sondsp.entities.Permission;
 import br.com.sondsp.entities.Role;
+import br.com.sondsp.entities.School;
 import br.com.sondsp.entities.User;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.UserFilter;
 import br.com.sondsp.form.*;
 import br.com.sondsp.repositories.PermissionsRepository;
 import br.com.sondsp.repositories.RolesRepository;
+import br.com.sondsp.repositories.SchoolRepository;
 import br.com.sondsp.repositories.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
@@ -17,10 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static br.com.sondsp.util.SystemMessages.*;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
@@ -33,15 +34,17 @@ public class UsersService {
     private final PermissionsRepository permissionsRepository;
 
     public User registerUser(RegisterForm form) {
-        if (!existsByEmail(form.email()))
-            return User.buildUserWithRegisterForm(form, getRole(form.role()), getUserPermissions(form.permissions()));
+        User verifiyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
 
-        User user = getByEmail(form.email());
+        if (verifiyUser != null) {
+            if (Objects.equals(verifiyUser.getEmail(), form.email()))
+                throw new UserAlreadyExistsException(EMAIL_ALREADY_EXISTS);
 
-        if (user.getStatus())
-            throw new UserAlreadyExistsException(USER_ALREADY_EXISTS);
+            if (Objects.equals(verifiyUser.getRegistration(), form.registration()))
+                throw new UserAlreadyExistsException(REGISTRATION_ALREADY_EXISTS);
+        }
 
-        return save(User.updateUserWithRegisterForm(form, getRole(form.role()), getUserPermissions(form.permissions())));
+        return save(User.buildUserWithRegisterForm(form, getRole(form.role()), getUserPermissions(form.permissions())));
     }
 
     public User getUser(Integer id) {
@@ -94,10 +97,6 @@ public class UsersService {
         repository.save(userToDelete);
     }
 
-    public boolean existsByEmail(String email) {
-        return repository.existsByEmail(email);
-    }
-
     public User findByEmailAndRegistration(String email, String registration) {
         return repository.findByEmailAndRegistration(email, registration);
     }
@@ -109,17 +108,41 @@ public class UsersService {
             if (filter == null)
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
-            if (filter.name() != null && !filter.name().isBlank())
-                predicates.add(criteriaBuilder.like(criteriaBuilder
-                        .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+            if (filter.search() != null && !filter.search().isBlank()) {
+                Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
 
+                String searchPattern = "%" + filter.search().toLowerCase() + "%";
 
-            if (filter.role() != null)
-                predicates.add(criteriaBuilder.equal(root.get("role"), filter.role()));
+                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
+                Predicate searchInEmail = criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), searchPattern);
+                Predicate searchInRegistration = criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern);
+                Predicate searchInRole = criteriaBuilder.like(criteriaBuilder.lower(roleJoin.get("name")), searchPattern);
 
-            if (filter.email() != null && !filter.email().isBlank())
-                predicates.add(criteriaBuilder.like(criteriaBuilder
-                        .lower(root.get("email")), "%" + filter.email().toLowerCase() + "%"));
+                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInName, searchInEmail, searchInRegistration, searchInRole);
+
+                predicates.add(combinedSearchPredicate);
+            } else {
+                if (filter.name() != null && !filter.name().isBlank())
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+
+                if (filter.registration() != null && !filter.registration().isBlank())
+                    predicates.add(criteriaBuilder.equal(criteriaBuilder
+                            .lower(root.get("registration")), "%" + filter.registration().toLowerCase() + "%"));
+
+                if (filter.roleName() != null && !filter.roleName().isBlank()) {
+                    Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
+
+                    predicates.add(criteriaBuilder.like(
+                            criteriaBuilder.lower(roleJoin.get("name")),
+                            "%" + filter.roleName().toLowerCase() + "%"
+                    ));
+                }
+
+                if (filter.email() != null && !filter.email().isBlank())
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("email")), "%" + filter.email().toLowerCase() + "%"));
+            }
 
             if (filter.status() != null)
                 predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));

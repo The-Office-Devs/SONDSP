@@ -18,8 +18,6 @@ public record UserForm(
         @NotBlank(message = EMPTY_NAME)
         String name,
         String role,
-        @NotNull(message = EMPTY_STATUS)
-        Boolean status,
         List<String> permissions) {
     public UserForm {
         registration = registration.trim();

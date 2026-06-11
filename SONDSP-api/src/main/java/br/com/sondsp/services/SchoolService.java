@@ -50,14 +50,25 @@ public class SchoolService {
             if (filter == null)
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
-            if (filter.name() != null && !filter.name().isBlank()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder
-                        .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
-            }
+            if (filter.search() != null && !filter.search().isBlank()) {
+                String searchPattern = "%" + filter.search().toLowerCase() + "%";
 
-            if (filter.principalName() != null && !filter.principalName().isBlank()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder
-                        .lower(root.get("principalName")), "%" + filter.principalName().toLowerCase() + "%"));
+                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
+                Predicate searchInPrincipal = criteriaBuilder.like(criteriaBuilder.lower(root.get("principalName")), searchPattern);
+
+                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInName, searchInPrincipal);
+
+                predicates.add(combinedSearchPredicate);
+            } else {
+                if (filter.name() != null && !filter.name().isBlank()) {
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+                }
+
+                if (filter.principalName() != null && !filter.principalName().isBlank()) {
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("principalName")), "%" + filter.principalName().toLowerCase() + "%"));
+                }
             }
 
             if (filter.status() != null)

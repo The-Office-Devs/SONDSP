@@ -1,11 +1,15 @@
 package br.com.sondsp.services;
 
+import br.com.sondsp.entities.Role;
 import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.entities.Student;
+import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.repositories.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
@@ -22,6 +26,10 @@ public class StudentService {
 
     public Student createStudent(StudentForm form) {
         return repository.save(new Student(form));
+    }
+
+    public List<Student> createStudents(List<StudentForm> forms) {
+        return forms.stream().map(this::createStudent).toList();
     }
 
     public Student getStudent(Integer id) {
@@ -52,23 +60,45 @@ public class StudentService {
             if (filter == null)
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
-            if (filter.name() != null && !filter.name().isBlank()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder
-                        .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+            if (filter.search() != null && !filter.search().isBlank()) {
+                Join<Student, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
+
+                String searchPattern = "%" + filter.search().toLowerCase() + "%";
+
+                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
+                Predicate searchInRegistration = criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern);
+                Predicate searchInSchoolClass = criteriaBuilder.like(criteriaBuilder.lower(schoolClassJoin.get("name")), searchPattern);
+
+                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInName, searchInRegistration, searchInSchoolClass);
+
+                predicates.add(combinedSearchPredicate);
+            } else {
+                if (filter.name() != null && !filter.name().isBlank()) {
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+                }
+
+                if (filter.registration() != null && !filter.registration().isBlank()) {
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("registration")), "%" + filter.registration().toLowerCase() + "%"));
+                }
+
+                if (filter.schoolClassName() != null && !filter.schoolClassName().isBlank()) {
+                    Join<User, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
+
+                    predicates.add(criteriaBuilder.like(
+                            criteriaBuilder.lower(schoolClassJoin.get("name")),
+                            "%" + filter.schoolClassName().toLowerCase() + "%"
+                    ));
+                }
+
+                if (filter.rowNumber() != null) {
+                    predicates.add(criteriaBuilder.equal(root.get("rowNumber"), filter.rowNumber()));
+                }
             }
 
-            if (filter.registration() != null && !filter.registration().isBlank()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder
-                        .lower(root.get("registration")), "%" + filter.registration().toLowerCase() + "%"));
-            }
-
-            if (filter.schoolClassId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("schoolClassId"), filter.schoolClassId()));
-            }
-
-            if (filter.rowNumber() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("rowNumber"), filter.rowNumber()));
-            }
+            if (filter.status() != null)
+                predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
