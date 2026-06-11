@@ -39,13 +39,15 @@ public class SchoolService {
 
     public void deleteSchool(Integer id) {
         School school = getSchool(id);
-        school.setStatus(true);
+        school.setStatus(false);
         repository.save(school);
     }
 
     private Specification<School> buildFilter(SchoolFilter filter) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(criteriaBuilder.isTrue(root.get("status")));
 
             if (filter == null)
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

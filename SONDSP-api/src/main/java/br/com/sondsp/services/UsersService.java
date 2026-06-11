@@ -105,6 +105,8 @@ public class UsersService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            predicates.add(criteriaBuilder.isTrue(root.get("status")));
+
             if (filter == null)
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
