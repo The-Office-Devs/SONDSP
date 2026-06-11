@@ -3,7 +3,9 @@ package br.com.sondsp.filters;
 public record StudentFilter(
         String name,
         String registration,
-        Integer schoolClassId,
-        Integer rowNumber
+        String schoolClassName,
+        Integer rowNumber,
+        Boolean status,
+        String search
 ) {
 }

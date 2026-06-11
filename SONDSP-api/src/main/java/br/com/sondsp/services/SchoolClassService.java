@@ -1,7 +1,9 @@
 package br.com.sondsp.services;
 
+import br.com.sondsp.entities.Role;
 import br.com.sondsp.entities.School;
 import br.com.sondsp.entities.SchoolClass;
+import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import br.com.sondsp.repositories.SchoolClassRepository;
@@ -54,21 +56,34 @@ public class SchoolClassService {
             if (filter == null)
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
-            if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
-                Join<SchoolClass, School> schoolJoin = (Join<SchoolClass, School>) root
-                        .<SchoolClass, School>fetch("school", JoinType.INNER);
+            if (filter.search() != null && !filter.search().isBlank()) {
+                Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 
-                predicates.add(criteriaBuilder.like(criteriaBuilder
-                        .lower(schoolJoin.get("name")), "%" + filter.schoolName().toLowerCase() + "%"));
-            }
+                String searchPattern = "%" + filter.search().toLowerCase() + "%";
 
-            if (filter.name() != null && !filter.name().isBlank()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder
-                        .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
-            }
+                Predicate searchInSchool = criteriaBuilder.like(criteriaBuilder.lower(schoolJoin.get("name")), searchPattern);
+                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
+                Predicate searchInSchoolYear = criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern);
 
-            if (filter.schoolYear() != null && !filter.schoolYear().isBlank()) {
-                predicates.add(criteriaBuilder.equal(root.get("schoolYear"), filter.schoolYear()));
+                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInSchool, searchInName, searchInSchoolYear);
+
+                predicates.add(combinedSearchPredicate);
+            } else {
+                if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
+                    Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
+
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(schoolJoin.get("name")), "%" + filter.schoolName().toLowerCase() + "%"));
+                }
+
+                if (filter.name() != null && !filter.name().isBlank()) {
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+                }
+
+                if (filter.schoolYear() != null && !filter.schoolYear().isBlank()) {
+                    predicates.add(criteriaBuilder.equal(root.get("schoolYear"), filter.schoolYear()));
+                }
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
