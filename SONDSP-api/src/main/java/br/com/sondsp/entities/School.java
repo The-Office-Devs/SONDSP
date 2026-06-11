@@ -28,6 +28,8 @@ public class School {
 
     public School(SchoolForm school) {
         this.name = school.name();
+        this.principalName = school.principalName();
+        this.status = school.status();
     }
 
     public static School updateSchoolWithSchoolForm(School school, SchoolForm updatedSchool) {
