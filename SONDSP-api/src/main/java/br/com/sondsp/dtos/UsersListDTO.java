@@ -7,7 +7,8 @@ public record UsersListDTO(
         String name,
         String registration,
         String email,
-        String role
+        String role,
+        Boolean status
         ) {
     public UsersListDTO(User user) {
         this(
@@ -15,7 +16,8 @@ public record UsersListDTO(
                 user.getName(),
                 user.getRegistration(),
                 user.getEmail(),
-                user.getRole() != null ? user.getRole().getName() : null
+                user.getRole() != null ? user.getRole().getName() : null,
+                user.getStatus()
         );
     }
 }
