@@ -9,10 +9,11 @@ import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTabl
 import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 
 const columns: ColumnDef<UserListItem>[] = [
-  { id: "registration", header: "Registro Funcional (RF)", width: "160px" },
-  { id: "name", header: "Nome", width: "220px" },
-  { id: "email", header: "Email", width: "300px" },
-  { id: "role", header: "Função", width: "160px" },
+  { id: "registration", header: "Registro Funcional (RF)", width: "140px" },
+  { id: "name", header: "Nome", width: "180px" },
+  { id: "email", header: "Email", width: "260px" },
+  { id: "role", header: "Função", width: "140px" },
+  { id: "status", header: "Status", width: "120px" }
 ];
 
 export function UsersDesktop() {
@@ -31,8 +32,8 @@ export function UsersDesktop() {
   }, [users, filter]);
 
   const actions: RowAction<UserListItem>[] = [
-    { type: "edit", onClick: (user) => setEditUserId(user.id) },
-    { type: "delete", onClick: (user) => setDeleteUser(user) }
+    { type: "edit", onClick: (user) => setEditUserId(user.id), disabled: (user) => !user.status },
+    { type: "delete", onClick: (user) => setDeleteUser(user), disabled: (user) => !user.status },
   ];
 
   if (isLoading) {

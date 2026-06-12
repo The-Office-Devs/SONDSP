@@ -8,6 +8,7 @@ export interface SchoolRow {
   id: number;
   name: string;
   principalName: string;
+  status: boolean;
 }
 
 export interface CreateSchoolRequest {

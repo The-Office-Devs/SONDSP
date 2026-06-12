@@ -13,6 +13,7 @@ export interface UserListItem {
   registration: string;
   email: string;
   role: string
+  status: boolean;
 }
 
 export interface CreateUserRequest {

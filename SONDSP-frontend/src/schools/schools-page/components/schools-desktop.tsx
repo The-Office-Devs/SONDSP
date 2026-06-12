@@ -10,8 +10,9 @@ import { LinkUsersDialog } from "./link-users-dialog";
 import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 
 const columns: ColumnDef<SchoolRow>[] = [
-  { id: "name", header: "Nome", width: "400px" },
-  { id: "principalName", header: "Diretor", width: "400px" }
+  { id: "name", header: "Nome", width: "300px" },
+  { id: "principalName", header: "Diretor", width: "300px" },
+  { id: "status", header: "Status", width: "300px"}
 ];
 
 export function SchoolsDesktop() {
@@ -31,9 +32,9 @@ export function SchoolsDesktop() {
   }, [schools, filter]);
 
   const actions: RowAction<SchoolRow>[] = [
-    { type: "edit", onClick: (school) => setEditSchoolId(school.id) },
-    { type: "link", onClick: (school) => setLinkUsersSchool(school) },
-    { type: "delete", onClick: (school) => setDeleteSchool(school) }
+    { type: "edit", onClick: (school) => setEditSchoolId(school.id), disabled: (user) => !user.status },
+    { type: "link", onClick: (school) => setLinkUsersSchool(school), disabled: (school) => !school.status },
+    { type: "delete", onClick: (school) => setDeleteSchool(school), disabled: (school) => !school.status }
   ];
 
   if (isLoading) {
@@ -44,6 +45,7 @@ export function SchoolsDesktop() {
     );
   }
 
+  // TODO: listar apenas usuarios ativos para vinculo
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <SchoolUpsertPanel
