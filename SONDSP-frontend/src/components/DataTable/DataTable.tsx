@@ -20,6 +20,7 @@ export type ColumnDef<T> = {
 export type RowAction<T> = {
   type: 'edit' | 'delete' | 'link' | 'normal';
   onClick: (row: T) => void;
+  disabled?: boolean | ((row: T) => boolean);
   label?: string;
   className?: string;
 }
@@ -39,6 +40,13 @@ export function DataTable<T>({
   emptyMessage,
   actions
 }: Readonly<DataTableProps<T>>) {
+  const formatCellValue = (value: unknown) => {
+    if (value === true) return "Ativo";
+    if (value === false) return "Inativo";
+    if (value === null || value === undefined || value === "") return "-";
+    return String(value);
+  };
+
   if (data.length === 0) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-500 shadow-sm">
@@ -87,21 +95,29 @@ export function DataTable<T>({
                   key={String(column.id)}
                   className={cn("px-6 py-4 text-slate-900 font-semibold", column.className)}
                 >
-                  {String(row[column.id] ?? "-")}
+                  {formatCellValue(row[column.id])}
                 </TableCell>
               ))}
 
               <TableCell className="px-4 py-3">
                 <div className="flex items-center justify-center gap-2 whitespace-nowrap">
-                  {actions.map((action) => (
-                    <ActionButton
-                      key={`${action.type}-${action.label}`}
-                      type={action.type}
-                      onClick={() => action.onClick(row)}
-                      label={action.label}
-                      className={action.className}
-                    />
-                  ))}
+                  {actions.map((action) => {
+                    const isDisabled =
+                      typeof action.disabled === "function"
+                        ? action.disabled(row)
+                        : action.disabled ?? false;
+
+                    return (
+                      <ActionButton
+                        key={`${action.type}-${action.label}`}
+                        type={action.type}
+                        onClick={() => action.onClick(row)}
+                        disabled={isDisabled}
+                        label={action.label}
+                        className={action.className}
+                      />
+                    );
+                  })}
                 </div>
               </TableCell>
             </TableRow>
@@ -115,11 +131,18 @@ export function DataTable<T>({
 type ActionButtonProps = Readonly<{
   type: "edit" | "delete" | "link" | "normal";
   onClick: () => void;
+  disabled?: boolean;
   className?: string;
   label?: string;
 }>;
 
-function ActionButton({ type, onClick, className, label }: ActionButtonProps) {
+function ActionButton({ 
+  type, 
+  onClick, 
+  className, 
+  label, 
+  disabled = false
+}: ActionButtonProps) {
   const shared = cn("w-14", className);
 
   if (type === "edit") {
@@ -128,6 +151,7 @@ function ActionButton({ type, onClick, className, label }: ActionButtonProps) {
         title="Editar"
         aria-label="Editar"
         className={cn(shared)}
+        disabled={disabled}
         onClick={onClick}
       >
         <PencilLine className="size-4" />
@@ -143,6 +167,7 @@ function ActionButton({ type, onClick, className, label }: ActionButtonProps) {
         aria-label="Vincular usuários"
         variant="outline"
         className={cn(shared, "border-slate-400 text-slate-900 hover:bg-slate-100")}
+        disabled={disabled}
         onClick={onClick}
       >
         <Link2 className="size-4" />
@@ -158,6 +183,7 @@ function ActionButton({ type, onClick, className, label }: ActionButtonProps) {
         aria-label="Excluir"
         variant="destructive"
         className={shared}
+        disabled={disabled}
         onClick={onClick}
       >
         <Trash2 className="size-4" />
@@ -169,6 +195,7 @@ function ActionButton({ type, onClick, className, label }: ActionButtonProps) {
   return (
     <Button
       className={cn(shared)}
+      disabled={disabled}
       onClick={onClick}
     >
       <AlarmSmoke className="size-4" />
