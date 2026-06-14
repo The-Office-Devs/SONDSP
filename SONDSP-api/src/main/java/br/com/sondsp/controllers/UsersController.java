@@ -73,7 +73,7 @@ public class UsersController {
                     )
             }
     )
-    public ResponseEntity<?> listUser(@RequestBody(required = false) UserFilter filter){
+    public ResponseEntity<?> listUser(@ModelAttribute UserFilter filter){
         return ResponseEntity.ok().body(service.getUsers(filter).stream().map(UsersListDTO::new));
     }
 
