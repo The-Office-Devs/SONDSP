@@ -73,7 +73,7 @@ public class SchoolClassController {
                     )
             }
     )
-    public ResponseEntity<?> getSchoolsClassesByFilter(@RequestBody(required = false) SchoolClassFilter filter) {
+    public ResponseEntity<?> getSchoolsClassesByFilter(@ModelAttribute SchoolClassFilter filter) {
         return ResponseEntity.ok().body(service.getSchoolsClasses(filter).stream().map(SchoolClassDTO::new));
     }
 

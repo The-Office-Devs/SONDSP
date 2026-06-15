@@ -89,7 +89,7 @@ public class StudentController {
                             )
                     )
     })
-    public ResponseEntity<?> getStudents(@RequestBody(required = false) StudentFilter filter) {
+    public ResponseEntity<?> getStudents(@ModelAttribute StudentFilter filter) {
         return ResponseEntity.ok().body(service.getStudents(filter).stream().map(StudentDTO::new));
     }
 
