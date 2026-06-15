@@ -12,7 +12,8 @@ export interface BaseFieldProps<T extends FieldValues> {
 }
 
 export interface TextFieldProps<T extends FieldValues> extends BaseFieldProps<T> {
-  type?: 'text' | 'email' | 'password' | 'number' | 'tel'
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel';
+  onlyNumbers?: boolean;
 }
 
 export interface SelectFieldProps<T extends FieldValues> extends BaseFieldProps<T> {

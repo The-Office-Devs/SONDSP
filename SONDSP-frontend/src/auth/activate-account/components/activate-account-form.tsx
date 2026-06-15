@@ -40,6 +40,7 @@ export function ActivateAccountForm({
         <TextField
           name="registration"
           label="Registro Funcional (RF)"
+          onlyNumbers
           ui={ui}
         />
 

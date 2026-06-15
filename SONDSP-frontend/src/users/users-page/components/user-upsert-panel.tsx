@@ -123,6 +123,7 @@ export function UserUpsertPanel({
             <TextField
               name="registration"
               label="Registro Funcional (RF)"
+              onlyNumbers
             />
 
             <TextField

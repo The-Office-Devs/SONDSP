@@ -10,6 +10,7 @@ export function TextField<T extends FieldValues>({
   label,
   placeholder,
   type = 'text',
+  onlyNumbers = false,
   ui = 'desktop'
 }: TextFieldProps<T>) {
   return (
@@ -25,6 +26,13 @@ export function TextField<T extends FieldValues>({
           aria-invalid={invalid}
           type={type}
           placeholder={placeholder}
+          inputMode={onlyNumbers ? "numeric" : undefined}
+          onChange={(e) => {
+            const value = onlyNumbers
+              ? e.target.value.replace(/\D/g, "")
+              : e.target.value;
+            field.onChange(value);
+          }}
         />
       )}
     </FormField>
