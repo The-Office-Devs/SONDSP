@@ -76,7 +76,7 @@ public class User implements UserDetails {
                 .role(role)
                 .email(form.email())
                 .permissions(permissions)
-                .status(true)
+                .status(false)
                 .password(null)
                 .build();
     }
