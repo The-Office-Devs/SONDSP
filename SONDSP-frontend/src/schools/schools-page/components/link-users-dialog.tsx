@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import type { School } from '../../schools.types';
 import type { UserListItem } from "@/users/users.types";
 import { useUsers } from '../use-schools';
 import { DataTable, type ColumnDef, type RowAction } from '@/components/DataTable/DataTable';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface LinkUsersDialogProps {
   school: School | null;
@@ -29,18 +30,13 @@ const columns: ColumnDef<UserListItem>[] = [
 
 export function LinkUsersDialog({ school, open, onOpenChange }: Readonly<LinkUsersDialogProps>) {
   const [filter, setFilter] = useState('');
-  const { data: users = [], isLoading } = useUsers();
+  const debouncedFilter = useDebounce(filter);
 
-  const filteredUsers = useMemo(() => {
-    if (!filter.trim()) return users;
-    const lowerFilter = filter.toLowerCase();
-    return users.filter(
-      (u) =>
-        u.name.toLowerCase().includes(lowerFilter) ||
-        u.registration.toLowerCase().includes(lowerFilter) ||
-        u.email.toLowerCase().includes(lowerFilter),
-    );
-  }, [users, filter]);
+  const { data: users = [], isLoading } = useUsers({
+    status: true,
+    ...debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
+  })
+    
 
   const handleLink = (userName: string) => {
     toast.success(`Usuário "${userName}" vinculado à escola "${school?.name}".`);

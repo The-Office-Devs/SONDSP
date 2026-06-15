@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import type { SchoolRow } from "@/schools/schools.types";
 import { useDeleteSchool, useSchools } from "../use-schools";
+import { useDebounce } from "@/hooks/useDebounce";
 
 import { SchoolUpsertPanel } from "./school-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
@@ -16,20 +17,17 @@ const columns: ColumnDef<SchoolRow>[] = [
 ];
 
 export function SchoolsDesktop() {
-  const { data: schools = [], isLoading } = useSchools();
+  const [filter, setFilter] = useState('');
+  const debouncedFilter = useDebounce(filter);
+
+  const { data: schools = [], isLoading } = useSchools(
+      debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
+    );
   const { mutate, isPending } = useDeleteSchool();
 
-  const [filter, setFilter] = useState('');
   const [editSchoolId, setEditSchoolId] = useState<number | null>(null);
   const [deleteSchool, setDeleteSchool] = useState<SchoolRow | null>(null);
   const [linkUsersSchool, setLinkUsersSchool] = useState<SchoolRow | null>(null);
-
-  const filteredSchools = useMemo(() => {
-    //TODO: implementar paginação na tabela e filtro disparando requisição para o backend
-    if (!filter.trim()) return schools;
-    const lowerFilter = filter.toLowerCase();
-    return schools.filter((s) => s.name.toLowerCase().includes(lowerFilter));
-  }, [schools, filter]);
 
   const actions: RowAction<SchoolRow>[] = [
     { type: "edit", onClick: (school) => setEditSchoolId(school.id), disabled: (user) => !user.status },

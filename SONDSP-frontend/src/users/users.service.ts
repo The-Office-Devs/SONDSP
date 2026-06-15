@@ -3,11 +3,12 @@ import type {
   CreateUserRequest,
   UpdateUserRequest,
   User, 
+  UserFilter, 
   UserListItem 
 } from "./users.types";
 
-export async function listUsersService(): Promise<UserListItem[]> {
-  const response = await api.get<UserListItem[]>('/user');
+export async function listUsersService(filter?: UserFilter): Promise<UserListItem[]> {
+  const response = await api.get<UserListItem[]>('/user', { params: filter });
   return response.data;
 }
 

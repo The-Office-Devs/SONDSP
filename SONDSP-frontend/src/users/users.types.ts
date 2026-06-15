@@ -16,6 +16,11 @@ export interface UserListItem {
   status: boolean;
 }
 
+export interface UserFilter {
+  search?: string;
+  status?: boolean;
+}
+
 export interface CreateUserRequest {
   name: string;
   registration: string;

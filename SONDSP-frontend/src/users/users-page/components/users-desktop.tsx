@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import type { UserListItem } from "@/users/users.types";
 import { useDeleteUser, useUsers } from "../use-users";
+import { useDebounce } from "@/hooks/useDebounce";
 
 import { UserUpsertPanel } from "./user-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
@@ -17,19 +18,16 @@ const columns: ColumnDef<UserListItem>[] = [
 ];
 
 export function UsersDesktop() {
-  const { data: users = [], isLoading } = useUsers();
+  const [filter, setFilter] = useState('');
+  const debouncedFilter = useDebounce(filter);
+
+  const { data: users = [], isLoading } = useUsers(
+    debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
+  );
   const { mutate, isPending } = useDeleteUser();
 
-  const [filter, setFilter] = useState('');
   const [editUserId, setEditUserId] = useState<number | null>(null);
   const [deleteUser, setDeleteUser] = useState<UserListItem | null>(null);
-
-  const filteredUsers = useMemo(() => {
-    //TODO: implementar paginação na tabela e filtro disparando requisição para o backend
-    if (!filter.trim()) return users;
-    const lowerFilter = filter.toLowerCase();
-    return users.filter((s) => s.name.toLowerCase().includes(lowerFilter));
-  }, [users, filter]);
 
   const actions: RowAction<UserListItem>[] = [
     { type: "edit", onClick: (user) => setEditUserId(user.id), disabled: (user) => !user.status },

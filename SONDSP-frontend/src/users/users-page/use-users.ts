@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { 
+  keepPreviousData, 
+  useMutation, 
+  useQuery, 
+  useQueryClient 
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { AxiosError } from "axios";
 
@@ -10,14 +15,16 @@ import {
   listUsersService, 
   updateUserService
 } from "../users.service";
+import type { UserFilter } from "../users.types";
 import type { UsersFormData } from "./users-schema";
 
 const USERS_QUERY_KEY = ['users'] as const;
 
-export function useUsers() {
+export function useUsers(filter?: UserFilter) {
   return useQuery({
-    queryKey: USERS_QUERY_KEY,
-    queryFn: listUsersService,
+    queryKey: [...USERS_QUERY_KEY, filter],
+    queryFn: () => listUsersService(filter),
+    placeholderData: keepPreviousData,
   });
 }
 

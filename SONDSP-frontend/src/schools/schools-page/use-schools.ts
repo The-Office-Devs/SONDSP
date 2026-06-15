@@ -1,6 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { 
+  keepPreviousData, 
+  useMutation, 
+  useQuery, 
+  useQueryClient 
+} from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+import { listUsersService } from '@/users/users.service';
 import {
   listSchoolsService,
   createSchoolService,
@@ -8,16 +14,22 @@ import {
   deleteSchoolService,
   getSchoolService,
 } from '../schools.service';
-import { listUsersService } from '@/users/users.service';
-import type { CreateSchoolRequest, UpdateSchoolRequest } from '../schools.types';
+import type { 
+  CreateSchoolRequest, 
+  SchoolFilter, 
+  UpdateSchoolRequest 
+} from '../schools.types';
+import type { UserFilter } from '@/users/users.types';
+
 
 const SCHOOLS_QUERY_KEY = ['schools'] as const;
 const USERS_QUERY_KEY = ['users'] as const;
 
-export function useSchools() {
+export function useSchools(filter?: SchoolFilter) {
   return useQuery({
-    queryKey: SCHOOLS_QUERY_KEY,
-    queryFn: () => listSchoolsService(),
+    queryKey: [...SCHOOLS_QUERY_KEY, filter],
+    queryFn: () => listSchoolsService(filter),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -75,9 +87,10 @@ export function useDeleteSchool() {
   });
 }
 
-export function useUsers() {
+export function useUsers(filter?: UserFilter) {
   return useQuery({
-    queryKey: USERS_QUERY_KEY,
-    queryFn: listUsersService,
+    queryKey: [...USERS_QUERY_KEY, filter],
+    queryFn: () => listUsersService(filter),
+    placeholderData: keepPreviousData,
   });
 }

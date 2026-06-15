@@ -11,6 +11,10 @@ export interface SchoolRow {
   status: boolean;
 }
 
+export interface SchoolFilter {
+  search?: string
+}
+
 export interface CreateSchoolRequest {
   name: string;
   principalName: string;
