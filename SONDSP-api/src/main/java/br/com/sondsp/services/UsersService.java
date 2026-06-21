@@ -1,6 +1,8 @@
 package br.com.sondsp.services;
 
 import br.com.sondsp.entities.Role;
+import br.com.sondsp.entities.School;
+import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.entities.User;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.UserFilter;
@@ -24,10 +26,13 @@ import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
-public class         UsersService {
+public class UsersService {
     private UsersRepository repository;
     private final RolesRepository rolesRepository;
     private final PermissionsRepository permissionsRepository;
+
+    private SchoolClassService schoolClassService;
+    private SchoolService schoolService;
 
     public User registerUser(RegisterForm form) {
         User verifyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
@@ -87,6 +92,44 @@ public class         UsersService {
         return repository.save(user);
     }
 
+    public Boolean linkToSchoolClass(Integer id, Integer schoolClassId) {
+        // Busca o usuário e a turma
+        User user = getUser(id);
+        SchoolClass schoolClass = schoolClassService.getSchoolClass(schoolClassId);
+
+        // Se encontrar a turma, remove ela
+        if (!user.getSchoolClasses().removeIf(sc -> Objects.equals(sc.getId(), schoolClassId))) {
+            // Se não tiver removido, adiciona a turma e retorna true
+            user.getSchoolClasses().add(schoolClass);
+            return true;
+        }
+
+        return false;
+    }
+
+    public Boolean linkToSchool(Integer id, Integer schoolId) {
+        // Busca o usuário e a escola
+        User user = getUser(id);
+        School school = schoolService.getSchool(schoolId);
+
+        // Se encontrar a escola, remove ela
+        if (!user.getSchools().removeIf(s -> Objects.equals(s.getId(), schoolId))) {
+            // Se não tiver removido, adiciona a escola e retorna true
+            user.getSchools().add(school);
+            return true;
+        }
+
+        return false;
+    }
+
+    public Boolean changeStatus(Integer id) {
+        User user = getUser(id);
+
+        user.setStatus(!user.getStatus());
+
+        return repository.save(user).getStatus();
+    }
+
     public User changePassword(ChangePasswordForm form){
         User user = repository.findByEmail(form.email());
 
@@ -99,12 +142,6 @@ public class         UsersService {
         } else {
             throw new ValidationException(INACTIVATED_USER);
         }
-    }
-
-    public void deleteUser(Integer idUser) {
-        User userToDelete = getUser(idUser);
-        userToDelete.setStatus(false);
-        repository.save(userToDelete);
     }
 
     public User findByEmailAndRegistration(String email, String registration) {

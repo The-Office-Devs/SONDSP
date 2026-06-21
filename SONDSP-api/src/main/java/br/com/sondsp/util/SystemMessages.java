@@ -4,6 +4,14 @@ public final class SystemMessages {
     // System errors
     public static final String UNEXPECTED_ERROR = "Ocorreu um erro inesperado: ";
 
+    // Simple messages
+    public static final String USER_ACTIVATED = "Usuário ativado com sucesso.";
+    public static final String USER_DEACTIVATED = "Usuário desativado com sucesso.";
+    public static final String USER_LINKED_TO_SCHOOL_CLASS = "Usuário vinculado a turma.";
+    public static final String USER_UNLINKED_TO_SCHOOL_CLASS = "Usuário desvinculado a turma.";
+    public static final String USER_LINKED_TO_SCHOOL = "Usuário vinculado a escola.";
+    public static final String USER_UNLINKED_TO_SCHOOL = "Usuário vinculado a escola.";
+
     // Format or business logic errors
     public static final String EMAIL_ALREADY_EXISTS = "O email já está sendo utilizado.";
     public static final String REGISTRATION_ALREADY_EXISTS = "A matrícula já existe";

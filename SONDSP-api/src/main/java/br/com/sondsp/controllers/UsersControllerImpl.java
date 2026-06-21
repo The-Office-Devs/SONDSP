@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static br.com.sondsp.util.SystemMessages.*;
+
 @RestController
 @RequestMapping("/user")
 public class UsersControllerImpl implements UsersController {
@@ -18,7 +20,7 @@ public class UsersControllerImpl implements UsersController {
     private UsersService service;
 
     @PostMapping()
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterForm form){
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterForm form) {
         return ResponseEntity.ok().body(new UserDTO(service.registerUser(form)));
     }
 
@@ -28,18 +30,36 @@ public class UsersControllerImpl implements UsersController {
     }
 
     @GetMapping()
-    public ResponseEntity<?> listUser(@ModelAttribute UserFilter filter){
+    public ResponseEntity<?> listUser(@ModelAttribute UserFilter filter) {
         return ResponseEntity.ok().body(service.getUsers(filter).stream().map(UsersListDTO::new));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody UserForm user){
+    public ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody UserForm user) {
         return ResponseEntity.ok().body(new UserDTO(service.updateUser(id, user)));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Integer id){
-        service.deleteUser(id);
-        return ResponseEntity.ok("Usuário desativado com sucesso.");
+    @PatchMapping("/{id}/linkToSchoolClass/{schoolClassId}")
+    public ResponseEntity<?> linkToSchoolClass(@PathVariable Integer id, @PathVariable Integer schoolClassId) {
+        if (service.linkToSchoolClass(id, schoolClassId))
+            return ResponseEntity.ok().body(USER_LINKED_TO_SCHOOL_CLASS);
+
+        return ResponseEntity.ok().body(USER_UNLINKED_TO_SCHOOL_CLASS);
+    }
+
+    @PatchMapping("/{id}/linkToSchool/{schoolId}")
+    public ResponseEntity<?> linkToSchool(@PathVariable Integer id, @PathVariable Integer schoolId) {
+        if (service.linkToSchool(id, schoolId))
+            return ResponseEntity.ok().body(USER_LINKED_TO_SCHOOL);
+
+        return ResponseEntity.ok().body(USER_UNLINKED_TO_SCHOOL);
+    }
+
+    @PatchMapping("/{id}/changeStatus")
+    public ResponseEntity<?> changeStatus(@PathVariable Integer id) {
+        if (service.changeStatus(id))
+            return ResponseEntity.ok().body(USER_ACTIVATED);
+
+        return ResponseEntity.ok().body(USER_DEACTIVATED);
     }
 }

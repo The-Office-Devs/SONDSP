@@ -11,9 +11,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 public interface UsersController {
     @Operation(description = "Registra um novo usuário", responses = {
@@ -26,7 +24,7 @@ public interface UsersController {
                     )
             )
     })
-    ResponseEntity<?> register(@Valid @RequestBody RegisterForm form);
+    ResponseEntity<?> register(RegisterForm form);
 
     @Operation(description = "Retorna o usuário com o id passado.", responses = {
             @ApiResponse(
@@ -38,7 +36,7 @@ public interface UsersController {
                     )
             )
     })
-    ResponseEntity<?> getUserById(@PathVariable Integer id);
+    ResponseEntity<?> getUserById(Integer id);
 
     @Operation(
             description = "Retorna todos os usuários com base no filtro passado. Se nenhum filtro for passado, retorna todos os usuários.",
@@ -53,7 +51,7 @@ public interface UsersController {
                     )
             }
     )
-    ResponseEntity<?> listUser(@ModelAttribute UserFilter filter);
+    ResponseEntity<?> listUser(UserFilter filter);
 
     @Operation(description = "Atualiza o usuário com o id passado.", responses = {
             @ApiResponse(
@@ -73,12 +71,52 @@ public interface UsersController {
                     )
             )
     })
-    ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody UserForm user);
+    ResponseEntity<?> updateUser(Integer id, UserForm user);
 
-    @Operation(description = "Desativa o usuário com o ID passado.", responses = {
+    @Operation(description = "Vincula/desvincula um usuário a uma turma.", responses = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Usuário desativado com sucesso",
+                    description = "Usuário vinculado/desvinculado a turma.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = String.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário/turma não encontrado(a).",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = StandardErrorDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> linkToSchoolClass(Integer id, Integer schoolClassId);
+
+    @Operation(description = "Vincula/desvincula um usuário a uma escola.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário vinculado/desvinculado a escola.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = String.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário/escola não encontrado(a).",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = StandardErrorDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> linkToSchool(Integer id, Integer schoolId);
+
+    @Operation(description = "Desativa ou ativa o usuário com o ID passado.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário desativado/ativado com sucesso",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = UserDTO.class)
@@ -93,5 +131,5 @@ public interface UsersController {
                     )
             )
     })
-    ResponseEntity<?> deleteUser(@PathVariable Integer id);
+    ResponseEntity<?> changeStatus(Integer id);
 }
