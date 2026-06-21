@@ -28,7 +28,7 @@ public interface SchoolController {
                     )
             )
     })
-    ResponseEntity<?> createSchool(@Valid @RequestBody SchoolForm form);
+    ResponseEntity<?> createSchool(SchoolForm form);
 
     @Operation(description = "Retorna escola com base no id.", responses = {
             @ApiResponse(
@@ -48,7 +48,7 @@ public interface SchoolController {
                     )
             )
     })
-    ResponseEntity<?> getSchoolById(@PathVariable Integer id);
+    ResponseEntity<?> getSchoolById(Integer id);
 
 
     @Operation(description = "Lista todas as escolas com base em um filtro passado. Caso o filtro não seja passado, irá retornar todas as escolas.", responses = {
@@ -61,7 +61,7 @@ public interface SchoolController {
                     )
             )
     })
-    ResponseEntity<?> getSchoolsByfilter(@ModelAttribute SchoolFilter filter);
+    ResponseEntity<?> getSchoolsByfilter(SchoolFilter filter);
 
     @Operation(description = "Atualiza uma escola com base no id.", responses = {
             @ApiResponse(
@@ -81,7 +81,7 @@ public interface SchoolController {
                     )
             )
     })
-    ResponseEntity<?> updateSchool(@PathVariable Integer id, @Valid @RequestBody SchoolForm form);
+    ResponseEntity<?> updateSchool(Integer id, SchoolForm form);
 
     @Operation(description = "Desativa a escola com o id passado.", responses = {
             @ApiResponse(
@@ -101,5 +101,5 @@ public interface SchoolController {
                     )
             )
     })
-    ResponseEntity<?> deleteSchool(@PathVariable Integer id);
+    ResponseEntity<?> deleteSchool(Integer id);
 }

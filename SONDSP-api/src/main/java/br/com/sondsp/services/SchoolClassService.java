@@ -27,7 +27,9 @@ public class SchoolClassService {
     private SchoolService schoolService;
 
     public SchoolClass createSchoolClass(SchoolClassForm form) {
-        return repository.save(new SchoolClass(form, schoolService.getSchool(form.schoolId())));
+
+        //form, schoolService.getSchool(form.schoolId())
+        return repository.save(new SchoolClass());
     }
 
     public SchoolClass getSchoolClass(Integer id) {
@@ -40,7 +42,9 @@ public class SchoolClassService {
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
-        return repository.save(SchoolClass.updateSchoolClassWithForm(getSchoolClass(id), form));
+
+        //SchoolClass.updateSchoolClassWithForm(getSchoolClass(id), form)
+        return repository.save(new SchoolClass());
     }
 
     public void deleteSchoolClass(Integer id) {

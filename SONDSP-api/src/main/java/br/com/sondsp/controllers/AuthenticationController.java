@@ -9,13 +9,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
 
-public interface AuthenticationController{
+public interface AuthenticationController {
     @Operation(description = "Efetua o login do usuário", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -26,7 +24,7 @@ public interface AuthenticationController{
                     )
             )
     })
-    ResponseEntity<?> login(@Valid @RequestBody AuthenticationForm form) throws LoginException;
+    ResponseEntity<?> login(AuthenticationForm form) throws LoginException;
 
     @Operation(description = "Envia email de troca de senha", responses = {
             @ApiResponse(
@@ -37,7 +35,7 @@ public interface AuthenticationController{
                     )
             )
     })
-    ResponseEntity<?> sendChangePasswordEmail(@RequestBody String email) throws Exception;
+    ResponseEntity<?> sendChangePasswordEmail(String email) throws Exception;
 
     @Operation(description = "Realiza o primeiro acesso do usuário.", responses = {
             @ApiResponse(
@@ -49,7 +47,7 @@ public interface AuthenticationController{
                     )
             )
     })
-    ResponseEntity<?> firstAccess(@RequestBody FirstAccessForm form);
+    ResponseEntity<?> firstAccess(FirstAccessForm form);
 
     @Operation(description = "Realiza a troca de senha do usuário.", responses = {
             @ApiResponse(
@@ -61,5 +59,5 @@ public interface AuthenticationController{
                     )
             )
     })
-    ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form);
+    ResponseEntity<?> changePassword(ChangePasswordForm form);
 }

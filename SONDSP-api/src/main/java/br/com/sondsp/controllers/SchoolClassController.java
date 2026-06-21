@@ -9,9 +9,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 public interface SchoolClassController {
     @Operation(description = "Cria uma nova turma.", responses = {
@@ -24,7 +22,7 @@ public interface SchoolClassController {
                     )
             )
     })
-    ResponseEntity<?> createSchoolClass(@Valid @RequestBody SchoolClassForm form);
+    ResponseEntity<?> createSchoolClass(SchoolClassForm form);
 
     @Operation(description = "Busca a turma com base no id passado.", responses = {
             @ApiResponse(
@@ -44,7 +42,7 @@ public interface SchoolClassController {
                     )
             )
     })
-    ResponseEntity<?> getSchoolClassById(@RequestParam Integer id);
+    ResponseEntity<?> getSchoolClassById(Integer id);
 
     @Operation(
             description = "Retorna todas as turmas com base em um filtro. Caso o filtro não seja passado, retorna todas as turmas.",
@@ -59,7 +57,7 @@ public interface SchoolClassController {
                     )
             }
     )
-    ResponseEntity<?> getSchoolsClassesByFilter(@ModelAttribute SchoolClassFilter filter);
+    ResponseEntity<?> getSchoolsClassesByFilter(SchoolClassFilter filter);
 
     @Operation(description = "Atualiza a turma com base no id.", responses = {
             @ApiResponse(
@@ -79,7 +77,7 @@ public interface SchoolClassController {
                     )
             )
     })
-    ResponseEntity<?> updateSchoolClass(@RequestParam Integer id, @RequestBody SchoolClassForm form);
+    ResponseEntity<?> updateSchoolClass(Integer id, SchoolClassForm form);
 
 
     @Operation(description = "Remove a turma com base no id.", responses = {
@@ -100,5 +98,5 @@ public interface SchoolClassController {
                     )
             )
     })
-    ResponseEntity<?> deleteSchoolClass(@RequestParam Integer id);
+    ResponseEntity<?> deleteSchoolClass(Integer id);
 }

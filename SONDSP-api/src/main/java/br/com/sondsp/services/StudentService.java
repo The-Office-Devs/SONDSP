@@ -25,7 +25,8 @@ public class StudentService {
     private SchoolClassService schoolClassService;
 
     public Student createStudent(StudentForm form) {
-        return repository.save(new Student(form));
+        // form
+        return repository.save(new Student());
     }
 
     public List<Student> createStudents(List<StudentForm> forms) {
@@ -44,7 +45,8 @@ public class StudentService {
     public Student updateStudent(Integer id, StudentForm form) {
         Student student = getStudent(id);
         SchoolClass schoolClass = schoolClassService.getSchoolClass(form.schoolClassId());
-        return repository.save(Student.updateStudentWithForm(form, student, schoolClass));
+        //Student.updateStudentWithForm(form, student, schoolClass)
+        return repository.save(new Student());
     }
 
     public void deleteStudent(Integer id) {

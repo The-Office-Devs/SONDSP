@@ -25,7 +25,7 @@ public interface StudentController {
                     )
             )
     })
-    ResponseEntity<?> createStudent(@RequestBody StudentForm form);
+    ResponseEntity<?> createStudent(StudentForm form);
 
     @Operation(description = "Cria alunos com base em um array.", responses = {
             @ApiResponse(
@@ -37,7 +37,7 @@ public interface StudentController {
                     )
             )
     })
-    ResponseEntity<?> createStudents(@RequestBody List<StudentForm> forms);
+    ResponseEntity<?> createStudents(List<StudentForm> forms);
 
     @Operation(description = "Retorna o aluno com o id passado.", responses = {
             @ApiResponse(
@@ -57,7 +57,7 @@ public interface StudentController {
                     )
             )
     })
-    ResponseEntity<?> getStudent(@RequestParam Integer id);
+    ResponseEntity<?> getStudent(Integer id);
 
     @Operation(
             description = "Retorna uma lista dos alunos com base no filtro passado. Se nenhum filtro for passado, retorna todos os alunos.",
@@ -71,7 +71,7 @@ public interface StudentController {
                             )
                     )
     })
-    ResponseEntity<?> getStudents(@ModelAttribute StudentFilter filter);
+    ResponseEntity<?> getStudents(StudentFilter filter);
 
     @Operation(description = "Atualiza o aluno com o id passado.", responses = {
             @ApiResponse(
@@ -91,7 +91,7 @@ public interface StudentController {
                     )
             )
     })
-    ResponseEntity<?> updateStudent(@RequestParam Integer id, @RequestBody StudentForm form);
+    ResponseEntity<?> updateStudent(Integer id, StudentForm form);
 
     @Operation(description = "Desativa o aluno com o id passado.", responses = {
             @ApiResponse(
@@ -111,5 +111,5 @@ public interface StudentController {
                     )
             )
     })
-    ResponseEntity<?> deleteStudent(@RequestParam Integer id);
+    ResponseEntity<?> deleteStudent(Integer id);
 }

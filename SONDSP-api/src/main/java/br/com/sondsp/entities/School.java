@@ -1,6 +1,5 @@
 package br.com.sondsp.entities;
 
-import br.com.sondsp.form.SchoolForm;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,20 +24,4 @@ public class School {
 
     @Column(name = "status")
     private Boolean status;
-
-    public School(SchoolForm school) {
-        this.name = school.name();
-        this.principalName = school.principalName();
-        this.status = school.status();
-    }
-
-    public static School updateSchoolWithSchoolForm(School school, SchoolForm updatedSchool) {
-        return School
-                .builder()
-                .id(school.getId())
-                .name(updatedSchool.name())
-                .principalName(updatedSchool.principalName())
-                .status(updatedSchool.status())
-                .build();
-    }
 }

@@ -39,7 +39,7 @@ public class AuthenticationControllerImpl implements AuthenticationController{
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form){
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form) {
         return ResponseEntity.ok().body(new UserDTO(usersService.changePassword(form)));
     }
 }

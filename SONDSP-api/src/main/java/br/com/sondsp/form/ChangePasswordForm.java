@@ -11,6 +11,8 @@ public record ChangePasswordForm(
         @NotBlank(message = EMPTY_EMAIL)
         String email,
         @NotBlank(message = EMPTY_PASSWORD)
-        String password
+        String oldPassword,
+        @NotBlank(message = EMPTY_PASSWORD)
+        String newPassword
 ) {
 }

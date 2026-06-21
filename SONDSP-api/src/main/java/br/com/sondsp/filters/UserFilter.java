@@ -6,6 +6,7 @@ public record UserFilter(
         String roleName,
         String email,
         Boolean status,
+        Integer rowNumber,
         String search
 ) {
 }

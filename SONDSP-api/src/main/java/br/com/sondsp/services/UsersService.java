@@ -136,7 +136,7 @@ public class UsersService {
         if (user == null) throw new EntityNotFoundException(USER_NOT_FOUND);
 
         if (user.getStatus()){
-            user.setPassword(encodePassword(form.password()));
+            user.setPassword(encodePassword(form.newPassword()));
 
             return repository.save(user);
         } else {
