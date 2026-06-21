@@ -25,6 +25,9 @@ public final class SystemMessages {
     public static final String EMPTY_SCHOOL = "Deve ser passada uma escola.";
     public static final String EMPTY_YEAR = "Deve ser passado o ano escolar.";
     public static final String EMPTY_PRINCIPAL = "Deve ser passado o nome do diretor.";
+    public static final String EMPTY_SUBJECT = "Uma matéria deve ser informado.";
+    public static final String EMPTY_AXIS = "Um eixo deve ser informado.";
+    public static final String EMPTY_MODEL = "Um modelo deve ser informado.";
 
     // User errors
     public static final String USER_NOT_FOUND = "o usuário não foi encontrado.";
@@ -37,6 +40,7 @@ public final class SystemMessages {
 
     public static final String SCHOOL_CLASS_NOT_FOUND = "A turma não foi encontrada.";
     public static final String STUDENT_NOT_FOUND = "O aluno não foi encontrado.";
+    public static final String ACTIVITY_NOT_FOUND = "A atividade não foi encontrada.";
 
     // Private constructor makes class not instantiable
     private SystemMessages() {}

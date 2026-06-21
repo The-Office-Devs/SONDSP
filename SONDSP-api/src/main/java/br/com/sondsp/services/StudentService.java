@@ -1,6 +1,5 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.entities.Role;
 import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.entities.Student;
 import br.com.sondsp.entities.User;
