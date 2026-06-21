@@ -30,21 +30,19 @@ public class Activity {
     @Column(name = "eixo")
     private String axis;
 
-    @Column(name = "model")
+    @Column(name = "modelo")
     private String model;
 
     @Column(name = "status")
     private Boolean status;
 
     public Activity(ActivityForm form, User creator) {
-        Activity.builder()
-                .creator(creator)
-                .subject(form.subject())
-                .axis(form.axis())
-                .model(form.model())
-                .status(form.status())
-                .build();
-
+        this.creator = creator;
+        this.name = form.name();
+        this.subject = form.subject();
+        this.axis = form.axis();
+        this.model = form.model();
+        this.status = form.status();
     }
 
     public static Activity builderUpdatedActivity(ActivityForm activityForm, User creator) {

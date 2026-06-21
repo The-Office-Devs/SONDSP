@@ -67,14 +67,10 @@ public class SurveyService {
 
     public Survey updateSurvey(Integer id, SurveyForm form){
         Survey survey = findSurveyById(id);
-        User administrator = findUserById(form.administratorId());
-        Student student = findStudentById(form.studentId());
-        Activity activity = findActivityById(form.activityId());
+        survey.setResult(form.result());
+        survey.setObservations(form.observations());
 
-        Survey surveyUpdated = Survey.buildUpdatedSurvey(form, administrator, student, activity);
-        surveyUpdated.setId(survey.getId());
-
-        return surveyRepository.save(surveyUpdated);
+        return surveyRepository.save(survey);
     }
 
     public void deleteSurvey(Integer id){

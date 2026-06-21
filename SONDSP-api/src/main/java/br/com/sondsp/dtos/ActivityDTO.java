@@ -5,7 +5,8 @@ import br.com.sondsp.entities.User;
 
 public record ActivityDTO(
         Integer id,
-        User creator,
+        Integer creatorId,
+        String creatorName,
         String name,
         String subject,
         String axis,
@@ -15,7 +16,8 @@ public record ActivityDTO(
     public ActivityDTO(Activity activity){
         this(
                 activity.getId(),
-                activity.getCreator(),
+                activity.getCreator() != null ? activity.getCreator().getId() : null,
+                activity.getCreator() != null ? activity.getCreator().getName() : null,
                 activity.getName(),
                 activity.getSubject(),
                 activity.getAxis(),

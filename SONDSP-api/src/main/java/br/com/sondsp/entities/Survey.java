@@ -58,18 +58,4 @@ public class Survey {
         this.isDigital = form.isDigital();
         this.status = true;
     }
-
-    public static Survey buildUpdatedSurvey(SurveyForm form, User administrator, Student student, Activity activity){
-        return Survey.builder()
-                .administrator(administrator)
-                .student(student)
-                .subject(form.subject())
-                .axis(form.axis())
-                .result(form.result())
-                .observations(form.observations())
-                .isDigital(form.isDigital())
-                .activity(activity)
-                .build();
-
-    }
 }
