@@ -38,7 +38,7 @@ public class Survey {
     private String observations;
 
     @Column(name = "imagem_sondagem")
-    private String surveyImage;
+    private String surveyImagePath;
 
     @Column(name = "ind_digital")
     private Boolean isDigital;
@@ -56,7 +56,7 @@ public class Survey {
                 .axis(form.axios())
                 .result(form.result())
                 .observations(form.observations())
-                .surveyImage(form.surveyImage())
+                .surveyImagePath(form.surveyImage())
                 .isDigital(form.isDigital())
                 .build();
     }
@@ -69,7 +69,7 @@ public class Survey {
                 .axis(form.axios())
                 .result(form.result())
                 .observations(form.observations())
-                .surveyImage(form.surveyImage())
+                .surveyImagePath(form.surveyImage())
                 .isDigital(form.isDigital())
                 .activity(activity)
                 .build();

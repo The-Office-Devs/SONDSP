@@ -2,9 +2,7 @@ package br.com.sondsp.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +15,36 @@ public class SpecificationFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public <T> Specification<T> buildFilter(Object filter, List<String> activityColumns){
+    public static class FilterColumn {
+        String filterKey;       // Nome do campo
+        String attributeName;   // Nome do atributo na Entidade
+        String joinRelation;    // Nome do relacionamento no Root
+        JoinType joinType;      // Tipo Join (INNER, LEFT, RIGHT)
+
+
+        public FilterColumn(String filterKey, String attributeName) {
+            this.filterKey = filterKey;
+            this.attributeName = attributeName;
+            this.joinRelation = null;
+            this.joinType = null;
+        }
+
+        public FilterColumn(String filterKey, String joinRelation, String attributeName, JoinType joinType) {
+            this.filterKey = filterKey;
+            this.joinRelation = joinRelation;
+            this.attributeName = attributeName;
+            this.joinType = joinType;
+        }
+
+        public boolean isJoin() {
+            return this.joinRelation != null;
+        }
+    }
+
+    public <T> Specification<T> buildFilter(Object filter, List<FilterColumn> filterColumns){
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = filter != null
-                    ? buildPredicates(filter, criteriaBuilder, root, activityColumns)
+                    ? buildPredicates(filter, criteriaBuilder, root, filterColumns)
                     : new ArrayList<>();
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -31,10 +55,9 @@ public class SpecificationFilter {
             Object filter,
             CriteriaBuilder builder,
             Root<T> root,
-            List<String> activityColumns
+            List<FilterColumn> filterColumns
     ){
         List<Predicate> predicates = new ArrayList<>();
-
         Map<String, Object> filterMap = objectMapper.convertValue(filter, new TypeReference<>() {});
 
         if (Boolean.TRUE.equals(isGeneralFilter(filterMap))){
@@ -42,21 +65,29 @@ public class SpecificationFilter {
             String filterPattern = "%" + generalFilter.toLowerCase() + "%";
             List<Predicate> orPredicates = new ArrayList<>();
 
-            activityColumns.forEach((column) -> {
+            filterColumns.forEach((column) -> {
                 Predicate predicate = buildPredicate(builder, root, filterPattern, column);
-                orPredicates.add(predicate);
+                if (predicate != null) orPredicates.add(predicate);
             });
 
             if (!orPredicates.isEmpty()) {
-                Predicate combinedSearchPredicate = builder.or(orPredicates.toArray(new Predicate[0]));
-                predicates.add(combinedSearchPredicate);
+                predicates.add(builder.or(orPredicates.toArray(new Predicate[0])));
             }
 
         } else {
-            filterMap.forEach((columnName, filterValue) -> {
-                if (!"generalFilter".equals(columnName) && filterValue != null && !filterValue.toString().isBlank()) {
-                    Predicate predicate = buildPredicate(builder, root, filterValue.toString(), columnName);
-                    predicates.add(predicate);
+            filterMap.forEach((columnKey, filterValue) -> {
+                if (!"generalFilter".equals(columnKey) && filterValue != null && !filterValue.toString().isBlank()) {
+
+                    FilterColumn filterColumn = filterColumns.stream()
+                            .filter(col -> col.filterKey.equals(columnKey))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (filterColumn != null) {
+                        String filterPattern = "%" + filterValue.toString().toLowerCase() + "%";
+                        Predicate predicate = buildPredicate(builder, root, filterPattern, filterColumn);
+                        if (predicate != null) predicates.add(predicate);
+                    }
                 }
             });
         }
@@ -73,8 +104,18 @@ public class SpecificationFilter {
             CriteriaBuilder criteriaBuilder,
             Root<T> root,
             String filterPattern,
-            String columnName
+            FilterColumn column
     ){
-        return criteriaBuilder.like(criteriaBuilder.lower(root.get(columnName)), filterPattern);
+        Expression<String> path;
+
+        if (column.isJoin()) {
+            Join<Object, Object> expressionJoin = root.join(column.joinRelation, column.joinType);
+            path = expressionJoin.get(column.attributeName);
+
+        } else {
+            path = root.get(column.attributeName);
+        }
+
+        return criteriaBuilder.like(criteriaBuilder.lower(path), filterPattern);
     }
 }

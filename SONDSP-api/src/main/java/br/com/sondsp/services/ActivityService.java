@@ -39,9 +39,15 @@ public class ActivityService {
     }
 
     public List<Activity> listActivities(ActivityFilter filter){
-        List<String> activityColumns = List.of("name", "subject", "axis", "model");
-        Specification<Activity> specification = specificationFilter.buildFilter(filter, activityColumns);
-        return activityRepository.findAll(specification);
+        List<SpecificationFilter.FilterColumn> columnsConfig = List.of(
+                new SpecificationFilter.FilterColumn("name", "name"),
+                new SpecificationFilter.FilterColumn("subject", "subject"),
+                new SpecificationFilter.FilterColumn("axis", "axis"),
+                new SpecificationFilter.FilterColumn("model", "model")
+        );
+
+        Specification<Activity> spec = specificationFilter.buildFilter(filter, columnsConfig);
+        return activityRepository.findAll(spec);
     }
 
     private Activity findActivityById(Integer idActivity){

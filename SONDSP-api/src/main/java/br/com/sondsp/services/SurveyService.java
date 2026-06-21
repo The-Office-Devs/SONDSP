@@ -13,6 +13,7 @@ import br.com.sondsp.repositories.UsersRepository;
 import br.com.sondsp.util.SpecificationFilter;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,8 @@ public class SurveyService {
     private UsersRepository usersRepository;
     private StudentRepository studentRepository;
     private ActivityRepository activityRepository;
+
+    @Autowired
     private SpecificationFilter specificationFilter;
 
     public Survey createSurvey(SurveyForm form){
@@ -86,9 +89,15 @@ public class SurveyService {
         );
     }
 
-    public List<Survey> listSurveys(SurveyFilter surveyFilter){
-        List<String> activityColumns = List.of("subject", "axis", "result", "isDigital");
-        Specification<Survey> specification = specificationFilter.buildFilter(surveyFilter, activityColumns);
-        return surveyRepository.findAll(specification);
+    public List<Survey> listSurveys(SurveyFilter filter){
+        List<SpecificationFilter.FilterColumn> columnsConfig = List.of(
+                new SpecificationFilter.FilterColumn("subject", "subject"),
+                new SpecificationFilter.FilterColumn("axis", "axis"),
+                new SpecificationFilter.FilterColumn("result", "result"),
+                new SpecificationFilter.FilterColumn("isDigital", "isDigital")
+        );
+
+        Specification<Survey> spec = specificationFilter.buildFilter(filter, columnsConfig);
+        return surveyRepository.findAll(spec);
     }
 }
