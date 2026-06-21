@@ -7,6 +7,7 @@ import { ForgotPasswordPage } from '@/auth/forgot-password/forgot-password-page'
 import { ActivateAccountPage } from '@/auth/activate-account/activate-account-page';
 import { UsersPage } from '@/users/users-page/users-page';
 import { SchoolsPage } from '@/schools/schools-page/schools-page';
+import { ClassesPage } from '@/classes/classes-page/classes-page';
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
         children: [
           { path: 'usuarios', element: <UsersPage /> },
           { path: 'escolas', element: <SchoolsPage /> },
+          { path: 'turmas', element: <ClassesPage /> },
         ]
       }
     ],

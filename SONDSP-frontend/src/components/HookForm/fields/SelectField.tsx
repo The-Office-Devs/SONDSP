@@ -14,7 +14,7 @@ export function SelectField<T extends FieldValues>({
     <FormField name={name} label={label} labelClassName="text-base">
       {({ field, invalid, fieldId }) => (
         <Select
-          value={field.value}
+          value={field.value ? String(field.value) : undefined}
           onValueChange={field.onChange}
           disabled={field.disabled}
         >

@@ -3,12 +3,11 @@ import type {
   School,
   CreateSchoolRequest,
   UpdateSchoolRequest,
-  SchoolRow,
   SchoolFilter,
 } from './schools.types';
 
-export async function listSchoolsService(filter?: SchoolFilter): Promise<SchoolRow[]> {
-  const response = await api.get<SchoolRow[]>('/school', { params: filter});
+export async function listSchoolsService(filter?: SchoolFilter): Promise<School[]> {
+  const response = await api.get<School[]>('/school', { params: filter});
   return response.data;
 }
 

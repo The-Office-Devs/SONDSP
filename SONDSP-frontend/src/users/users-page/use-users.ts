@@ -16,7 +16,7 @@ import {
   updateUserService
 } from "../users.service";
 import type { UserFilter } from "../users.types";
-import type { UsersFormData } from "./users-schema";
+import type { UserFormData } from "./user-schema";
 
 const USERS_QUERY_KEY = ['users'] as const;
 
@@ -40,7 +40,7 @@ export function useCreateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UsersFormData) => 
+    mutationFn: (data: UserFormData) => 
       createUserService({
         email: data.email,
         registration: data.registration,
@@ -63,7 +63,7 @@ export function useUpdateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UsersFormData }) =>
+    mutationFn: ({ id, data }: { id: number; data: UserFormData }) =>
       updateUserService(
         id, 
         {

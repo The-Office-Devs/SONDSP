@@ -1,16 +1,16 @@
 import { useState } from "react";
 
-import type { SchoolRow } from "@/schools/schools.types";
 import { useDeleteSchool, useSchools } from "../use-schools";
 import { useDebounce } from "@/hooks/useDebounce";
 
+import type { School } from "@/schools/schools.types";
 import { SchoolUpsertPanel } from "./school-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { LinkUsersDialog } from "./link-users-dialog";
 import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 
-const columns: ColumnDef<SchoolRow>[] = [
+const columns: ColumnDef<School>[] = [
   { id: "name", header: "Nome", width: "300px" },
   { id: "principalName", header: "Diretor", width: "300px" },
   { id: "status", header: "Status", width: "300px"}
@@ -26,10 +26,10 @@ export function SchoolsDesktop() {
   const { mutate, isPending } = useDeleteSchool();
 
   const [editSchoolId, setEditSchoolId] = useState<number | null>(null);
-  const [deleteSchool, setDeleteSchool] = useState<SchoolRow | null>(null);
-  const [linkUsersSchool, setLinkUsersSchool] = useState<SchoolRow | null>(null);
+  const [deleteSchool, setDeleteSchool] = useState<School | null>(null);
+  const [linkUsersSchool, setLinkUsersSchool] = useState<School | null>(null);
 
-  const actions: RowAction<SchoolRow>[] = [
+  const actions: RowAction<School>[] = [
     { type: "edit", onClick: (school) => setEditSchoolId(school.id), disabled: (user) => !user.status },
     { type: "link", onClick: (school) => setLinkUsersSchool(school), disabled: (school) => !school.status },
     { type: "delete", onClick: (school) => setDeleteSchool(school), disabled: (school) => !school.status }
@@ -43,7 +43,6 @@ export function SchoolsDesktop() {
     );
   }
 
-  // TODO: listar apenas usuarios ativos para vinculo
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <SchoolUpsertPanel
@@ -53,7 +52,7 @@ export function SchoolsDesktop() {
 
       <FilterBar value={filter} onChange={setFilter} />
 
-      <DataTable<SchoolRow>
+      <DataTable<School>
         data={schools}
         columns={columns}
         rowKey={(school) => school.id}
@@ -62,12 +61,11 @@ export function SchoolsDesktop() {
       />
 
       <LinkUsersDialog
-        school={linkUsersSchool}
         open={linkUsersSchool !== null}
         onOpenChange={(open) => { if (!open) setLinkUsersSchool(null); }}
       />
 
-      <DeleteDialog<SchoolRow>
+      <DeleteDialog<School>
         data={deleteSchool}
         title="Excluir Escola"
         open={deleteSchool !== null}

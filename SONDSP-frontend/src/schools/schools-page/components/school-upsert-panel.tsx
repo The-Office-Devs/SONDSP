@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, X } from 'lucide-react';
 
-import { schoolSchema, type SchoolFormData } from '../schools.schema';
+import { schoolSchema, type SchoolFormData } from '../school.schema';
 import { useCreateSchool, useSchool, useUpdateSchool } from '../use-schools';
 import { getSubmitLabel } from '@/lib/form-utils';
 

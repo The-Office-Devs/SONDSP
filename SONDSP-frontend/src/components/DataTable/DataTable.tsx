@@ -15,6 +15,7 @@ export type ColumnDef<T> = {
   header: React.ReactNode;
   width: string;
   className?: string;
+  accessor?: (row: T) => unknown;
 }
 
 export type RowAction<T> = {
@@ -95,7 +96,9 @@ export function DataTable<T>({
                   key={String(column.id)}
                   className={cn("px-6 py-4 text-slate-900 font-semibold", column.className)}
                 >
-                  {formatCellValue(row[column.id])}
+                  {formatCellValue(
+                    column.accessor ? column.accessor(row) : row[column.id as keyof T]
+                  )}
                 </TableCell>
               ))}
 
@@ -163,8 +166,8 @@ function ActionButton({
   if (type === "link") {
     return (
       <Button
-        title="Vincular usuários"
-        aria-label="Vincular usuários"
+        title="Vincular"
+        aria-label="Vincular"
         variant="outline"
         className={cn(shared, "border-slate-400 text-slate-900 hover:bg-slate-100")}
         disabled={disabled}

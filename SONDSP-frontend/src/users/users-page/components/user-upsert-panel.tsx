@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, X } from "lucide-react";
 
-import { type UsersFormData, usersSchema } from "../users-schema";
+import { type UserFormData, userSchema } from "../user-schema";
 import { useCreateUser, useUpdateUser, useUser } from "../use-users";
 import { getSubmitLabel } from "@/lib/form-utils";
 
@@ -28,7 +28,7 @@ const permissionsOptions = [
   { value: "DELETE_USER", label: "Excluir usuário" }
 ];
 
-const defaultValues: UsersFormData = {
+const defaultValues: UserFormData = {
   email: "",
   registration: "",
   name: "",
@@ -53,8 +53,8 @@ export function UserUpsertPanel({
   const isPending = isCreating || isUpdating;
   const submitLabel = getSubmitLabel(isPending, isEditMode);
 
-  const form = useForm<UsersFormData>({
-    resolver: zodResolver(usersSchema),
+  const form = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
     mode: "onChange",
     defaultValues
   });
@@ -76,7 +76,7 @@ export function UserUpsertPanel({
     }
   }, [isEditMode, user, form]);
 
-  const onSubmit = (data: UsersFormData) => {
+  const onSubmit = (data: UserFormData) => {
     if (isEditMode && userIdToEdit) {
       updateUser(
         { id: userIdToEdit, data },
