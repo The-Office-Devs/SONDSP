@@ -8,6 +8,7 @@ import { ActivateAccountPage } from '@/auth/activate-account/activate-account-pa
 import { UsersPage } from '@/users/users-page/users-page';
 import { SchoolsPage } from '@/schools/schools-page/schools-page';
 import { ClassesPage } from '@/classes/classes-page/classes-page';
+import { StudentsPage } from '@/students/students-page/students.page';
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
           { path: 'usuarios', element: <UsersPage /> },
           { path: 'escolas', element: <SchoolsPage /> },
           { path: 'turmas', element: <ClassesPage /> },
+          { path: 'alunos', element: <StudentsPage /> },
         ]
       }
     ],

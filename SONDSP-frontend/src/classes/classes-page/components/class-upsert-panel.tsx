@@ -5,13 +5,13 @@ import { Check, X } from "lucide-react";
 
 import { classSchema, type ClassFormData, type ClassFormInput } from "../class.schema";
 import { useClass, useCreateClass, useUpdateClass } from "../use-classes";
+import { useSchools } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 
 import { Card } from "@/components/ui/card";
 import { TextField } from "@/components/HookForm/fields/TextField";
 import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
-import { useSchools } from "@/schools/schools-page/use-schools";
 
 const defaultValues: ClassFormInput = {
   schoolId: 0,

@@ -18,11 +18,11 @@ import {
 import type { ClassFilter } from "../classes.types";
 import type { ClassFormData } from "./class.schema";
 
-const CLASS_QUERY_KEY = ['classes'] as const;
+const CLASSES_QUERY_KEY = ['classes'] as const;
 
 export function useClasses(filter?: ClassFilter) {
   return useQuery({
-    queryKey: [...CLASS_QUERY_KEY, filter],
+    queryKey: [...CLASSES_QUERY_KEY, filter],
     queryFn: () => listClassesService(filter),
     placeholderData: keepPreviousData,
   });
@@ -48,7 +48,7 @@ export function useCreateClass() {
       }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CLASS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: CLASSES_QUERY_KEY });
       toast.success('Turma cadastrada com sucesso!');
     },
 
@@ -72,7 +72,7 @@ export function useUpdateClass() {
       ),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CLASS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: CLASSES_QUERY_KEY });
       toast.success('Turma atualizada com sucesso!');
     },
 
@@ -89,7 +89,7 @@ export function useDeleteClass() {
       deleteClassService(id),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CLASS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: CLASSES_QUERY_KEY });
       toast.success('Turma excluída com sucesso!');
     },
 
