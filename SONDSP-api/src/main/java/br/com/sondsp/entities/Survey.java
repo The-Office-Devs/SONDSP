@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "atividade")
+@Table(name = "sondagem")
 public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

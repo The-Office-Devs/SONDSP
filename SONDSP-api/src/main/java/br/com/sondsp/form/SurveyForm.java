@@ -3,7 +3,6 @@ package br.com.sondsp.form;
 import org.springframework.web.multipart.MultipartFile;
 
 public record SurveyForm(
-        Integer administratorId,
         Integer studentId,
         String subject,
         String axis,

@@ -47,9 +47,8 @@ public class SurveyService {
     @Autowired
     private SpecificationFilter specificationFilter;
 
-    public Survey createSurvey(SurveyForm form){
+    public Survey createSurvey(SurveyForm form, User administrator) {
         Survey survey = new Survey(form);
-        User administrator = findUserById(form.administratorId());
         Student student = findStudentById(form.studentId());
         Activity activity = findActivityById(form.activityId());
 
