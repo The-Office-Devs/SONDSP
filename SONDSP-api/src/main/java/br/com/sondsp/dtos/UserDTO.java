@@ -27,8 +27,10 @@ public record UserDTO(
                 user.getPermissions() != null ?
                         user.getPermissions().stream().map(Permission::getPermission).toList() : List.of(),
                 user.getStatus(),
-                user.getSchools().stream().map(School::getName).toList(),
-                user.getSchoolClasses().stream().map(SchoolClass::getName).toList()
+                user.getSchools() != null ?
+                        user.getSchools().stream().map(s -> s.getSchool().getName()).toList() : List.of(),
+                user.getSchoolClasses() != null ?
+                        user.getSchoolClasses().stream().map(sc -> sc.getSchoolClass().getName()).toList() : List.of()
         );
     }
 }

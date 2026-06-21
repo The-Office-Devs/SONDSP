@@ -1,9 +1,7 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.entities.Role;
 import br.com.sondsp.entities.School;
 import br.com.sondsp.entities.SchoolClass;
-import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import br.com.sondsp.repositories.SchoolClassRepository;
@@ -27,9 +25,14 @@ public class SchoolClassService {
     private SchoolService schoolService;
 
     public SchoolClass createSchoolClass(SchoolClassForm form) {
+        School school = schoolService.getSchool(form.schoolId());
 
-        //form, schoolService.getSchool(form.schoolId())
-        return repository.save(new SchoolClass());
+        return repository.save(SchoolClass.builder()
+                .name(form.name())
+                .schoolYear(form.schoolYear())
+                .school(school)
+                .status(true)
+                .build());
     }
 
     public SchoolClass getSchoolClass(Integer id) {
@@ -42,15 +45,20 @@ public class SchoolClassService {
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
+        SchoolClass schoolClass = getSchoolClass(id);
 
-        //SchoolClass.updateSchoolClassWithForm(getSchoolClass(id), form)
-        return repository.save(new SchoolClass());
+        schoolClass.setName(form.name());
+        schoolClass.setSchoolYear(form.schoolYear());
+
+        return repository.save(schoolClass);
     }
 
-    public void deleteSchoolClass(Integer id) {
+    public Boolean changeStatus(Integer id) {
         SchoolClass schoolClass = getSchoolClass(id);
-        schoolClass.setStatus(false);
+        schoolClass.setStatus(!schoolClass.getStatus());
         repository.save(schoolClass);
+
+        return schoolClass.getStatus();
     }
 
     private Specification<SchoolClass> buildFilter(SchoolClassFilter filter) {
@@ -73,6 +81,12 @@ public class SchoolClassService {
 
                 predicates.add(combinedSearchPredicate);
             } else {
+                if (filter.schoolId() != null) {
+                    Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
+
+                    predicates.add(criteriaBuilder.equal(schoolJoin.get("id"), filter.schoolId()));
+                }
+
                 if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
                     Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 
@@ -89,6 +103,9 @@ public class SchoolClassService {
                     predicates.add(criteriaBuilder.equal(root.get("schoolYear"), filter.schoolYear()));
                 }
             }
+
+            if (filter.status() != null)
+                predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };

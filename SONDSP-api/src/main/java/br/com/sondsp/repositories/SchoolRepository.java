@@ -8,5 +8,4 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 
 public interface SchoolRepository extends JpaRepository<School, Integer>, JpaSpecificationExecutor<School> {
-    List<School> getByNameContaining(String name);
 }

@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_ACTIVATED;
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_DEACTIVATED;
+
 @RestController
 @RequestMapping("/schoolClass")
 public class SchoolClassControllerImpl implements SchoolClassController{
@@ -35,9 +38,11 @@ public class SchoolClassControllerImpl implements SchoolClassController{
         return ResponseEntity.ok().body(new SchoolClassDTO(service.updateSchoolClass(id, form)));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteSchoolClass(@RequestParam Integer id) {
-        service.deleteSchoolClass(id);
-        return ResponseEntity.ok("Turma desativada com sucesso.");
+    @PatchMapping("/{id}/changeStatus")
+    public ResponseEntity<?> changeStatus(@RequestParam Integer id) {
+        if (service.changeStatus(id))
+            return ResponseEntity.ok(SCHOOL_CLASS_ACTIVATED);
+
+        return ResponseEntity.ok(SCHOOL_CLASS_DEACTIVATED);
     }
 }

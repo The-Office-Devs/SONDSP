@@ -2,20 +2,18 @@ package br.com.sondsp.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Embeddable
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class UserSchoolClassId {
     @Column(name = "id_usuario")
-    private Long userId;
+    private Integer userId;
 
     @Column(name = "id_escola")
-    private Long schoolClassId;
+    private Integer schoolClassId;
 }

@@ -9,10 +9,12 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "usuario_x_turma")
 public class UserSchoolClass {
+    @Builder.Default
     @EmbeddedId
-    private UserSchoolClassId id;
+    private UserSchoolClassId id = new UserSchoolClassId();
 
     @ManyToOne
     @MapsId("userId")

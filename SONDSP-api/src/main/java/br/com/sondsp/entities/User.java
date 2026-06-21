@@ -50,21 +50,11 @@ public class User implements UserDetails {
     )
     private Set<Permission> permissions;
 
-    @ManyToMany
-    @JoinTable(
-            name = "usuario_x_escola",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_escola")
-    )
-    private Set<School> schools;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserSchool> schools;
 
-    @ManyToMany
-    @JoinTable(
-            name = "usuario_x_turma",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_turma")
-    )
-    private Set<SchoolClass> schoolClasses;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserSchoolClass> schoolClasses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

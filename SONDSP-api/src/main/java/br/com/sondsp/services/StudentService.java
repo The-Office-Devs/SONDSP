@@ -1,6 +1,5 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.entities.Role;
 import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.entities.Student;
 import br.com.sondsp.entities.User;
@@ -11,22 +10,30 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static br.com.sondsp.util.SystemMessages.STUDENT_NOT_FOUND;
 
-@Controller
+@Service
+@AllArgsConstructor
 public class StudentService {
     private StudentRepository repository;
     private SchoolClassService schoolClassService;
 
     public Student createStudent(StudentForm form) {
-        // form
-        return repository.save(new Student());
+        return repository.save(Student.builder()
+                .name(form.name())
+                .registration(form.registration())
+                .schoolClass(form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null)
+                .rowNumber(form.rowNumber())
+                .status(true)
+                .build());
     }
 
     public List<Student> createStudents(List<StudentForm> forms) {
@@ -44,15 +51,24 @@ public class StudentService {
 
     public Student updateStudent(Integer id, StudentForm form) {
         Student student = getStudent(id);
-        SchoolClass schoolClass = schoolClassService.getSchoolClass(form.schoolClassId());
-        //Student.updateStudentWithForm(form, student, schoolClass)
+
+        student.setName(form.name());
+        student.setRegistration(form.registration());
+        student.setRowNumber(form.rowNumber());
+
+        if (!Objects.equals(student.getSchoolClass().getId(), form.schoolClassId())) {
+            student.setSchoolClass(schoolClassService.getSchoolClass(form.schoolClassId()));
+        }
+
         return repository.save(new Student());
     }
 
-    public void deleteStudent(Integer id) {
+    public Boolean changeStatus(Integer id) {
         Student student = getStudent(id);
-        student.setStatus(false);
+        student.setStatus(!student.getStatus());
         repository.save(student);
+
+        return student.getStatus();
     }
 
     private Specification<Student> buildFilter(StudentFilter filter) {
@@ -83,6 +99,11 @@ public class StudentService {
                 if (filter.registration() != null && !filter.registration().isBlank()) {
                     predicates.add(criteriaBuilder.like(criteriaBuilder
                             .lower(root.get("registration")), "%" + filter.registration().toLowerCase() + "%"));
+                }
+
+                if (filter.schoolClassId() != null) {
+                    Join<User, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
+                    predicates.add(criteriaBuilder.equal(schoolClassJoin.get("id"), filter.schoolClassId()));
                 }
 
                 if (filter.schoolClassName() != null && !filter.schoolClassName().isBlank()) {

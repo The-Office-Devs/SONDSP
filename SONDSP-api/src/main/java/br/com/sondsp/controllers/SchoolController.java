@@ -83,10 +83,10 @@ public interface SchoolController {
     })
     ResponseEntity<?> updateSchool(Integer id, SchoolForm form);
 
-    @Operation(description = "Desativa a escola com o id passado.", responses = {
+    @Operation(description = "Desativa/ativa a escola com o id passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Escola removida com sucesso.",
+                    description = "Escola desativada/ativada com sucesso.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = SchoolDTO.class)
@@ -101,5 +101,5 @@ public interface SchoolController {
                     )
             )
     })
-    ResponseEntity<?> deleteSchool(Integer id);
+    ResponseEntity<?> changeStatus(Integer id);
 }

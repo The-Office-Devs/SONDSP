@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static br.com.sondsp.util.SystemMessages.SCHOOL_ACTIVATED;
+import static br.com.sondsp.util.SystemMessages.SCHOOL_DEACTIVATED;
+
 @RestController
 @RequestMapping("/school")
 public class SchoolControllerImpl implements SchoolController {
@@ -35,9 +38,11 @@ public class SchoolControllerImpl implements SchoolController {
         return ResponseEntity.ok().body(new SchoolDTO(service.updateSchool(id, form)));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteSchool(@PathVariable Integer id) {
-        service.deleteSchool(id);
-        return ResponseEntity.ok("Escola removida com sucesso.");
+    @PatchMapping("/{id}/changeStatus")
+    public ResponseEntity<?> changeStatus(@PathVariable Integer id) {
+        if (service.changeStatus(id))
+            return ResponseEntity.ok(SCHOOL_ACTIVATED);
+
+        return ResponseEntity.ok(SCHOOL_DEACTIVATED);
     }
 }

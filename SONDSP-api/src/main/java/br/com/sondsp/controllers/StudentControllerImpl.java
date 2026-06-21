@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static br.com.sondsp.util.SystemMessages.*;
+
 @RestController
 @RequestMapping("/student")
 public class StudentControllerImpl implements StudentController {
@@ -41,9 +43,11 @@ public class StudentControllerImpl implements StudentController {
         return ResponseEntity.ok().body(new StudentDTO(service.updateStudent(id, form)));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStudent(@RequestParam Integer id) {
-        service.deleteStudent(id);
-        return ResponseEntity.ok("Aluno desativado com sucesso.");
+    @PatchMapping("/{id}/changeStatus")
+    public ResponseEntity<?> changeStatus(@RequestParam Integer id) {
+        if (service.changeStatus(id))
+            return ResponseEntity.ok(STUDENT_ACTIVATED);
+
+        return ResponseEntity.ok(STUDENT_DEACTIVATED);
     }
 }

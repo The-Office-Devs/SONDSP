@@ -79,11 +79,10 @@ public interface SchoolClassController {
     })
     ResponseEntity<?> updateSchoolClass(Integer id, SchoolClassForm form);
 
-
-    @Operation(description = "Remove a turma com base no id.", responses = {
+    @Operation(description = "Ativa/desativa a turma com base no id.", responses = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Turma removida com sucesso.",
+                    description = "Turma ativada/desativada com sucesso.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = SchoolClassDTO.class)
@@ -98,5 +97,5 @@ public interface SchoolClassController {
                     )
             )
     })
-    ResponseEntity<?> deleteSchoolClass(Integer id);
+    ResponseEntity<?> changeStatus(Integer id);
 }

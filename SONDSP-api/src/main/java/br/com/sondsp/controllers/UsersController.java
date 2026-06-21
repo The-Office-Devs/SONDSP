@@ -1,9 +1,12 @@
 package br.com.sondsp.controllers;
 
+import br.com.sondsp.dtos.RegisterDTO;
 import br.com.sondsp.dtos.StandardErrorDTO;
 import br.com.sondsp.dtos.UserDTO;
 import br.com.sondsp.dtos.UsersListDTO;
 import br.com.sondsp.filters.UserFilter;
+import br.com.sondsp.form.LinkSchoolClassForm;
+import br.com.sondsp.form.LinkSchoolForm;
 import br.com.sondsp.form.RegisterForm;
 import br.com.sondsp.form.UserForm;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +23,7 @@ public interface UsersController {
                     description = "Usuário registrado com sucesso.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = UserDTO.class)
+                            schema = @Schema(implementation = RegisterDTO.class)
                     )
             )
     })
@@ -91,7 +94,7 @@ public interface UsersController {
                     )
             )
     })
-    ResponseEntity<?> linkToSchoolClass(Integer id, Integer schoolClassId);
+    ResponseEntity<?> linkToSchoolClass(Integer id, LinkSchoolClassForm form);
 
     @Operation(description = "Vincula/desvincula um usuário a uma escola.", responses = {
             @ApiResponse(
@@ -111,7 +114,7 @@ public interface UsersController {
                     )
             )
     })
-    ResponseEntity<?> linkToSchool(Integer id, Integer schoolId);
+    ResponseEntity<?> linkToSchool(Integer id, LinkSchoolForm form);
 
     @Operation(description = "Desativa ou ativa o usuário com o ID passado.", responses = {
             @ApiResponse(
@@ -119,7 +122,7 @@ public interface UsersController {
                     description = "Usuário desativado/ativado com sucesso",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = UserDTO.class)
+                            schema = @Schema(implementation = String.class)
                     )
             ),
             @ApiResponse(

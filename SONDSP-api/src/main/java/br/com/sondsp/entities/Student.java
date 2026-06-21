@@ -1,6 +1,5 @@
 package br.com.sondsp.entities;
 
-import br.com.sondsp.form.StudentForm;
 import jakarta.persistence.*;
 import lombok.*;
 

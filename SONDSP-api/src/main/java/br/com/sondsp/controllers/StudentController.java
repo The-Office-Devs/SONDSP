@@ -93,10 +93,10 @@ public interface StudentController {
     })
     ResponseEntity<?> updateStudent(Integer id, StudentForm form);
 
-    @Operation(description = "Desativa o aluno com o id passado.", responses = {
+    @Operation(description = "Desativa/ativa o aluno com o id passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Aluno desativado com sucesso.",
+                    description = "Aluno desativado/ativado com sucesso.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = StudentDTO.class)
@@ -111,5 +111,5 @@ public interface StudentController {
                     )
             )
     })
-    ResponseEntity<?> deleteStudent(Integer id);
+    ResponseEntity<?> changeStatus(Integer id);
 }

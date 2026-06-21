@@ -1,8 +1,11 @@
 package br.com.sondsp.controllers;
 
+import br.com.sondsp.dtos.RegisterDTO;
 import br.com.sondsp.dtos.UserDTO;
 import br.com.sondsp.dtos.UsersListDTO;
 import br.com.sondsp.filters.UserFilter;
+import br.com.sondsp.form.LinkSchoolClassForm;
+import br.com.sondsp.form.LinkSchoolForm;
 import br.com.sondsp.form.RegisterForm;
 import br.com.sondsp.form.UserForm;
 import br.com.sondsp.services.UsersService;
@@ -21,7 +24,7 @@ public class UsersControllerImpl implements UsersController {
 
     @PostMapping()
     public ResponseEntity<?> register(@Valid @RequestBody RegisterForm form) {
-        return ResponseEntity.ok().body(new UserDTO(service.registerUser(form)));
+        return ResponseEntity.ok().body(new RegisterDTO(service.registerUser(form)));
     }
 
     @GetMapping("/{id}")
@@ -39,17 +42,17 @@ public class UsersControllerImpl implements UsersController {
         return ResponseEntity.ok().body(new UserDTO(service.updateUser(id, user)));
     }
 
-    @PatchMapping("/{id}/linkToSchoolClass/{schoolClassId}")
-    public ResponseEntity<?> linkToSchoolClass(@PathVariable Integer id, @PathVariable Integer schoolClassId) {
-        if (service.linkToSchoolClass(id, schoolClassId))
+    @PatchMapping("/{id}/linkSchoolClass")
+    public ResponseEntity<?> linkToSchoolClass(@PathVariable Integer id, @Valid @RequestBody LinkSchoolClassForm form) {
+        if (service.linkToSchoolClass(id, form))
             return ResponseEntity.ok().body(USER_LINKED_TO_SCHOOL_CLASS);
 
         return ResponseEntity.ok().body(USER_UNLINKED_TO_SCHOOL_CLASS);
     }
 
-    @PatchMapping("/{id}/linkToSchool/{schoolId}")
-    public ResponseEntity<?> linkToSchool(@PathVariable Integer id, @PathVariable Integer schoolId) {
-        if (service.linkToSchool(id, schoolId))
+    @PatchMapping("/{id}/linkSchool")
+    public ResponseEntity<?> linkToSchool(@PathVariable Integer id, @Valid @RequestBody LinkSchoolForm form) {
+        if (service.linkToSchool(id, form))
             return ResponseEntity.ok().body(USER_LINKED_TO_SCHOOL);
 
         return ResponseEntity.ok().body(USER_UNLINKED_TO_SCHOOL);
@@ -58,8 +61,8 @@ public class UsersControllerImpl implements UsersController {
     @PatchMapping("/{id}/changeStatus")
     public ResponseEntity<?> changeStatus(@PathVariable Integer id) {
         if (service.changeStatus(id))
-            return ResponseEntity.ok().body(USER_ACTIVATED);
+            return ResponseEntity.ok(USER_ACTIVATED);
 
-        return ResponseEntity.ok().body(USER_DEACTIVATED);
+        return ResponseEntity.ok(USER_DEACTIVATED);
     }
 }

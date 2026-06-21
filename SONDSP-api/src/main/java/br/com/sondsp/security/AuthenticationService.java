@@ -85,6 +85,9 @@ public class AuthenticationService implements UserDetailsService {
         if (user == null) throw new EntityNotFoundException(EMAIL_OR_REGISTRATION_NOT_FOUND);
 
         if (!user.getStatus()){
+            if (user.getPassword() != null)
+                throw new ValidationException(INACTIVATED_USER);
+
             user.setPassword(encodePassword(form.password()));
             user.setStatus(true);
             return usersService.save(user);
