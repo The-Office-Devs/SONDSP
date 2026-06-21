@@ -12,24 +12,37 @@ import br.com.sondsp.repositories.SurveyRepository;
 import br.com.sondsp.repositories.UsersRepository;
 import br.com.sondsp.util.SpecificationFilter;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import static br.com.sondsp.util.SystemMessages.*;
 
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SurveyService {
 
-    private SurveyRepository surveyRepository;
-    private UsersRepository usersRepository;
-    private StudentRepository studentRepository;
-    private ActivityRepository activityRepository;
+    private final SurveyRepository surveyRepository;
+    private final UsersRepository usersRepository;
+    private final StudentRepository studentRepository;
+    private final ActivityRepository activityRepository;
+
+    @Value("${upload-dir:/sondsp/sondagens}")
+    private String uploadDir;
 
     @Autowired
     private SpecificationFilter specificationFilter;
@@ -43,6 +56,11 @@ public class SurveyService {
         survey.setAdministrator(administrator);
         survey.setStudent(student);
         survey.setActivity(activity);
+
+        if (form.image() != null && !form.image().isEmpty()) {
+            String savedImagePath = storeImageLocal(form.image());
+            survey.setSurveyImagePath(savedImagePath);
+        }
 
         return surveyRepository.save(survey);
     }
@@ -99,5 +117,24 @@ public class SurveyService {
 
         Specification<Survey> spec = specificationFilter.buildFilter(filter, columnsConfig);
         return surveyRepository.findAll(spec);
+    }
+
+    private String storeImageLocal(MultipartFile file) {
+        try {
+            Path uploadPath = Paths.get(this.uploadDir).toAbsolutePath().normalize();
+            Files.createDirectories(uploadPath);
+
+            String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+            String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
+
+            Path targetLocation = uploadPath.resolve(uniqueFileName);
+
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            return targetLocation.toString();
+
+        } catch (IOException ex) {
+            throw new RuntimeException("Não foi possível salvar o arquivo de imagem. Tente novamente!", ex);
+        }
     }
 }

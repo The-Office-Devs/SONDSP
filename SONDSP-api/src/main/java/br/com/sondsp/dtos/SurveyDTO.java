@@ -27,7 +27,7 @@ public record SurveyDTO(
                 survey.getAxis(),
                 survey.getResult(),
                 survey.getObservations(),
-                survey.getSurveyImage(),
+                survey.getSurveyImagePath(),
                 survey.getIsDigital(),
                 survey.getActivity(),
                 survey.getStatus()

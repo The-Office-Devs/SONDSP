@@ -50,15 +50,13 @@ public class Survey {
     @Column(name = "status")
     private Boolean status;
 
-    public Survey(SurveyForm form){
-        Survey.builder()
-                .subject(form.subject())
-                .axis(form.axios())
-                .result(form.result())
-                .observations(form.observations())
-                .surveyImagePath(form.surveyImage())
-                .isDigital(form.isDigital())
-                .build();
+    public Survey(SurveyForm form) {
+        this.subject = form.subject();
+        this.axis = form.axis();
+        this.result = form.result();
+        this.observations = form.observations();
+        this.isDigital = form.isDigital();
+        this.status = true;
     }
 
     public static Survey buildUpdatedSurvey(SurveyForm form, User administrator, Student student, Activity activity){
@@ -66,10 +64,9 @@ public class Survey {
                 .administrator(administrator)
                 .student(student)
                 .subject(form.subject())
-                .axis(form.axios())
+                .axis(form.axis())
                 .result(form.result())
                 .observations(form.observations())
-                .surveyImagePath(form.surveyImage())
                 .isDigital(form.isDigital())
                 .activity(activity)
                 .build();

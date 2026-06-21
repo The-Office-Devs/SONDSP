@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +21,8 @@ public class SurveyController {
     @Autowired
     private SurveyService surveyService;
 
-    @PostMapping()
-    @Operation(description = "Cria uma nova atividade.", responses = {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(description = "Cria uma nova sondagem.", responses = {
             @ApiResponse(
                     responseCode = "200",
                     description = "Sondagem criada com sucesso",
@@ -31,7 +32,7 @@ public class SurveyController {
                     )
             )
     })
-    public ResponseEntity<?> createSurvey(@RequestBody SurveyForm form) {
+    public ResponseEntity<?> createSurvey(@ModelAttribute SurveyForm form) {
         return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form)));
     }
 
@@ -53,7 +54,7 @@ public class SurveyController {
     }
 
     @PutMapping("/{id}")
-    @Operation(description = "Atualiza a atividade com o id passado.", responses = {
+    @Operation(description = "Atualiza a sondagem com o id passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
                     description = "Sondagem atualizada com sucesso",
