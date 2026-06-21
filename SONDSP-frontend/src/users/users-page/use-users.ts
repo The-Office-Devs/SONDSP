@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import type { AxiosError } from "axios";
 
 import { handleApiError } from "@/lib/utils";
+import { useAuthStore } from "@/auth/auth.store";
+import { UserRole } from "@/auth/auth.types";
 import { 
   createUserService, 
   deleteUserService, 
@@ -16,7 +18,7 @@ import {
   updateUserService
 } from "../users.service";
 import type { UserFilter } from "../users.types";
-import type { UsersFormData } from "./users-schema";
+import type { UserFormData } from "./user-schema";
 
 const USERS_QUERY_KEY = ['users'] as const;
 
@@ -40,7 +42,7 @@ export function useCreateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UsersFormData) => 
+    mutationFn: (data: UserFormData) => 
       createUserService({
         email: data.email,
         registration: data.registration,
@@ -61,9 +63,11 @@ export function useCreateUser() {
 
 export function useUpdateUser() {
   const queryClient = useQueryClient();
+  const currentUser = useAuthStore((state) => state.user);
+  const updateCurrentUser = useAuthStore((state) => state.updateUser);
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UsersFormData }) =>
+    mutationFn: ({ id, data }: { id: number; data: UserFormData }) =>
       updateUserService(
         id, 
         {
@@ -75,8 +79,23 @@ export function useUpdateUser() {
         }
       ),
 
-    onSuccess: () => {
+    onSuccess: (updatedUser) => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+
+      if (
+        currentUser &&
+        (currentUser.email === updatedUser.email ||
+          (currentUser.registration && currentUser.registration === updatedUser.registration))
+      ) {
+        updateCurrentUser({
+          name: updatedUser.name,
+          registration: updatedUser.registration,
+          email: updatedUser.email,
+          role: updatedUser.role as UserRole,
+          permissions: updatedUser.permissions,
+        });
+      }
+
       toast.success('Usuário atualizado com sucesso!');
     },
 

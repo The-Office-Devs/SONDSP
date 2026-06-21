@@ -13,6 +13,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import br.com.sondsp.entities.Permission;
+import java.util.List;
+
 @Slf4j
 @Service
 public class TokenService {

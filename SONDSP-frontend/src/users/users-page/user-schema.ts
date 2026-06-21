@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 
-export const usersSchema = z.object({
+export const userSchema = z.object({
   email: z
     .email("Digite um e-mail válido"),
   registration: z
@@ -19,4 +19,4 @@ export const usersSchema = z.object({
     .min(1, 'Selecione ao menos uma permissão')
 });
 
-export type UsersFormData = z.infer<typeof usersSchema>;
+export type UserFormData = z.infer<typeof userSchema>;

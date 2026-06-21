@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import br.com.sondsp.entities.User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import javax.security.auth.login.LoginException;
 
 @RestController
@@ -22,6 +25,11 @@ public class AuthenticationControllerImpl implements AuthenticationController{
 
     @Autowired
     private UsersService usersService;
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getAuthenticatedUser(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(new UserDTO(user));
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthenticationForm form) throws LoginException {

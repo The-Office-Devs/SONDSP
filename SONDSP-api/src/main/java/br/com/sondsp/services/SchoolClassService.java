@@ -90,6 +90,9 @@ public class SchoolClassService {
                 }
             }
 
+            if (filter.status() != null)
+                predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }

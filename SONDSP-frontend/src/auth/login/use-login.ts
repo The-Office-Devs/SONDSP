@@ -18,13 +18,7 @@ export function useLogin() {
       loginService({ login: data.login, password: data.password }),
 
     onSuccess: (response) => {
-      login(response.token, {
-        name: response.name,
-        registration: response.registration,
-        role: response.role as UserRole,
-        permissions: response.permissions
-      });
-
+      login(response.token);
       navigate('/gerenciamento/usuarios');
     },
 

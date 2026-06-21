@@ -42,7 +42,7 @@ public class User implements UserDetails {
     @Column(name = "senha")
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "permissao_x_usuario",
             joinColumns = @JoinColumn(name = "id_usuario"),
@@ -50,7 +50,7 @@ public class User implements UserDetails {
     )
     private Set<Permission> permissions;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_x_escola",
             joinColumns = @JoinColumn(name = "id_usuario"),
@@ -58,7 +58,7 @@ public class User implements UserDetails {
     )
     private Set<School> schools;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_x_turma",
             joinColumns = @JoinColumn(name = "id_usuario"),

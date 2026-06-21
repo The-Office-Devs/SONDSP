@@ -1,9 +1,10 @@
-import type { ReactNode } from "react"
+import type { ComponentProps, ReactNode } from "react"
 import type { FieldPath, FieldValues } from "react-hook-form"
 
 export type Ui = 'desktop' | 'mobile';
 
-export interface BaseFieldProps<T extends FieldValues> {
+export interface BaseFieldProps<T extends FieldValues>
+  extends Omit<ComponentProps<"input">, "name" | "type" | "prefix"> {
   name: FieldPath<T>
   label: string
   id?: string
