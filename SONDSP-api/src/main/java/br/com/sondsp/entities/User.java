@@ -1,7 +1,5 @@
 package br.com.sondsp.entities;
 
-import br.com.sondsp.form.RegisterForm;
-import br.com.sondsp.form.UserForm;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,7 +7,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -67,37 +64,12 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_turma")
     )
-    private Set<SchoolClass> schoolsClasses;
-
-    public static User buildUserWithRegisterForm(RegisterForm form, Role role, Set<Permission> permissions) {
-        return User.builder()
-                .name(form.name())
-                .registration(form.registration())
-                .role(role)
-                .email(form.email())
-                .permissions(permissions)
-                .status(false)
-                .password(null)
-                .build();
-    }
+    private Set<SchoolClass> schoolClasses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String roleName = "ROLE_" + this.role.getName().toUpperCase();
         return List.of(new SimpleGrantedAuthority(roleName));
-    }
-
-    public static User updateUserWithUserForm(User user, UserForm form) {
-        return User
-                .builder()
-                .id(user.getId())
-                .registration(form.registration())
-                .email(form.email())
-                .name(form.name())
-                .password(user.getPassword())
-                .role(user.getRole())
-                .permissions(user.getPermissions())
-                .build();
     }
 
     @Override

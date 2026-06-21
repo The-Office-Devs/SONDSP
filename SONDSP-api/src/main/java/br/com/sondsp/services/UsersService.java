@@ -1,15 +1,12 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.entities.Permission;
 import br.com.sondsp.entities.Role;
-import br.com.sondsp.entities.School;
 import br.com.sondsp.entities.User;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.UserFilter;
 import br.com.sondsp.form.*;
 import br.com.sondsp.repositories.PermissionsRepository;
 import br.com.sondsp.repositories.RolesRepository;
-import br.com.sondsp.repositories.SchoolRepository;
 import br.com.sondsp.repositories.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
@@ -24,27 +21,34 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static br.com.sondsp.util.SystemMessages.*;
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 @AllArgsConstructor
-public class UsersService {
+public class         UsersService {
     private UsersRepository repository;
     private final RolesRepository rolesRepository;
     private final PermissionsRepository permissionsRepository;
 
     public User registerUser(RegisterForm form) {
-        User verifiyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
+        User verifyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
 
-        if (verifiyUser != null) {
-            if (Objects.equals(verifiyUser.getEmail(), form.email()))
+        if (verifyUser != null) {
+            if (Objects.equals(verifyUser.getEmail(), form.email()))
                 throw new UserAlreadyExistsException(EMAIL_ALREADY_EXISTS);
 
-            if (Objects.equals(verifiyUser.getRegistration(), form.registration()))
+            if (Objects.equals(verifyUser.getRegistration(), form.registration()))
                 throw new UserAlreadyExistsException(REGISTRATION_ALREADY_EXISTS);
         }
 
-        return save(User.buildUserWithRegisterForm(form, getRole(form.role()), getUserPermissions(form.permissions())));
+        return save(User.builder()
+                .name(form.name())
+                .registration(form.registration())
+                .role(rolesRepository.getRoleByName(form.role()))
+                .status(false)
+                .email(form.email())
+                .password(null)
+                .permissions(permissionsRepository.findAllByPermissionIn(form.permissions()))
+                .build());
     }
 
     public User getUser(Integer id) {
@@ -69,12 +73,18 @@ public class UsersService {
         return repository.save(user);
     }
 
-    public User updateUser(Integer id, UserForm userForm) {
+    public User updateUser(Integer id, UserForm form) {
         User user = getUser(id);
 
-        validadeUser(userForm, user);
+        user.setName(form.name());
+        user.setRegistration(form.registration());
+        user.setRole(rolesRepository.getRoleByName(form.role()));
+        user.setEmail(form.email());
+        user.setPermissions(permissionsRepository.findAllByPermissionIn(form.permissions()));
 
-        return repository.save(User.updateUserWithUserForm(getUser(id), userForm));
+        validadeUser(form, user);
+
+        return repository.save(user);
     }
 
     public User changePassword(ChangePasswordForm form){
@@ -154,14 +164,6 @@ public class UsersService {
     private void validadeUser(UserForm userForm, User user) {
         if (!Objects.equals(user.getEmail(), userForm.email()) && repository.existsByEmail(userForm.email()))
             throw new ValidationException(EMAIL_ALREADY_EXISTS);
-    }
-
-    public Set<Permission> getUserPermissions(List<String> permissions){
-        return permissionsRepository.findAllByPermissionIn(permissions);
-    }
-
-    private Role getRole(String role){
-        return rolesRepository.getRoleByName(role);
     }
 
     public String encodePassword(String password){

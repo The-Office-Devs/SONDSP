@@ -1,29 +1,20 @@
 package br.com.sondsp.controllers;
 
-import br.com.sondsp.dtos.SchoolDTO;
 import br.com.sondsp.dtos.StandardErrorDTO;
 import br.com.sondsp.dtos.StudentDTO;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
-import br.com.sondsp.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/student")
-public class StudentController {
-    @Autowired
-    private StudentService service;
-
-    @PostMapping()
+public interface StudentController {
     @Operation(description = "Cria um novo aluno.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -34,11 +25,8 @@ public class StudentController {
                     )
             )
     })
-    public ResponseEntity<?> createStudent(@RequestBody StudentForm form) {
-        return ResponseEntity.ok().body(new StudentDTO(service.createStudent(form)));
-    }
+    ResponseEntity<?> createStudent(@RequestBody StudentForm form);
 
-    @PostMapping("/load")
     @Operation(description = "Cria alunos com base em um array.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -49,11 +37,8 @@ public class StudentController {
                     )
             )
     })
-    public ResponseEntity<?> createStudents(@RequestBody List<StudentForm> forms) {
-        return ResponseEntity.ok().body(service.createStudents(forms).stream().map(StudentDTO::new));
-    }
+    ResponseEntity<?> createStudents(@RequestBody List<StudentForm> forms);
 
-    @GetMapping("/{id}")
     @Operation(description = "Retorna o aluno com o id passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -72,11 +57,8 @@ public class StudentController {
                     )
             )
     })
-    public ResponseEntity<?> getStudent(@RequestParam Integer id) {
-        return ResponseEntity.ok().body(new StudentDTO(service.getStudent(id)));
-    }
+    ResponseEntity<?> getStudent(@RequestParam Integer id);
 
-    @GetMapping()
     @Operation(
             description = "Retorna uma lista dos alunos com base no filtro passado. Se nenhum filtro for passado, retorna todos os alunos.",
             responses = {
@@ -89,11 +71,8 @@ public class StudentController {
                             )
                     )
     })
-    public ResponseEntity<?> getStudents(@ModelAttribute StudentFilter filter) {
-        return ResponseEntity.ok().body(service.getStudents(filter).stream().map(StudentDTO::new));
-    }
+    ResponseEntity<?> getStudents(@ModelAttribute StudentFilter filter);
 
-    @PutMapping("/{id}")
     @Operation(description = "Atualiza o aluno com o id passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -112,11 +91,8 @@ public class StudentController {
                     )
             )
     })
-    public ResponseEntity<?> updateStudent(@RequestParam Integer id, @RequestBody StudentForm form) {
-        return ResponseEntity.ok().body(new StudentDTO(service.updateStudent(id, form)));
-    }
+    ResponseEntity<?> updateStudent(@RequestParam Integer id, @RequestBody StudentForm form);
 
-    @DeleteMapping("/{id}")
     @Operation(description = "Desativa o aluno com o id passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -135,8 +111,5 @@ public class StudentController {
                     )
             )
     })
-    public ResponseEntity<?> deleteStudent(@RequestParam Integer id) {
-        service.deleteStudent(id);
-        return ResponseEntity.ok("Aluno desativado com sucesso.");
-    }
+    ResponseEntity<?> deleteStudent(@RequestParam Integer id);
 }

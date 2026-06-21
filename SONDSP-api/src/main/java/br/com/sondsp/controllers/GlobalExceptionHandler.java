@@ -7,15 +7,11 @@ import jakarta.xml.bind.ValidationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.security.auth.login.LoginException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static br.com.sondsp.util.SystemMessages.UNEXPECTED_ERROR;
 

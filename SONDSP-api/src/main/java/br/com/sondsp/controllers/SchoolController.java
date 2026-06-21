@@ -17,13 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/school")
-public class SchoolController {
-    @Autowired
-    private SchoolService service;
-
-    @PostMapping()
+public interface SchoolController {
     @Operation(description = "Cria uma nova escola.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -34,11 +28,8 @@ public class SchoolController {
                     )
             )
     })
-    public ResponseEntity<?> createSchool(@Valid @RequestBody SchoolForm form) {
-        return ResponseEntity.ok().body(new SchoolDTO(service.createSchool(form)));
-    }
+    ResponseEntity<?> createSchool(@Valid @RequestBody SchoolForm form);
 
-    @GetMapping("/{id}")
     @Operation(description = "Retorna escola com base no id.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -57,11 +48,9 @@ public class SchoolController {
                     )
             )
     })
-    public ResponseEntity<?> getSchoolById(@PathVariable Integer id) {
-        return ResponseEntity.ok().body(new SchoolDTO(service.getSchool(id)));
-    }
+    ResponseEntity<?> getSchoolById(@PathVariable Integer id);
 
-    @GetMapping()
+
     @Operation(description = "Lista todas as escolas com base em um filtro passado. Caso o filtro não seja passado, irá retornar todas as escolas.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -72,11 +61,8 @@ public class SchoolController {
                     )
             )
     })
-    public ResponseEntity<?> getSchoolsByfilter(@ModelAttribute SchoolFilter filter) {
-        return ResponseEntity.ok().body(service.getSchools(filter).stream().map(SchoolDTO::new));
-    }
+    ResponseEntity<?> getSchoolsByfilter(@ModelAttribute SchoolFilter filter);
 
-    @PutMapping("/{id}")
     @Operation(description = "Atualiza uma escola com base no id.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -95,11 +81,8 @@ public class SchoolController {
                     )
             )
     })
-    public ResponseEntity<?> updateSchool(@PathVariable Integer id, @Valid @RequestBody SchoolForm form) {
-        return ResponseEntity.ok().body(new SchoolDTO(service.updateSchool(id, form)));
-    }
+    ResponseEntity<?> updateSchool(@PathVariable Integer id, @Valid @RequestBody SchoolForm form);
 
-    @DeleteMapping("/{id}")
     @Operation(description = "Desativa a escola com o id passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -118,8 +101,5 @@ public class SchoolController {
                     )
             )
     })
-    public ResponseEntity<?> deleteSchool(@PathVariable Integer id) {
-        service.deleteSchool(id);
-        return ResponseEntity.ok("Escola removida com sucesso.");
-    }
+    ResponseEntity<?> deleteSchool(@PathVariable Integer id);
 }

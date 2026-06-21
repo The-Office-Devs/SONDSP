@@ -1,6 +1,8 @@
 package br.com.sondsp.dtos;
 
 import br.com.sondsp.entities.Permission;
+import br.com.sondsp.entities.School;
+import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.entities.User;
 
 import java.util.List;
@@ -12,7 +14,9 @@ public record UserDTO(
         String email,
         String role,
         List<String> permissions,
-        Boolean status) {
+        Boolean status,
+        List<String> schools,
+        List<String> schoolClasses) {
     public UserDTO(User user) {
         this(
                 user.getId(),
@@ -22,7 +26,9 @@ public record UserDTO(
                 user.getRole() != null ? user.getRole().getName() : null,
                 user.getPermissions() != null ?
                         user.getPermissions().stream().map(Permission::getPermission).toList() : List.of(),
-                user.getStatus()
+                user.getStatus(),
+                user.getSchools().stream().map(School::getName).toList(),
+                user.getSchoolClasses().stream().map(SchoolClass::getName).toList()
         );
     }
 }

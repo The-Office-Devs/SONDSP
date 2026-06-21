@@ -4,24 +4,16 @@ import br.com.sondsp.dtos.SchoolClassDTO;
 import br.com.sondsp.dtos.StandardErrorDTO;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
-import br.com.sondsp.services.SchoolClassService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/schoolClass")
-public class SchoolClassController {
-    @Autowired
-    private SchoolClassService service;
-
-    @PostMapping()
+public interface SchoolClassController {
     @Operation(description = "Cria uma nova turma.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -32,11 +24,8 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> createSchoolClass(@Valid @RequestBody SchoolClassForm form) {
-        return ResponseEntity.ok().body(new SchoolClassDTO(service.createSchoolClass(form)));
-    }
+    ResponseEntity<?> createSchoolClass(@Valid @RequestBody SchoolClassForm form);
 
-    @GetMapping("/{id}")
     @Operation(description = "Busca a turma com base no id passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -55,11 +44,8 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> getSchoolClassById(@RequestParam Integer id) {
-        return ResponseEntity.ok().body(new SchoolClassDTO(service.getSchoolClass(id)));
-    }
+    ResponseEntity<?> getSchoolClassById(@RequestParam Integer id);
 
-    @GetMapping()
     @Operation(
             description = "Retorna todas as turmas com base em um filtro. Caso o filtro não seja passado, retorna todas as turmas.",
             responses = {
@@ -73,11 +59,8 @@ public class SchoolClassController {
                     )
             }
     )
-    public ResponseEntity<?> getSchoolsClassesByFilter(@ModelAttribute SchoolClassFilter filter) {
-        return ResponseEntity.ok().body(service.getSchoolsClasses(filter).stream().map(SchoolClassDTO::new));
-    }
+    ResponseEntity<?> getSchoolsClassesByFilter(@ModelAttribute SchoolClassFilter filter);
 
-    @PutMapping("/{id}")
     @Operation(description = "Atualiza a turma com base no id.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -96,11 +79,9 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> updateSchoolClass(@RequestParam Integer id, @RequestBody SchoolClassForm form) {
-        return ResponseEntity.ok().body(new SchoolClassDTO(service.updateSchoolClass(id, form)));
-    }
+    ResponseEntity<?> updateSchoolClass(@RequestParam Integer id, @RequestBody SchoolClassForm form);
 
-    @DeleteMapping("/{id}")
+
     @Operation(description = "Remove a turma com base no id.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -119,8 +100,5 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> deleteSchoolClass(@RequestParam Integer id) {
-        service.deleteSchoolClass(id);
-        return ResponseEntity.ok("Turma desativada com sucesso.");
-    }
+    ResponseEntity<?> deleteSchoolClass(@RequestParam Integer id);
 }

@@ -8,8 +8,7 @@ public record UsersListDTO(
         String registration,
         String email,
         String role,
-        Boolean status
-        ) {
+        Boolean status) {
     public UsersListDTO(User user) {
         this(
                 user.getId(),
