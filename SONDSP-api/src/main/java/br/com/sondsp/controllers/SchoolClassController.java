@@ -1,7 +1,9 @@
 package br.com.sondsp.controllers;
 
+import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.SchoolClassDTO;
 import br.com.sondsp.dtos.StandardErrorDTO;
+import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import br.com.sondsp.services.SchoolClassService;
@@ -12,8 +14,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/schoolClass")
@@ -61,20 +69,39 @@ public class SchoolClassController {
 
     @GetMapping()
     @Operation(
-            description = "Retorna todas as turmas com base em um filtro. Caso o filtro não seja passado, retorna todas as turmas.",
+            description = "Retorna as turmas paginadas com base em um filtro. É possível passar page, size e sort na URL.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Turmas retornadas com sucesso.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = SchoolClassForm.class))
+                                    schema = @Schema(implementation = PageResponse.class)
                             )
                     )
             }
     )
-    public ResponseEntity<?> getSchoolsClassesByFilter(@ModelAttribute SchoolClassFilter filter) {
-        return ResponseEntity.ok().body(service.getSchoolsClasses(filter).stream().map(SchoolClassDTO::new));
+    public ResponseEntity<PageResponse<SchoolClassDTO>> getSchoolsClassesByFilter(
+            @ModelAttribute SchoolClassFilter filter,
+            @PageableDefault(size = 5) Pageable pageable) {
+
+        Page<SchoolClass> schoolClassPage = service.getSchoolsClasses(filter, pageable);
+
+        List<SchoolClassDTO> contentDTO = schoolClassPage.getContent().stream()
+                .map(SchoolClassDTO::new)
+                .toList();
+
+        PageResponse<SchoolClassDTO> response = new PageResponse<>(
+                contentDTO,
+                schoolClassPage.getNumber(),
+                schoolClassPage.getSize(),
+                schoolClassPage.getTotalElements(),
+                schoolClassPage.getTotalPages(),
+                schoolClassPage.hasNext(),
+                schoolClassPage.hasPrevious()
+        );
+
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/{id}")

@@ -1,8 +1,9 @@
 package br.com.sondsp.controllers;
 
-import br.com.sondsp.dtos.SchoolDTO;
+import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.StandardErrorDTO;
 import br.com.sondsp.dtos.StudentDTO;
+import br.com.sondsp.entities.Student;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.services.StudentService;
@@ -12,6 +13,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,19 +82,38 @@ public class StudentController {
 
     @GetMapping()
     @Operation(
-            description = "Retorna uma lista dos alunos com base no filtro passado. Se nenhum filtro for passado, retorna todos os alunos.",
+            description = "Retorna uma lista dos alunos de forma paginada com base no filtro passado. É possível passar page, size e sort na URL.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Alunos retornados.",
+                            description = "Alunos retornados com sucesso.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = StudentDTO.class))
+                                    schema = @Schema(implementation = PageResponse.class)
                             )
                     )
-    })
-    public ResponseEntity<?> getStudents(@ModelAttribute StudentFilter filter) {
-        return ResponseEntity.ok().body(service.getStudents(filter).stream().map(StudentDTO::new));
+            })
+    public ResponseEntity<PageResponse<StudentDTO>> getStudents(
+            @ModelAttribute StudentFilter filter,
+            @PageableDefault(size = 5) Pageable pageable) {
+
+        Page<Student> studentPage = service.getStudents(filter, pageable);
+
+        List<StudentDTO> contentDTO = studentPage.getContent().stream()
+                .map(StudentDTO::new)
+                .toList();
+
+        PageResponse<StudentDTO> response = new PageResponse<>(
+                contentDTO,
+                studentPage.getNumber(),
+                studentPage.getSize(),
+                studentPage.getTotalElements(),
+                studentPage.getTotalPages(),
+                studentPage.hasNext(),
+                studentPage.hasPrevious()
+        );
+
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/{id}")
