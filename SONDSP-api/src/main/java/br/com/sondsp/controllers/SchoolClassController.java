@@ -55,7 +55,7 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> getSchoolClassById(@RequestParam Integer id) {
+    public ResponseEntity<?> getSchoolClassById(@PathVariable Integer id) {
         return ResponseEntity.ok().body(new SchoolClassDTO(service.getSchoolClass(id)));
     }
 
@@ -96,7 +96,7 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> updateSchoolClass(@RequestParam Integer id, @RequestBody SchoolClassForm form) {
+    public ResponseEntity<?> updateSchoolClass(@PathVariable Integer id, @RequestBody SchoolClassForm form) {
         return ResponseEntity.ok().body(new SchoolClassDTO(service.updateSchoolClass(id, form)));
     }
 
@@ -119,7 +119,7 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> deleteSchoolClass(@RequestParam Integer id) {
+    public ResponseEntity<?> deleteSchoolClass(@PathVariable Integer id) {
         service.deleteSchoolClass(id);
         return ResponseEntity.ok("Turma desativada com sucesso.");
     }
