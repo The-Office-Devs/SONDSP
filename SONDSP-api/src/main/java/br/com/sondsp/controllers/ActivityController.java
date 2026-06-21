@@ -7,7 +7,6 @@ import br.com.sondsp.filters.ActivityFilter;
 import br.com.sondsp.form.ActivityForm;
 import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.ActivityService;
-import br.com.sondsp.services.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,9 +25,6 @@ import java.util.Optional;
 public class ActivityController {
     @Autowired
     private ActivityService activityService;
-
-    @Autowired
-    private UsersService usersService;
 
     @Autowired
     private AuthenticationService authenticationService;

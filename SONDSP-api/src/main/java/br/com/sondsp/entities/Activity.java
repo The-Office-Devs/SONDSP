@@ -47,10 +47,9 @@ public class Activity {
 
     }
 
-    public static Activity builderUpdatedActivity(ActivityForm activityForm, Activity activity) {
+    public static Activity builderUpdatedActivity(ActivityForm activityForm, User creator) {
         return Activity.builder()
-                .id(activity.id)
-                .creator(activity.creator)
+                .creator(creator)
                 .name(activityForm.name())
                 .subject(activityForm.subject())
                 .axis(activityForm.axis())

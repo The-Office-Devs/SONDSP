@@ -1,5 +1,6 @@
 package br.com.sondsp.entities;
 
+import br.com.sondsp.form.SurveyForm;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +22,7 @@ public class Survey {
     private User administrator;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_estudante", referencedColumnName = "id")
+    @JoinColumn(name = "id_aluno", referencedColumnName = "id")
     private Student student;
 
     @Column(name = "materia")
@@ -45,4 +46,33 @@ public class Survey {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_atividade", referencedColumnName = "id")
     private Activity activity;
+
+    @Column(name = "status")
+    private Boolean status;
+
+    public Survey(SurveyForm form){
+        Survey.builder()
+                .subject(form.subject())
+                .axis(form.axios())
+                .result(form.result())
+                .observations(form.observations())
+                .surveyImage(form.surveyImage())
+                .isDigital(form.isDigital())
+                .build();
+    }
+
+    public static Survey buildUpdatedSurvey(SurveyForm form, User administrator, Student student, Activity activity){
+        return Survey.builder()
+                .administrator(administrator)
+                .student(student)
+                .subject(form.subject())
+                .axis(form.axios())
+                .result(form.result())
+                .observations(form.observations())
+                .surveyImage(form.surveyImage())
+                .isDigital(form.isDigital())
+                .activity(activity)
+                .build();
+
+    }
 }

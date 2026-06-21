@@ -41,6 +41,7 @@ public final class SystemMessages {
     public static final String SCHOOL_CLASS_NOT_FOUND = "A turma não foi encontrada.";
     public static final String STUDENT_NOT_FOUND = "O aluno não foi encontrado.";
     public static final String ACTIVITY_NOT_FOUND = "A atividade não foi encontrada.";
+    public static final String SURVEY_NOT_FOUND = "A sondagem não foi encontrada.";
 
     // Private constructor makes class not instantiable
     private SystemMessages() {}
