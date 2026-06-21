@@ -2,12 +2,6 @@ export interface School {
   id: number;
   name: string;
   principalName: string;
-}
-
-export interface SchoolRow {
-  id: number;
-  name: string;
-  principalName: string;
   status: boolean;
 }
 

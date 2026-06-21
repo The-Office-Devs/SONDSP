@@ -11,7 +11,8 @@ export function TextField<T extends FieldValues>({
   placeholder,
   type = 'text',
   onlyNumbers = false,
-  ui = 'desktop'
+  ui = 'desktop',
+  ...props
 }: TextFieldProps<T>) {
   return (
     <FormField
@@ -22,6 +23,7 @@ export function TextField<T extends FieldValues>({
       {({ field, invalid, fieldId }) => (
         <Input
           {...field}
+          {...props}
           id={fieldId}
           aria-invalid={invalid}
           type={type}

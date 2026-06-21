@@ -6,6 +6,11 @@ export async function loginService(data: LoginRequest): Promise<LoginResponse> {
   return response.data;
 }
 
+export async function getMeService(): Promise<any> {
+  const response = await api.get<any>('/auth/me');
+  return response.data;
+}
+
 export async function activateAccountService(data: ActivateAccountRequest): Promise<void> {
   await api.post('/auth/first-access', data);
 }

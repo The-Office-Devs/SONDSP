@@ -16,8 +16,8 @@ export function DesktopShellHeader() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
-  const displayName = user?.name ?? 'Adrielson Barbosa';
-  const displayRole = roleLabels[user?.role ?? ''] ?? 'Coordenador';
+
+  if (!user) return null;
 
   const handleLogout = () => {
     logout();
@@ -37,10 +37,10 @@ export function DesktopShellHeader() {
 
         <div className="flex min-w-0 flex-1 items-center">
           <div className="min-w-0">
-            <h1 className="truncate text-[1.45rem] font-medium leading-tight">{displayName}</h1>
+            <h1 className="truncate text-[1.45rem] font-medium leading-tight">{user.name}</h1>
             <p className="mt-1 flex items-center gap-2 text-sm text-white/65">
               <span className="h-2 w-2 rounded-full bg-white/65" />
-              <span> Função: {displayRole} </span>
+              <span> Função: {user.role} </span>
             </p>
           </div>
         </div>

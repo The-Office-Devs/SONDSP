@@ -8,13 +8,14 @@ import {
   TableRow 
 } from "../ui/table";
 import { Button } from "../ui/button";
-import { AlarmSmoke, Link2, PencilLine, Trash2 } from "lucide-react";
+import { AlarmSmoke, Link2, PencilLine, Trash2, X } from "lucide-react";
 
 export type ColumnDef<T> = {
   id: keyof T;
   header: React.ReactNode;
   width: string;
   className?: string;
+  accessor?: (row: T) => unknown;
 }
 
 export type RowAction<T> = {
@@ -95,7 +96,9 @@ export function DataTable<T>({
                   key={String(column.id)}
                   className={cn("px-6 py-4 text-slate-900 font-semibold", column.className)}
                 >
-                  {formatCellValue(row[column.id])}
+                  {formatCellValue(
+                    column.accessor ? column.accessor(row) : row[column.id as keyof T]
+                  )}
                 </TableCell>
               ))}
 
@@ -163,8 +166,8 @@ function ActionButton({
   if (type === "link") {
     return (
       <Button
-        title="Vincular usuários"
-        aria-label="Vincular usuários"
+        title="Vincular"
+        aria-label="Vincular"
         variant="outline"
         className={cn(shared, "border-slate-400 text-slate-900 hover:bg-slate-100")}
         disabled={disabled}
@@ -179,14 +182,14 @@ function ActionButton({
   if (type === "delete") {
     return (
       <Button
-        title="Excluir"
-        aria-label="Excluir"
+        title="Inativar"
+        aria-label="Inativar"
         variant="destructive"
         className={shared}
         disabled={disabled}
         onClick={onClick}
       >
-        <Trash2 className="size-4" />
+        <X className="size-4" />
         {label}
       </Button>
     );
