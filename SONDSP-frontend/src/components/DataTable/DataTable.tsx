@@ -8,7 +8,7 @@ import {
   TableRow 
 } from "../ui/table";
 import { Button } from "../ui/button";
-import { AlarmSmoke, Link2, PencilLine, Trash2 } from "lucide-react";
+import { AlarmSmoke, Link2, PencilLine, Trash2, X } from "lucide-react";
 
 export type ColumnDef<T> = {
   id: keyof T;
@@ -182,14 +182,14 @@ function ActionButton({
   if (type === "delete") {
     return (
       <Button
-        title="Excluir"
-        aria-label="Excluir"
+        title="Inativar"
+        aria-label="Inativar"
         variant="destructive"
         className={shared}
         disabled={disabled}
         onClick={onClick}
       >
-        <Trash2 className="size-4" />
+        <X className="size-4" />
         {label}
       </Button>
     );

@@ -10,7 +10,6 @@ public record RegisterDTO(
         String registration,
         String role,
         String email,
-        String password,
         List<String> permissions) {
     public RegisterDTO(User user) {
         this(
@@ -18,7 +17,6 @@ public record RegisterDTO(
             user.getRegistration(),
             user.getRole() != null ? user.getRole().getName() : null,
             user.getEmail(),
-            user.getPassword(),
             user.getPermissions() != null ?
                     user.getPermissions().stream().map(Permission::getPermission).toList() : List.of()
         );

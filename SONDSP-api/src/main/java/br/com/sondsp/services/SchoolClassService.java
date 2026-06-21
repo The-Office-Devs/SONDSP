@@ -14,8 +14,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +27,14 @@ public class SchoolClassService {
     private SchoolService schoolService;
 
     public SchoolClass createSchoolClass(SchoolClassForm form) {
-        return repository.save(new SchoolClass(form, schoolService.getSchool(form.schoolId())));
+        School school = schoolService.getSchool(form.schoolId());
+
+        return repository.save(SchoolClass.builder()
+                .name(form.name())
+                .schoolYear(form.schoolYear())
+                .school(school)
+                .status(true)
+                .build());
     }
 
     public SchoolClass getSchoolClass(Integer id) {
@@ -42,13 +47,20 @@ public class SchoolClassService {
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
-        return repository.save(SchoolClass.updateSchoolClassWithForm(getSchoolClass(id), form));
+        SchoolClass schoolClass = getSchoolClass(id);
+
+        schoolClass.setName(form.name());
+        schoolClass.setSchoolYear(form.schoolYear());
+
+        return repository.save(schoolClass);
     }
 
-    public void deleteSchoolClass(Integer id) {
+    public Boolean changeStatus(Integer id) {
         SchoolClass schoolClass = getSchoolClass(id);
-        schoolClass.setStatus(false);
+        schoolClass.setStatus(!schoolClass.getStatus());
         repository.save(schoolClass);
+
+        return schoolClass.getStatus();
     }
 
     private Specification<SchoolClass> buildFilter(SchoolClassFilter filter) {
@@ -71,6 +83,12 @@ public class SchoolClassService {
 
                 predicates.add(combinedSearchPredicate);
             } else {
+                if (filter.schoolId() != null) {
+                    Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
+
+                    predicates.add(criteriaBuilder.equal(schoolJoin.get("id"), filter.schoolId()));
+                }
+
                 if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
                     Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 

@@ -22,8 +22,12 @@ import static br.com.sondsp.util.SystemMessages.SCHOOL_NOT_FOUND;
 public class SchoolService {
     private SchoolRepository repository;
 
-    public School createSchool(SchoolForm school) {
-        return repository.save(new School(school));
+    public School createSchool(SchoolForm form) {
+        return repository.save(School.builder()
+                .name(form.name())
+                .principalName(form.principalName())
+                .status(true)
+                .build());
     }
 
     public School getSchool(Integer id) {
@@ -35,14 +39,21 @@ public class SchoolService {
         return repository.findAll(spec, pageable);
     }
 
-    public School updateSchool(Integer id, SchoolForm school) {
-        return repository.save(School.updateSchoolWithSchoolForm(getSchool(id), school));
+    public School updateSchool(Integer id, SchoolForm form) {
+        School school = getSchool(id);
+
+        school.setName(form.name());
+        school.setPrincipalName(form.principalName());
+
+        return repository.save(new School());
     }
 
-    public void deleteSchool(Integer id) {
+    public boolean changeStatus(Integer id) {
         School school = getSchool(id);
-        school.setStatus(false);
+        school.setStatus(!school.getStatus());
         repository.save(school);
+
+        return school.getStatus();
     }
 
     private Specification<School> buildFilter(SchoolFilter filter) {

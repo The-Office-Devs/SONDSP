@@ -3,33 +3,17 @@ package br.com.sondsp.controllers;
 import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.SchoolClassDTO;
 import br.com.sondsp.dtos.StandardErrorDTO;
-import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
-import br.com.sondsp.services.SchoolClassService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-@RestController
-@RequestMapping("/schoolClass")
-public class SchoolClassController {
-    @Autowired
-    private SchoolClassService service;
-
-    @PostMapping()
+public interface SchoolClassController {
     @Operation(description = "Cria uma nova turma.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -40,11 +24,8 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> createSchoolClass(@Valid @RequestBody SchoolClassForm form) {
-        return ResponseEntity.ok().body(new SchoolClassDTO(service.createSchoolClass(form)));
-    }
+    ResponseEntity<?> createSchoolClass(SchoolClassForm form);
 
-    @GetMapping("/{id}")
     @Operation(description = "Busca a turma com base no id passado.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -63,48 +44,23 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> getSchoolClassById(@PathVariable Integer id) {
-        return ResponseEntity.ok().body(new SchoolClassDTO(service.getSchoolClass(id)));
-    }
+    ResponseEntity<?> getSchoolClassById(Integer id);
 
-    @GetMapping()
     @Operation(
-            description = "Retorna as turmas paginadas com base em um filtro. É possível passar page, size e sort na URL.",
+            description = "Retorna todas as turmas com base em um filtro. Caso o filtro não seja passado, retorna todas as turmas.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Turmas retornadas com sucesso.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = PageResponse.class)
+                                    array = @ArraySchema(schema = @Schema(implementation = SchoolClassForm.class))
                             )
                     )
             }
     )
-    public ResponseEntity<PageResponse<SchoolClassDTO>> getSchoolsClassesByFilter(
-            @ModelAttribute SchoolClassFilter filter,
-            @PageableDefault(size = 5) Pageable pageable) {
+    public ResponseEntity<PageResponse<SchoolClassDTO>> getSchoolsClassesByFilter(SchoolClassFilter filter, Pageable pageable);
 
-        Page<SchoolClass> schoolClassPage = service.getSchoolsClasses(filter, pageable);
-
-        List<SchoolClassDTO> contentDTO = schoolClassPage.getContent().stream()
-                .map(SchoolClassDTO::new)
-                .toList();
-
-        PageResponse<SchoolClassDTO> response = new PageResponse<>(
-                contentDTO,
-                schoolClassPage.getNumber(),
-                schoolClassPage.getSize(),
-                schoolClassPage.getTotalElements(),
-                schoolClassPage.getTotalPages(),
-                schoolClassPage.hasNext(),
-                schoolClassPage.hasPrevious()
-        );
-
-        return ResponseEntity.ok().body(response);
-    }
-
-    @PutMapping("/{id}")
     @Operation(description = "Atualiza a turma com base no id.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -123,15 +79,12 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> updateSchoolClass(@PathVariable Integer id, @RequestBody SchoolClassForm form) {
-        return ResponseEntity.ok().body(new SchoolClassDTO(service.updateSchoolClass(id, form)));
-    }
+    ResponseEntity<?> updateSchoolClass(Integer id, SchoolClassForm form);
 
-    @DeleteMapping("/{id}")
-    @Operation(description = "Remove a turma com base no id.", responses = {
+    @Operation(description = "Ativa/desativa a turma com base no id.", responses = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Turma removida com sucesso.",
+                    description = "Turma ativada/desativada com sucesso.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = SchoolClassDTO.class)
@@ -146,8 +99,5 @@ public class SchoolClassController {
                     )
             )
     })
-    public ResponseEntity<?> deleteSchoolClass(@PathVariable Integer id) {
-        service.deleteSchoolClass(id);
-        return ResponseEntity.ok("Turma desativada com sucesso.");
-    }
+    ResponseEntity<?> changeStatus(Integer id);
 }
