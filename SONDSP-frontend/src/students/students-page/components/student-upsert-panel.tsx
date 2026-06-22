@@ -54,8 +54,8 @@ export function StudentUpsertPanel({
     if (student) {
       form.reset({ 
         name: student.name,
-        schoolClassId: student.schoolClass.id,
-        rowNumber: student.rowNumber,
+        schoolClassId: student.schoolClass?.id ?? 0,
+        rowNumber: student.rowNumber ?? "",
         registration: student.registration,
         status: student.status
       });

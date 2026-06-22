@@ -14,7 +14,7 @@ const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "180px" },
   { id: "registration", header: "Matrícula", width: "180px", },
   { id: "name", header: "Nome", width: "180px" },
-  { id: "schoolClass", header: "Turma", width: "260px", accessor: (row) => `${row.schoolClass.name} - ${row.schoolClass.school.name}` },
+  { id: "schoolClass", header: "Turma", width: "260px", accessor: (row) => row.schoolClass ? `${row.schoolClass.name} - ${row.schoolClass.school.name}` : "-" },
   { id: "status", header: "Status", width: "180px" },
 ];
 

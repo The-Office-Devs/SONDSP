@@ -4,8 +4,8 @@ export interface StudentListItem {
   id: number;
   name: string;
   registration: string;
-  schoolClass: Class;
-  rowNumber: number;
+  schoolClass?: Class | null;
+  rowNumber?: number | null;
   status: boolean;
 }
 
