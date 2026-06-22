@@ -1,11 +1,14 @@
 package br.com.sondsp.services;
 
 import br.com.sondsp.entities.School;
+import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.filters.SchoolFilter;
 import br.com.sondsp.form.SchoolForm;
+import br.com.sondsp.repositories.SchoolClassRepository;
 import br.com.sondsp.repositories.SchoolRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,12 +18,14 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CANNOT_INACTIVATE;
 import static br.com.sondsp.util.SystemMessages.SCHOOL_NOT_FOUND;
 
 @Service
 @AllArgsConstructor
 public class SchoolService {
     private SchoolRepository repository;
+    private SchoolClassRepository schoolClassRepository;
 
     public School createSchool(SchoolForm form) {
         return repository.save(School.builder()
@@ -50,6 +55,15 @@ public class SchoolService {
 
     public boolean changeStatus(Integer id) {
         School school = getSchool(id);
+
+        // Se a escola estiver ativa, valida se existe alguma turma ativa relacionada
+        if (school.getStatus()) {
+            List<SchoolClass> classes = schoolClassRepository.findAllBySchoolId(id);
+
+            if (classes.stream().anyMatch(SchoolClass::getStatus))
+                throw new ValidationException(SCHOOL_CANNOT_INACTIVATE);
+        }
+
         school.setStatus(!school.getStatus());
         repository.save(school);
 
