@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static br.com.sondsp.util.SystemMessages.ROW_NUMBER_TAKEN;
 import static br.com.sondsp.util.SystemMessages.STUDENT_NOT_FOUND;
 
 @Service
@@ -33,7 +35,7 @@ public class StudentService {
                 .name(form.name())
                 .registration(form.registration())
                 .schoolClass(form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null)
-                .rowNumber(form.rowNumber())
+                .rowNumber(form.schoolClassId() != null ? null : form.rowNumber())
                 .status(true)
                 .build());
     }
@@ -54,13 +56,18 @@ public class StudentService {
     public Student updateStudent(Integer id, StudentForm form) {
         Student student = getStudent(id);
 
+        if (!Objects.equals(student.getSchoolClass().getId(), form.schoolClassId())) {
+            student.setSchoolClass(schoolClassService.getSchoolClass(form.schoolClassId()));
+
+            for (Student verifyStudent : repository.findAllBySchoolClassId(form.schoolClassId())) {
+                if (Objects.equals(verifyStudent.getRowNumber(), form.rowNumber()))
+                    throw new ValidationException(ROW_NUMBER_TAKEN);
+            }
+        }
+
         student.setName(form.name());
         student.setRegistration(form.registration());
         student.setRowNumber(form.rowNumber());
-
-        if (!Objects.equals(student.getSchoolClass().getId(), form.schoolClassId())) {
-            student.setSchoolClass(schoolClassService.getSchoolClass(form.schoolClassId()));
-        }
 
         return repository.save(student);
     }

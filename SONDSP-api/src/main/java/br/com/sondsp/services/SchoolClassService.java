@@ -2,13 +2,16 @@ package br.com.sondsp.services;
 
 import br.com.sondsp.entities.School;
 import br.com.sondsp.entities.SchoolClass;
+import br.com.sondsp.entities.Student;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import br.com.sondsp.repositories.SchoolClassRepository;
+import br.com.sondsp.repositories.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_CANNOT_ACTIVATE;
 import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_NOT_FOUND;
 
 @Service
@@ -25,6 +29,7 @@ import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_NOT_FOUND;
 public class SchoolClassService {
     private SchoolClassRepository repository;
     private SchoolService schoolService;
+    private StudentRepository studentRepository;
 
     public SchoolClass createSchoolClass(SchoolClassForm form) {
         School school = schoolService.getSchool(form.schoolId());
@@ -61,7 +66,23 @@ public class SchoolClassService {
 
     public Boolean changeStatus(Integer id) {
         SchoolClass schoolClass = getSchoolClass(id);
+
+        // Se a turma estiver inativa e a escola também
+        if (!schoolClass.getStatus() && !schoolService.getSchool(schoolClass.getId()).getStatus())
+            throw new ValidationException(SCHOOL_CLASS_CANNOT_ACTIVATE);
+
         schoolClass.setStatus(!schoolClass.getStatus());
+
+        // Desvincula todos os alunos da turma ao desativar
+        List<Student> students = studentRepository.findAllBySchoolClassId(id);
+
+        // TODO: Arrumar esse loop para não fazer um update por aluno
+        for (Student student : students) {
+            student.setSchoolClass(null);
+            student.setRowNumber(null);
+            studentRepository.save(student);
+        }
+
         repository.save(schoolClass);
 
         return schoolClass.getStatus();

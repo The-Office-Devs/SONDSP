@@ -24,6 +24,9 @@ public final class SystemMessages {
     public static final String INVALID_EMAIL_FORMAT = "Email inválido.";
     public static final String INACTIVATED_USER = "Usuário inativo.";
     public static final String INVALID_YEAR = "O ano deve ser um ano letivo válido.";
+    public static final String SCHOOL_CANNOT_INACTIVATE = "A escola não pode ser inativada, pois existem turmas ativas.";
+    public static final String SCHOOL_CLASS_CANNOT_ACTIVATE = "A turma não pode ser ativada, pois a escola está inativa.";
+    public static final String ROW_NUMBER_TAKEN = "O número da chamada passado já está sendo utilizado por um aluno na turma.";
 
     // Empty properties
     public static final String EMPTY_NAME = "Um nome deve ser informado.";
