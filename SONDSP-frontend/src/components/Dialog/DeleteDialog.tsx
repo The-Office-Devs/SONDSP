@@ -16,6 +16,7 @@ interface DeleteDialogProps<T extends { id: number | string; name: string; statu
   isPending: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (data: T) => void;
+  children?: React.ReactNode;
 }
 
 export function DeleteDialog<T extends { id: number | string; name: string; status?: boolean }>({ 
@@ -25,6 +26,7 @@ export function DeleteDialog<T extends { id: number | string; name: string; stat
   isPending,
   onOpenChange,
   onConfirm,
+  children,
 }: Readonly<DeleteDialogProps<T>>) {
   const handleConfirm = () => {
     if (!data) return;
@@ -44,6 +46,7 @@ export function DeleteDialog<T extends { id: number | string; name: string; stat
             Tem certeza que deseja {actionText} {data?.name}?
           </DialogDescription>
         </DialogHeader>
+        {children}
 
         <DialogFooter className="flex w-full flex-col gap-2 sm:flex-row">
           <Button

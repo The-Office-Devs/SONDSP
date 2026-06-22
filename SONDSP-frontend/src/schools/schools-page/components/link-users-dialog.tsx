@@ -35,6 +35,7 @@ export function LinkUsersDialog({ open, onOpenChange, isTeachers = false }: Read
     status: true,
     page,
     size,
+    ...(isTeachers ? { roleName: 'Professor' } : {}),
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
 

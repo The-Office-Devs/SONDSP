@@ -82,7 +82,13 @@ export function ClassesDesktop() {
             onSuccess: () => setDeleteClass(null)
           })
         }
-      />
+      >
+        {deleteClass?.status && (
+          <p className="text-sm text-destructive font-medium">
+            Ao inativar a turma, todos os alunos relacionados a ela perderão esse vínculo.
+          </p>
+        )}
+      </DeleteDialog>
     </div>
   )
 }

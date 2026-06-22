@@ -19,6 +19,7 @@ export interface UserListItem {
 export interface UserFilter {
   search?: string;
   status?: boolean;
+  roleName?: string;
 }
 
 export interface CreateUserRequest {
