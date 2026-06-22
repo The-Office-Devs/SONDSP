@@ -20,13 +20,14 @@ public final class SystemMessages {
 
     // Format or business logic errors
     public static final String EMAIL_ALREADY_EXISTS = "O email já está sendo utilizado.";
-    public static final String REGISTRATION_ALREADY_EXISTS = "O registro funcional já existe";
+    public static final String REGISTRATION_ALREADY_EXISTS = "O registro funcional já existe.";
     public static final String INVALID_EMAIL_FORMAT = "Email inválido.";
     public static final String INACTIVATED_USER = "Usuário inativo.";
     public static final String INVALID_YEAR = "O ano deve ser um ano letivo válido.";
     public static final String SCHOOL_CANNOT_INACTIVATE = "A escola não pode ser inativada, pois existem turmas ativas.";
     public static final String SCHOOL_CLASS_CANNOT_ACTIVATE = "A turma não pode ser ativada, pois a escola está inativa.";
     public static final String ROW_NUMBER_TAKEN = "O número da chamada passado já está sendo utilizado por um aluno na turma.";
+    public static final String STUDENT_REGISTRATION_ALREADY_EXISTS = "A matrícula já existe.";
 
     // Empty properties
     public static final String EMPTY_NAME = "Um nome deve ser informado.";

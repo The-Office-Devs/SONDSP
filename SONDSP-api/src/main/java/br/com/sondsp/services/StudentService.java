@@ -3,6 +3,7 @@ package br.com.sondsp.services;
 import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.entities.Student;
 import br.com.sondsp.entities.User;
+import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.repositories.StudentRepository;
@@ -19,10 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static br.com.sondsp.util.SystemMessages.ROW_NUMBER_TAKEN;
-import static br.com.sondsp.util.SystemMessages.STUDENT_NOT_FOUND;
+import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -31,11 +30,17 @@ public class StudentService {
     private SchoolClassService schoolClassService;
 
     public Student createStudent(StudentForm form) {
+        if (repository.existsBySchoolClassIdAndRowNumber(form.schoolClassId(), form.rowNumber()))
+            throw new ValidationException(ROW_NUMBER_TAKEN);
+
+        if (repository.existsByRegistration(form.registration()))
+            throw new ValidationException(STUDENT_REGISTRATION_ALREADY_EXISTS);
+
         return repository.save(Student.builder()
                 .name(form.name())
                 .registration(form.registration())
                 .schoolClass(form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null)
-                .rowNumber(form.schoolClassId() != null ? null : form.rowNumber())
+                .rowNumber(form.schoolClassId() != null ? form.rowNumber() : null)
                 .status(true)
                 .build());
     }
