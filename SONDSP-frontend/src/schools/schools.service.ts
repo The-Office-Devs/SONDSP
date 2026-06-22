@@ -1,4 +1,5 @@
 import { api } from '@/api/axios';
+import type { PageResponse, PaginationParams } from '@/api/types';
 import type {
   School,
   CreateSchoolRequest,
@@ -6,8 +7,10 @@ import type {
   SchoolFilter,
 } from './schools.types';
 
-export async function listSchoolsService(filter?: SchoolFilter): Promise<School[]> {
-  const response = await api.get<School[]>('/school', { params: filter});
+export async function listSchoolsService(
+  filter?: SchoolFilter & PaginationParams
+): Promise<PageResponse<School>> {
+  const response = await api.get<PageResponse<School>>('/school', { params: filter});
   return response.data;
 }
 

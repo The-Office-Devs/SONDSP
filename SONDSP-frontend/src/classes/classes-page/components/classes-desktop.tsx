@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 import { useClasses, useDeleteClass } from "../use-classes";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useTableState } from "@/hooks/useTableState";
+import { buildPaginationProps } from "@/api/types";
 
 import type { ClassListItem } from "@/classes/classes.types";
 import { ClassUpsertPanel } from "./class-upsert-panel";
@@ -18,12 +19,13 @@ const columns: ColumnDef<ClassListItem>[] = [
 ];
 
 export function ClassesDesktop() {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: classes = [], isLoading } = useClasses(
-    debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
-  );
+  const { data: classesPage, isLoading, isFetching } = useClasses({
+    page,
+    size,
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
   const { mutate, isPending } = useDeleteClass();
 
   const [editClassId, setEditClassId] = useState<number | null>(null);
@@ -54,11 +56,13 @@ export function ClassesDesktop() {
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<ClassListItem>
-        data={classes}
+        data={classesPage?.content ?? []}
         columns={columns}
         rowKey={(classItem) => classItem.id}
         actions={actions}
         emptyMessage="Nenhuma turma encontrada"
+        isFetching={isFetching}
+        pagination={classesPage ? buildPaginationProps(classesPage, setPage) : undefined}
       />
 
       <LinkUsersDialog

@@ -84,7 +84,7 @@ export function LoginForm({
             name="login"
             label="E-mail institucional"
             type="email"
-            placeholder="nome@sondsp.gov.br"
+            placeholder="nome@sme.prefeitura.gov.br"
             ui={linksStyle}
           />
 

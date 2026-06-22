@@ -14,10 +14,13 @@ import { administratorItems, applicationItems } from '@/lib/sidebar-utils';
 import { useAuthStore } from '@/auth/auth.store';
 
 export function DesktopShellSidebar() {
+  const user = useAuthStore((state) => state.user);
   const [expanded, setExpanded] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
+
+  if (!user) return null;
 
   const handleLogout = () => {
     logout();
@@ -34,8 +37,8 @@ export function DesktopShellSidebar() {
       >
         <div className={cn('flex flex-col gap-8 px-3 py-6', expanded ? 'items-stretch' : 'items-center')}>
           <div className="flex w-fit items-center gap-3 rounded-full bg-white px-2 py-1 text-primary shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef4ff] text-lg font-semibold">P</div>
-            {expanded ? <span className="pr-2 text-lg font-semibold">Professor</span> : null}
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef4ff] text-lg font-semibold">{user.name.charAt(0).toUpperCase()}</div>
+            {expanded ? <span className="pr-2 text-lg font-semibold">{user.role}</span> : null}
           </div>
 
           <nav className="flex flex-1 flex-col gap-3 text-white">
@@ -44,7 +47,7 @@ export function DesktopShellSidebar() {
               label="Início"
               expanded={expanded}
               active={location.pathname === '/'}
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/gerenciamento/usuarios')}
             />
 
             {expanded ? <SidebarSection title="Área do Administrador" icon={PencilLine} /> : null}

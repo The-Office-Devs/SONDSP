@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import { useDebounce } from "@/hooks/useDebounce";
+import { useTableState } from "@/hooks/useTableState";
 import { useDeleteStudent, useStudents } from "../use-students";
+import { buildPaginationProps } from "@/api/types";
 
 import type { StudentListItem } from "@/students/students.types";
 import { StudentUpsertPanel } from "./student-upsert-panel";
@@ -18,12 +19,13 @@ const columns: ColumnDef<StudentListItem>[] = [
 ];
 
 export function StudentsDesktop() {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: students = [], isLoading } = useStudents(
-    debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
-  );
+  const { data: studentsPage, isLoading, isFetching } = useStudents({
+    page,
+    size,
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
   const { mutate, isPending } = useDeleteStudent();
 
   const [editStudentId, setEditStudentId] = useState<number | null>(null);
@@ -52,11 +54,13 @@ export function StudentsDesktop() {
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<StudentListItem>
-        data={students}
+        data={studentsPage?.content ?? []}
         columns={columns}
         rowKey={(studentItem) => studentItem.id}
         actions={actions}
         emptyMessage="Nenhum aluno encontrado"
+        isFetching={isFetching}
+        pagination={studentsPage ? buildPaginationProps(studentsPage, setPage) : undefined}
       />
 
       <DeleteDialog<StudentListItem>

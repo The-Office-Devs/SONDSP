@@ -12,17 +12,18 @@ import { useAuthStore } from "@/auth/auth.store";
 import { UserRole } from "@/auth/auth.types";
 import { 
   createUserService, 
-  deleteUserService, 
+  changeUserStatusService, 
   getUserService, 
   listUsersService, 
   updateUserService
 } from "../users.service";
 import type { UserFilter } from "../users.types";
 import type { UserFormData } from "./user-schema";
+import type { PaginationParams } from "@/api/types";
 
 const USERS_QUERY_KEY = ['users'] as const;
 
-export function useUsers(filter?: UserFilter) {
+export function useUsers(filter?: UserFilter & PaginationParams) {
   return useQuery({
     queryKey: [...USERS_QUERY_KEY, filter],
     queryFn: () => listUsersService(filter),
@@ -104,16 +105,16 @@ export function useUpdateUser() {
   });
 }
 
-export function useDeleteUser() {
+export function useChangeUserStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: number) => 
-      deleteUserService(id),
+      changeUserStatusService(id),
 
-    onSuccess: () => {
+    onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
-      toast.success('Usuário excluído com sucesso!');
+      toast.success(message || 'Status do usuário alterado com sucesso!');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>

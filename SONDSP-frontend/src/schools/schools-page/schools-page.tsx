@@ -6,7 +6,7 @@ import { SchoolsMobile } from "./components/schools-mobile";
 
 export function SchoolsPage() {
   const isDesktop = useIsDesktop();
-  useFooter({ title: 'Cadastro de Escolas' });
+  useFooter({ title: 'Gerenciamento de Escolas' });
 
   return isDesktop ? <SchoolsDesktop /> : <SchoolsMobile />;
 }

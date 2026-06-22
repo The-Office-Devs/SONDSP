@@ -31,7 +31,7 @@ export function ClassUpsertPanel({
   const { mutate: createClass, isPending: isCreating } = useCreateClass();
   const { mutate: updateClass, isPending: isUpdating } = useUpdateClass();
   const { data: schoolClass, isLoading: isLoadingClass } = useClass(classIdToEdit);
-  const { data: schools } = useSchools();
+  const { data: schoolsPage } = useSchools({ size: 100 });
 
   const isEditMode = classIdToEdit !== null;
   const isPending = isCreating || isUpdating;
@@ -85,7 +85,7 @@ export function ClassUpsertPanel({
   };
 
   const schoolOptions = 
-    schools?.map((school) => ({
+    schoolsPage?.content?.map((school) => ({
       value: String(school.id),
       label: school.name
     })) ?? [];

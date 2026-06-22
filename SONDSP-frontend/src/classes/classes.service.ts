@@ -1,4 +1,5 @@
 import { api } from "@/api/axios";
+import type { PageResponse, PaginationParams } from "@/api/types";
 import type { 
   Class, 
   ClassFilter, 
@@ -7,8 +8,10 @@ import type {
   UpdateClassRequest 
 } from "./classes.types";
 
-export async function listClassesService(filter?: ClassFilter): Promise<ClassListItem[]> {
-  const response = await api.get<ClassListItem[]>('/schoolClass', { params: filter });
+export async function listClassesService(
+  filter?: ClassFilter & PaginationParams
+): Promise<PageResponse<ClassListItem>> {
+  const response = await api.get<PageResponse<ClassListItem>>('/schoolClass', { params: filter });
   return response.data;
 }
 

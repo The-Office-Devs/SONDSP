@@ -1,4 +1,5 @@
 import { api } from "@/api/axios";
+import type { PageResponse, PaginationParams } from "@/api/types";
 import type { 
   CreateStudentRequest, 
   Student, 
@@ -7,8 +8,10 @@ import type {
   UpdateStudentRequest 
 } from "./students.types";
 
-export async function listStudentsService(filter?: StudentFilter): Promise<StudentListItem[]> {
-  const response = await api.get<StudentListItem[]>('/student', { params: filter });
+export async function listStudentsService(
+  filter?: StudentFilter & PaginationParams
+): Promise<PageResponse<StudentListItem>> {
+  const response = await api.get<PageResponse<StudentListItem>>('/student', { params: filter });
   return response.data;
 }
 

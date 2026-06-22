@@ -13,7 +13,8 @@ import {
 import type { UserListItem } from "@/users/users.types";
 import { useUsers } from '../use-schools';
 import { DataTable, type ColumnDef, type RowAction } from '@/components/DataTable/DataTable';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useTableState } from '@/hooks/useTableState';
+import { buildPaginationProps } from '@/api/types';
 
 interface LinkUsersDialogProps {
   open: boolean;
@@ -28,16 +29,17 @@ const columns: ColumnDef<UserListItem>[] = [
 ];
 
 export function LinkUsersDialog({ open, onOpenChange, isTeachers = false }: Readonly<LinkUsersDialogProps>) {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: users = [], isLoading } = useUsers({
+  const { data: usersPage, isLoading, isFetching } = useUsers({
     status: true,
-    ...debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
-  })
+    page,
+    size,
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
 
   const handleLink = (userName: string) => {
-    const userType = isTeachers ? "Professor" : "Usuário"
+    const userType = isTeachers ? "Professor" : "Usuário";
     toast.success(`${userType} "${userName}" vinculado com sucesso.`);
   };
 
@@ -61,11 +63,13 @@ export function LinkUsersDialog({ open, onOpenChange, isTeachers = false }: Read
             <FilterBar value={filter} onChange={setFilter} />
 
             <DataTable<UserListItem>
-              data={users}
+              data={usersPage?.content ?? []}
               columns={columns}
               rowKey={(user) => user.id}
               actions={actions}
               emptyMessage={isTeachers ? "Nenhum professor encontrado" : "Nenhum usuário encontrado"}
+              isFetching={isFetching}
+              pagination={usersPage ? buildPaginationProps(usersPage, setPage) : undefined}
             />
 
             <div className="flex justify-start">

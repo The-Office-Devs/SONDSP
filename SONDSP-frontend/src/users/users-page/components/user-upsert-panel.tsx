@@ -117,7 +117,7 @@ export function UserUpsertPanel({
             <TextField
               name="email"
               label="E-mail Institucional"
-              placeholder="nome@sondsp.gov.br"
+              placeholder="nome@sme.prefeitura.gov.br"
             />
 
             <TextField

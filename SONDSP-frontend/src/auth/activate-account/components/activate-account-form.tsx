@@ -48,7 +48,7 @@ export function ActivateAccountForm({
           name="email"
           label="E-mail institucional"
           type="email"
-          placeholder="nome@sondsp.gov.br"
+          placeholder="nome@sme.prefeitura.gov.br"
           ui={ui}
         />
 

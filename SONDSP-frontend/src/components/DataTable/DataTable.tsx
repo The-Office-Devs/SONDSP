@@ -8,7 +8,8 @@ import {
   TableRow 
 } from "../ui/table";
 import { Button } from "../ui/button";
-import { AlarmSmoke, Link2, PencilLine, Trash2, X } from "lucide-react";
+import { AlarmSmoke, Check, Link2, Loader2, PencilLine, X } from "lucide-react";
+import { AppPagination } from "../ui/pagination";
 
 export type ColumnDef<T> = {
   id: keyof T;
@@ -32,6 +33,16 @@ interface DataTableProps<T> {
   rowKey: (row: T) => React.Key;
   actions: RowAction<T>[];
   emptyMessage: string;
+  isFetching?: boolean;
+  pagination?: {
+    page: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+    hasNext?: boolean;
+    hasPrevious?: boolean;
+    totalElements?: number;
+    size?: number;
+  };
 }
 
 export function DataTable<T>({
@@ -39,7 +50,9 @@ export function DataTable<T>({
   columns,
   rowKey, 
   emptyMessage,
-  actions
+  actions,
+  isFetching = false,
+  pagination
 }: Readonly<DataTableProps<T>>) {
   const formatCellValue = (value: unknown) => {
     if (value === true) return "Ativo";
@@ -50,83 +63,114 @@ export function DataTable<T>({
 
   if (data.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-500 shadow-sm">
+      <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-500 shadow-sm">
+        {isFetching && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
+            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-md">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              <span>Carregando dados...</span>
+            </div>
+          </div>
+        )}
         {emptyMessage}
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <Table className="table-fixed">
-        <colgroup>
-          {columns.map((column) => (
-            <col  
-              key={String(column.id)}
-              style={{ width: column.width }}
-            />
-          ))}
-          <col style={{ width: actions.length > 2 ? "160px" : "120px" }} />
-        </colgroup>
-
-        <TableHeader className="bg-primary text-white">
-          <TableRow className="hover:bg-transparent">
+    <div className="space-y-4">
+      <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        {isFetching && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
+            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-md">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              <span>Carregando dados...</span>
+            </div>
+          </div>
+        )}
+        <Table className={cn("table-fixed transition-opacity duration-200", isFetching && "opacity-50 pointer-events-none")}>
+          <colgroup>
             {columns.map((column) => (
-              <TableHead
+              <col  
                 key={String(column.id)}
-                className="px-6 py-3 text-left font-semibold text-white"
-              >
-                {column.header} ↓
-              </TableHead>
+                style={{ width: column.width }}
+              />
             ))}
+            <col style={{ width: actions.length > 2 ? "160px" : "120px" }} />
+          </colgroup>
 
-            {actions.length > 0 && (
-              <TableHead className="px-6 py-3 text-center font-semibold text-white">
-                Ações
-              </TableHead>
-            )}
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {data.map((row) => (
-            <TableRow key={rowKey(row)} className="border-slate-200">
+          <TableHeader className="bg-primary text-white">
+            <TableRow className="hover:bg-transparent">
               {columns.map((column) => (
-                <TableCell 
+                <TableHead
                   key={String(column.id)}
-                  className={cn("px-6 py-4 text-slate-900 font-semibold", column.className)}
+                  className="px-6 py-3 text-left font-semibold text-white"
                 >
-                  {formatCellValue(
-                    column.accessor ? column.accessor(row) : row[column.id as keyof T]
-                  )}
-                </TableCell>
+                  {column.header} ↓
+                </TableHead>
               ))}
 
-              <TableCell className="px-4 py-3">
-                <div className="flex items-center justify-center gap-2 whitespace-nowrap">
-                  {actions.map((action) => {
-                    const isDisabled =
-                      typeof action.disabled === "function"
-                        ? action.disabled(row)
-                        : action.disabled ?? false;
-
-                    return (
-                      <ActionButton
-                        key={`${action.type}-${action.label}`}
-                        type={action.type}
-                        onClick={() => action.onClick(row)}
-                        disabled={isDisabled}
-                        label={action.label}
-                        className={action.className}
-                      />
-                    );
-                  })}
-                </div>
-              </TableCell>
+              {actions.length > 0 && (
+                <TableHead className="px-6 py-3 text-center font-semibold text-white">
+                  Ações
+                </TableHead>
+              )}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+
+          <TableBody>
+            {data.map((row) => (
+              <TableRow key={rowKey(row)} className="border-slate-200">
+                {columns.map((column) => (
+                  <TableCell 
+                    key={String(column.id)}
+                    className={cn("px-6 py-4 text-slate-900 font-semibold", column.className)}
+                  >
+                    {formatCellValue(
+                      column.accessor ? column.accessor(row) : row[column.id as keyof T]
+                    )}
+                  </TableCell>
+                ))}
+
+                <TableCell className="px-4 py-3">
+                  <div className="flex items-center justify-center gap-2 whitespace-nowrap">
+                    {actions.map((action) => {
+                      const isDisabled =
+                        typeof action.disabled === "function"
+                          ? action.disabled(row)
+                          : action.disabled ?? false;
+
+                      return (
+                        <ActionButton
+                          key={`${action.type}-${action.label}`}
+                          type={action.type}
+                          onClick={() => action.onClick(row)}
+                          disabled={isDisabled}
+                          label={action.label}
+                          className={action.className}
+                          status={(row as any).status}
+                        />
+                      );
+                    })}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {pagination && (
+        <AppPagination
+          page={pagination.page}
+          totalPages={pagination.totalPages}
+          onPageChange={pagination.onPageChange}
+          hasNext={pagination.hasNext}
+          hasPrevious={pagination.hasPrevious}
+          totalElements={pagination.totalElements}
+          size={pagination.size}
+        />
+      )}
     </div>
   );
 }
@@ -137,6 +181,7 @@ type ActionButtonProps = Readonly<{
   disabled?: boolean;
   className?: string;
   label?: string;
+  status?: boolean;
 }>;
 
 function ActionButton({ 
@@ -144,7 +189,8 @@ function ActionButton({
   onClick, 
   className, 
   label, 
-  disabled = false
+  disabled = false,
+  status
 }: ActionButtonProps) {
   const shared = cn("w-14", className);
 
@@ -180,16 +226,20 @@ function ActionButton({
   }
 
   if (type === "delete") {
+    const isInactive = status === false;
     return (
       <Button
-        title="Inativar"
-        aria-label="Inativar"
-        variant="destructive"
-        className={shared}
+        title={isInactive ? "Ativar" : "Inativar"}
+        aria-label={isInactive ? "Ativar" : "Inativar"}
+        variant={isInactive ? "default" : "destructive"}
+        className={cn(
+          shared,
+          isInactive && "bg-emerald-600 hover:bg-emerald-500 text-white border-transparent"
+        )}
         disabled={disabled}
         onClick={onClick}
       >
-        <X className="size-4" />
+        {isInactive ? <Check className="size-4" /> : <X className="size-4" />}
         {label}
       </Button>
     );

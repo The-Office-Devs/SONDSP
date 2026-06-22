@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 import { useDeleteSchool, useSchools } from "../use-schools";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useTableState } from "@/hooks/useTableState";
+import { buildPaginationProps } from "@/api/types";
 
 import type { School } from "@/schools/schools.types";
 import { SchoolUpsertPanel } from "./school-upsert-panel";
@@ -17,12 +18,13 @@ const columns: ColumnDef<School>[] = [
 ];
 
 export function SchoolsDesktop() {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: schools = [], isLoading } = useSchools(
-      debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
-    );
+  const { data: schoolsPage, isLoading, isFetching } = useSchools({
+    page,
+    size,
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
   const { mutate, isPending } = useDeleteSchool();
 
   const [editSchoolId, setEditSchoolId] = useState<number | null>(null);
@@ -53,11 +55,13 @@ export function SchoolsDesktop() {
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<School>
-        data={schools}
+        data={schoolsPage?.content ?? []}
         columns={columns}
         rowKey={(school) => school.id}
         actions={actions}
         emptyMessage="Nenhuma escola encontrada"
+        isFetching={isFetching}
+        pagination={schoolsPage ? buildPaginationProps(schoolsPage, setPage) : undefined}
       />
 
       <LinkUsersDialog

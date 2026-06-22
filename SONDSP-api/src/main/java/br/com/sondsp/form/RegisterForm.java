@@ -15,7 +15,7 @@ public record RegisterForm(
         String registration,
         @NotBlank(message = EMPTY_ROLE)
         String role,
-        @Pattern(regexp = "^[A-Z]+@sme.prefeitura.gov.br", message = INVALID_EMAIL_FORMAT)
+        @Pattern(regexp = "^[a-zA-Z0-9._]+@sme\\.prefeitura\\.gov\\.br$", message = INVALID_EMAIL_FORMAT)
         @NotBlank(message = EMPTY_EMAIL)
         String email,
         @NotEmpty(message = EMPTY_PERMISSIONS)
