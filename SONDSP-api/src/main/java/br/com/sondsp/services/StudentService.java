@@ -56,20 +56,19 @@ public class StudentService {
     public Student updateStudent(Integer id, StudentForm form) {
         Student student = getStudent(id);
 
-        if (student.getSchoolClass() != null && !Objects.equals(student.getSchoolClass().getId(), form.schoolClassId())) {
-            student.setSchoolClass(schoolClassService.getSchoolClass(form.schoolClassId()));
+        // Se o numero da chamada e a turma não forem nulos, valida se já existe
+        if (form.rowNumber() != null && form.schoolClassId() != null) {
+            if (repository.existsBySchoolClassIdAndRowNumberAndIdNot(form.schoolClassId(), form.rowNumber(), id))
+                throw new ValidationException(ROW_NUMBER_TAKEN);
         }
 
-        // TODO: Arrumar essa coisa feia
-        if (student.getSchoolClass() != null)
-            for (Student verifyStudent : repository.findAllBySchoolClassId(form.schoolClassId())) {
-                if (Objects.equals(verifyStudent.getRowNumber(), form.rowNumber()))
-                    throw new ValidationException(ROW_NUMBER_TAKEN);
-            }
+        student.setSchoolClass(form.schoolClassId() != null
+                ? schoolClassService.getSchoolClass(form.schoolClassId())
+                : null);
 
+        student.setRowNumber(form.rowNumber());
         student.setName(form.name());
         student.setRegistration(form.registration());
-        student.setRowNumber(form.rowNumber());
 
         return repository.save(student);
     }
