@@ -3,7 +3,7 @@ package br.com.sondsp.controllers;
 import br.com.sondsp.dtos.StandardErrorDTO;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.xml.bind.ValidationException;
+import jakarta.validation.ValidationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
