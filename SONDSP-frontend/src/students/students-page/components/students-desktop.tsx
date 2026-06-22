@@ -33,7 +33,7 @@ export function StudentsDesktop() {
 
   const actions: RowAction<StudentListItem>[] = [
     { type: "edit", onClick: (studentItem) => setEditStudentId(studentItem.id), disabled: (studentItem) => !studentItem.status },
-    { type: "delete", onClick: (studentItem) => setDeleteStudent(studentItem), disabled: (studentItem) => !studentItem.status }
+    { type: "delete", onClick: (studentItem) => setDeleteStudent(studentItem) }
   ];
   
   if (isLoading) {
@@ -65,7 +65,7 @@ export function StudentsDesktop() {
 
       <DeleteDialog<StudentListItem>
         data={deleteStudent}
-        title="Excluir Aluno"
+        title={deleteStudent?.status ? "Inativar Aluno" : "Ativar Aluno"}
         open={deleteStudent !== null}
         onOpenChange={(open) => { if (!open) setDeleteStudent(null); }}
         isPending={isPending}

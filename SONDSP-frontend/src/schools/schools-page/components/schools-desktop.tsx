@@ -34,7 +34,7 @@ export function SchoolsDesktop() {
   const actions: RowAction<School>[] = [
     { type: "edit", onClick: (school) => setEditSchoolId(school.id), disabled: (user) => !user.status },
     { type: "link", onClick: (school) => setLinkUsersSchool(school), disabled: (school) => !school.status },
-    { type: "delete", onClick: (school) => setDeleteSchool(school), disabled: (school) => !school.status }
+    { type: "delete", onClick: (school) => setDeleteSchool(school) }
   ];
 
   if (isLoading) {
@@ -71,7 +71,7 @@ export function SchoolsDesktop() {
 
       <DeleteDialog<School>
         data={deleteSchool}
-        title="Excluir Escola"
+        title={deleteSchool?.status ? "Inativar Escola" : "Ativar Escola"}
         open={deleteSchool !== null}
         onOpenChange={(open) => { if (!open) setDeleteSchool(null); }}
         isPending={isPending}

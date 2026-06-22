@@ -45,7 +45,7 @@ public class SchoolService {
         school.setName(form.name());
         school.setPrincipalName(form.principalName());
 
-        return repository.save(new School());
+        return repository.save(school);
     }
 
     public boolean changeStatus(Integer id) {

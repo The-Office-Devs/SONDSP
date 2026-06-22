@@ -52,6 +52,10 @@ public class SchoolClassService {
         schoolClass.setName(form.name());
         schoolClass.setSchoolYear(form.schoolYear());
 
+        if (!java.util.Objects.equals(schoolClass.getSchool().getId(), form.schoolId())) {
+            schoolClass.setSchool(schoolService.getSchool(form.schoolId()));
+        }
+
         return repository.save(schoolClass);
     }
 

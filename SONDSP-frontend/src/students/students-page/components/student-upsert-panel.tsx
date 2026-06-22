@@ -33,7 +33,7 @@ export function StudentUpsertPanel({
   const { mutate: createStudent, isPending: isCreating } = useCreateStudent();
   const { mutate: updateStudent, isPending: isUpdating } = useUpdateStudent();
   const { data: student, isLoading: isLoadingClass } = useStudent(studentIdToEdit);
-  const { data: classesPage } = useClasses({ size: 100 });
+  const { data: classesPage } = useClasses({ size: 100, status: true });
 
   const isEditMode = studentIdToEdit !== null;
   const isPending = isCreating || isUpdating;

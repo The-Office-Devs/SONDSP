@@ -31,7 +31,7 @@ export function ClassUpsertPanel({
   const { mutate: createClass, isPending: isCreating } = useCreateClass();
   const { mutate: updateClass, isPending: isUpdating } = useUpdateClass();
   const { data: schoolClass, isLoading: isLoadingClass } = useClass(classIdToEdit);
-  const { data: schoolsPage } = useSchools({ size: 100 });
+  const { data: schoolsPage } = useSchools({ size: 100, status: true });
 
   const isEditMode = classIdToEdit !== null;
   const isPending = isCreating || isUpdating;

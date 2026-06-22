@@ -93,9 +93,9 @@ export function useDeleteStudent() {
     mutationFn: (id: number) => 
       deleteStudentService(id),
 
-    onSuccess: () => {
+    onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
-      toast.success('Aluno excluído com sucesso!');
+      toast.success(message || 'Status do aluno alterado com sucesso!');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>

@@ -78,12 +78,12 @@ export function useDeleteSchool() {
 
   return useMutation({
     mutationFn: (id: number) => deleteSchoolService(id),
-    onSuccess: () => {
+    onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
-      toast.success('Escola excluída com sucesso!');
+      toast.success(message || 'Status da escola alterado com sucesso!');
     },
     onError: () => {
-      toast.error('Erro ao excluir escola.');
+      toast.error('Erro ao alterar status da escola.');
     },
   });
 }

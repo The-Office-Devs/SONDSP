@@ -62,7 +62,7 @@ public class StudentService {
             student.setSchoolClass(schoolClassService.getSchoolClass(form.schoolClassId()));
         }
 
-        return repository.save(new Student());
+        return repository.save(student);
     }
 
     public Boolean changeStatus(Integer id) {

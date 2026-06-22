@@ -30,6 +30,7 @@ export async function updateClassService(id: number, data: UpdateClassRequest): 
   return response.data;
 }
 
-export async function deleteClassService(id: number): Promise<void> {
-  await api.delete(`/schoolClass/${id}`);
+export async function deleteClassService(id: number): Promise<string> {
+  const response = await api.patch<string>(`/schoolClass/${id}/changeStatus`);
+  return response.data;
 }

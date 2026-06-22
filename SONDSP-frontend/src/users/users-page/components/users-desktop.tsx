@@ -8,6 +8,7 @@ import { buildPaginationProps } from "@/api/types";
 import { UserUpsertPanel } from "./user-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
+import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 
 const columns: ColumnDef<UserListItem>[] = [
   { id: "registration", header: "Registro Funcional (RF)", width: "140px" },
@@ -25,13 +26,14 @@ export function UsersDesktop() {
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
-  const { mutate } = useChangeUserStatus();
+  const { mutate, isPending } = useChangeUserStatus();
 
   const [editUserId, setEditUserId] = useState<number | null>(null);
+  const [statusUser, setStatusUser] = useState<UserListItem | null>(null);
 
   const actions: RowAction<UserListItem>[] = [
     { type: "edit", onClick: (user) => setEditUserId(user.id), disabled: (user) => !user.status },
-    { type: "delete", onClick: (user) => mutate(user.id) },
+    { type: "delete", onClick: (user) => setStatusUser(user) },
   ];
 
   if (isLoading) {
@@ -59,6 +61,19 @@ export function UsersDesktop() {
         emptyMessage="Nenhum usuário encontrado"
         isFetching={isFetching}
         pagination={usersPage ? buildPaginationProps(usersPage, setPage) : undefined}
+      />
+
+      <DeleteDialog<UserListItem>
+        data={statusUser}
+        title={statusUser?.status ? "Inativar Usuário" : "Ativar Usuário"}
+        open={statusUser !== null}
+        onOpenChange={(open) => { if (!open) setStatusUser(null); }}
+        isPending={isPending}
+        onConfirm={(user) => 
+          mutate(user.id, {
+            onSuccess: () => setStatusUser(null)
+          })
+        }
       />
     </div>
   );

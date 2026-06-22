@@ -35,7 +35,7 @@ export function ClassesDesktop() {
   const actions: RowAction<ClassListItem>[] = [
     { type: "edit", onClick: (classItem) => setEditClassId(classItem.id), disabled: (classItem) => !classItem.status },
     { type: "link", onClick: (classItem) => setLinkTeachersClass(classItem), disabled: (classItem) => !classItem.status },
-    { type: "delete", onClick: (classItem) => setDeleteClass(classItem), disabled: (classItem) => !classItem.status }
+    { type: "delete", onClick: (classItem) => setDeleteClass(classItem) }
   ];
   
   if (isLoading) {
@@ -73,7 +73,7 @@ export function ClassesDesktop() {
 
       <DeleteDialog<ClassListItem>
         data={deleteClass}
-        title="Excluir Turma"
+        title={deleteClass?.status ? "Inativar Turma" : "Ativar Turma"}
         open={deleteClass !== null}
         onOpenChange={(open) => { if (!open) setDeleteClass(null); }}
         isPending={isPending}

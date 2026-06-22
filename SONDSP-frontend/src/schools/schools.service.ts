@@ -29,6 +29,7 @@ export async function updateSchoolService(id: number, data: UpdateSchoolRequest)
   return response.data;
 }
 
-export async function deleteSchoolService(id: number): Promise<void> {
-  await api.delete(`/school/${id}`);
+export async function deleteSchoolService(id: number): Promise<string> {
+  const response = await api.patch<string>(`/school/${id}/changeStatus`);
+  return response.data;
 }

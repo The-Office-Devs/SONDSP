@@ -106,7 +106,7 @@ export function DataTable<T>({
                   key={String(column.id)}
                   className="px-6 py-3 text-left font-semibold text-white"
                 >
-                  {column.header} ↓
+                  {column.header}
                 </TableHead>
               ))}
 

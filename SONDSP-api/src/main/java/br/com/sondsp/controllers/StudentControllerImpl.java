@@ -35,7 +35,7 @@ public class StudentControllerImpl implements StudentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getStudent(@RequestParam Integer id) {
+    public ResponseEntity<?> getStudent(@PathVariable Integer id) {
         return ResponseEntity.ok().body(new StudentDTO(service.getStudent(id)));
     }
 
@@ -64,12 +64,12 @@ public class StudentControllerImpl implements StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudent(@RequestParam Integer id, @RequestBody StudentForm form) {
+    public ResponseEntity<?> updateStudent(@PathVariable Integer id, @RequestBody StudentForm form) {
         return ResponseEntity.ok().body(new StudentDTO(service.updateStudent(id, form)));
     }
 
     @PatchMapping("/{id}/changeStatus")
-    public ResponseEntity<?> changeStatus(@RequestParam Integer id) {
+    public ResponseEntity<?> changeStatus(@PathVariable Integer id) {
         if (service.changeStatus(id))
             return ResponseEntity.ok(STUDENT_ACTIVATED);
 

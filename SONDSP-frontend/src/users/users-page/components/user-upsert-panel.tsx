@@ -22,7 +22,6 @@ const roleOptions = [
 ];
 
 const permissionsOptions = [
-  { value: "ALL", label: "Todas"},
   { value: "CREATE_USER", label: "Criar usuário" },
   { value: "UPDATE_USER", label: "Editar usuário" },
   { value: "DELETE_USER", label: "Excluir usuário" }

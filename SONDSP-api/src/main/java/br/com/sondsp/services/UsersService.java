@@ -209,6 +209,9 @@ public class UsersService {
     private void validadeUser(UserForm userForm, User user) {
         if (!Objects.equals(user.getEmail(), userForm.email()) && repository.existsByEmail(userForm.email()))
             throw new ValidationException(EMAIL_ALREADY_EXISTS);
+
+        if (!Objects.equals(user.getRegistration(), userForm.registration()) && repository.existsByRegistration(userForm.registration()))
+            throw new ValidationException(REGISTRATION_ALREADY_EXISTS);
     }
 
     public String encodePassword(String password){

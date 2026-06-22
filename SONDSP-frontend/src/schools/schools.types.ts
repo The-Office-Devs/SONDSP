@@ -6,7 +6,8 @@ export interface School {
 }
 
 export interface SchoolFilter {
-  search?: string
+  search?: string;
+  status?: boolean;
 }
 
 export interface CreateSchoolRequest {

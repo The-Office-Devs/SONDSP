@@ -89,9 +89,9 @@ export function useDeleteClass() {
     mutationFn: (id: number) => 
       deleteClassService(id),
 
-    onSuccess: () => {
+    onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: CLASSES_QUERY_KEY });
-      toast.success('Turma excluída com sucesso!');
+      toast.success(message || 'Status da turma alterado com sucesso!');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>

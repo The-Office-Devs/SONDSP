@@ -32,7 +32,7 @@ public class SchoolClassControllerImpl implements SchoolClassController{
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSchoolClassById(@RequestParam Integer id) {
+    public ResponseEntity<?> getSchoolClassById(@PathVariable Integer id) {
         return ResponseEntity.ok().body(new SchoolClassDTO(service.getSchoolClass(id)));
     }
 
@@ -61,12 +61,12 @@ public class SchoolClassControllerImpl implements SchoolClassController{
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateSchoolClass(@RequestParam Integer id, @RequestBody SchoolClassForm form) {
+    public ResponseEntity<?> updateSchoolClass(@PathVariable Integer id, @RequestBody SchoolClassForm form) {
         return ResponseEntity.ok().body(new SchoolClassDTO(service.updateSchoolClass(id, form)));
     }
 
     @PatchMapping("/{id}/changeStatus")
-    public ResponseEntity<?> changeStatus(@RequestParam Integer id) {
+    public ResponseEntity<?> changeStatus(@PathVariable Integer id) {
         if (service.changeStatus(id))
             return ResponseEntity.ok(SCHOOL_CLASS_ACTIVATED);
 
