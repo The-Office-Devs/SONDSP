@@ -1,8 +1,5 @@
 package br.com.sondsp.entities;
 
-import br.com.sondsp.dtos.RegisterDTO;
-import br.com.sondsp.entities.enums.UserRoles;
-import br.com.sondsp.form.UserForm;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,7 +7,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -46,90 +42,24 @@ public class User implements UserDetails {
     @Column(name = "senha")
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "permissao_x_usuario",
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_permissao")
     )
-    private Set<Permission> permissions = new HashSet<>();
+    private Set<Permission> permissions;
 
-    @ManyToMany
-    @JoinTable(
-            name = "usuario_x_escola",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_escola")
-    )
-    private Set<School> schools = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<UserSchool> schools;
 
-    @ManyToMany
-    @JoinTable(
-            name = "usuario_x_turma",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_turma")
-    )
-    private Set<SchoolClass> schoolsClasses = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<UserSchoolClass> schoolClasses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String roleName = "ROLE_" + this.role.getName().toUpperCase();
         return List.of(new SimpleGrantedAuthority(roleName));
-    }
-
-    public static User buildUserWithRegisterDTOAndEncodedPassword(
-            RegisterDTO registerDTO,
-            String encodedPassword,
-            Role role,
-            Set<Permission> permissions
-    ) {
-        return User
-                .builder()
-                .name(registerDTO.name())
-                .password(encodedPassword)
-                .registration(registerDTO.registration())
-                .email(registerDTO.email())
-                .role(role)
-                .status(true)
-                .permissions(permissions)
-                .build();
-    }
-
-    public static User updateUserWithRegisterDTO(
-            RegisterDTO registerDTO,
-            User user,
-            Role role,
-            Set<Permission> permissions
-    ) {
-        return User
-                .builder()
-                .name(registerDTO.name())
-                .password(user.password)
-                .registration(registerDTO.registration())
-                .email(user.email)
-                .role(role)
-                .status(true)
-                .permissions(permissions)
-                .build();
-    }
-
-
-    public static User updateUserWithUserForm(
-            User user,
-            UserForm userUpdated,
-            Role role,
-            Set<Permission> permissions
-    ) {
-        return User
-                .builder()
-                .id(user.getId())
-                .registration(userUpdated.registration())
-                .email(userUpdated.email())
-                .name(userUpdated.name())
-                .password(user.getPassword())
-                .role(role)
-                .status(userUpdated.status())
-                .permissions(permissions)
-                .build();
     }
 
     @Override

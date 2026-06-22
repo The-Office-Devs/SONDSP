@@ -17,5 +17,11 @@ public class School {
     private Integer id;
 
     @Column(name = "nome")
-    private String nome;
+    private String name;
+
+    @Column(name = "diretor")
+    private String principalName;
+
+    @Column(name = "status")
+    private Boolean status;
 }

@@ -1,0 +1,123 @@
+import { 
+  keepPreviousData, 
+  useMutation, 
+  useQuery, 
+  useQueryClient 
+} from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { AxiosError } from "axios";
+
+import { handleApiError } from "@/lib/utils";
+import { useAuthStore } from "@/auth/auth.store";
+import { UserRole } from "@/auth/auth.types";
+import { 
+  createUserService, 
+  changeUserStatusService, 
+  getUserService, 
+  listUsersService, 
+  updateUserService
+} from "../users.service";
+import type { UserFilter } from "../users.types";
+import type { UserFormData } from "./user-schema";
+import type { PaginationParams } from "@/api/types";
+
+const USERS_QUERY_KEY = ['users'] as const;
+
+export function useUsers(filter?: UserFilter & PaginationParams) {
+  return useQuery({
+    queryKey: [...USERS_QUERY_KEY, filter],
+    queryFn: () => listUsersService(filter),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useUser(id: number | null) {
+  return useQuery({
+    queryKey: ["user", id],
+    queryFn: () => getUserService(id as number),
+    enabled: !!id,
+  });
+}
+
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UserFormData) => 
+      createUserService({
+        email: data.email,
+        registration: data.registration,
+        name: data.name,
+        role: data.role,
+        permissions: data.permissions
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+      toast.success('Usuário cadastrado com sucesso!');
+    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error)
+  });
+}
+
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+  const currentUser = useAuthStore((state) => state.user);
+  const updateCurrentUser = useAuthStore((state) => state.updateUser);
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UserFormData }) =>
+      updateUserService(
+        id, 
+        {
+          email: data.email,
+          registration: data.registration,
+          name: data.name,
+          role: data.role,
+          permissions: data.permissions
+        }
+      ),
+
+    onSuccess: (updatedUser) => {
+      queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+
+      if (
+        currentUser &&
+        (currentUser.email === updatedUser.email ||
+          (currentUser.registration && currentUser.registration === updatedUser.registration))
+      ) {
+        updateCurrentUser({
+          name: updatedUser.name,
+          registration: updatedUser.registration,
+          email: updatedUser.email,
+          role: updatedUser.role as UserRole,
+          permissions: updatedUser.permissions,
+        });
+      }
+
+      toast.success('Usuário atualizado com sucesso!');
+    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error)
+  });
+}
+
+export function useChangeUserStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => 
+      changeUserStatusService(id),
+
+    onSuccess: (message) => {
+      queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+      toast.success(message || 'Status do usuário alterado com sucesso!');
+    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error)
+  });
+}

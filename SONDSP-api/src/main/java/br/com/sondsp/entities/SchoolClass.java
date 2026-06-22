@@ -17,9 +17,15 @@ public class SchoolClass {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_escola", referencedColumnName = "id")
+    @JoinColumn(name = "id_escola", referencedColumnName = "id", updatable = false)
     private School school;
 
     @Column(name = "nome")
     private String name;
+
+    @Column(name = "ano_letivo")
+    private String schoolYear;
+
+    @Column(name = "status")
+    private Boolean status;
 }

@@ -3,7 +3,6 @@ package br.com.sondsp.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -28,5 +27,5 @@ public class Role {
         joinColumns = @JoinColumn(name = "id_funcao"),
         inverseJoinColumns = @JoinColumn(name = "id_permissao")
     )
-    private Set<Permission> permissions = new HashSet<>();
+    private Set<Permission> permissions;
 }

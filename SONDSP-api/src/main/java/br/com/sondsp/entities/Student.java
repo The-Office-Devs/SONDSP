@@ -28,4 +28,7 @@ public class Student {
 
     @Column(name = "num_chamada")
     private Integer rowNumber;
+
+    @Column(name = "status")
+    private Boolean status;
 }

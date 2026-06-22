@@ -1,49 +1,63 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.AuthenticationDTO;
-import br.com.sondsp.dtos.RegisterDTO;
-import br.com.sondsp.security.AuthenticationService;
-import br.com.sondsp.services.UsersService;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.sondsp.dtos.UserDTO;
+import br.com.sondsp.form.AuthenticationForm;
+import br.com.sondsp.form.ChangePasswordForm;
+import br.com.sondsp.form.FirstAccessForm;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/auth")
-public class AuthenticationController {
-    @Autowired
-    private AuthenticationService authenticationService;
+import javax.security.auth.login.LoginException;
 
-    @Autowired
-    private UsersService  usersService;
+public interface AuthenticationController {
+    @Operation(description = "Efetua o login do usuário", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário logado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AuthenticationDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> login(AuthenticationForm form) throws LoginException;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationDTO authenticationDTO){
-        return this.authenticationService.loginUser(authenticationDTO);
-    }
+    @Operation(description = "Envia email de troca de senha", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Email enviado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json"
+                    )
+            )
+    })
+    ResponseEntity<?> sendChangePasswordEmail(String email) throws Exception;
 
-    @PostMapping("/send-change-password-email")
-    public ResponseEntity<?> sendChangePasswordEmail(@RequestBody String email){
-        return this.authenticationService.sendChangePasswordEmail(email);
-    }
+    @Operation(description = "Realiza o primeiro acesso do usuário.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Primeiro acesso realizado com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> firstAccess(FirstAccessForm form);
 
-    @PostMapping("/first-access")
-    public ResponseEntity<?> firstAccess(@RequestBody String email){
-        return this.authenticationService.firstAccess(email);
-    }
-
-    @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody String email, @RequestBody String password){
-        return this.usersService.changePassword(email, password);
-    }
-
-    @PostMapping("/activate-user")
-    public ResponseEntity<?> activateUser(
-            @RequestBody String rf,
-            @RequestBody String email,
-            @RequestBody String password
-    ){
-        return this.usersService.activateUser(rf, email, password);
-    }
+    @Operation(description = "Realiza a troca de senha do usuário.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Senha trocada com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> changePassword(ChangePasswordForm form);
 }

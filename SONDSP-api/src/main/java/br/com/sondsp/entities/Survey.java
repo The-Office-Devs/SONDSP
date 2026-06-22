@@ -40,7 +40,6 @@ public class Survey {
     private String surveyImage;
 
     @Column(name = "ind_digital")
-    // TODO: Adicionar converter
     private Boolean isDigital;
 
     @ManyToOne(fetch = FetchType.LAZY)
