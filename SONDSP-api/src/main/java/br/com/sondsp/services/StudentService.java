@@ -61,7 +61,7 @@ public class StudentService {
         }
 
         // TODO: Arrumar essa coisa feia
-        if (student.getStatus() != null)
+        if (student.getSchoolClass() != null)
             for (Student verifyStudent : repository.findAllBySchoolClassId(form.schoolClassId())) {
                 if (Objects.equals(verifyStudent.getRowNumber(), form.rowNumber()))
                     throw new ValidationException(ROW_NUMBER_TAKEN);
