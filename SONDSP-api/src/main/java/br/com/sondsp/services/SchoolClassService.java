@@ -68,7 +68,7 @@ public class SchoolClassService {
         SchoolClass schoolClass = getSchoolClass(id);
 
         // Se a turma estiver inativa e a escola também
-        if (!schoolClass.getStatus() && !schoolService.getSchool(schoolClass.getId()).getStatus())
+        if (!schoolClass.getStatus() && !schoolService.getSchool(schoolClass.getSchool().getId()).getStatus())
             throw new ValidationException(SCHOOL_CLASS_CANNOT_ACTIVATE);
 
         schoolClass.setStatus(!schoolClass.getStatus());
