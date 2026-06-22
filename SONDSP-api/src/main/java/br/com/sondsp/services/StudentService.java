@@ -56,7 +56,7 @@ public class StudentService {
     public Student updateStudent(Integer id, StudentForm form) {
         Student student = getStudent(id);
 
-        if (!Objects.equals(student.getSchoolClass().getId(), form.schoolClassId())) {
+        if (student.getSchoolClass() != null && !Objects.equals(student.getSchoolClass().getId(), form.schoolClassId())) {
             student.setSchoolClass(schoolClassService.getSchoolClass(form.schoolClassId()));
 
             for (Student verifyStudent : repository.findAllBySchoolClassId(form.schoolClassId())) {
