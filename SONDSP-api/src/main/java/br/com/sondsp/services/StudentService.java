@@ -58,12 +58,14 @@ public class StudentService {
 
         if (student.getSchoolClass() != null && !Objects.equals(student.getSchoolClass().getId(), form.schoolClassId())) {
             student.setSchoolClass(schoolClassService.getSchoolClass(form.schoolClassId()));
+        }
 
+        // TODO: Arrumar essa coisa feia
+        if (student.getStatus() != null)
             for (Student verifyStudent : repository.findAllBySchoolClassId(form.schoolClassId())) {
                 if (Objects.equals(verifyStudent.getRowNumber(), form.rowNumber()))
                     throw new ValidationException(ROW_NUMBER_TAKEN);
             }
-        }
 
         student.setName(form.name());
         student.setRegistration(form.registration());
