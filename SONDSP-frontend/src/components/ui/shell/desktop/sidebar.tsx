@@ -16,6 +16,10 @@ import { useAuthStore } from '@/auth/auth.store';
 export function DesktopShellSidebar() {
   const user = useAuthStore((state) => state.user);
   const [expanded, setExpanded] = useState(true);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    admin: false,
+    application: false,
+  });
   const navigate = useNavigate();
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
@@ -27,12 +31,32 @@ export function DesktopShellSidebar() {
     navigate('/login');
   };
 
+  const toggleSection = (key: string) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleParentClick = (key: string) => {
+    if (!expanded) {
+      setExpanded(true);
+      setOpenSections({ admin: false, application: false, [key]: true });
+    } else {
+      toggleSection(key);
+    }
+  };
+
+  const adminHasActiveChild = administratorItems.some(
+    (item) => location.pathname === `/gerenciamento${item.to}`,
+  );
+  const applicationHasActiveChild = applicationItems.some(
+    (item) => location.pathname === item.to,
+  );
+
   return (
     <div className="flex h-full">
       <aside
         className={cn(
           'flex h-full shrink-0 flex-col overflow-hidden bg-primary text-white transition-[width] duration-300 ease-out',
-          expanded ? 'w-[16rem]' : 'w-[5.25rem]',
+          expanded ? 'w-[16.5rem]' : 'w-[5.25rem]',
         )}
       >
         <div className={cn('flex flex-col gap-8 px-3 py-6', expanded ? 'items-stretch' : 'items-center')}>
@@ -50,40 +74,66 @@ export function DesktopShellSidebar() {
               onClick={() => navigate('/gerenciamento/usuarios')}
             />
 
-            {expanded ? <SidebarSection title="Área do Administrador" icon={PencilLine} /> : null}
-            <div className="space-y-1">
-              {administratorItems.map((item) => {
-                const path = `/gerenciamento${item.to}`;
+            <div className="group/admin">
+              <SidebarItem
+                icon={PencilLine}
+                label="Área do Administrador"
+                expanded={expanded}
+                onClick={() => handleParentClick('admin')}
+                className={cn(
+                  'group-hover/admin:bg-white/10',
+                  adminHasActiveChild && 'bg-white/10',
+                )}
+              />
+              {expanded && openSections.admin && (
+                <div className="mt-3 flex flex-col gap-3">
+                  {administratorItems.map((item) => {
+                    const path = `/gerenciamento${item.to}`;
 
-                return (
-                  <SidebarItem
-                    key={item.label}
-                    icon={item.icon}
-                    label={item.label}
-                    expanded={expanded}
-                    active={location.pathname === path}
-                    indent={expanded}
-                    onClick={() => navigate(path)}
-                  />
-                );
-              })}
+                    return (
+                      <SidebarItem
+                        key={item.label}
+                        icon={item.icon}
+                        label={item.label}
+                        expanded={expanded}
+                        active={location.pathname === path}
+                        indent={expanded}
+                        onClick={() => navigate(path)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            {expanded ? <SidebarSection title="Área de Aplicação" icon={ClipboardList} /> : null}
-            <div className="space-y-1">
-              {applicationItems.map((item) => (
-                <SidebarItem
-                  key={item.label}
-                  icon={item.icon}
-                  label={item.label}
-                  expanded={expanded}
-                  indent={expanded}
-                  onClick={() => navigate(item.to)}
-                />
-              ))}
+            <div className="group/application">
+              <SidebarItem
+                icon={ClipboardList}
+                label="Área de Aplicação"
+                expanded={expanded}
+                onClick={() => handleParentClick('application')}
+                className={cn(
+                  'group-hover/application:bg-white/10',
+                  applicationHasActiveChild && 'bg-white/10',
+                )}
+              />
+              {expanded && openSections.application && (
+                <div className="mt-3 flex flex-col gap-3">
+                  {applicationItems.map((item) => (
+                    <SidebarItem
+                      key={item.label}
+                      icon={item.icon}
+                      label={item.label}
+                      expanded={expanded}
+                      indent={expanded}
+                      onClick={() => navigate(item.to)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="mt-2 space-y-1">
+            <div className="flex flex-col gap-3">
               <SidebarItem icon={CircleHelp} label="Ajuda" expanded={expanded} onClick={() => {}} />
               <SidebarItem icon={LogOut} label="Sair" expanded={expanded} onClick={handleLogout} />
             </div>
@@ -115,9 +165,10 @@ interface SidebarItemProps {
   indent?: boolean;
   active?: boolean;
   onClick?: () => void;
+  className?: string;
 }
 
-export function SidebarItem({ icon: Icon, label, expanded, indent = false, active = false, onClick }: SidebarItemProps) {
+export function SidebarItem({ icon: Icon, label, expanded, indent = false, active = false, onClick, className }: SidebarItemProps) {
   return (
     <button
       type="button"
@@ -127,27 +178,12 @@ export function SidebarItem({ icon: Icon, label, expanded, indent = false, activ
         'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors cursor-pointer',
         active ? 'bg-white/12 text-white' : 'text-white/95 hover:bg-white/10',
         !expanded && 'justify-center px-2',
-        indent && expanded && 'pl-5',
+        indent && expanded && 'pl-12',
+        className,
       )}
     >
       <Icon className="size-6 shrink-0" />
       {expanded ? <span className="truncate text-[1.05rem] font-medium">{label}</span> : null}
     </button>
-  );
-}
-
-interface SidebarSectionProps {
-  icon: ComponentType<{ className?: string }>;
-  title: string;
-}
-
-export function SidebarSection({ icon: Icon, title }: SidebarSectionProps) {
-  return (
-    <div className="mt-3 flex items-start gap-3 px-3 text-white/90">
-      <Icon className="mt-0.5 size-5 shrink-0" />
-      <span className="whitespace-nowrap text-[0.95rem] font-medium leading-tight">
-        {title}
-      </span>
-    </div>
   );
 }
