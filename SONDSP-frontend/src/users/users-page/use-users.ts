@@ -15,9 +15,11 @@ import {
   changeUserStatusService, 
   getUserService, 
   listUsersService, 
-  updateUserService
+  updateUserService,
+  linkUserToSchoolService,
+  linkUserToSchoolClassService
 } from "../users.service";
-import type { UserFilter } from "../users.types";
+import type { LinkSchoolClassRequest, LinkSchoolRequest, UserFilter } from "../users.types";
 import type { UserFormData } from "./user-schema";
 import type { PaginationParams } from "@/api/types";
 
@@ -115,6 +117,40 @@ export function useChangeUserStatus() {
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
       toast.success(message || 'Status do usuário alterado com sucesso!');
+    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error)
+  });
+}
+
+export function useLinkUserToSchool() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: LinkSchoolRequest }) => 
+      linkUserToSchoolService(id, data),
+
+    onSuccess: (message) => {
+      queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+      toast.success(message);
+    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error)
+  });
+}
+
+export function useLinkUserToSchoolClass() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: LinkSchoolClassRequest }) => 
+      linkUserToSchoolClassService(id, data),
+
+    onSuccess: (message) => {
+      queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+      toast.success(message);
     },
 
     onError: (error: AxiosError<{ error: string }>) =>

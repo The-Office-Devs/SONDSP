@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import { toast } from 'sonner';
-
 import { Button } from '@/components/ui/button';
 import { FilterBar } from '@/components/FilterBar/FilterBar';
 import {
@@ -19,6 +16,8 @@ import { buildPaginationProps } from '@/api/types';
 interface LinkUsersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onLink: (userId: number, userFunction: string) => void;
+  queryParams?: Record<string, string | number | boolean>; // Pra filtrar se é de escola ou turma 
   isTeachers?: boolean;
 }
 
@@ -28,24 +27,26 @@ const columns: ColumnDef<UserListItem>[] = [
   { id: "role", header: "Função", width: "100px" },
 ];
 
-export function LinkUsersDialog({ open, onOpenChange, isTeachers = false }: Readonly<LinkUsersDialogProps>) {
+export function LinkUsersDialog({ 
+  open, 
+  onOpenChange, 
+  onLink,
+  queryParams,
+  isTeachers = false 
+}: Readonly<LinkUsersDialogProps>) {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
   const { data: usersPage, isLoading, isFetching } = useUsers({
     status: true,
     page,
     size,
+    ...queryParams,
     ...(isTeachers ? { roleName: 'Professor' } : {}),
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
 
-  const handleLink = (userName: string) => {
-    const userType = isTeachers ? "Professor" : "Usuário";
-    toast.success(`${userType} "${userName}" vinculado com sucesso.`);
-  };
-
   const actions: RowAction<UserListItem>[] = [
-    { type: "link", onClick: (user) => handleLink(user.name) },
+    { type: "link", onClick: (user) => onLink(user.id, user.role), isActive: (user) => user.linked },
   ];
 
   return (

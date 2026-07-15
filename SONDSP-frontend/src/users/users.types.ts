@@ -14,12 +14,15 @@ export interface UserListItem {
   email: string;
   role: string
   status: boolean;
+  linked: boolean;
 }
 
 export interface UserFilter {
   search?: string;
   status?: boolean;
   roleName?: string;
+  schoolId?: number;
+  schoolClassId?: number;
 }
 
 export interface CreateUserRequest {
@@ -31,3 +34,13 @@ export interface CreateUserRequest {
 }
 
 export type UpdateUserRequest = CreateUserRequest;
+
+export interface LinkSchoolRequest {
+  schoolId: number;
+  function: string;
+}
+
+export interface LinkSchoolClassRequest {
+  schoolClassId: number;
+  function: string;
+}

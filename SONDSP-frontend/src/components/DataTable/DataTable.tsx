@@ -7,8 +7,16 @@ import {
   TableHeader, 
   TableRow 
 } from "../ui/table";
+import { 
+  AlarmSmoke, 
+  Check, 
+  Link2, 
+  Link2Off, 
+  Loader2, 
+  PencilLine, 
+  X 
+} from "lucide-react";
 import { Button } from "../ui/button";
-import { AlarmSmoke, Check, Link2, Loader2, PencilLine, X } from "lucide-react";
 import { AppPagination } from "../ui/pagination";
 
 export type ColumnDef<T> = {
@@ -25,6 +33,7 @@ export type RowAction<T> = {
   disabled?: boolean | ((row: T) => boolean);
   label?: string;
   className?: string;
+  isActive?: (row: T) => boolean;
 }
 
 interface DataTableProps<T> {
@@ -140,6 +149,8 @@ export function DataTable<T>({
                           ? action.disabled(row)
                           : action.disabled ?? false;
 
+                      const isActive = action.isActive ? action.isActive(row) : undefined;
+
                       return (
                         <ActionButton
                           key={`${action.type}-${action.label}`}
@@ -148,7 +159,7 @@ export function DataTable<T>({
                           disabled={isDisabled}
                           label={action.label}
                           className={action.className}
-                          status={(row as any).status}
+                          isActive={isActive}
                         />
                       );
                     })}
@@ -181,7 +192,7 @@ type ActionButtonProps = Readonly<{
   disabled?: boolean;
   className?: string;
   label?: string;
-  status?: boolean;
+  isActive?: boolean;
 }>;
 
 function ActionButton({ 
@@ -190,7 +201,7 @@ function ActionButton({
   className, 
   label, 
   disabled = false,
-  status
+  isActive
 }: ActionButtonProps) {
   const shared = cn("w-14", className);
 
@@ -210,23 +221,25 @@ function ActionButton({
   }
 
   if (type === "link") {
+    const isLinked = isActive ?? false;
     return (
       <Button
-        title="Vincular"
-        aria-label="Vincular"
-        variant="outline"
-        className={cn(shared, "border-slate-400 text-slate-900 hover:bg-slate-100")}
+        title={isLinked ? "Desvincular" : "Vincular"}
+        aria-label={isLinked ? "Desvincular" : "Vincular"}
+        variant={isLinked ? "destructive" : "outline"}
+        className={cn(shared,)}
         disabled={disabled}
         onClick={onClick}
       >
-        <Link2 className="size-4" />
+        {isLinked ? <Link2Off className="size-4" /> : <Link2 className="size-4" />}
         {label}
       </Button>
     );
   }
 
   if (type === "delete") {
-    const isInactive = status === false;
+    const active = isActive ?? true;
+    const isInactive = !active;
     return (
       <Button
         title={isInactive ? "Ativar" : "Inativar"}

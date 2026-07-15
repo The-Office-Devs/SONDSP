@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { useDeleteSchool, useSchools } from "../use-schools";
+import { useLinkUserToSchool } from "@/users/users-page/use-users";
 import { useTableState } from "@/hooks/useTableState";
 import { buildPaginationProps } from "@/api/types";
 
@@ -26,15 +27,21 @@ export function SchoolsDesktop() {
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
   const { mutate, isPending } = useDeleteSchool();
+  const { mutate: linkUserToSchool } = useLinkUserToSchool();
 
   const [editSchoolId, setEditSchoolId] = useState<number | null>(null);
   const [deleteSchool, setDeleteSchool] = useState<School | null>(null);
   const [linkUsersSchool, setLinkUsersSchool] = useState<School | null>(null);
 
+  const handleLinkUserToSchool = (userId: number, userFunction: string) => {
+    if (!linkUsersSchool) return;
+    linkUserToSchool({ id: userId, data: { schoolId: linkUsersSchool.id, function: userFunction } });
+  }
+
   const actions: RowAction<School>[] = [
     { type: "edit", onClick: (school) => setEditSchoolId(school.id), disabled: (user) => !user.status },
     { type: "link", onClick: (school) => setLinkUsersSchool(school), disabled: (school) => !school.status },
-    { type: "delete", onClick: (school) => setDeleteSchool(school) }
+    { type: "delete", onClick: (school) => setDeleteSchool(school), isActive: (school) => school.status }
   ];
 
   if (isLoading) {
@@ -67,6 +74,8 @@ export function SchoolsDesktop() {
       <LinkUsersDialog
         open={linkUsersSchool !== null}
         onOpenChange={(open) => { if (!open) setLinkUsersSchool(null); }}
+        onLink={handleLinkUserToSchool}
+        queryParams={linkUsersSchool ? { schoolId: linkUsersSchool.id } : undefined}
       />
 
       <DeleteDialog<School>
@@ -80,7 +89,13 @@ export function SchoolsDesktop() {
             onSuccess: () => setDeleteSchool(null)
           })
         }
-      />
+      >
+        {deleteSchool?.status && (
+          <p className="text-sm text-destructive font-medium">
+            Ao inativar a escola, todos os usuários relacionados a ela perderão esse vínculo.
+          </p>
+        )}
+      </DeleteDialog>
     </div>
   );
 }

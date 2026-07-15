@@ -33,7 +33,7 @@ export function StudentsDesktop() {
 
   const actions: RowAction<StudentListItem>[] = [
     { type: "edit", onClick: (studentItem) => setEditStudentId(studentItem.id), disabled: (studentItem) => !studentItem.status },
-    { type: "delete", onClick: (studentItem) => setDeleteStudent(studentItem) }
+    { type: "delete", onClick: (studentItem) => setDeleteStudent(studentItem), isActive: (studentItem) => studentItem.status }
   ];
   
   if (isLoading) {

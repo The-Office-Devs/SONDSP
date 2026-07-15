@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { useClasses, useDeleteClass } from "../use-classes";
+import { useLinkUserToSchoolClass } from "@/users/users-page/use-users";
 import { useTableState } from "@/hooks/useTableState";
 import { buildPaginationProps } from "@/api/types";
 
@@ -27,15 +28,21 @@ export function ClassesDesktop() {
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
   const { mutate, isPending } = useDeleteClass();
+  const { mutate: linkUserToSchoolClass } = useLinkUserToSchoolClass();
 
   const [editClassId, setEditClassId] = useState<number | null>(null);
   const [deleteClass, setDeleteClass] = useState<ClassListItem | null>(null);
   const [linkTeachersClass, setLinkTeachersClass] = useState<ClassListItem | null>(null);
 
+  const handleLinkUserToSchoolClass = (userId: number, userFunction: string) => {
+    if (!linkTeachersClass) return;
+    linkUserToSchoolClass({ id: userId, data: { schoolClassId: linkTeachersClass.id, function: userFunction } });
+  }
+
   const actions: RowAction<ClassListItem>[] = [
     { type: "edit", onClick: (classItem) => setEditClassId(classItem.id), disabled: (classItem) => !classItem.status },
     { type: "link", onClick: (classItem) => setLinkTeachersClass(classItem), disabled: (classItem) => !classItem.status },
-    { type: "delete", onClick: (classItem) => setDeleteClass(classItem) }
+    { type: "delete", onClick: (classItem) => setDeleteClass(classItem), isActive: (classItem) => classItem.status }
   ];
   
   if (isLoading) {
@@ -68,6 +75,12 @@ export function ClassesDesktop() {
       <LinkUsersDialog
         open={linkTeachersClass !== null}
         onOpenChange={(open) => { if (!open) setLinkTeachersClass(null); }}
+        onLink={handleLinkUserToSchoolClass}
+        queryParams={
+          linkTeachersClass
+            ? { linkedToSchoolId: linkTeachersClass.school.id, schoolClassId: linkTeachersClass.id }
+            : undefined
+        }
         isTeachers={true}
       />
 

@@ -33,7 +33,7 @@ export function UsersDesktop() {
 
   const actions: RowAction<UserListItem>[] = [
     { type: "edit", onClick: (user) => setEditUserId(user.id), disabled: (user) => !user.status },
-    { type: "delete", onClick: (user) => setStatusUser(user) },
+    { type: "delete", onClick: (user) => setStatusUser(user), isActive: (user) => user.status },
   ];
 
   if (isLoading) {
