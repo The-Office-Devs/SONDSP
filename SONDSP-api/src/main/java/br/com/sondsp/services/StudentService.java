@@ -1,5 +1,6 @@
 package br.com.sondsp.services;
 
+import br.com.sondsp.entities.School;
 import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.entities.Student;
 import br.com.sondsp.entities.User;
@@ -8,6 +9,7 @@ import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.repositories.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -95,14 +97,28 @@ public class StudentService {
 
             if (filter.search() != null && !filter.search().isBlank()) {
                 Join<Student, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
+                Join<SchoolClass, School> schoolJoin = schoolClassJoin.join("school", JoinType.INNER);
 
                 String searchPattern = "%" + filter.search().toLowerCase() + "%";
 
+                Expression<String> schoolClass = criteriaBuilder.concat(
+                        criteriaBuilder.concat(schoolClassJoin.get("name"), " - "),
+                        schoolJoin.get("name")
+                );
+
+                Expression<String> rowNumberString = criteriaBuilder.function(
+                        "to_char", String.class,
+                        root.get("rowNumber"),
+                        criteriaBuilder.literal("FM999999999")
+                );
+
                 Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
                 Predicate searchInRegistration = criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern);
-                Predicate searchInSchoolClass = criteriaBuilder.like(criteriaBuilder.lower(schoolClassJoin.get("name")), searchPattern);
+                Predicate searchInSchoolClass = criteriaBuilder.like(criteriaBuilder.lower(schoolClass), searchPattern);
+                Predicate searchInRowNumber = criteriaBuilder.like(rowNumberString, searchPattern);
 
-                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInName, searchInRegistration, searchInSchoolClass);
+                Predicate combinedSearchPredicate = criteriaBuilder.or(
+                        searchInName, searchInRegistration, searchInSchoolClass, searchInRowNumber);
 
                 predicates.add(combinedSearchPredicate);
             } else {
