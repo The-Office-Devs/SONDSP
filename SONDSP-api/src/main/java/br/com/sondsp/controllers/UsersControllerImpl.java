@@ -47,8 +47,11 @@ public class UsersControllerImpl implements UsersController {
 
         Page<User> userPage = service.getUsers(filter, pageable);
 
+        Integer schoolId = filter != null ? filter.schoolId() : null;
+        Integer schoolClassId = filter != null ? filter.schoolClassId() : null;
+
         List<UsersListDTO> contentDTO = userPage.getContent().stream()
-                .map(UsersListDTO::new)
+                .map(user -> new UsersListDTO(user, service.isLinked(user, schoolId, schoolClassId)))
                 .toList();
 
         PageResponse<UsersListDTO> response = new PageResponse<>(

@@ -8,9 +8,7 @@ import br.com.sondsp.repositories.PermissionsRepository;
 import br.com.sondsp.repositories.RolesRepository;
 import br.com.sondsp.repositories.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -199,11 +197,31 @@ public class UsersService {
                             .lower(root.get("email")), "%" + filter.email().toLowerCase() + "%"));
             }
 
+            if (filter.linkedToSchoolId() != null) {
+                Subquery<Integer> sub = query.subquery(Integer.class);
+                Root<UserSchool> usRoot = sub.from(UserSchool.class);
+                sub.select(usRoot.get("user").get("id"))
+                        .where(criteriaBuilder.equal(usRoot.get("school").get("id"), filter.linkedToSchoolId()));
+                predicates.add(root.get("id").in(sub));
+            }
+
             if (filter.status() != null)
                 predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    public boolean isLinked(User user, Integer schoolId, Integer schoolClassId) {
+        if (schoolClassId != null)
+            return user.getSchoolClasses() != null && user.getSchoolClasses().stream()
+                    .anyMatch(usc -> usc.getSchoolClass() != null && schoolClassId.equals(usc.getSchoolClass().getId()));
+
+        if (schoolId != null)
+            return user.getSchools() != null && user.getSchools().stream()
+                    .anyMatch(us -> us.getSchool() != null && schoolId.equals(us.getSchool().getId()));
+
+        return false;
     }
 
     private void validadeUser(UserForm userForm, User user) {

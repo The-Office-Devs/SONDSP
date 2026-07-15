@@ -14,6 +14,7 @@ import lombok.*;
 public class UserSchool {
     @Builder.Default
     @EmbeddedId
+    @EqualsAndHashCode.Include
     private UserSchoolId id = new UserSchoolId();
 
     @ManyToOne
