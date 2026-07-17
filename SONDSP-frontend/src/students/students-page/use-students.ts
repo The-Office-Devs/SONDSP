@@ -17,10 +17,11 @@ import {
 } from "../students.service";
 import type { StudentFilter } from "../students.types";
 import type { StudentFormData } from "./student.schema";
+import type { PaginationParams } from "@/api/types";
 
 const STUDENTS_QUERY_KEY = ['students'] as const;
 
-export function useStudents(filter?: StudentFilter) {
+export function useStudents(filter?: StudentFilter & PaginationParams) {
   return useQuery({
     queryKey: [...STUDENTS_QUERY_KEY, filter],
     queryFn: () => listStudentsService(filter),
@@ -92,9 +93,9 @@ export function useDeleteStudent() {
     mutationFn: (id: number) => 
       deleteStudentService(id),
 
-    onSuccess: () => {
+    onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
-      toast.success('Aluno excluído com sucesso!');
+      toast.success(message || 'Status do aluno alterado com sucesso!');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>

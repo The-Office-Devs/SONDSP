@@ -1,4 +1,5 @@
 import { api } from "@/api/axios";
+import type { PageResponse, PaginationParams } from "@/api/types";
 import type { 
   Class, 
   ClassFilter, 
@@ -7,8 +8,10 @@ import type {
   UpdateClassRequest 
 } from "./classes.types";
 
-export async function listClassesService(filter?: ClassFilter): Promise<ClassListItem[]> {
-  const response = await api.get<ClassListItem[]>('/schoolClass', { params: filter });
+export async function listClassesService(
+  filter?: ClassFilter & PaginationParams
+): Promise<PageResponse<ClassListItem>> {
+  const response = await api.get<PageResponse<ClassListItem>>('/schoolClass', { params: filter });
   return response.data;
 }
 
@@ -27,6 +30,7 @@ export async function updateClassService(id: number, data: UpdateClassRequest): 
   return response.data;
 }
 
-export async function deleteClassService(id: number): Promise<void> {
-  await api.delete(`/schoolClass/${id}`);
+export async function deleteClassService(id: number): Promise<string> {
+  const response = await api.patch<string>(`/schoolClass/${id}/changeStatus`);
+  return response.data;
 }

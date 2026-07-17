@@ -1,8 +1,9 @@
 import { useState } from "react";
 
 import type { UserListItem } from "@/users/users.types";
-import { useDeleteUser, useUsers } from "../use-users";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useChangeUserStatus, useUsers } from "../use-users";
+import { useTableState } from "@/hooks/useTableState";
+import { buildPaginationProps } from "@/api/types";
 
 import { UserUpsertPanel } from "./user-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
@@ -18,20 +19,21 @@ const columns: ColumnDef<UserListItem>[] = [
 ];
 
 export function UsersDesktop() {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: users = [], isLoading } = useUsers(
-    debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
-  );
-  const { mutate, isPending } = useDeleteUser();
+  const { data: usersPage, isLoading, isFetching } = useUsers({
+    page,
+    size,
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
+  const { mutate, isPending } = useChangeUserStatus();
 
   const [editUserId, setEditUserId] = useState<number | null>(null);
-  const [deleteUser, setDeleteUser] = useState<UserListItem | null>(null);
+  const [statusUser, setStatusUser] = useState<UserListItem | null>(null);
 
   const actions: RowAction<UserListItem>[] = [
     { type: "edit", onClick: (user) => setEditUserId(user.id), disabled: (user) => !user.status },
-    { type: "delete", onClick: (user) => setDeleteUser(user), disabled: (user) => !user.status },
+    { type: "delete", onClick: (user) => setStatusUser(user), isActive: (user) => user.status },
   ];
 
   if (isLoading) {
@@ -52,22 +54,24 @@ export function UsersDesktop() {
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<UserListItem>
-        data={users}
+        data={usersPage?.content ?? []}
         columns={columns}
         rowKey={(user) => user.id}
         actions={actions}
         emptyMessage="Nenhum usuário encontrado"
+        isFetching={isFetching}
+        pagination={usersPage ? buildPaginationProps(usersPage, setPage) : undefined}
       />
 
       <DeleteDialog<UserListItem>
-        data={deleteUser}
-        title="Excluir Usuário"
-        open={deleteUser !== null}
-        onOpenChange={(open) => { if (!open) setDeleteUser(null); }}
+        data={statusUser}
+        title={statusUser?.status ? "Inativar Usuário" : "Ativar Usuário"}
+        open={statusUser !== null}
+        onOpenChange={(open) => { if (!open) setStatusUser(null); }}
         isPending={isPending}
         onConfirm={(user) => 
           mutate(user.id, {
-            onSuccess: () => setDeleteUser(null)
+            onSuccess: () => setStatusUser(null)
           })
         }
       />

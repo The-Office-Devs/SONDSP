@@ -33,7 +33,7 @@ export function StudentUpsertPanel({
   const { mutate: createStudent, isPending: isCreating } = useCreateStudent();
   const { mutate: updateStudent, isPending: isUpdating } = useUpdateStudent();
   const { data: student, isLoading: isLoadingClass } = useStudent(studentIdToEdit);
-  const { data: classes } = useClasses();
+  const { data: classesPage } = useClasses({ size: 100, status: true });
 
   const isEditMode = studentIdToEdit !== null;
   const isPending = isCreating || isUpdating;
@@ -54,8 +54,8 @@ export function StudentUpsertPanel({
     if (student) {
       form.reset({ 
         name: student.name,
-        schoolClassId: student.schoolClass.id,
-        rowNumber: student.rowNumber,
+        schoolClassId: student.schoolClass?.id ?? 0,
+        rowNumber: student.rowNumber ?? "",
         registration: student.registration,
         status: student.status
       });
@@ -89,7 +89,7 @@ export function StudentUpsertPanel({
   };
 
   const classOptions = 
-    classes?.map((c) => ({
+    classesPage?.content?.map((c) => ({
       value: String(c.id),
       label: `${c.name} - ${c.school.name}`
     })) ?? [];

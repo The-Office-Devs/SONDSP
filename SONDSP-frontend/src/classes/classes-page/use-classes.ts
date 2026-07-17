@@ -17,10 +17,11 @@ import {
 } from "../classes.service";
 import type { ClassFilter } from "../classes.types";
 import type { ClassFormData } from "./class.schema";
+import type { PaginationParams } from "@/api/types";
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
 
-export function useClasses(filter?: ClassFilter) {
+export function useClasses(filter?: ClassFilter & PaginationParams) {
   return useQuery({
     queryKey: [...CLASSES_QUERY_KEY, filter],
     queryFn: () => listClassesService(filter),
@@ -88,9 +89,9 @@ export function useDeleteClass() {
     mutationFn: (id: number) => 
       deleteClassService(id),
 
-    onSuccess: () => {
+    onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: CLASSES_QUERY_KEY });
-      toast.success('Turma excluída com sucesso!');
+      toast.success(message || 'Status da turma alterado com sucesso!');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>

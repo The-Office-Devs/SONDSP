@@ -2,24 +2,26 @@ package br.com.sondsp.services;
 
 import br.com.sondsp.entities.School;
 import br.com.sondsp.entities.SchoolClass;
+import br.com.sondsp.entities.Student;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import br.com.sondsp.repositories.SchoolClassRepository;
+import br.com.sondsp.repositories.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_CANNOT_ACTIVATE;
 import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_NOT_FOUND;
 
 @Service
@@ -27,9 +29,17 @@ import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_NOT_FOUND;
 public class SchoolClassService {
     private SchoolClassRepository repository;
     private SchoolService schoolService;
+    private StudentRepository studentRepository;
 
     public SchoolClass createSchoolClass(SchoolClassForm form) {
-        return repository.save(new SchoolClass(form, schoolService.getSchool(form.schoolId())));
+        School school = schoolService.getSchool(form.schoolId());
+
+        return repository.save(SchoolClass.builder()
+                .name(form.name())
+                .schoolYear(form.schoolYear())
+                .school(school)
+                .status(true)
+                .build());
     }
 
     public SchoolClass getSchoolClass(Integer id) {
@@ -42,13 +52,40 @@ public class SchoolClassService {
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
-        return repository.save(SchoolClass.updateSchoolClassWithForm(getSchoolClass(id), form));
+        SchoolClass schoolClass = getSchoolClass(id);
+
+        schoolClass.setName(form.name());
+        schoolClass.setSchoolYear(form.schoolYear());
+
+        if (!java.util.Objects.equals(schoolClass.getSchool().getId(), form.schoolId())) {
+            schoolClass.setSchool(schoolService.getSchool(form.schoolId()));
+        }
+
+        return repository.save(schoolClass);
     }
 
-    public void deleteSchoolClass(Integer id) {
+    public Boolean changeStatus(Integer id) {
         SchoolClass schoolClass = getSchoolClass(id);
-        schoolClass.setStatus(false);
+
+        // Se a turma estiver inativa e a escola também
+        if (!schoolClass.getStatus() && !schoolService.getSchool(schoolClass.getSchool().getId()).getStatus())
+            throw new ValidationException(SCHOOL_CLASS_CANNOT_ACTIVATE);
+
+        schoolClass.setStatus(!schoolClass.getStatus());
+
+        // Desvincula todos os alunos da turma ao desativar
+        List<Student> students = studentRepository.findAllBySchoolClassId(id);
+
+        // TODO: Arrumar esse loop para não fazer um update por aluno
+        for (Student student : students) {
+            student.setSchoolClass(null);
+            student.setRowNumber(null);
+            studentRepository.save(student);
+        }
+
         repository.save(schoolClass);
+
+        return schoolClass.getStatus();
     }
 
     private Specification<SchoolClass> buildFilter(SchoolClassFilter filter) {
@@ -71,6 +108,12 @@ public class SchoolClassService {
 
                 predicates.add(combinedSearchPredicate);
             } else {
+                if (filter.schoolId() != null) {
+                    Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
+
+                    predicates.add(criteriaBuilder.equal(schoolJoin.get("id"), filter.schoolId()));
+                }
+
                 if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
                     Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 

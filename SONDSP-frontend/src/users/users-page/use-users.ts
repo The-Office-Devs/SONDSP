@@ -8,19 +8,24 @@ import { toast } from "sonner";
 import type { AxiosError } from "axios";
 
 import { handleApiError } from "@/lib/utils";
+import { useAuthStore } from "@/auth/auth.store";
+import { UserRole } from "@/auth/auth.types";
 import { 
   createUserService, 
-  deleteUserService, 
+  changeUserStatusService, 
   getUserService, 
   listUsersService, 
-  updateUserService
+  updateUserService,
+  linkUserToSchoolService,
+  linkUserToSchoolClassService
 } from "../users.service";
-import type { UserFilter } from "../users.types";
+import type { LinkSchoolClassRequest, LinkSchoolRequest, UserFilter } from "../users.types";
 import type { UserFormData } from "./user-schema";
+import type { PaginationParams } from "@/api/types";
 
 const USERS_QUERY_KEY = ['users'] as const;
 
-export function useUsers(filter?: UserFilter) {
+export function useUsers(filter?: UserFilter & PaginationParams) {
   return useQuery({
     queryKey: [...USERS_QUERY_KEY, filter],
     queryFn: () => listUsersService(filter),
@@ -61,6 +66,8 @@ export function useCreateUser() {
 
 export function useUpdateUser() {
   const queryClient = useQueryClient();
+  const currentUser = useAuthStore((state) => state.user);
+  const updateCurrentUser = useAuthStore((state) => state.updateUser);
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UserFormData }) =>
@@ -75,8 +82,23 @@ export function useUpdateUser() {
         }
       ),
 
-    onSuccess: () => {
+    onSuccess: (updatedUser) => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+
+      if (
+        currentUser &&
+        (currentUser.email === updatedUser.email ||
+          (currentUser.registration && currentUser.registration === updatedUser.registration))
+      ) {
+        updateCurrentUser({
+          name: updatedUser.name,
+          registration: updatedUser.registration,
+          email: updatedUser.email,
+          role: updatedUser.role as UserRole,
+          permissions: updatedUser.permissions,
+        });
+      }
+
       toast.success('Usuário atualizado com sucesso!');
     },
 
@@ -85,16 +107,50 @@ export function useUpdateUser() {
   });
 }
 
-export function useDeleteUser() {
+export function useChangeUserStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: number) => 
-      deleteUserService(id),
+      changeUserStatusService(id),
 
-    onSuccess: () => {
+    onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
-      toast.success('Usuário excluído com sucesso!');
+      toast.success(message || 'Status do usuário alterado com sucesso!');
+    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error)
+  });
+}
+
+export function useLinkUserToSchool() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: LinkSchoolRequest }) => 
+      linkUserToSchoolService(id, data),
+
+    onSuccess: (message) => {
+      queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+      toast.success(message);
+    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error)
+  });
+}
+
+export function useLinkUserToSchoolClass() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: LinkSchoolClassRequest }) => 
+      linkUserToSchoolClassService(id, data),
+
+    onSuccess: (message) => {
+      queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+      toast.success(message);
     },
 
     onError: (error: AxiosError<{ error: string }>) =>

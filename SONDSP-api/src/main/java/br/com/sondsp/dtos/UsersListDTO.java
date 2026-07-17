@@ -8,16 +8,22 @@ public record UsersListDTO(
         String registration,
         String email,
         String role,
-        Boolean status
-        ) {
+        Boolean status,
+        Boolean linked) {
+
     public UsersListDTO(User user) {
+        this(user, false);
+    }
+
+    public UsersListDTO(User user, boolean linked) {
         this(
                 user.getId(),
                 user.getName(),
                 user.getRegistration(),
                 user.getEmail(),
                 user.getRole() != null ? user.getRole().getName() : null,
-                user.getStatus()
+                user.getStatus(),
+                linked
         );
     }
 }

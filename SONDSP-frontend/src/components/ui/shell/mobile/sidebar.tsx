@@ -19,6 +19,7 @@ interface MobileShellSidebarProps {
 }
 
 export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
@@ -33,6 +34,8 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
       };
     }
   }, [open]);
+
+  if (!user) return null;
 
   const goTo = (to: string) => {
     navigate(to);
@@ -70,9 +73,9 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
           <div className="flex items-center justify-between">
             <div className="flex w-fit items-center gap-3 rounded-full bg-white px-2 py-1 text-primary shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef4ff] text-lg font-semibold">
-                P
+                {user.name.charAt(0).toUpperCase()}
               </div>
-              <span className="pr-2 text-lg font-semibold"> Professor </span>
+              <span className="pr-2 text-lg font-semibold">{user.role}</span>
             </div>
 
             <button

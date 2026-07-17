@@ -20,12 +20,13 @@ import type {
   UpdateSchoolRequest 
 } from '../schools.types';
 import type { UserFilter } from '@/users/users.types';
+import type { PaginationParams } from '@/api/types';
 
 
 const SCHOOLS_QUERY_KEY = ['schools'] as const;
 const USERS_QUERY_KEY = ['users'] as const;
 
-export function useSchools(filter?: SchoolFilter) {
+export function useSchools(filter?: SchoolFilter & PaginationParams) {
   return useQuery({
     queryKey: [...SCHOOLS_QUERY_KEY, filter],
     queryFn: () => listSchoolsService(filter),
@@ -77,17 +78,17 @@ export function useDeleteSchool() {
 
   return useMutation({
     mutationFn: (id: number) => deleteSchoolService(id),
-    onSuccess: () => {
+    onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
-      toast.success('Escola excluída com sucesso!');
+      toast.success(message || 'Status da escola alterado com sucesso!');
     },
     onError: () => {
-      toast.error('Erro ao excluir escola.');
+      toast.error('Erro ao alterar status da escola.');
     },
   });
 }
 
-export function useUsers(filter?: UserFilter) {
+export function useUsers(filter?: UserFilter & PaginationParams) {
   return useQuery({
     queryKey: [...USERS_QUERY_KEY, filter],
     queryFn: () => listUsersService(filter),

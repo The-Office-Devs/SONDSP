@@ -5,29 +5,15 @@ import br.com.sondsp.dtos.UserDTO;
 import br.com.sondsp.form.AuthenticationForm;
 import br.com.sondsp.form.ChangePasswordForm;
 import br.com.sondsp.form.FirstAccessForm;
-import br.com.sondsp.security.AuthenticationService;
-import br.com.sondsp.services.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
 
-@RestController
-@RequestMapping("/auth")
-public class AuthenticationController {
-    @Autowired
-    private AuthenticationService service;
-
-    @Autowired
-    private UsersService usersService;
-
-    @PostMapping("/login")
+public interface AuthenticationController {
     @Operation(description = "Efetua o login do usuário", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -38,11 +24,8 @@ public class AuthenticationController {
                     )
             )
     })
-    public ResponseEntity<?> login(@Valid @RequestBody AuthenticationForm form) throws LoginException {
-        return ResponseEntity.ok().body(new AuthenticationDTO(service.loginUser(form)));
-    }
+    ResponseEntity<?> login(AuthenticationForm form) throws LoginException;
 
-    @PostMapping("/change-password")
     @Operation(description = "Envia email de troca de senha", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -52,11 +35,8 @@ public class AuthenticationController {
                     )
             )
     })
-    public ResponseEntity<?> sendChangePasswordEmail(@RequestBody String email) throws Exception {
-        return ResponseEntity.ok().body(service.sendChangePasswordEmail(email));
-    }
+    ResponseEntity<?> sendChangePasswordEmail(String email) throws Exception;
 
-    @PostMapping("/first-access")
     @Operation(description = "Realiza o primeiro acesso do usuário.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -67,11 +47,8 @@ public class AuthenticationController {
                     )
             )
     })
-    public ResponseEntity<?> firstAccess(@RequestBody FirstAccessForm form) {
-        return ResponseEntity.ok().body(new UserDTO(service.firstAccess(form)));
-    }
+    ResponseEntity<?> firstAccess(FirstAccessForm form);
 
-    @PutMapping("/change-password")
     @Operation(description = "Realiza a troca de senha do usuário.", responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -82,7 +59,5 @@ public class AuthenticationController {
                     )
             )
     })
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form){
-        return ResponseEntity.ok().body(new UserDTO(usersService.changePassword(form)));
-    }
+    ResponseEntity<?> changePassword(ChangePasswordForm form);
 }

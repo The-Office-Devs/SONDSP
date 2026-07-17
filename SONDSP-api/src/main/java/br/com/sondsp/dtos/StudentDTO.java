@@ -15,7 +15,7 @@ public record StudentDTO(
                 student.getId(),
                 student.getName(),
                 student.getRegistration(),
-                new SchoolClassDTO(student.getSchoolClass()),
+                student.getSchoolClass() == null ? null : new SchoolClassDTO(student.getSchoolClass()),
                 student.getRowNumber(),
                 student.getStatus()
         );

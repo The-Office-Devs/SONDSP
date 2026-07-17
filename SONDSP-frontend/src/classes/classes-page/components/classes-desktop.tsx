@@ -1,7 +1,9 @@
 import { useState } from "react";
 
 import { useClasses, useDeleteClass } from "../use-classes";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useLinkUserToSchoolClass } from "@/users/users-page/use-users";
+import { useTableState } from "@/hooks/useTableState";
+import { buildPaginationProps } from "@/api/types";
 
 import type { ClassListItem } from "@/classes/classes.types";
 import { ClassUpsertPanel } from "./class-upsert-panel";
@@ -18,22 +20,29 @@ const columns: ColumnDef<ClassListItem>[] = [
 ];
 
 export function ClassesDesktop() {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: classes = [], isLoading } = useClasses(
-    debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
-  );
+  const { data: classesPage, isLoading, isFetching } = useClasses({
+    page,
+    size,
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
   const { mutate, isPending } = useDeleteClass();
+  const { mutate: linkUserToSchoolClass } = useLinkUserToSchoolClass();
 
   const [editClassId, setEditClassId] = useState<number | null>(null);
   const [deleteClass, setDeleteClass] = useState<ClassListItem | null>(null);
   const [linkTeachersClass, setLinkTeachersClass] = useState<ClassListItem | null>(null);
 
+  const handleLinkUserToSchoolClass = (userId: number, userFunction: string) => {
+    if (!linkTeachersClass) return;
+    linkUserToSchoolClass({ id: userId, data: { schoolClassId: linkTeachersClass.id, function: userFunction } });
+  }
+
   const actions: RowAction<ClassListItem>[] = [
     { type: "edit", onClick: (classItem) => setEditClassId(classItem.id), disabled: (classItem) => !classItem.status },
     { type: "link", onClick: (classItem) => setLinkTeachersClass(classItem), disabled: (classItem) => !classItem.status },
-    { type: "delete", onClick: (classItem) => setDeleteClass(classItem), disabled: (classItem) => !classItem.status }
+    { type: "delete", onClick: (classItem) => setDeleteClass(classItem), isActive: (classItem) => classItem.status }
   ];
   
   if (isLoading) {
@@ -54,22 +63,30 @@ export function ClassesDesktop() {
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<ClassListItem>
-        data={classes}
+        data={classesPage?.content ?? []}
         columns={columns}
         rowKey={(classItem) => classItem.id}
         actions={actions}
         emptyMessage="Nenhuma turma encontrada"
+        isFetching={isFetching}
+        pagination={classesPage ? buildPaginationProps(classesPage, setPage) : undefined}
       />
 
       <LinkUsersDialog
         open={linkTeachersClass !== null}
         onOpenChange={(open) => { if (!open) setLinkTeachersClass(null); }}
+        onLink={handleLinkUserToSchoolClass}
+        queryParams={
+          linkTeachersClass
+            ? { linkedToSchoolId: linkTeachersClass.school.id, schoolClassId: linkTeachersClass.id }
+            : undefined
+        }
         isTeachers={true}
       />
 
       <DeleteDialog<ClassListItem>
         data={deleteClass}
-        title="Excluir Turma"
+        title={deleteClass?.status ? "Inativar Turma" : "Ativar Turma"}
         open={deleteClass !== null}
         onOpenChange={(open) => { if (!open) setDeleteClass(null); }}
         isPending={isPending}
@@ -78,7 +95,13 @@ export function ClassesDesktop() {
             onSuccess: () => setDeleteClass(null)
           })
         }
-      />
+      >
+        {deleteClass?.status && (
+          <p className="text-sm text-destructive font-medium">
+            Ao inativar a turma, todos os alunos relacionados a ela perderão esse vínculo.
+          </p>
+        )}
+      </DeleteDialog>
     </div>
   )
 }

@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import { toast } from 'sonner';
-
 import { Button } from '@/components/ui/button';
 import { FilterBar } from '@/components/FilterBar/FilterBar';
 import {
@@ -13,11 +10,14 @@ import {
 import type { UserListItem } from "@/users/users.types";
 import { useUsers } from '../use-schools';
 import { DataTable, type ColumnDef, type RowAction } from '@/components/DataTable/DataTable';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useTableState } from '@/hooks/useTableState';
+import { buildPaginationProps } from '@/api/types';
 
 interface LinkUsersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onLink: (userId: number, userFunction: string) => void;
+  queryParams?: Record<string, string | number | boolean>; // Pra filtrar se é de escola ou turma 
   isTeachers?: boolean;
 }
 
@@ -27,22 +27,26 @@ const columns: ColumnDef<UserListItem>[] = [
   { id: "role", header: "Função", width: "100px" },
 ];
 
-export function LinkUsersDialog({ open, onOpenChange, isTeachers = false }: Readonly<LinkUsersDialogProps>) {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter);
+export function LinkUsersDialog({ 
+  open, 
+  onOpenChange, 
+  onLink,
+  queryParams,
+  isTeachers = false 
+}: Readonly<LinkUsersDialogProps>) {
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: users = [], isLoading } = useUsers({
+  const { data: usersPage, isLoading, isFetching } = useUsers({
     status: true,
-    ...debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
-  })
-
-  const handleLink = (userName: string) => {
-    const userType = isTeachers ? "Professor" : "Usuário"
-    toast.success(`${userType} "${userName}" vinculado com sucesso.`);
-  };
+    page,
+    size,
+    ...queryParams,
+    ...(isTeachers ? { roleName: 'Professor' } : {}),
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
 
   const actions: RowAction<UserListItem>[] = [
-    { type: "link", onClick: (user) => handleLink(user.name) },
+    { type: "link", onClick: (user) => onLink(user.id, user.role), isActive: (user) => user.linked },
   ];
 
   return (
@@ -61,11 +65,13 @@ export function LinkUsersDialog({ open, onOpenChange, isTeachers = false }: Read
             <FilterBar value={filter} onChange={setFilter} />
 
             <DataTable<UserListItem>
-              data={users}
+              data={usersPage?.content ?? []}
               columns={columns}
               rowKey={(user) => user.id}
               actions={actions}
               emptyMessage={isTeachers ? "Nenhum professor encontrado" : "Nenhum usuário encontrado"}
+              isFetching={isFetching}
+              pagination={usersPage ? buildPaginationProps(usersPage, setPage) : undefined}
             />
 
             <div className="flex justify-start">

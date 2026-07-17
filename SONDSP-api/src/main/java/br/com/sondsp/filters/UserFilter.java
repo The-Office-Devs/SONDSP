@@ -6,6 +6,9 @@ public record UserFilter(
         String roleName,
         String email,
         Boolean status,
-        String search
+        String search,
+        Integer schoolId,
+        Integer schoolClassId,
+        Integer linkedToSchoolId
 ) {
 }

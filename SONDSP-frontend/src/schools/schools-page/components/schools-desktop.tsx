@@ -1,7 +1,9 @@
 import { useState } from "react";
 
 import { useDeleteSchool, useSchools } from "../use-schools";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useLinkUserToSchool } from "@/users/users-page/use-users";
+import { useTableState } from "@/hooks/useTableState";
+import { buildPaginationProps } from "@/api/types";
 
 import type { School } from "@/schools/schools.types";
 import { SchoolUpsertPanel } from "./school-upsert-panel";
@@ -17,22 +19,29 @@ const columns: ColumnDef<School>[] = [
 ];
 
 export function SchoolsDesktop() {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: schools = [], isLoading } = useSchools(
-      debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
-    );
+  const { data: schoolsPage, isLoading, isFetching } = useSchools({
+    page,
+    size,
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
   const { mutate, isPending } = useDeleteSchool();
+  const { mutate: linkUserToSchool } = useLinkUserToSchool();
 
   const [editSchoolId, setEditSchoolId] = useState<number | null>(null);
   const [deleteSchool, setDeleteSchool] = useState<School | null>(null);
   const [linkUsersSchool, setLinkUsersSchool] = useState<School | null>(null);
 
+  const handleLinkUserToSchool = (userId: number, userFunction: string) => {
+    if (!linkUsersSchool) return;
+    linkUserToSchool({ id: userId, data: { schoolId: linkUsersSchool.id, function: userFunction } });
+  }
+
   const actions: RowAction<School>[] = [
     { type: "edit", onClick: (school) => setEditSchoolId(school.id), disabled: (user) => !user.status },
     { type: "link", onClick: (school) => setLinkUsersSchool(school), disabled: (school) => !school.status },
-    { type: "delete", onClick: (school) => setDeleteSchool(school), disabled: (school) => !school.status }
+    { type: "delete", onClick: (school) => setDeleteSchool(school), isActive: (school) => school.status }
   ];
 
   if (isLoading) {
@@ -53,21 +62,25 @@ export function SchoolsDesktop() {
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<School>
-        data={schools}
+        data={schoolsPage?.content ?? []}
         columns={columns}
         rowKey={(school) => school.id}
         actions={actions}
         emptyMessage="Nenhuma escola encontrada"
+        isFetching={isFetching}
+        pagination={schoolsPage ? buildPaginationProps(schoolsPage, setPage) : undefined}
       />
 
       <LinkUsersDialog
         open={linkUsersSchool !== null}
         onOpenChange={(open) => { if (!open) setLinkUsersSchool(null); }}
+        onLink={handleLinkUserToSchool}
+        queryParams={linkUsersSchool ? { schoolId: linkUsersSchool.id } : undefined}
       />
 
       <DeleteDialog<School>
         data={deleteSchool}
-        title="Excluir Escola"
+        title={deleteSchool?.status ? "Inativar Escola" : "Ativar Escola"}
         open={deleteSchool !== null}
         onOpenChange={(open) => { if (!open) setDeleteSchool(null); }}
         isPending={isPending}
@@ -76,7 +89,13 @@ export function SchoolsDesktop() {
             onSuccess: () => setDeleteSchool(null)
           })
         }
-      />
+      >
+        {deleteSchool?.status && (
+          <p className="text-sm text-destructive font-medium">
+            Ao inativar a escola, todos os usuários relacionados a ela perderão esse vínculo.
+          </p>
+        )}
+      </DeleteDialog>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import { useDebounce } from "@/hooks/useDebounce";
+import { useTableState } from "@/hooks/useTableState";
 import { useDeleteStudent, useStudents } from "../use-students";
+import { buildPaginationProps } from "@/api/types";
 
 import type { StudentListItem } from "@/students/students.types";
 import { StudentUpsertPanel } from "./student-upsert-panel";
@@ -13,17 +14,18 @@ const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "180px" },
   { id: "registration", header: "Matrícula", width: "180px", },
   { id: "name", header: "Nome", width: "180px" },
-  { id: "schoolClass", header: "Turma", width: "260px", accessor: (row) => `${row.schoolClass.name} - ${row.schoolClass.school.name}` },
+  { id: "schoolClass", header: "Turma", width: "260px", accessor: (row) => row.schoolClass ? `${row.schoolClass.name} - ${row.schoolClass.school.name}` : "-" },
   { id: "status", header: "Status", width: "180px" },
 ];
 
 export function StudentsDesktop() {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: students = [], isLoading } = useStudents(
-    debouncedFilter.trim() ? { search: debouncedFilter.trim() } : undefined
-  );
+  const { data: studentsPage, isLoading, isFetching } = useStudents({
+    page,
+    size,
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
   const { mutate, isPending } = useDeleteStudent();
 
   const [editStudentId, setEditStudentId] = useState<number | null>(null);
@@ -31,7 +33,7 @@ export function StudentsDesktop() {
 
   const actions: RowAction<StudentListItem>[] = [
     { type: "edit", onClick: (studentItem) => setEditStudentId(studentItem.id), disabled: (studentItem) => !studentItem.status },
-    { type: "delete", onClick: (studentItem) => setDeleteStudent(studentItem), disabled: (studentItem) => !studentItem.status }
+    { type: "delete", onClick: (studentItem) => setDeleteStudent(studentItem), isActive: (studentItem) => studentItem.status }
   ];
   
   if (isLoading) {
@@ -52,16 +54,18 @@ export function StudentsDesktop() {
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<StudentListItem>
-        data={students}
+        data={studentsPage?.content ?? []}
         columns={columns}
         rowKey={(studentItem) => studentItem.id}
         actions={actions}
         emptyMessage="Nenhum aluno encontrado"
+        isFetching={isFetching}
+        pagination={studentsPage ? buildPaginationProps(studentsPage, setPage) : undefined}
       />
 
       <DeleteDialog<StudentListItem>
         data={deleteStudent}
-        title="Excluir Aluno"
+        title={deleteStudent?.status ? "Inativar Aluno" : "Ativar Aluno"}
         open={deleteStudent !== null}
         onOpenChange={(open) => { if (!open) setDeleteStudent(null); }}
         isPending={isPending}

@@ -1,20 +1,14 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.entities.Permission;
-import br.com.sondsp.entities.Role;
-import br.com.sondsp.entities.School;
-import br.com.sondsp.entities.User;
+import br.com.sondsp.entities.*;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.UserFilter;
 import br.com.sondsp.form.*;
 import br.com.sondsp.repositories.PermissionsRepository;
 import br.com.sondsp.repositories.RolesRepository;
-import br.com.sondsp.repositories.SchoolRepository;
 import br.com.sondsp.repositories.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static br.com.sondsp.util.SystemMessages.*;
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 @AllArgsConstructor
@@ -35,18 +28,29 @@ public class UsersService {
     private final RolesRepository rolesRepository;
     private final PermissionsRepository permissionsRepository;
 
-    public User registerUser(RegisterForm form) {
-        User verifiyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
+    private SchoolClassService schoolClassService;
+    private SchoolService schoolService;
 
-        if (verifiyUser != null) {
-            if (Objects.equals(verifiyUser.getEmail(), form.email()))
+    public User registerUser(RegisterForm form) {
+        User verifyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
+
+        if (verifyUser != null) {
+            if (Objects.equals(verifyUser.getEmail(), form.email()))
                 throw new UserAlreadyExistsException(EMAIL_ALREADY_EXISTS);
 
-            if (Objects.equals(verifiyUser.getRegistration(), form.registration()))
+            if (Objects.equals(verifyUser.getRegistration(), form.registration()))
                 throw new UserAlreadyExistsException(REGISTRATION_ALREADY_EXISTS);
         }
 
-        return save(User.buildUserWithRegisterForm(form, getRole(form.role()), getUserPermissions(form.permissions())));
+        return save(User.builder()
+                .name(form.name())
+                .registration(form.registration())
+                .role(rolesRepository.getRoleByName(form.role()))
+                .status(false)
+                .email(form.email())
+                .password(null)
+                .permissions(permissionsRepository.findAllByPermissionIn(form.permissions()))
+                .build());
     }
 
     public User getUser(Integer id) {
@@ -71,32 +75,79 @@ public class UsersService {
         return repository.save(user);
     }
 
-    public User updateUser(Integer id, UserForm userForm) {
+    public User updateUser(Integer id, UserForm form) {
         User user = getUser(id);
 
-        validadeUser(userForm, user);
+        validadeUser(form, user);
 
-        return repository.save(User.updateUserWithUserForm(getUser(id), userForm));
+        user.setName(form.name());
+        user.setRegistration(form.registration());
+        user.setRole(rolesRepository.getRoleByName(form.role()));
+        user.setEmail(form.email());
+        user.setPermissions(permissionsRepository.findAllByPermissionIn(form.permissions()));
+
+        return save(user);
+    }
+
+    public Boolean linkToSchoolClass(Integer id, LinkSchoolClassForm form) {
+        // Busca o usuário e a turma
+        User user = getUser(id);
+        SchoolClass schoolClass = schoolClassService.getSchoolClass(form.schoolClassId());
+
+        // Se encontrar a turma, remove ela
+        if (user.getSchoolClasses()
+                .removeIf(usc -> usc.getSchoolClass().getId().equals(form.schoolClassId()))) {
+            save(user);
+            return false;
+        }
+
+        // Se não tiver removido, adiciona a turma e retorna true
+        UserSchoolClass newSchoolClass = UserSchoolClass.builder().user(user).schoolClass(schoolClass).atuacao(form.function()).build();
+        user.getSchoolClasses().add(newSchoolClass);
+        save(user);
+        return true;
+    }
+
+    public Boolean linkToSchool(Integer id, LinkSchoolForm form) {
+        // Busca o usuário e a escola
+        User user = getUser(id);
+        School school = schoolService.getSchool(form.schoolId());
+
+        // Se encontrar a escola, remove ela
+        if (user.getSchools()
+                .removeIf(usc -> usc.getSchool().getId().equals(form.schoolId()))) {
+            save(user);
+            return false;
+        }
+
+        // Se não tiver removido, adiciona a escola e retorna true
+        UserSchool newSchool = UserSchool.builder().user(user).school(school).atuacao(form.function()).build();
+        user.getSchools().add(newSchool);
+        save(user);
+        return true;
+    }
+
+    public Boolean changeStatus(Integer id) {
+        User user = getUser(id);
+
+        if (user.getPassword() == null)
+            throw new ValidationException(FIRST_ACESS_NOT_DONE);
+
+        user.setStatus(!user.getStatus());
+
+        return save(user).getStatus();
     }
 
     public User changePassword(ChangePasswordForm form){
-        User user = repository.findByEmail(form.email());
-
-        if (user == null) throw new EntityNotFoundException(USER_NOT_FOUND);
+        User user = getByEmail(form.email());
 
         if (user.getStatus()){
             user.setPassword(encodePassword(form.password()));
 
-            return repository.save(user);
+            return save(user);
         } else {
             throw new ValidationException(INACTIVATED_USER);
         }
-    }
-
-    public void deleteUser(Integer idUser) {
-        User userToDelete = getUser(idUser);
-        userToDelete.setStatus(false);
-        repository.save(userToDelete);
     }
 
     public User findByEmailAndRegistration(String email, String registration) {
@@ -130,7 +181,7 @@ public class UsersService {
 
                 if (filter.registration() != null && !filter.registration().isBlank())
                     predicates.add(criteriaBuilder.equal(criteriaBuilder
-                            .lower(root.get("registration")), "%" + filter.registration().toLowerCase() + "%"));
+                            .lower(root.get("registration")), filter.registration().toLowerCase()));
 
                 if (filter.roleName() != null && !filter.roleName().isBlank()) {
                     Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
@@ -146,6 +197,14 @@ public class UsersService {
                             .lower(root.get("email")), "%" + filter.email().toLowerCase() + "%"));
             }
 
+            if (filter.linkedToSchoolId() != null) {
+                Subquery<Integer> sub = query.subquery(Integer.class);
+                Root<UserSchool> usRoot = sub.from(UserSchool.class);
+                sub.select(usRoot.get("user").get("id"))
+                        .where(criteriaBuilder.equal(usRoot.get("school").get("id"), filter.linkedToSchoolId()));
+                predicates.add(root.get("id").in(sub));
+            }
+
             if (filter.status() != null)
                 predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
 
@@ -153,17 +212,24 @@ public class UsersService {
         };
     }
 
+    public boolean isLinked(User user, Integer schoolId, Integer schoolClassId) {
+        if (schoolClassId != null)
+            return user.getSchoolClasses() != null && user.getSchoolClasses().stream()
+                    .anyMatch(usc -> usc.getSchoolClass() != null && schoolClassId.equals(usc.getSchoolClass().getId()));
+
+        if (schoolId != null)
+            return user.getSchools() != null && user.getSchools().stream()
+                    .anyMatch(us -> us.getSchool() != null && schoolId.equals(us.getSchool().getId()));
+
+        return false;
+    }
+
     private void validadeUser(UserForm userForm, User user) {
         if (!Objects.equals(user.getEmail(), userForm.email()) && repository.existsByEmail(userForm.email()))
             throw new ValidationException(EMAIL_ALREADY_EXISTS);
-    }
 
-    public Set<Permission> getUserPermissions(List<String> permissions){
-        return permissionsRepository.findAllByPermissionIn(permissions);
-    }
-
-    private Role getRole(String role){
-        return rolesRepository.getRoleByName(role);
+        if (!Objects.equals(user.getRegistration(), userForm.registration()) && repository.existsByRegistration(userForm.registration()))
+            throw new ValidationException(REGISTRATION_ALREADY_EXISTS);
     }
 
     public String encodePassword(String password){

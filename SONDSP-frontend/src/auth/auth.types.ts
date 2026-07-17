@@ -11,6 +11,7 @@ export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 export interface AuthUser {
   name: string;
   registration: string;
+  email?: string;
   role: UserRole;
   permissions: string[];
 }

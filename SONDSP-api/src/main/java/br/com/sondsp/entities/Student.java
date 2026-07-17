@@ -1,6 +1,5 @@
 package br.com.sondsp.entities;
 
-import br.com.sondsp.form.StudentForm;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,25 +31,4 @@ public class Student {
 
     @Column(name = "status")
     private Boolean status;
-
-    public Student(StudentForm form) {
-         Student.builder()
-                .name(form.name())
-                .registration(form.registration())
-                .registration(form.registration())
-                .rowNumber(form.rowNumber())
-                .status(form.status())
-                .build();
-    }
-
-    public static Student updateStudentWithForm(StudentForm form, Student student, SchoolClass schoolClass) {
-        return Student.builder()
-                .id(student.getId())
-                .name(form.name())
-                .registration(form.registration())
-                .schoolClass(schoolClass)
-                .rowNumber(form.rowNumber())
-                .status(form.status())
-                .build();
-    }
 }
