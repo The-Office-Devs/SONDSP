@@ -1,8 +1,10 @@
 package br.com.sondsp.controllers;
 
+import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.StandardErrorDTO;
 import br.com.sondsp.dtos.UserDTO;
 import br.com.sondsp.dtos.UsersListDTO;
+import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.UserFilter;
 import br.com.sondsp.form.RegisterForm;
 import br.com.sondsp.form.UserForm;
@@ -15,9 +17,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -61,20 +68,39 @@ public class UsersController {
 
     @GetMapping()
     @Operation(
-            description = "Retorna todos os usuários com base no filtro passado. Se nenhum filtro for passado, retorna todos os usuários.",
+            description = "Retorna todos os usuários de forma paginada com base no filtro passado. É possível passar page, size e sort na URL.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Retorna os usuários encontrados",
                             content = @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = UsersListDTO.class))
+                                    schema = @Schema(implementation = PageResponse.class)
                             )
                     )
             }
     )
-    public ResponseEntity<?> listUser(@ModelAttribute UserFilter filter){
-        return ResponseEntity.ok().body(service.getUsers(filter).stream().map(UsersListDTO::new));
+    public ResponseEntity<PageResponse<UsersListDTO>> listUser(
+            @ModelAttribute UserFilter filter,
+            @PageableDefault(size = 5) Pageable pageable) {
+
+        Page<User> userPage = service.getUsers(filter, pageable);
+
+        List<UsersListDTO> contentDTO = userPage.getContent().stream()
+                .map(UsersListDTO::new)
+                .toList();
+
+        PageResponse<UsersListDTO> response = new PageResponse<>(
+                contentDTO,
+                userPage.getNumber(),
+                userPage.getSize(),
+                userPage.getTotalElements(),
+                userPage.getTotalPages(),
+                userPage.hasNext(),
+                userPage.hasPrevious()
+        );
+
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/{id}")

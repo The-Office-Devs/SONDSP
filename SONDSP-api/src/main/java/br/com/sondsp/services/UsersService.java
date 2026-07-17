@@ -17,6 +17,8 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,9 +62,9 @@ public class UsersService {
         return user;
     }
 
-    public List<User> getUsers(UserFilter filter) {
+    public Page<User> getUsers(UserFilter filter, Pageable pageable) {
         Specification<User> spec = buildFilter(filter);
-        return repository.findAll(spec);
+        return repository.findAll(spec, pageable);
     }
 
     public User save(User user) {

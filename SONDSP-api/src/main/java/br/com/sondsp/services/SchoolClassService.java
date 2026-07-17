@@ -1,9 +1,7 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.entities.Role;
 import br.com.sondsp.entities.School;
 import br.com.sondsp.entities.SchoolClass;
-import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import br.com.sondsp.repositories.SchoolClassRepository;
@@ -12,6 +10,10 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +36,9 @@ public class SchoolClassService {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(SCHOOL_CLASS_NOT_FOUND));
     }
 
-    public List<SchoolClass> getSchoolsClasses(SchoolClassFilter filter) {
+    public Page<SchoolClass> getSchoolsClasses(SchoolClassFilter filter, Pageable pageable) {
         Specification<SchoolClass> spec = buildFilter(filter);
-        return repository.findAll(spec);
+        return repository.findAll(spec, pageable);
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {

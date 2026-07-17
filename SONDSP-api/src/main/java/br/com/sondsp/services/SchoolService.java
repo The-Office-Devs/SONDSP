@@ -7,6 +7,8 @@ import br.com.sondsp.repositories.SchoolRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +30,9 @@ public class SchoolService {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(SCHOOL_NOT_FOUND));
     }
 
-    public List<School> getSchools(SchoolFilter filter) {
+    public Page<School> getSchools(SchoolFilter filter, Pageable pageable) {
         Specification<School> spec = buildFilter(filter);
-        return repository.findAll(spec);
+        return repository.findAll(spec, pageable);
     }
 
     public School updateSchool(Integer id, SchoolForm school) {

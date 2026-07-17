@@ -10,6 +10,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 
@@ -35,9 +37,9 @@ public class StudentService {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(STUDENT_NOT_FOUND));
     }
 
-    public List<Student> getStudents(StudentFilter filter) {
+    public Page<Student> getStudents(StudentFilter filter, Pageable pageable) {
         Specification<Student> spec = buildFilter(filter);
-        return repository.findAll(spec);
+        return repository.findAll(spec, pageable);
     }
 
     public Student updateStudent(Integer id, StudentForm form) {
