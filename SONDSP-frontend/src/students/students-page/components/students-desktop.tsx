@@ -11,10 +11,11 @@ import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTabl
 import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 
 const columns: ColumnDef<StudentListItem>[] = [
-  { id: "rowNumber", header: "N° Chamada", width: "180px" },
+  { id: "rowNumber", header: "N° Chamada", width: "120px" },
   { id: "registration", header: "Matrícula", width: "180px", },
   { id: "name", header: "Nome", width: "180px" },
-  { id: "schoolClass", header: "Turma", width: "260px", accessor: (row) => row.schoolClass ? `${row.schoolClass.name} - ${row.schoolClass.school.name}` : "-" },
+  { id: "schoolName", header: "Escola", width: "260px", accessor: (row) => row.schoolClass ? row.schoolClass.school.name : "-" },
+  { id: "schoolClass", header: "Turma", width: "260px", accessor: (row) => row.schoolClass ? row.schoolClass.name : "-" },
   { id: "status", header: "Status", width: "180px" },
 ];
 

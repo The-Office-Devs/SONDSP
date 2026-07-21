@@ -5,6 +5,7 @@ export interface StudentListItem {
   name: string;
   registration: string;
   schoolClass?: Class | null;
+  schoolName?: Class | null;
   rowNumber?: number | null;
   status: boolean;
 }

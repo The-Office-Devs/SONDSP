@@ -41,7 +41,6 @@ export function LinkUsersDialog({
     page,
     size,
     ...queryParams,
-    ...(isTeachers ? { roleName: 'Professor' } : {}),
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
 

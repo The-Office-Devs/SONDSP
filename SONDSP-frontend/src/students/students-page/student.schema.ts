@@ -1,14 +1,6 @@
 import { z } from "zod/v4";
 
 export const studentSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "O nome do aluno é obrigatória"),
-  schoolClassId: z.coerce
-    .number()
-    .int()
-    .positive("Selecione uma turma"),
   rowNumber: z.coerce
     .number()
     .int()
@@ -17,7 +9,19 @@ export const studentSchema = z.object({
     .string()
     .trim()
     .min(1, "A matrícula do aluno é obrigatória"),
-    status: z.boolean()
+    status: z.boolean(),
+  name: z
+    .string()
+    .trim()
+    .min(1, "O nome do aluno é obrigatório"),
+  schoolId: z.coerce
+    .number()
+    .int()
+    .positive("Selecione uma escola"),
+  schoolClassId: z.coerce
+    .number()
+    .int()
+    .positive("Selecione uma turma"),
 });
 
 export type StudentFormInput = z.input<typeof studentSchema>;
