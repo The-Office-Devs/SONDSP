@@ -19,6 +19,7 @@ export interface TextFieldProps<T extends FieldValues> extends BaseFieldProps<T>
 
 export interface SelectFieldProps<T extends FieldValues> extends BaseFieldProps<T> {
   options: { value: string; label: string }[]
+  onValueChange?: (value: string) => void;
 }
 
 export interface MultiSelectFieldProps<T extends FieldValues> extends BaseFieldProps<T> {
@@ -42,4 +43,10 @@ export interface InputGroupFieldProps<T extends FieldValues> extends BaseFieldPr
     label: ReactNode
     onClick: () => void
   }
+}
+
+export interface ComboboxFieldProps<T extends FieldValues> extends BaseFieldProps<T> {
+  options: { value: string; label: string }[]
+  emptyMessage?: string
+  onValueChange?: (value: string) => void
 }
