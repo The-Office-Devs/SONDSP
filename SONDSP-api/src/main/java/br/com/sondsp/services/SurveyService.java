@@ -107,7 +107,8 @@ public class SurveyService {
                 new SpecificationFilter.FilterColumn("subject", "subject"),
                 new SpecificationFilter.FilterColumn("axis", "axis"),
                 new SpecificationFilter.FilterColumn("result", "result"),
-                new SpecificationFilter.FilterColumn("isDigital", "isDigital")
+                new SpecificationFilter.FilterColumn("isDigital", "isDigital"),
+                new SpecificationFilter.FilterColumn("status", "status")
         );
 
         Specification<Survey> spec = specificationFilter.buildFilter(filter, columnsConfig);

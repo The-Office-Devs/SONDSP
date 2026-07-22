@@ -43,7 +43,8 @@ public class ActivityService {
                 new SpecificationFilter.FilterColumn("name", "name"),
                 new SpecificationFilter.FilterColumn("subject", "subject"),
                 new SpecificationFilter.FilterColumn("axis", "axis"),
-                new SpecificationFilter.FilterColumn("model", "model")
+                new SpecificationFilter.FilterColumn("model", "model"),
+                new SpecificationFilter.FilterColumn("status", "status")
         );
 
         Specification<Activity> spec = specificationFilter.buildFilter(filter, columnsConfig);
