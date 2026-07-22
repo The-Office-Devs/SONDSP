@@ -5,7 +5,9 @@ import {
   useQueryClient 
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import type { AxiosError } from 'axios';
 
+import { handleApiError } from '@/lib/utils';
 import { listUsersService } from '@/users/users.service';
 import {
   listSchoolsService,
@@ -51,9 +53,9 @@ export function useCreateSchool() {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
       toast.success('Escola cadastrada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao cadastrar escola.');
-    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao cadastrar escola.')
   });
 }
 
@@ -67,9 +69,9 @@ export function useUpdateSchool() {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
       toast.success('Escola atualizada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao atualizar escola.');
-    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao atualizar escola.')
   });
 }
 
@@ -82,9 +84,9 @@ export function useDeleteSchool() {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
       toast.success(message || 'Status da escola alterado com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao alterar status da escola.');
-    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao alterar status da escola.')
   });
 }
 
