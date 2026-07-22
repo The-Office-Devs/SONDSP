@@ -117,8 +117,16 @@ public class StudentService {
                 Predicate searchInSchoolClass = criteriaBuilder.like(criteriaBuilder.lower(schoolClass), searchPattern);
                 Predicate searchInRowNumber = criteriaBuilder.like(rowNumberString, searchPattern);
 
+                Boolean status = switch (filter.search().toLowerCase()){
+                    case "ativo" -> true;
+                    case "inativo" -> false;
+                    default -> null;
+                };
+
+                Predicate searchInStatus = criteriaBuilder.equal(root.get("status"), status);
+
                 Predicate combinedSearchPredicate = criteriaBuilder.or(
-                        searchInName, searchInRegistration, searchInSchoolClass, searchInRowNumber);
+                        searchInName, searchInRegistration, searchInSchoolClass, searchInRowNumber, searchInStatus);
 
                 predicates.add(combinedSearchPredicate);
             } else {
