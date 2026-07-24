@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useClasses, useDeleteClass } from "../use-classes";
 import { useLinkUserToSchoolClass } from "@/users/users-page/use-users";
-import { useTableState } from "@/hooks/useTableState";
+import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
 
 import type { ClassListItem } from "@/classes/classes.types";
@@ -95,13 +95,7 @@ export function ClassesDesktop() {
             onSuccess: () => setDeleteClass(null)
           })
         }
-      >
-        {deleteClass?.status && (
-          <p className="text-sm text-destructive font-medium">
-            Ao inativar a turma, todos os alunos relacionados a ela perderão esse vínculo.
-          </p>
-        )}
-      </DeleteDialog>
+      />
     </div>
   )
 }

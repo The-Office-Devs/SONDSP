@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { UserListItem } from "@/users/users.types";
 import { useChangeUserStatus, useUsers } from "../use-users";
-import { useTableState } from "@/hooks/useTableState";
+import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
 
 import { UserUpsertPanel } from "./user-upsert-panel";

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useDeleteSchool, useSchools } from "../use-schools";
 import { useLinkUserToSchool } from "@/users/users-page/use-users";
-import { useTableState } from "@/hooks/useTableState";
+import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
 
 import type { School } from "@/schools/schools.types";
@@ -89,13 +89,7 @@ export function SchoolsDesktop() {
             onSuccess: () => setDeleteSchool(null)
           })
         }
-      >
-        {deleteSchool?.status && (
-          <p className="text-sm text-destructive font-medium">
-            Ao inativar a escola, todos os usuários relacionados a ela perderão esse vínculo.
-          </p>
-        )}
-      </DeleteDialog>
+      />
     </div>
   );
 }
