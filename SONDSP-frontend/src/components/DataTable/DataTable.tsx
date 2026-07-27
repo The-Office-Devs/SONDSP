@@ -28,7 +28,7 @@ export type ColumnDef<T> = {
 }
 
 export type RowAction<T> = {
-  type: 'edit' | 'delete' | 'link' | 'normal';
+  type: 'edit' | 'inactivate' | 'link' | 'normal';
   onClick: (row: T) => void;
   disabled?: boolean | ((row: T) => boolean);
   label?: string;
@@ -187,7 +187,7 @@ export function DataTable<T>({
 }
 
 type ActionButtonProps = Readonly<{
-  type: "edit" | "delete" | "link" | "normal";
+  type: "edit" | "inactivate" | "link" | "normal";
   onClick: () => void;
   disabled?: boolean;
   className?: string;
@@ -237,7 +237,7 @@ function ActionButton({
     );
   }
 
-  if (type === "delete") {
+  if (type === "inactivate") {
     const active = isActive ?? true;
     const isInactive = !active;
     return (

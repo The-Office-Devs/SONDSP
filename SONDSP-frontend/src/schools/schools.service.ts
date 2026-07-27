@@ -29,7 +29,7 @@ export async function updateSchoolService(id: number, data: UpdateSchoolRequest)
   return response.data;
 }
 
-export async function deleteSchoolService(id: number): Promise<string> {
+export async function inactivateSchoolService(id: number): Promise<string> {
   const response = await api.patch<string>(`/school/${id}/changeStatus`);
   return response.data;
 }

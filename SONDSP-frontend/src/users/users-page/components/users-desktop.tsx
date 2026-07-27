@@ -8,7 +8,7 @@ import { buildPaginationProps } from "@/api/types";
 import { UserUpsertPanel } from "./user-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
-import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
+import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<UserListItem>[] = [
   { id: "registration", header: "Registro Funcional (RF)", width: "140px" },
@@ -33,7 +33,7 @@ export function UsersDesktop() {
 
   const actions: RowAction<UserListItem>[] = [
     { type: "edit", onClick: (user) => setEditUserId(user.id), disabled: (user) => !user.status },
-    { type: "delete", onClick: (user) => setStatusUser(user), isActive: (user) => user.status },
+    { type: "inactivate", onClick: (user) => setStatusUser(user), isActive: (user) => user.status },
   ];
 
   if (isLoading) {
@@ -63,7 +63,7 @@ export function UsersDesktop() {
         pagination={usersPage ? buildPaginationProps(usersPage, setPage) : undefined}
       />
 
-      <DeleteDialog<UserListItem>
+      <InactivateDialog<UserListItem>
         data={statusUser}
         title={statusUser?.status ? "Inativar Usuário" : "Ativar Usuário"}
         open={statusUser !== null}

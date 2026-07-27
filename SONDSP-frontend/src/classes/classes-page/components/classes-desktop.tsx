@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useClasses, useDeleteClass } from "../use-classes";
+import { useClasses, useInactivateClass } from "../use-classes";
 import { useLinkUserToSchoolClass } from "@/users/users-page/use-users";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
@@ -10,7 +10,7 @@ import { ClassUpsertPanel } from "./class-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { LinkUsersDialog } from "@/schools/schools-page/components/link-users-dialog";
-import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
+import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<ClassListItem>[] = [
   { id: "school", header: "Escola", width: "180px", accessor: (row) => row.school.name },
@@ -27,11 +27,11 @@ export function ClassesDesktop() {
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
-  const { mutate, isPending } = useDeleteClass();
+  const { mutate, isPending } = useInactivateClass();
   const { mutate: linkUserToSchoolClass } = useLinkUserToSchoolClass();
 
   const [editClassId, setEditClassId] = useState<number | null>(null);
-  const [deleteClass, setDeleteClass] = useState<ClassListItem | null>(null);
+  const [inactivateClass, setInactivateClass] = useState<ClassListItem | null>(null);
   const [linkTeachersClass, setLinkTeachersClass] = useState<ClassListItem | null>(null);
 
   const handleLinkUserToSchoolClass = (userId: number, userFunction: string) => {
@@ -42,7 +42,7 @@ export function ClassesDesktop() {
   const actions: RowAction<ClassListItem>[] = [
     { type: "edit", onClick: (classItem) => setEditClassId(classItem.id), disabled: (classItem) => !classItem.status },
     { type: "link", onClick: (classItem) => setLinkTeachersClass(classItem), disabled: (classItem) => !classItem.status },
-    { type: "delete", onClick: (classItem) => setDeleteClass(classItem), isActive: (classItem) => classItem.status }
+    { type: "inactivate", onClick: (classItem) => setInactivateClass(classItem), isActive: (classItem) => classItem.status }
   ];
   
   if (isLoading) {
@@ -84,15 +84,15 @@ export function ClassesDesktop() {
         isTeachers={true}
       />
 
-      <DeleteDialog<ClassListItem>
-        data={deleteClass}
-        title={deleteClass?.status ? "Inativar Turma" : "Ativar Turma"}
-        open={deleteClass !== null}
-        onOpenChange={(open) => { if (!open) setDeleteClass(null); }}
+      <InactivateDialog<ClassListItem>
+        data={inactivateClass}
+        title={inactivateClass?.status ? "Inativar Turma" : "Ativar Turma"}
+        open={inactivateClass !== null}
+        onOpenChange={(open) => { if (!open) setInactivateClass(null); }}
         isPending={isPending}
         onConfirm={(classItem) => 
           mutate(classItem.id, {
-            onSuccess: () => setDeleteClass(null)
+            onSuccess: () => setInactivateClass(null)
           })
         }
       />

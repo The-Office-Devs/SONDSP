@@ -6,7 +6,7 @@ import { useTableState } from "@/hooks/use-table-state";
 import { StrandInsertPanel } from "./strand-insert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
-import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
+import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const mockData: StrandListItem[] = [
   { id: 1, name: "Números", subject: "Matemática", status: true },
@@ -22,10 +22,10 @@ const columns: ColumnDef<StrandListItem>[] = [
 export function StrandsDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const [statusStrand, setStatusStrand] = useState<StrandListItem | null>(null);
+  const [inactivateStrand, setInactivateStrand] = useState<StrandListItem | null>(null);
 
   const actions: RowAction<StrandListItem>[] = [
-    { type: "delete", onClick: (strand) => setStatusStrand(strand), isActive: (strand) => strand.status }
+    { type: "inactivate", onClick: (strand) => setInactivateStrand(strand), isActive: (strand) => strand.status }
   ]
 
   /*if (isLoading) {
@@ -52,11 +52,11 @@ export function StrandsDesktop() {
         pagination={strandsPage ? buildPaginationProps(strandsPage, setPage) : undefined}*/
       />
 
-      <DeleteDialog<StrandListItem>
-        data={statusStrand}
-        title={statusStrand?.status ? "Inativar Eixo" : "Ativar Eixo"}
-        open={statusStrand !== null}
-        onOpenChange={(open) => { if (!open) setStatusStrand(null) }}
+      <InactivateDialog<StrandListItem>
+        data={inactivateStrand}
+        title={inactivateStrand?.status ? "Inativar Eixo" : "Ativar Eixo"}
+        open={inactivateStrand !== null}
+        onOpenChange={(open) => { if (!open) setInactivateStrand(null) }}
         isPending={false}
         onConfirm={() => null}
         /*isPending={isPending}
