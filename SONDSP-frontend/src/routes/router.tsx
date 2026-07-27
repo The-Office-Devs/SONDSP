@@ -10,6 +10,7 @@ import { UsersPage } from '@/users/users-page/users-page';
 import { SchoolsPage } from '@/schools/schools-page/schools-page';
 import { ClassesPage } from '@/classes/classes-page/classes-page';
 import { StudentsPage } from '@/students/students-page/students.page';
+import { ActivitiesPage } from '@/activities/activities-page/activities-page';
 
 export const router = createBrowserRouter([
   {
@@ -42,10 +43,11 @@ export const router = createBrowserRouter([
           {
             path: 'gerenciamento',
             children: [
-              { path: 'usuarios', element: <UsersPage /> },
+              { path: 'alunos', element: <StudentsPage /> },
               { path: 'escolas', element: <SchoolsPage /> },
+              { path: 'modelos-atividades', element: <ActivitiesPage /> },
+              { path: 'usuarios', element: <UsersPage /> },
               { path: 'turmas', element: <ClassesPage /> },
-              { path: 'alunos', element: <StudentsPage /> }
             ]
           }
         ]
