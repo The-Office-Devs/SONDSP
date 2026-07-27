@@ -12,8 +12,7 @@ import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { Button } from "@/components/ui/button";
 
 const subjectOptions = [
-  { value: "Escrita", label: "Língua Portuguesa - Escrita" },
-  { value: "Leitura", label: "Língua Portuguesa - Leitura" },
+  { value: "Língua Portuguesa", label: "Língua Portuguesa" },
   { value: "Matemática", label: "Matemática" }
 ];
 
