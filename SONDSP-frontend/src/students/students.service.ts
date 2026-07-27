@@ -30,7 +30,7 @@ export async function updateStudentService(id: number, data: UpdateStudentReques
   return response.data;
 }
 
-export async function deleteStudentService(id: number): Promise<string> {
+export async function inactivateStudentService(id: number): Promise<string> {
   const response = await api.patch<string>(`/student/${id}/changeStatus`);
   return response.data;
 }

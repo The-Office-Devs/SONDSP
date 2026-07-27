@@ -9,7 +9,7 @@ import {
   DialogTitle 
 } from "../ui/dialog";
 
-interface DeleteDialogProps<T extends { id: number | string; name: string; status?: boolean }> {
+interface InactivateDialogProps<T extends { id: number | string; name: string; status?: boolean }> {
   data: T | null;
   title: string;
   open: boolean;
@@ -19,7 +19,7 @@ interface DeleteDialogProps<T extends { id: number | string; name: string; statu
   children?: React.ReactNode;
 }
 
-export function DeleteDialog<T extends { id: number | string; name: string; status?: boolean }>({ 
+export function InactivateDialog<T extends { id: number | string; name: string; status?: boolean }>({ 
   data, 
   title,
   open, 
@@ -27,7 +27,7 @@ export function DeleteDialog<T extends { id: number | string; name: string; stat
   onOpenChange,
   onConfirm,
   children,
-}: Readonly<DeleteDialogProps<T>>) {
+}: Readonly<InactivateDialogProps<T>>) {
   const handleConfirm = () => {
     if (!data) return;
     onConfirm(data);

@@ -10,7 +10,7 @@ import type { AxiosError } from "axios";
 import { handleApiError } from "@/lib/utils";
 import { 
   createStudentService, 
-  deleteStudentService, 
+  inactivateStudentService, 
   getStudentService, 
   listStudentsService, 
   updateStudentService 
@@ -86,12 +86,12 @@ export function useUpdateStudent() {
   });
 }
 
-export function useDeleteStudent() {
+export function useInactivateStudent() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: number) => 
-      deleteStudentService(id),
+      inactivateStudentService(id),
 
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });

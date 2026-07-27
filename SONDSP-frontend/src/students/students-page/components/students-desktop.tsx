@@ -1,14 +1,14 @@
 import { useState } from "react";
 
 import { useTableState } from "@/hooks/useTableState";
-import { useDeleteStudent, useStudents } from "../use-students";
+import { useInactivateStudent, useStudents } from "../use-students";
 import { buildPaginationProps } from "@/api/types";
 
 import type { StudentListItem } from "@/students/students.types";
 import { StudentUpsertPanel } from "./student-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
-import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
+import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "120px" },
@@ -27,14 +27,14 @@ export function StudentsDesktop() {
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
-  const { mutate, isPending } = useDeleteStudent();
+  const { mutate, isPending } = useInactivateStudent();
 
   const [editStudentId, setEditStudentId] = useState<number | null>(null);
-  const [deleteStudent, setDeleteStudent] = useState<StudentListItem | null>(null);
+  const [inactivateStudent, setInactivateStudent] = useState<StudentListItem | null>(null);
 
   const actions: RowAction<StudentListItem>[] = [
     { type: "edit", onClick: (studentItem) => setEditStudentId(studentItem.id), disabled: (studentItem) => !studentItem.status },
-    { type: "delete", onClick: (studentItem) => setDeleteStudent(studentItem), isActive: (studentItem) => studentItem.status }
+    { type: "inactivate", onClick: (studentItem) => setInactivateStudent(studentItem), isActive: (studentItem) => studentItem.status }
   ];
   
   if (isLoading) {
@@ -64,15 +64,15 @@ export function StudentsDesktop() {
         pagination={studentsPage ? buildPaginationProps(studentsPage, setPage) : undefined}
       />
 
-      <DeleteDialog<StudentListItem>
-        data={deleteStudent}
-        title={deleteStudent?.status ? "Inativar Aluno" : "Ativar Aluno"}
-        open={deleteStudent !== null}
-        onOpenChange={(open) => { if (!open) setDeleteStudent(null); }}
+      <InactivateDialog<StudentListItem>
+        data={inactivateStudent}
+        title={inactivateStudent?.status ? "Inativar Aluno" : "Ativar Aluno"}
+        open={inactivateStudent !== null}
+        onOpenChange={(open) => { if (!open) setInactivateStudent(null); }}
         isPending={isPending}
         onConfirm={(studentItem) => 
           mutate(studentItem.id, {
-            onSuccess: () => setDeleteStudent(null)
+            onSuccess: () => setInactivateStudent(null)
           })
         }
       />

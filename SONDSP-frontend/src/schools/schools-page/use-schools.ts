@@ -13,7 +13,7 @@ import {
   listSchoolsService,
   createSchoolService,
   updateSchoolService,
-  deleteSchoolService,
+  inactivateSchoolService,
   getSchoolService,
 } from '../schools.service';
 import type { 
@@ -75,11 +75,11 @@ export function useUpdateSchool() {
   });
 }
 
-export function useDeleteSchool() {
+export function useInactivateSchool() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => deleteSchoolService(id),
+    mutationFn: (id: number) => inactivateSchoolService(id),
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
       toast.success(message || 'Status da escola alterado com sucesso!');
