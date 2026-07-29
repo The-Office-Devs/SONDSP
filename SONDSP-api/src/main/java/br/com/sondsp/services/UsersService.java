@@ -171,7 +171,15 @@ public class UsersService {
                 Predicate searchInRegistration = criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern);
                 Predicate searchInRole = criteriaBuilder.like(criteriaBuilder.lower(roleJoin.get("name")), searchPattern);
 
-                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInName, searchInEmail, searchInRegistration, searchInRole);
+                Boolean status = switch (filter.search().toLowerCase()){
+                    case "ativo" -> true;
+                    case "inativo" -> false;
+                    default -> null;
+                };
+
+                Predicate searchInStatus = criteriaBuilder.equal(root.get("status"), status);
+
+                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInName, searchInEmail, searchInRegistration, searchInRole, searchInStatus);
 
                 predicates.add(combinedSearchPredicate);
             } else {
