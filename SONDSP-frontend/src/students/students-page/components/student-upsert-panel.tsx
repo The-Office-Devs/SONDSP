@@ -195,6 +195,7 @@ export function StudentUpsertPanel({
                 placeholder="Selecione a turma"
                 options={classOptions}
                 emptyMessage="Nenhuma turma encontrada."
+                disabled={!schoolId}
               />
     
               <div className="flex gap-2 items-end justify-end xl:col-start-3">
