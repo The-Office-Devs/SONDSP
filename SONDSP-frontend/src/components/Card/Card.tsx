@@ -7,7 +7,7 @@ interface CardProps {
   title: string;
   submitLabel: string;
   isSubmitDisabled: boolean;
-  isEditMode: boolean;
+  isEditMode?: boolean;
   onSubmit: React.SubmitEventHandler<HTMLFormElement>;
   onCancelEdit?: () => void;
   children: React.ReactNode;

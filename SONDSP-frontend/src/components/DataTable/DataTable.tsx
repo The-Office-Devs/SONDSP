@@ -10,6 +10,7 @@ import {
 import { 
   AlarmSmoke, 
   Check, 
+  Eye, 
   Link2, 
   Link2Off, 
   Loader2, 
@@ -28,7 +29,7 @@ export type ColumnDef<T> = {
 }
 
 export type RowAction<T> = {
-  type: 'edit' | 'inactivate' | 'link' | 'normal';
+  type: 'edit' | 'inactivate' | 'link' | 'view' | 'normal';
   onClick: (row: T) => void;
   disabled?: boolean | ((row: T) => boolean);
   label?: string;
@@ -187,7 +188,7 @@ export function DataTable<T>({
 }
 
 type ActionButtonProps = Readonly<{
-  type: "edit" | "inactivate" | "link" | "normal";
+  type: "edit" | "inactivate" | "link" | 'view' | "normal";
   onClick: () => void;
   disabled?: boolean;
   className?: string;
@@ -227,7 +228,7 @@ function ActionButton({
         title={isLinked ? "Desvincular" : "Vincular"}
         aria-label={isLinked ? "Desvincular" : "Vincular"}
         variant={isLinked ? "destructive" : "outline"}
-        className={cn(shared,)}
+        className={cn(shared)}
         disabled={disabled}
         onClick={onClick}
       >
@@ -253,6 +254,22 @@ function ActionButton({
         onClick={onClick}
       >
         {isInactive ? <Check className="size-4" /> : <X className="size-4" />}
+        {label}
+      </Button>
+    );
+  }
+
+  if (type === "view") {
+    return (
+      <Button
+        title="Visualizar"
+        aria-label="Visualizar"
+        variant="outline"
+        className={cn(shared)}
+        disabled={disabled}
+        onClick={onClick}
+      >
+        <Eye className="size-4" />
         {label}
       </Button>
     );
