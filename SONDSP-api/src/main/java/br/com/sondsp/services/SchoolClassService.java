@@ -21,8 +21,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_CANNOT_ACTIVATE;
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_NOT_FOUND;
+import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -32,6 +31,9 @@ public class SchoolClassService {
     private StudentRepository studentRepository;
 
     public SchoolClass createSchoolClass(SchoolClassForm form) {
+        if (repository.existsBySchoolIdAndNameAndSchoolYear(form.schoolId(), form.name(), form.schoolYear()))
+            throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
+
         School school = schoolService.getSchool(form.schoolId());
 
         return repository.save(SchoolClass.builder()
@@ -52,6 +54,9 @@ public class SchoolClassService {
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
+        if (repository.existsBySchoolIdAndNameAndSchoolYear(form.schoolId(), form.name(), form.schoolYear()))
+            throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
+
         SchoolClass schoolClass = getSchoolClass(id);
 
         schoolClass.setName(form.name());
