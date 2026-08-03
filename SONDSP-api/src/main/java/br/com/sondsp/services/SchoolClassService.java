@@ -103,23 +103,25 @@ public class SchoolClassService {
             if (filter.search() != null && !filter.search().isBlank()) {
                 Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 
-                String searchPattern = "%" + filter.search().toLowerCase() + "%";
+                String search = filter.search().toLowerCase();
+                String searchPattern = "%" + search + "%";
 
-                Predicate searchInSchool = criteriaBuilder.like(criteriaBuilder.lower(schoolJoin.get("name")), searchPattern);
-                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
-                Predicate searchInSchoolYear = criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern);
+                List<Predicate> orPredicates = new ArrayList<>();
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(schoolJoin.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern));
 
-                Boolean status = switch (filter.search().toLowerCase()){
-                    case "ativo" -> true;
-                    case "inativo" -> false;
-                    default -> null;
-                };
+                Boolean status = null;
+                if ("ativo".startsWith(search)) {
+                    status = true;
+                } else if ("inativo".startsWith(search)) {
+                    status = false;
+                }
 
-                Predicate searchInStatus = criteriaBuilder.equal(root.get("status"), status);
+                if (status != null)
+                    orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
-                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInSchool, searchInName, searchInSchoolYear, searchInStatus);
-
-                predicates.add(combinedSearchPredicate);
+                predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
             } else {
                 if (filter.schoolId() != null) {
                     Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);

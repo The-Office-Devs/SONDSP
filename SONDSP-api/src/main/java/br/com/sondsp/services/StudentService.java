@@ -99,7 +99,8 @@ public class StudentService {
                 Join<Student, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
                 Join<SchoolClass, School> schoolJoin = schoolClassJoin.join("school", JoinType.INNER);
 
-                String searchPattern = "%" + filter.search().toLowerCase() + "%";
+                String search = filter.search().toLowerCase();
+                String searchPattern = "%" + search + "%";
 
                 Expression<String> schoolClass = criteriaBuilder.concat(
                         criteriaBuilder.concat(schoolClassJoin.get("name"), " - "),
@@ -112,23 +113,23 @@ public class StudentService {
                         criteriaBuilder.literal("FM999999999")
                 );
 
-                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
-                Predicate searchInRegistration = criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern);
-                Predicate searchInSchoolClass = criteriaBuilder.like(criteriaBuilder.lower(schoolClass), searchPattern);
-                Predicate searchInRowNumber = criteriaBuilder.like(rowNumberString, searchPattern);
+                List<Predicate> orPredicates = new ArrayList<>();
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(schoolClass), searchPattern));
+                orPredicates.add(criteriaBuilder.like(rowNumberString, searchPattern));
 
-                Boolean status = switch (filter.search().toLowerCase()){
-                    case "ativo" -> true;
-                    case "inativo" -> false;
-                    default -> null;
-                };
+                Boolean status = null;
+                if ("ativo".startsWith(search)) {
+                    status = true;
+                } else if ("inativo".startsWith(search)) {
+                    status = false;
+                }
 
-                Predicate searchInStatus = criteriaBuilder.equal(root.get("status"), status);
+                if (status != null)
+                    orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
-                Predicate combinedSearchPredicate = criteriaBuilder.or(
-                        searchInName, searchInRegistration, searchInSchoolClass, searchInRowNumber, searchInStatus);
-
-                predicates.add(combinedSearchPredicate);
+                predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
             } else {
                 if (filter.name() != null && !filter.name().isBlank()) {
                     predicates.add(criteriaBuilder.like(criteriaBuilder

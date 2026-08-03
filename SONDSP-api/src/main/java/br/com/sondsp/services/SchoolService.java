@@ -78,22 +78,24 @@ public class SchoolService {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
             if (filter.search() != null && !filter.search().isBlank()) {
-                String searchPattern = "%" + filter.search().toLowerCase() + "%";
+                String search = filter.search().toLowerCase();
+                String searchPattern = "%" + search + "%";
 
-                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
-                Predicate searchInPrincipal = criteriaBuilder.like(criteriaBuilder.lower(root.get("principalName")), searchPattern);
+                List<Predicate> orPredicates = new ArrayList<>();
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("principalName")), searchPattern));
 
-                Boolean status = switch (filter.search().toLowerCase()){
-                    case "ativo" -> true;
-                    case "inativo" -> false;
-                    default -> null;
-                };
+                Boolean status = null;
+                if ("ativo".startsWith(search)) {
+                    status = true;
+                } else if ("inativo".startsWith(search)) {
+                    status = false;
+                }
 
-                Predicate searchInStatus = criteriaBuilder.equal(root.get("status"), status);
+                if (status != null)
+                    orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
-                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInName, searchInPrincipal, searchInStatus);
-
-                predicates.add(combinedSearchPredicate);
+                predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
             } else {
                 if (filter.name() != null && !filter.name().isBlank()) {
                     predicates.add(criteriaBuilder.like(criteriaBuilder
