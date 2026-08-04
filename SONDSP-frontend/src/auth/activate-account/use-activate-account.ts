@@ -15,12 +15,12 @@ export function useActivateAccount() {
     mutationFn: (data: ActivateAccountFormData) =>
       activateAccountService({
         registration: data.registration,
-        email: data.email,
+        email: data.email.toLowerCase(),
         password: data.newPassword
       }),
 
     onSuccess: () => {
-      toast.success("Conta ativada!");
+      toast.success("Conta ativada com sucesso.");
 
       setTimeout(() => {
         navigate('/login');
@@ -28,7 +28,7 @@ export function useActivateAccount() {
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao ativar conta.')
   });
 
   return { 

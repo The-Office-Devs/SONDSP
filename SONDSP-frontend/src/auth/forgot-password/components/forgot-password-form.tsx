@@ -31,7 +31,7 @@ export function ForgotPasswordForm({
   });
 
   const onSubmit = (data: ForgotPasswordFormData) => {
-    mutate(data.email);
+    mutate(data.email.toLowerCase());
   };
 
   return (
