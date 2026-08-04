@@ -51,7 +51,7 @@ export function useCreateSchool() {
     mutationFn: (data: CreateSchoolRequest) => createSchoolService(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
-      toast.success('Escola cadastrada com sucesso!');
+      toast.success('Escola cadastrada com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
@@ -67,7 +67,7 @@ export function useUpdateSchool() {
       updateSchoolService(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
-      toast.success('Escola atualizada com sucesso!');
+      toast.success('Escola atualizada com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
@@ -82,7 +82,7 @@ export function useInactivateSchool() {
     mutationFn: (id: number) => inactivateSchoolService(id),
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
-      toast.success(message || 'Status da escola alterado com sucesso!');
+      toast.success(message || 'Status da escola alterado com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
