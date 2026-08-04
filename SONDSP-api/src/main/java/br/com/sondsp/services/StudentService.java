@@ -82,6 +82,11 @@ public class StudentService {
 
     public Boolean changeStatus(Integer id) {
         Student student = getStudent(id);
+
+        if (!student.getSchoolClass().getStatus()) {
+            throw new ValidationException(STUDENT_CANNOT_ACTIVATE);
+        }
+
         student.setStatus(!student.getStatus());
         repository.save(student);
 
