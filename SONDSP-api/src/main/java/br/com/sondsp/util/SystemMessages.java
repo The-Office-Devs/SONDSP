@@ -54,7 +54,7 @@ public final class SystemMessages {
     public static final String STUDENT_NOT_FOUND = "O aluno não foi encontrado.";
     public static final String SCHOOL_NOT_FOUND = "A escola não foi encontrada.";
     public static final String USER_ALREADY_ACTIVE = "O usuário já está ativo.";
-    public static final String INVALID_CREDENTIALS = "E-mail ou senha inválidos";
+    public static final String INVALID_CREDENTIALS = "E-mail ou senha inválidos.";
     public static final String FIRST_ACCESS_NOT_DONE = "O usuário ainda não fez o primeiro acesso.";
     public static final String INVALID_REGISTRATION_FORMAT = "O formato do registro funcional está incorreto.";
 
