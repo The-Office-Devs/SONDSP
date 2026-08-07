@@ -54,7 +54,7 @@ public class SchoolClassService {
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
-        if (repository.existsBySchoolIdAndNameAndSchoolYear(form.schoolId(), form.name(), form.schoolYear()))
+        if (repository.existsBySchoolIdAndNameAndSchoolYearAndIdNot(form.schoolId(), form.name(), form.schoolYear(), id))
             throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
 
         SchoolClass schoolClass = getSchoolClass(id);
