@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, FileSpreadsheet, X } from "lucide-react";
 import { toast } from "sonner";
+import { 
+  Check, 
+  ChevronDown, 
+  ChevronUp, 
+  FileSpreadsheet, 
+  X 
+} from "lucide-react";
 
 import { studentSchema, type StudentFormData, type StudentFormInput } from "../student.schema";
 import { useCreateStudent, useStudent, useUpdateStudent } from "../use-students";
@@ -22,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
 import { FileDropzone } from "@/components/ui/file-dropzone";
+import { cn } from "@/lib/utils";
 
 const defaultValues: StudentFormInput = {
   name: "",
@@ -61,6 +68,14 @@ export function StudentUpsertPanel({
   const schoolId = useWatch({ control: form.control, name: "schoolId" });
   const [registrationMode, setRegistrationMode] = useState<"individual" | "batch">("individual");
   const [batchFile, setBatchFile] = useState<File | null>(null);
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    if (isEditMode) {
+      setRegistrationMode("individual");
+      setBatchFile(null);
+    }
+  }, [isEditMode]);
 
   useEffect(() => {
     if (!isEditMode) {
@@ -121,7 +136,7 @@ export function StudentUpsertPanel({
       ?.filter((c) => !schoolId || c.school.id == schoolId)
       .map((c) => ({
         value: String(c.id),
-        label: c.name
+        label: `${c.name} - ${c.schoolYear}`
       })) ?? [];
 
   // TODO: terminar logica do cadastro em lote quando o back estiver pronto
@@ -129,7 +144,7 @@ export function StudentUpsertPanel({
     <Card className="border-0 bg-[#efefef] px-5 py-5 shadow-sm">
       <div className="space-y-5">
         <div className="flex flex-row items-center gap-4">
-          <h2 className="text-base font-semibold text-slate-950 whitespace-nowrap">
+          <h2 className="text-lg font-semibold text-slate-950 whitespace-nowrap">
             {isEditMode ? "Edição de Aluno" : "Cadastro de Aluno"}
           </h2>
 
@@ -152,118 +167,133 @@ export function StudentUpsertPanel({
               </Select>
             </div>
           )}
+
+          <button
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            className="ml-auto cursor-pointer text-slate-950"
+          >
+            {open ? <ChevronUp className="size-5" /> : <ChevronDown className="size-5" />}
+          </button>
         </div>
   
-        {registrationMode === "individual" ? (
-          <FormProvider {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
-            >   
-              <TextField
-                name="rowNumber"
-                label="N° Chamada"
-                placeholder="N° Chamada do Aluno"
-                onlyNumbers
-                maxLength={3}
-              />
+        <div className={cn(
+          "grid transition-[grid-template-rows] duration-300 ease-out",
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        )}>
+          <div className="overflow-hidden p-1">
+            {registrationMode === "individual" ? (
+              <FormProvider {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+                >   
+                  <TextField
+                    name="rowNumber"
+                    label="N° Chamada"
+                    placeholder="N° Chamada do Aluno"
+                    onlyNumbers
+                    maxLength={3}
+                  />
 
-              <TextField
-                name="registration"
-                label="Matrícula"
-                placeholder="Matrícula do Aluno"
-                onlyNumbers
-              />
+                  <TextField
+                    name="registration"
+                    label="Matrícula"
+                    placeholder="Matrícula do Aluno"
+                    onlyNumbers
+                  />
 
-              <TextField
-                name="name"
-                label="Nome"
-                placeholder="Nome do Aluno"
-              />
+                  <TextField
+                    name="name"
+                    label="Nome"
+                    placeholder="Nome do Aluno"
+                  />
 
-              <SelectField
-                name="schoolId"
-                label="Escola"
-                placeholder="Selecione a escola"
-                options={schoolOptions}
-                onValueChange={() => form.setValue("schoolClassId", 0, { shouldValidate: true })}
-              />
+                  <SelectField
+                    name="schoolId"
+                    label="Escola"
+                    placeholder="Selecione a escola"
+                    options={schoolOptions}
+                    onValueChange={() => form.setValue("schoolClassId", 0, { shouldValidate: true })}
+                  />
 
-              <ComboboxField
-                name="schoolClassId"
-                label="Turma"
-                placeholder="Selecione a turma"
-                options={classOptions}
-                emptyMessage="Nenhuma turma encontrada."
-                disabled={!schoolId}
-              />
-    
-              <div className="flex gap-2 items-end justify-end xl:col-start-3">
-                {isEditMode && (
+                  <ComboboxField
+                    name="schoolClassId"
+                    label="Turma"
+                    placeholder="Selecione a turma"
+                    options={classOptions}
+                    emptyMessage="Nenhuma turma encontrada."
+                    disabled={!schoolId}
+                  />
+        
+                  <div className="flex gap-2 items-end justify-end xl:col-start-3">
+                    {isEditMode && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        isRounded={true}
+                        onClick={handleCancelEdit}
+                      >
+                        <X className="size-4" />
+                        Cancelar
+                      </Button>
+                    )}
+        
+                    <Button
+                      type="submit"
+                      isRounded={true}
+                      disabled={isPending || isLoadingClass|| !form.formState.isValid}
+                    >
+                      <Check className="size-4" />
+                      {submitLabel}
+                    </Button>
+                  </div>
+                </form>
+              </FormProvider>
+            ) : (
+              <div className="space-y-4">
+                {batchFile ? (
+                  <div className="flex justify-between rounded-lg border border-input bg-white px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <FileSpreadsheet className="size-4 text-muted-foreground" />
+                      <p className="font-medium"> {batchFile.name} </p>
+                      <p className="text-muted-foreground">
+                        {(batchFile.size / 1024).toFixed(0)} KB
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="w-auto"
+                      onClick={() => setBatchFile(null)}
+                    >
+                      <X className="size-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <FileDropzone
+                    accept={EXCEL_ACCEPT}
+                    onFileSelected={setBatchFile}
+                    onReject={() => toast.error("Apenas arquivos Excel (.xlsx, .xls) são permitidos!")}
+                  />
+                )}
+
+                <div className="flex justify-end">
                   <Button
                     type="button"
-                    variant="outline"
-                    isRounded={true}
-                    onClick={handleCancelEdit}
+                    isRounded
+                    disabled={!batchFile /* || isPending --> quando back ficar pronto */}
+                    onClick={() => {}}
                   >
-                    <X className="size-4" />
-                    Cancelar
+                    <Check className="size-4" />
+                    Importar
                   </Button>
-                )}
-    
-                <Button
-                  type="submit"
-                  isRounded={true}
-                  disabled={isPending || isLoadingClass|| !form.formState.isValid}
-                >
-                  <Check className="size-4" />
-                  {submitLabel}
-                </Button>
-              </div>
-            </form>
-          </FormProvider>
-        ) : (
-          <div className="space-y-4">
-            {batchFile ? (
-              <div className="flex justify-between rounded-lg border border-input bg-white px-4 py-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <FileSpreadsheet className="size-4 text-muted-foreground" />
-                  <p className="font-medium"> {batchFile.name} </p>
-                  <p className="text-muted-foreground">
-                    {(batchFile.size / 1024).toFixed(0)} KB
-                  </p>
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="w-auto"
-                  onClick={() => setBatchFile(null)}
-                >
-                  <X className="size-4" />
-                </Button>
               </div>
-            ) : (
-              <FileDropzone
-                accept={EXCEL_ACCEPT}
-                onFileSelected={setBatchFile}
-                onReject={() => toast.error("Apenas arquivos Excel (.xlsx, .xls) são permitidos!")}
-              />
             )}
-
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                isRounded
-                disabled={!batchFile /* || isPending --> quando back ficar pronto */}
-                onClick={() => {}}
-              >
-                <Check className="size-4" />
-                Importar
-              </Button>
-            </div>
           </div>
-        )}
+        </div>
       </div>
     </Card>
   );

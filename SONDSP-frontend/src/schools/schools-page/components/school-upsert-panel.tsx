@@ -91,6 +91,7 @@ export function SchoolUpsertPanel({
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
         onCancelEdit={handleCancelEdit}
+        collapsible
       >
         <TextField name="name" label="Nome" placeholder="Nome da escola" />
         <TextField name="principalName" label="Diretor" placeholder="Nome do diretor" />

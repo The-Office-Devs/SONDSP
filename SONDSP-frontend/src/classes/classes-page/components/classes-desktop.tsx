@@ -13,10 +13,10 @@ import { LinkUsersDialog } from "@/schools/schools-page/components/link-users-di
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<ClassListItem>[] = [
-  { id: "school", header: "Escola", width: "180px", accessor: (row) => row.school.name },
-  { id: "name", header: "Nome", width: "180px" },
-  { id: "schoolYear", header: "Ano Letivo", width: "260px" },
-  { id: "status", header: "Status", width: "180px" },
+  { id: "school", header: "Escola", width: "30%", accessor: (row) => row.school.name },
+  { id: "name", header: "Nome", width: "28%" },
+  { id: "schoolYear", header: "Ano Letivo", width: "12%" },
+  { id: "status", header: "Status", width: "12%" },
 ];
 
 export function ClassesDesktop() {
@@ -92,7 +92,13 @@ export function ClassesDesktop() {
         isPending={isPending}
         onConfirm={(classItem) => 
           mutate(classItem.id, {
-            onSuccess: () => setInactivateClass(null)
+            onSuccess: () => {
+              setInactivateClass(null);
+
+              if (classItem.id === editClassId) {
+                setEditClassId(null);
+              }
+            }
           })
         }
       />
