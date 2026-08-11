@@ -26,7 +26,7 @@ export function useCreateActivity() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ACTIVITIES_QUERY_KEY });
-      toast.success('Modelo de Atividade cadastrado com sucesso!');
+      toast.success('Modelo de atividade cadastrado com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>

@@ -16,7 +16,7 @@ const mockData: ActivityListItem[] = [
     subject: "Matemática",
     strand: "Números",
     bimester: "1° Bimestre",
-    schoolYear: "2026",
+    schoolYear: "1° Ano",
     activityModelRef: "imagem", // back ja vai enviar o arquivo aqui ou precisa de uma requisição especifica
     status: true 
   },
@@ -26,7 +26,7 @@ const mockData: ActivityListItem[] = [
     subject: "Matemática", 
     strand: "Mais Números",
     bimester: "2° Bimestre",
-    schoolYear: "2026",
+    schoolYear: "1° Ano",
     activityModelRef: "imagem 2",
     status: false 
   }
@@ -43,11 +43,11 @@ const columns: ColumnDef<ActivityListItem>[] = [
 export function ActivitiesDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const [openViewFile, setOpenViewFile] = useState(false);
+  const [viewActivity, setViewActivity] = useState<ActivityListItem | null>(null);
   const [inactivateActivity, setInactivateActivity] = useState<ActivityListItem | null>(null);
 
   const actions: RowAction<ActivityListItem>[] = [
-    { type: "view", onClick: () => setOpenViewFile(true) },
+    { type: "view", onClick: (activityItem) => setViewActivity(activityItem) },
     { type: "inactivate", onClick: (activityItem) => setInactivateActivity(activityItem), isActive: (activityItem) => activityItem.status }
   ];
 
@@ -92,9 +92,9 @@ export function ActivitiesDesktop() {
 
       <ViewFileDialog
         file="aaaa"
-        title="Modelo de Atividade"
-        open={openViewFile != false}
-        onOpenChange={(open) => { if (!open) setOpenViewFile(false)}}
+        title={viewActivity?.name ?? ""}
+        open={viewActivity !== null}
+        onOpenChange={(open) => { if (!open) setViewActivity(null) }}
       />
     </div>
   )

@@ -22,8 +22,13 @@ const strandOptions = [
   { value: "2", label: "Mais Números" }
 ];
 
-const bimesterOptions = [1, 2, 3, 4].map((n) => {
-  const label = `${n}° Bimestre`;
+const schoolYearOptions = [1, 2, 3].map((n) => {
+  const label = `${n}° Ano`;
+  return { value: label, label };
+});
+
+const bimesterOptions = ['Inicial', 1, 2, 3, 4].map((n) => {
+  const label = n == 'Inicial' ? n : `${n}° Bimestre`;
   return { value: label, label };
 });
 
@@ -72,7 +77,7 @@ export function ActivityInsertPanel() {
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <TextField name="name" label="Nome" placeholder="Nome do Modelo de Atividade" />
+        <TextField name="name" label="Nome" placeholder="Nome do modelo de atividade" />
 
         <SelectField
           name="subjectId"
@@ -88,11 +93,11 @@ export function ActivityInsertPanel() {
           options={strandOptions}
         />
 
-        <TextField
+        <SelectField
           name="schoolYear"
-          label="Ano Letivo"
-          placeholder="Ano Letivo"
-          maxLength={4}
+          label="Ano Escolar"
+          placeholder="Selecione o ano escolar"
+          options={schoolYearOptions}
         />
 
         <SelectField
@@ -137,7 +142,7 @@ export function ActivityInsertPanel() {
                 form.setValue("activityModelFile", file, { shouldValidate: true })
               }
               onReject={() => toast.error("Apenas imagens ou PDF são permitidos!")}
-              className="min-h-12"
+              className="min-h-12 items-start px-4"
             />
           )}
         </div>

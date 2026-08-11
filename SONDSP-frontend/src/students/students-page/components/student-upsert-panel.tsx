@@ -247,6 +247,7 @@ export function StudentUpsertPanel({
                 accept={EXCEL_ACCEPT}
                 onFileSelected={setBatchFile}
                 onReject={() => toast.error("Apenas arquivos Excel (.xlsx, .xls) são permitidos!")}
+                className="items-center"
               />
             )}
 

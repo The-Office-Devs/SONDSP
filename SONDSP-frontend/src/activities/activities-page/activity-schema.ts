@@ -22,7 +22,7 @@ export const activitySchema = z.object({
     .positive("Selecione um eixo"),
   schoolYear: z
     .string()
-    .length(4, "O ano letivo deve ter exatamente 4 caracteres"),
+    .min(1, "Selecione um ano escolar"),
   bimester: z
     .string()
     .min(1, "Selecione um bimestre"),
