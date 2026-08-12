@@ -39,7 +39,7 @@ export function ForgotPasswordForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="mt-5 space-y-5">
         <TextField
           name="email"
-          label="E-mail institucional"
+          label="E-mail Institucional"
           type="email"
           placeholder="nome@sme.prefeitura.gov.br"
           ui={ui}

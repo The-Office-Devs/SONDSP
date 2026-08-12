@@ -6,7 +6,7 @@ export const loginSchema = z.object({
     .endsWith('@sme.prefeitura.gov.br', 'O e-mail deve ser institucional (@sme.prefeitura.gov.br)'),
   password: z
     .string()
-    .min(6, 'A senha deve ter no mínimo 6 caracteres'),
+    .min(1, 'Insira a senha'),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

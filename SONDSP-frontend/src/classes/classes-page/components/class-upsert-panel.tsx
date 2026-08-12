@@ -109,12 +109,12 @@ export function ClassUpsertPanel({
           options={schoolOptions}
         />
             
-        <TextField name="name" label="Nome" placeholder="Nome da Turma" />
+        <TextField name="name" label="Nome" placeholder="Nome da turma" />
   
         <TextField
           name="schoolYear"
           label="Ano Letivo"
-          placeholder="Ano Letivo"
+          placeholder="Ano letivo da turma"
           onlyNumbers
           maxLength={4}
         />

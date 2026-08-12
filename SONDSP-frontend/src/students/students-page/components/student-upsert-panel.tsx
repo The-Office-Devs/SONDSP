@@ -191,7 +191,7 @@ export function StudentUpsertPanel({
                   <TextField
                     name="rowNumber"
                     label="N° Chamada"
-                    placeholder="N° Chamada do Aluno"
+                    placeholder="Número de chamada do aluno"
                     onlyNumbers
                     maxLength={3}
                   />
@@ -199,15 +199,11 @@ export function StudentUpsertPanel({
                   <TextField
                     name="registration"
                     label="Matrícula"
-                    placeholder="Matrícula do Aluno"
+                    placeholder="Matrícula do aluno"
                     onlyNumbers
                   />
 
-                  <TextField
-                    name="name"
-                    label="Nome"
-                    placeholder="Nome do Aluno"
-                  />
+                  <TextField name="name" label="Nome"placeholder="Nome do aluno" />
 
                   <SelectField
                     name="schoolId"
@@ -275,7 +271,7 @@ export function StudentUpsertPanel({
                   <FileDropzone
                     accept={EXCEL_ACCEPT}
                     onFileSelected={setBatchFile}
-                    onReject={() => toast.error("Apenas arquivos Excel (.xlsx, .xls) são permitidos!")}
+                    onReject={() => toast.error("Apenas arquivos Excel (.xlsx, .xls) são permitidos.")}
                   />
                 )}
 

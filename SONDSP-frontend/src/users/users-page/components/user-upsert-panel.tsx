@@ -119,7 +119,12 @@ export function UserUpsertPanel({
           placeholder="nome@sme.prefeitura.gov.br"
         />
 
-        <TextField name="registration" label="Registro Funcional (RF)" onlyNumbers />
+        <TextField 
+          name="registration" 
+          label="Registro Funcional (RF)" 
+          placeholder="Registro funcional do usuário"
+          onlyNumbers 
+        />
 
         <TextField name="name" label="Nome" placeholder="Nome do usuário" />
 
