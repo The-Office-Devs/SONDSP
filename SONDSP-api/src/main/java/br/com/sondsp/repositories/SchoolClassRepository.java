@@ -9,4 +9,5 @@ import java.util.List;
 public interface SchoolClassRepository extends JpaRepository<SchoolClass, Integer>, JpaSpecificationExecutor<SchoolClass> {
     List<SchoolClass> findAllBySchoolId(Integer schoolId);
     Boolean existsBySchoolIdAndNameAndSchoolYear(Integer schoolId, String name, String schoolYear);
+    Boolean existsBySchoolIdAndNameAndSchoolYearAndIdNot(Integer schoolId, String name, String schoolYear, Integer id);
 }

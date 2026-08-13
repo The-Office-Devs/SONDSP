@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { handleApiError } from '@/lib/utils';
 import { useAuthStore } from '../auth.store';
 import { loginService } from '../auth.service';
-import { UserRole } from '../auth.types';
 
 import type { LoginFormData } from './login.schema';
 import type { AxiosError } from 'axios';
@@ -15,7 +14,7 @@ export function useLogin() {
 
   const mutation = useMutation({
     mutationFn: (data: LoginFormData) =>
-      loginService({ login: data.login, password: data.password }),
+      loginService({ login: data.login.toLowerCase(), password: data.password }),
 
     onSuccess: (response) => {
       login(response.token);
@@ -23,7 +22,7 @@ export function useLogin() {
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao realizar login.')
   });
 
   return {

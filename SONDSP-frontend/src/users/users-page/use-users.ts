@@ -47,7 +47,7 @@ export function useCreateUser() {
   return useMutation({
     mutationFn: (data: UserFormData) => 
       createUserService({
-        email: data.email,
+        email: data.email.toLowerCase(),
         registration: data.registration,
         name: data.name,
         role: data.role,
@@ -56,11 +56,11 @@ export function useCreateUser() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
-      toast.success('Usuário cadastrado com sucesso!');
+      toast.success('Usuário cadastrado com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao cadastrar usuário.')
   });
 }
 
@@ -74,7 +74,7 @@ export function useUpdateUser() {
       updateUserService(
         id, 
         {
-          email: data.email,
+          email: data.email.toLowerCase(),
           registration: data.registration,
           name: data.name,
           role: data.role,
@@ -93,17 +93,17 @@ export function useUpdateUser() {
         updateCurrentUser({
           name: updatedUser.name,
           registration: updatedUser.registration,
-          email: updatedUser.email,
+          email: updatedUser.email.toLowerCase(),
           role: updatedUser.role as UserRole,
           permissions: updatedUser.permissions,
         });
       }
 
-      toast.success('Usuário atualizado com sucesso!');
+      toast.success('Usuário atualizado com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao atualizar usuário.')
   });
 }
 
@@ -116,11 +116,11 @@ export function useChangeUserStatus() {
 
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
-      toast.success(message || 'Status do usuário alterado com sucesso!');
+      toast.success(message || 'Status do usuário alterado com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao alterar status do usuário.')
   });
 }
 
@@ -133,11 +133,11 @@ export function useLinkUserToSchool() {
 
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
-      toast.success(message);
+      toast.success(message || 'Usuário vinculado à escola com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao vincular usuário à escola.')
   });
 }
 
@@ -150,10 +150,10 @@ export function useLinkUserToSchoolClass() {
 
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
-      toast.success(message);
+      toast.success(message || 'Usuário vinculado à turma com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao vincular usuário à turma.')
   });
 }

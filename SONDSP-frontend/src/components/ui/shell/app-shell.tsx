@@ -14,13 +14,11 @@ export function AppShell({ children }: PropsWithChildren) {
   return (
     <>
       {isDesktop ? (
-        <div className="flex flex-col min-h-screen bg-[#f2f4f8] text-slate-900">
+        <div className="flex h-screen flex-col overflow-hidden bg-[#f2f4f8] text-slate-900">
           <DesktopShellHeader />
           <div className="grid min-h-0 flex-1 grid-cols-[auto_minmax(0,1fr)] overflow-hidden">
             <DesktopShellSidebar />
-            <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
-              <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
-            </div>
+            <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
           </div>
           <DesktopShellFooter />
         </div>

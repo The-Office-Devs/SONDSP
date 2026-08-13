@@ -11,12 +11,12 @@ import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTabl
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<StudentListItem>[] = [
-  { id: "rowNumber", header: "N° Chamada", width: "120px" },
-  { id: "registration", header: "Matrícula", width: "180px", },
-  { id: "name", header: "Nome", width: "180px" },
-  { id: "schoolName", header: "Escola", width: "260px", accessor: (row) => row.schoolClass ? row.schoolClass.school.name : "-" },
-  { id: "schoolClass", header: "Turma", width: "260px", accessor: (row) => row.schoolClass ? row.schoolClass.name : "-" },
-  { id: "status", header: "Status", width: "180px" },
+  { id: "rowNumber", header: "N° Chamada", width: "10%" },
+  { id: "registration", header: "Matrícula", width: "14%", },
+  { id: "name", header: "Nome", width: "20%" },
+  { id: "schoolName", header: "Escola", width: "22%", accessor: (row) => row.schoolClass ? row.schoolClass.school.name : "-" },
+  { id: "schoolClass", header: "Turma", width: "12%", accessor: (row) => row.schoolClass ? row.schoolClass.name : "-" },
+  { id: "status", header: "Status", width: "8%" },
 ];
 
 export function StudentsDesktop() {
@@ -72,7 +72,13 @@ export function StudentsDesktop() {
         isPending={isPending}
         onConfirm={(studentItem) => 
           mutate(studentItem.id, {
-            onSuccess: () => setInactivateStudent(null)
+            onSuccess: () => {
+              setInactivateStudent(null);
+
+              if (studentItem.id === editStudentId) {
+                setEditStudentId(null);
+              }
+            } 
           })
         }
       />

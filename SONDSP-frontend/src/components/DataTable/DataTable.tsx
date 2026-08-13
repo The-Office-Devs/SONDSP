@@ -88,7 +88,7 @@ export function DataTable<T>({
 
   return (
     <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
         {isFetching && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
             <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-md">
@@ -97,7 +97,7 @@ export function DataTable<T>({
             </div>
           </div>
         )}
-        <Table className={cn("table-fixed transition-opacity duration-200", isFetching && "opacity-50 pointer-events-none")}>
+        <Table className={cn("w-full min-w-[820px] table-fixed transition-opacity duration-200", isFetching && "opacity-50 pointer-events-none")}>
           <colgroup>
             {columns.map((column) => (
               <col  
@@ -105,7 +105,7 @@ export function DataTable<T>({
                 style={{ width: column.width }}
               />
             ))}
-            <col style={{ width: actions.length > 2 ? "160px" : "120px" }} />
+            <col style={{ width: actions.length > 2 ? "18%" : "14%" }} />
           </colgroup>
 
           <TableHeader className="bg-primary text-white">
@@ -133,7 +133,7 @@ export function DataTable<T>({
                 {columns.map((column) => (
                   <TableCell 
                     key={String(column.id)}
-                    className={cn("px-6 py-4 text-slate-900 font-semibold", column.className)}
+                    className={cn("px-6 py-4 text-slate-900 font-semibold truncate", column.className)}
                   >
                     {formatCellValue(
                       column.accessor ? column.accessor(row) : row[column.id as keyof T]

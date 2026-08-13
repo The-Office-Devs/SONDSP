@@ -13,9 +13,9 @@ import { LinkUsersDialog } from "./link-users-dialog";
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<School>[] = [
-  { id: "name", header: "Nome", width: "300px" },
-  { id: "principalName", header: "Diretor", width: "300px" },
-  { id: "status", header: "Status", width: "300px"}
+  { id: "name", header: "Nome", width: "34%" },
+  { id: "principalName", header: "Diretor", width: "32%" },
+  { id: "status", header: "Status", width: "16%"}
 ];
 
 export function SchoolsDesktop() {
@@ -86,7 +86,13 @@ export function SchoolsDesktop() {
         isPending={isPending}
         onConfirm={(school) => 
           mutate(school.id, {
-            onSuccess: () => setInactivateSchool(null)
+            onSuccess: () => {
+              setInactivateSchool(null);
+
+              if (school.id === editSchoolId) {
+                setEditSchoolId(null);
+              }
+            }
           })
         }
       />

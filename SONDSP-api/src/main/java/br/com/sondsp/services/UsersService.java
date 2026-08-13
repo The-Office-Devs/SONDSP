@@ -131,7 +131,7 @@ public class UsersService {
         User user = getUser(id);
 
         if (user.getPassword() == null)
-            throw new ValidationException(FIRST_ACESS_NOT_DONE);
+            throw new ValidationException(FIRST_ACCESS_NOT_DONE);
 
         user.setStatus(!user.getStatus());
 

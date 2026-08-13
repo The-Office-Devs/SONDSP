@@ -16,7 +16,7 @@ export function useResetPassword() {
       resetPasswordService(data),
 
     onSuccess: () => {
-      toast.success("Senha redefinida!");
+      toast.success("Senha redefinida com sucesso.");
 
       setTimeout(() => {
         navigate('/login');
@@ -24,7 +24,7 @@ export function useResetPassword() {
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao redefinir senha.')
   });
 
   return { 

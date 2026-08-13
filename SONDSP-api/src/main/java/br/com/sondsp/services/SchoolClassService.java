@@ -54,7 +54,7 @@ public class SchoolClassService {
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
-        if (repository.existsBySchoolIdAndNameAndSchoolYear(form.schoolId(), form.name(), form.schoolYear()))
+        if (repository.existsBySchoolIdAndNameAndSchoolYearAndIdNot(form.schoolId(), form.name(), form.schoolYear(), id))
             throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
 
         SchoolClass schoolClass = getSchoolClass(id);
@@ -76,18 +76,13 @@ public class SchoolClassService {
         if (!schoolClass.getStatus() && !schoolService.getSchool(schoolClass.getSchool().getId()).getStatus())
             throw new ValidationException(SCHOOL_CLASS_CANNOT_ACTIVATE);
 
-        schoolClass.setStatus(!schoolClass.getStatus());
-
-        // Desvincula todos os alunos da turma ao desativar
-        List<Student> students = studentRepository.findAllBySchoolClassId(id);
-
-        // TODO: Arrumar esse loop para não fazer um update por aluno
-        for (Student student : students) {
-            student.setSchoolClass(null);
-            student.setRowNumber(null);
-            studentRepository.save(student);
+        List<Student> students = studentRepository.findAllBySchoolClassIdAndStatusTrue(id);
+        System.out.println(students.isEmpty());
+        if (!students.isEmpty()) {
+            throw new ValidationException(SCHOOL_CLASS_CANNOT_INACTIVATE);
         }
 
+        schoolClass.setStatus(!schoolClass.getStatus());
         repository.save(schoolClass);
 
         return schoolClass.getStatus();

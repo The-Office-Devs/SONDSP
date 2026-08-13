@@ -4,14 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import brasaoSp from '@/assets/brasao-sp.png';
 import { useAuthStore } from '@/auth/auth.store';
 
-const roleLabels: Record<string, string> = {
-  'Administrador': 'Administrador',
-  'Administrador da Escola': 'Administrador da Escola',
-  'Coordenador': 'Coordenador',
-  'Professor': 'Professor',
-  'POA' : 'Professor Orientador de Área'
-};
-
 export function DesktopShellHeader() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
@@ -21,7 +13,7 @@ export function DesktopShellHeader() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/login'); 
   };
 
   return (
