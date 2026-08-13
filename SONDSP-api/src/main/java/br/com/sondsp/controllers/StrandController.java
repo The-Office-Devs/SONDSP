@@ -20,4 +20,28 @@ public interface StrandController {
             )
     })
     ResponseEntity<?> createStrand(StrandForm form);
+
+    @Operation(description = "Exclui um eixo.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Eixo excluído com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = StrandDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> deleteStrand(Integer idStrand);
+
+    @Operation(description = "Lista todos os eixos ativos.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Retorna os eixos encontrados.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = StrandDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> getAllStrand();
 }

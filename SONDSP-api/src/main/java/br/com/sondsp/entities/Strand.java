@@ -16,12 +16,12 @@ public class Strand {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "nome")
+    @Column(name = "eixo")
     private String name;
 
     @Column(name = "materia")
     private String subject;
 
-    @Column(name = "status")
+    @Column(name = "ativo")
     private Boolean status;
 }
