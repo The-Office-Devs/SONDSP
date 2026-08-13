@@ -9,6 +9,11 @@ export const schoolSchema = z.object({
     .string()
     .trim()
     .min(1, 'O nome do diretor é obrigatório'),
+  codigoInep: z
+    .string()
+    .trim()
+    .min(1, 'O código INEP é obrigatório')
+    .regex(/^\d{8}$/, 'O código INEP deve conter exatamente 8 dígitos numéricos'),
   status: z.boolean()
 });
 
