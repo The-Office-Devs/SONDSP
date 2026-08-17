@@ -1,6 +1,7 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.StrandDTO;
+import br.com.sondsp.filters.StrandFilter;
 import br.com.sondsp.form.StrandForm;
 import br.com.sondsp.services.StrandService;
 import jakarta.validation.Valid;
@@ -29,9 +30,14 @@ public class StrandControllerImpl {
 
     @GetMapping()
     public ResponseEntity<Page<StrandDTO>> getAllStrand(
-            @RequestParam(required = false) String search,
+            @RequestParam(value = "search", required = false) String search,
+            StrandFilter filter,
             Pageable pageable) {
 
-        return ResponseEntity.ok().body(strandService.getAllStrands(search, pageable));
+        if (search != null && !search.trim().isEmpty()) {
+            filter.setGeneralFilter(search.trim());
+        }
+
+        return ResponseEntity.ok().body(strandService.getAllStrands(filter, pageable));
     }
 }
