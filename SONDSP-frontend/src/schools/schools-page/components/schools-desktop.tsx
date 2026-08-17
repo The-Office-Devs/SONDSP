@@ -13,8 +13,9 @@ import { LinkUsersDialog } from "./link-users-dialog";
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<School>[] = [
+  { id: "codigoInep", header: "Código INEP", width: "20%" },
   { id: "name", header: "Nome", width: "34%" },
-  { id: "principalName", header: "Diretor", width: "32%" },
+  { id: "principalName", header: "Diretor", width: "30%" },
   { id: "status", header: "Status", width: "16%"}
 ];
 

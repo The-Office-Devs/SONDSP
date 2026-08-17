@@ -31,6 +31,8 @@ public final class SystemMessages {
     public static final String ROW_NUMBER_TAKEN = "O número de chamada passado já está sendo utilizado por um aluno na turma.";
     public static final String STUDENT_REGISTRATION_ALREADY_EXISTS = "A matrícula já está sendo utilizada.";
     public static final String STUDENT_CANNOT_ACTIVATE = "O aluno não pode ser ativado, pois a turma está inativa.";
+    public static final String INEP_ALREADY_EXISTS = "Este código INEP já está cadastrado";
+    public static final String INVALID_INEP_FORMAT = "Formato de código INEP inválido (deve ter 8 dígitos)";
 
     // Empty properties
     public static final String EMPTY_NAME = "Um nome deve ser informado.";
@@ -43,6 +45,7 @@ public final class SystemMessages {
     public static final String EMPTY_SCHOOL = "Uma escola deve ser informada.";
     public static final String EMPTY_YEAR = "Um ano letivo deve ser informado.";
     public static final String EMPTY_PRINCIPAL = "O nome de diretor deve ser informado.";
+    public static final String EMPTY_INEP = "O código INEP é obrigatório";
     public static final String EMPTY_FUNCTION = "A função do usuário deve ser informada.";
     public static final String EMPTY_SCHOOL_CLASS = "Uma turma deve ser informada.";
 

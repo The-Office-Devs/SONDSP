@@ -22,6 +22,9 @@ public class School {
     @Column(name = "diretor")
     private String principalName;
 
+    @Column(name = "codigo_inep", unique = true, nullable = false, length = 8)
+    private String codigoInep;
+
     @Column(name = "status")
     private Boolean status;
 }
