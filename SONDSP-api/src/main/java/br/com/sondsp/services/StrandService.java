@@ -6,9 +6,9 @@ import br.com.sondsp.form.StrandForm;
 import br.com.sondsp.repositories.StrandRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static br.com.sondsp.util.SystemMessages.STRAND_NOT_FOUND;
 
@@ -28,16 +28,22 @@ public class StrandService {
         return strandRepository.save(strand);
     }
 
-    public Strand deleteStrand(Integer id) {
+    public String changeStrandStatus(Integer id) {
         Strand strand = this.strandRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(STRAND_NOT_FOUND)
         );
 
-        strand.setStatus(false);
-        return strandRepository.save(strand);
+        strand.setStatus(!strand.getStatus());
+        strandRepository.save(strand);
+
+        return "Status alterado com sucesso";
     }
 
-    public List<StrandDTO> getAllStrands() {
-        return this.strandRepository.findAllByStatus(true);
+    public Page<StrandDTO> getAllStrands(String search, Pageable pageable) {
+        if (search != null && !search.trim().isEmpty()) {
+            return this.strandRepository.findByNameContainingIgnoreCase(search.trim(), pageable);
+        }
+
+        return this.strandRepository.findAllBy(pageable);
     }
 }

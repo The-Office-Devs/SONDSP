@@ -1,19 +1,16 @@
 import { useState } from "react";
 
-import type { StrandListItem } from "@/strands/strands.types";
+import type { Strand } from "@/strands/strands.types";
+import { useStrands, useChangeStrandStatus } from "../use-strands";
 import { useTableState } from "@/hooks/use-table-state";
+import { buildPaginationProps } from "@/api/types";
 
 import { StrandInsertPanel } from "./strand-insert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
-const mockData: StrandListItem[] = [
-  { id: 1, name: "Números", subject: "Matemática", status: true },
-  { id: 2, name: "Cotidiano", subject: "Matemática", status: false }
-]
-
-const columns: ColumnDef<StrandListItem>[] = [
+const columns: ColumnDef<Strand>[] = [
   { id: "name", header: "Nome", width: "180px" },
   { id: "subject", header: "Matéria", width: "180px" },
   { id: "status", header: "Status", width: "120px" }
@@ -22,49 +19,55 @@ const columns: ColumnDef<StrandListItem>[] = [
 export function StrandsDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const [inactivateStrand, setInactivateStrand] = useState<StrandListItem | null>(null);
+  const { data: strandsPage, isLoading, isFetching } = useStrands({
+    page,
+    size,
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
 
-  const actions: RowAction<StrandListItem>[] = [
+  const { mutate, isPending } = useChangeStrandStatus();
+
+  const [inactivateStrand, setInactivateStrand] = useState<Strand | null>(null);
+
+  const actions: RowAction<Strand>[] = [
     { type: "inactivate", onClick: (strand) => setInactivateStrand(strand), isActive: (strand) => strand.status }
-  ]
+  ];
 
-  /*if (isLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
         <p className="text-sm text-slate-500">Carregando eixos...</p>
       </div>
     );
-  }*/
+  }
 
   return (
     <div className="space-y-4 lg:p-6">
       <StrandInsertPanel />
 
-      <FilterBar value={filter}  onChange={setFilter} />
+      <FilterBar value={filter} onChange={setFilter} />
 
-      <DataTable<StrandListItem>
-        data={mockData}
+      <DataTable<Strand>
+        data={strandsPage?.content ?? []}
         columns={columns}
         rowKey={(strand) => strand.id}
         actions={actions}
         emptyMessage="Nenhum eixo encontrado"
-        /*isFetching={isFetching}
-        pagination={strandsPage ? buildPaginationProps(strandsPage, setPage) : undefined}*/
+        isFetching={isFetching}
+        pagination={strandsPage ? buildPaginationProps(strandsPage, setPage) : undefined}
       />
 
-      <InactivateDialog<StrandListItem>
+      <InactivateDialog<Strand>
         data={inactivateStrand}
         title={inactivateStrand?.status ? "Inativar Eixo" : "Ativar Eixo"}
         open={inactivateStrand !== null}
         onOpenChange={(open) => { if (!open) setInactivateStrand(null) }}
-        isPending={false}
-        onConfirm={() => null}
-        /*isPending={isPending}
+        isPending={isPending}
         onConfirm={(strand) => 
           mutate(strand.id, {
-            onSuccess: () => setStatusStrand(null)
+            onSuccess: () => setInactivateStrand(null)
           })
-        }*/
+        }
       />
     </div>
   );

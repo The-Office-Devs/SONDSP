@@ -1,8 +1,8 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 
 import { strandSchema, type StrandFormData } from "../strand.schema";
+import { useCreateStrand } from "../use-strands";
 import { getSubmitLabel } from "@/lib/form-utils";
 
 import { Card } from "@/components/Card/Card";
@@ -20,8 +20,8 @@ const defaultValues: StrandFormData = {
 };
 
 export function StrandInsertPanel() {
-  // const { mutate: createStrand, isPending } = useCreateStrand();
-  const submitLabel = getSubmitLabel(/*isPending*/false, false);
+  const { mutate: createStrand, isPending } = useCreateStrand();
+  const submitLabel = getSubmitLabel(isPending, false);
   
   const form = useForm<StrandFormData>({
     resolver: zodResolver(strandSchema),
@@ -30,17 +30,15 @@ export function StrandInsertPanel() {
   });
 
   const onSubmit = (data: StrandFormData) => {
-    console.log(data);
-    form.reset(defaultValues);
-    toast.success("Eixo cadastrado com sucesso");
-    /*createStrand(data, {
+    createStrand(data, {
       onSuccess: () => {
         form.reset(defaultValues);
       },
-    });*/
+    });
   }
 
-  const isSubmitDisabled = /*isPending ||*/ !form.formState.isValid;
+  const isSubmitDisabled = isPending || !form.formState.isValid;
+
   return (
     <FormProvider {...form}>
       <Card 
