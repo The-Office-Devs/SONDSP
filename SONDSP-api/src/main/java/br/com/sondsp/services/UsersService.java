@@ -113,16 +113,27 @@ public class UsersService {
         User user = getUser(id);
         School school = schoolService.getSchool(form.schoolId());
 
-        // Se encontrar a escola, remove ela
-        if (user.getSchools()
-                .removeIf(usc -> usc.getSchool().getId().equals(form.schoolId()))) {
+        // Se o usuário possui vínculo com a escola
+        if (user.getSchools().stream().anyMatch(usc -> usc.getSchool().getId().equals(school.getId()))) {
+            // Remove o vínculo do usuario com todas as turmas da escola
+            user.getSchoolClasses().removeIf(sc -> sc.getSchoolClass().getSchool().getId().equals(school.getId()));
+
+            // Remove o vínculo com a escola
+            user.getSchools().removeIf(usc -> usc.getSchool().getId().equals(school.getId()));
+
             save(user);
             return false;
         }
 
-        // Se não tiver removido, adiciona a escola e retorna true
+        // Se não possui vínculo com a escola, deve criá-lo
+        if (form.function() == null || form.function().isBlank()) {
+            // Caso esteja criando um vínculo, deve ser passada a função do usuário na escola
+            throw new ValidationException(EMPTY_FUNCTION);
+        }
+
         UserSchool newSchool = UserSchool.builder().user(user).school(school).atuacao(form.function()).build();
         user.getSchools().add(newSchool);
+
         save(user);
         return true;
     }
