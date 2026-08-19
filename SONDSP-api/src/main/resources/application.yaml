@@ -39,6 +39,17 @@ spring:
       whitelabel:
         enabled: false
       include-exception: false
+  mail:
+    host: live.smtp.mailtrap.io
+    port: 587
+    username: api
+    password: "${MAIL_PASSWORD}"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 server:
   port: 8081
 jwt:
