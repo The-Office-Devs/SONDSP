@@ -125,6 +125,7 @@ export function DesktopShellSidebar() {
                       icon={item.icon}
                       label={item.label}
                       expanded={expanded}
+                      active={location.pathname === item.to}
                       indent={expanded}
                       onClick={() => navigate(item.to)}
                     />
