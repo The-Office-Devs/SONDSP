@@ -21,7 +21,7 @@ const columns: ColumnDef<UserListItem>[] = [
 export function UsersDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: usersPage, isLoading, isFetching } = useUsers({
+  const { data: usersPage, isFetching } = useUsers({
     page,
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
@@ -35,14 +35,6 @@ export function UsersDesktop() {
     { type: "edit", onClick: (user) => setEditUserId(user.id), disabled: (user) => !user.status },
     { type: "inactivate", onClick: (user) => setStatusUser(user), isActive: (user) => user.status },
   ];
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <p className="text-sm text-slate-500">Carregando usuários...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4 p-4 lg:p-6">

@@ -22,7 +22,7 @@ const columns: ColumnDef<School>[] = [
 export function SchoolsDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: schoolsPage, isLoading, isFetching } = useSchools({
+  const { data: schoolsPage, isFetching } = useSchools({
     page,
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
@@ -44,14 +44,6 @@ export function SchoolsDesktop() {
     { type: "link", onClick: (school) => setLinkUsersSchool(school), disabled: (school) => !school.status },
     { type: "inactivate", onClick: (school) => setInactivateSchool(school), isActive: (school) => school.status }
   ];
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <p className="text-sm text-slate-500">Carregando escolas...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4 p-4 lg:p-6">
