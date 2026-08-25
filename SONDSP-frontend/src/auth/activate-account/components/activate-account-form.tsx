@@ -40,13 +40,14 @@ export function ActivateAccountForm({
         <TextField
           name="registration"
           label="Registro Funcional (RF)"
+          placeholder="Insira o registro funcional do usuário"
           onlyNumbers
           ui={ui}
         />
 
         <TextField
           name="email"
-          label="E-mail institucional"
+          label="E-mail Institucional"
           type="email"
           placeholder="nome@sme.prefeitura.gov.br"
           ui={ui}

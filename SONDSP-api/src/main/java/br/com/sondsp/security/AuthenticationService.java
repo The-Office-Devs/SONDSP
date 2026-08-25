@@ -57,7 +57,7 @@ public class AuthenticationService implements UserDetailsService {
         User user = authenticateUser(form);
 
         if (!user.getStatus())
-            throw new LoginException(INACTIVATED_USER);
+            throw new LoginException(INVALID_CREDENTIALS);
 
         return new UserAuthResult(user, getToken(user));
     }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useDeleteSchool, useSchools } from "../use-schools";
+import { useInactivateSchool, useSchools } from "../use-schools";
 import { useLinkUserToSchool } from "@/users/users-page/use-users";
 import { useTableState } from "@/hooks/useTableState";
 import { buildPaginationProps } from "@/api/types";
@@ -10,12 +10,13 @@ import { SchoolUpsertPanel } from "./school-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { LinkUsersDialog } from "./link-users-dialog";
-import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
+import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<School>[] = [
-  { id: "name", header: "Nome", width: "300px" },
-  { id: "principalName", header: "Diretor", width: "300px" },
-  { id: "status", header: "Status", width: "300px"}
+  { id: "codigoInep", header: "Código INEP", width: "20%" },
+  { id: "name", header: "Nome", width: "34%" },
+  { id: "principalName", header: "Diretor", width: "30%" },
+  { id: "status", header: "Status", width: "16%"}
 ];
 
 export function SchoolsDesktop() {
@@ -26,11 +27,11 @@ export function SchoolsDesktop() {
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
-  const { mutate, isPending } = useDeleteSchool();
+  const { mutate, isPending } = useInactivateSchool();
   const { mutate: linkUserToSchool } = useLinkUserToSchool();
 
   const [editSchoolId, setEditSchoolId] = useState<number | null>(null);
-  const [deleteSchool, setDeleteSchool] = useState<School | null>(null);
+  const [inactivateSchool, setInactivateSchool] = useState<School | null>(null);
   const [linkUsersSchool, setLinkUsersSchool] = useState<School | null>(null);
 
   const handleLinkUserToSchool = (userId: number, userFunction: string) => {
@@ -41,7 +42,7 @@ export function SchoolsDesktop() {
   const actions: RowAction<School>[] = [
     { type: "edit", onClick: (school) => setEditSchoolId(school.id), disabled: (user) => !user.status },
     { type: "link", onClick: (school) => setLinkUsersSchool(school), disabled: (school) => !school.status },
-    { type: "delete", onClick: (school) => setDeleteSchool(school), isActive: (school) => school.status }
+    { type: "inactivate", onClick: (school) => setInactivateSchool(school), isActive: (school) => school.status }
   ];
 
   if (isLoading) {
@@ -78,24 +79,24 @@ export function SchoolsDesktop() {
         queryParams={linkUsersSchool ? { schoolId: linkUsersSchool.id } : undefined}
       />
 
-      <DeleteDialog<School>
-        data={deleteSchool}
-        title={deleteSchool?.status ? "Inativar Escola" : "Ativar Escola"}
-        open={deleteSchool !== null}
-        onOpenChange={(open) => { if (!open) setDeleteSchool(null); }}
+      <InactivateDialog<School>
+        data={inactivateSchool}
+        title={inactivateSchool?.status ? "Inativar Escola" : "Ativar Escola"}
+        open={inactivateSchool !== null}
+        onOpenChange={(open) => { if (!open) setInactivateSchool(null); }}
         isPending={isPending}
         onConfirm={(school) => 
           mutate(school.id, {
-            onSuccess: () => setDeleteSchool(null)
+            onSuccess: () => {
+              setInactivateSchool(null);
+
+              if (school.id === editSchoolId) {
+                setEditSchoolId(null);
+              }
+            }
           })
         }
-      >
-        {deleteSchool?.status && (
-          <p className="text-sm text-destructive font-medium">
-            Ao inativar a escola, todos os usuários relacionados a ela perderão esse vínculo.
-          </p>
-        )}
-      </DeleteDialog>
+      />
     </div>
   );
 }

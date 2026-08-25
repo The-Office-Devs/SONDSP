@@ -5,13 +5,15 @@ import {
   useQueryClient 
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import type { AxiosError } from 'axios';
 
+import { handleApiError } from '@/lib/utils';
 import { listUsersService } from '@/users/users.service';
 import {
   listSchoolsService,
   createSchoolService,
   updateSchoolService,
-  deleteSchoolService,
+  inactivateSchoolService,
   getSchoolService,
 } from '../schools.service';
 import type { 
@@ -49,11 +51,11 @@ export function useCreateSchool() {
     mutationFn: (data: CreateSchoolRequest) => createSchoolService(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
-      toast.success('Escola cadastrada com sucesso!');
+      toast.success('Escola cadastrada com sucesso.');
     },
-    onError: () => {
-      toast.error('Erro ao cadastrar escola.');
-    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao cadastrar escola.')
   });
 }
 
@@ -65,26 +67,26 @@ export function useUpdateSchool() {
       updateSchoolService(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
-      toast.success('Escola atualizada com sucesso!');
+      toast.success('Escola atualizada com sucesso.');
     },
-    onError: () => {
-      toast.error('Erro ao atualizar escola.');
-    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao atualizar escola.')
   });
 }
 
-export function useDeleteSchool() {
+export function useInactivateSchool() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => deleteSchoolService(id),
+    mutationFn: (id: number) => inactivateSchoolService(id),
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: SCHOOLS_QUERY_KEY });
-      toast.success(message || 'Status da escola alterado com sucesso!');
+      toast.success(message || 'Status da escola alterado com sucesso.');
     },
-    onError: () => {
-      toast.error('Erro ao alterar status da escola.');
-    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao alterar status da escola.')
   });
 }
 

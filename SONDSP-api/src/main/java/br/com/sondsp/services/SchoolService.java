@@ -2,6 +2,7 @@ package br.com.sondsp.services;
 
 import br.com.sondsp.entities.School;
 import br.com.sondsp.entities.SchoolClass;
+import br.com.sondsp.exceptions.SchoolAlreadyExistsException;
 import br.com.sondsp.filters.SchoolFilter;
 import br.com.sondsp.form.SchoolForm;
 import br.com.sondsp.repositories.SchoolClassRepository;
@@ -18,8 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CANNOT_INACTIVATE;
-import static br.com.sondsp.util.SystemMessages.SCHOOL_NOT_FOUND;
+import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -28,9 +28,14 @@ public class SchoolService {
     private SchoolClassRepository schoolClassRepository;
 
     public School createSchool(SchoolForm form) {
+        if (repository.existsByCodigoInep(form.codigoInep())) {
+            throw new SchoolAlreadyExistsException(INEP_ALREADY_EXISTS);
+        }
+
         return repository.save(School.builder()
                 .name(form.name())
                 .principalName(form.principalName())
+                .codigoInep(form.codigoInep())
                 .status(true)
                 .build());
     }
@@ -47,8 +52,13 @@ public class SchoolService {
     public School updateSchool(Integer id, SchoolForm form) {
         School school = getSchool(id);
 
+        if (repository.existsByCodigoInepAndIdNot(form.codigoInep(), id)) {
+            throw new SchoolAlreadyExistsException(INEP_ALREADY_EXISTS);
+        }
+
         school.setName(form.name());
         school.setPrincipalName(form.principalName());
+        school.setCodigoInep(form.codigoInep());
 
         return repository.save(school);
     }
@@ -78,22 +88,25 @@ public class SchoolService {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
             if (filter.search() != null && !filter.search().isBlank()) {
-                String searchPattern = "%" + filter.search().toLowerCase() + "%";
+                String search = filter.search().toLowerCase();
+                String searchPattern = "%" + search + "%";
 
-                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
-                Predicate searchInPrincipal = criteriaBuilder.like(criteriaBuilder.lower(root.get("principalName")), searchPattern);
+                List<Predicate> orPredicates = new ArrayList<>();
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("principalName")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("codigoInep")), searchPattern));
 
-                Boolean status = switch (filter.search().toLowerCase()){
-                    case "ativo" -> true;
-                    case "inativo" -> false;
-                    default -> null;
-                };
+                Boolean status = null;
+                if ("ativo".startsWith(search)) {
+                    status = true;
+                } else if ("inativo".startsWith(search)) {
+                    status = false;
+                }
 
-                Predicate searchInStatus = criteriaBuilder.equal(root.get("status"), status);
+                if (status != null)
+                    orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
-                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInName, searchInPrincipal, searchInStatus);
-
-                predicates.add(combinedSearchPredicate);
+                predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
             } else {
                 if (filter.name() != null && !filter.name().isBlank()) {
                     predicates.add(criteriaBuilder.like(criteriaBuilder

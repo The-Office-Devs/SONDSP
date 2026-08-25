@@ -8,15 +8,20 @@ export function SelectField<T extends FieldValues>({
   name, 
   label, 
   placeholder,
-  options
+  options,
+  onValueChange,
+  disabled
 }: SelectFieldProps<T>) {
   return (
     <FormField name={name} label={label} labelClassName="text-base">
       {({ field, invalid, fieldId }) => (
         <Select
           value={field.value ? String(field.value) : ""}
-          onValueChange={field.onChange}
-          disabled={field.disabled}
+          onValueChange={(value) => {
+            field.onChange(value);
+            onValueChange?.(value);
+          }}
+          disabled={disabled || field.disabled}
         >
           <SelectTrigger
             id={fieldId}

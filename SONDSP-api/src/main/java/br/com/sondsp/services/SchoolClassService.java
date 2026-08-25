@@ -21,8 +21,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_CANNOT_ACTIVATE;
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_NOT_FOUND;
+import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -32,6 +31,9 @@ public class SchoolClassService {
     private StudentRepository studentRepository;
 
     public SchoolClass createSchoolClass(SchoolClassForm form) {
+        if (repository.existsBySchoolIdAndNameAndSchoolYear(form.schoolId(), form.name(), form.schoolYear()))
+            throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
+
         School school = schoolService.getSchool(form.schoolId());
 
         return repository.save(SchoolClass.builder()
@@ -52,6 +54,9 @@ public class SchoolClassService {
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
+        if (repository.existsBySchoolIdAndNameAndSchoolYearAndIdNot(form.schoolId(), form.name(), form.schoolYear(), id))
+            throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
+
         SchoolClass schoolClass = getSchoolClass(id);
 
         schoolClass.setName(form.name());
@@ -71,18 +76,13 @@ public class SchoolClassService {
         if (!schoolClass.getStatus() && !schoolService.getSchool(schoolClass.getSchool().getId()).getStatus())
             throw new ValidationException(SCHOOL_CLASS_CANNOT_ACTIVATE);
 
-        schoolClass.setStatus(!schoolClass.getStatus());
+        List<Student> students = studentRepository.findAllBySchoolClassIdAndStatusTrue(id);
 
-        // Desvincula todos os alunos da turma ao desativar
-        List<Student> students = studentRepository.findAllBySchoolClassId(id);
-
-        // TODO: Arrumar esse loop para não fazer um update por aluno
-        for (Student student : students) {
-            student.setSchoolClass(null);
-            student.setRowNumber(null);
-            studentRepository.save(student);
+        if (!students.isEmpty()) {
+            throw new ValidationException(SCHOOL_CLASS_CANNOT_INACTIVATE);
         }
 
+        schoolClass.setStatus(!schoolClass.getStatus());
         repository.save(schoolClass);
 
         return schoolClass.getStatus();
@@ -98,23 +98,25 @@ public class SchoolClassService {
             if (filter.search() != null && !filter.search().isBlank()) {
                 Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 
-                String searchPattern = "%" + filter.search().toLowerCase() + "%";
+                String search = filter.search().toLowerCase();
+                String searchPattern = "%" + search + "%";
 
-                Predicate searchInSchool = criteriaBuilder.like(criteriaBuilder.lower(schoolJoin.get("name")), searchPattern);
-                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
-                Predicate searchInSchoolYear = criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern);
+                List<Predicate> orPredicates = new ArrayList<>();
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(schoolJoin.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern));
 
-                Boolean status = switch (filter.search().toLowerCase()){
-                    case "ativo" -> true;
-                    case "inativo" -> false;
-                    default -> null;
-                };
+                Boolean status = null;
+                if ("ativo".startsWith(search)) {
+                    status = true;
+                } else if ("inativo".startsWith(search)) {
+                    status = false;
+                }
 
-                Predicate searchInStatus = criteriaBuilder.equal(root.get("status"), status);
+                if (status != null)
+                    orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
-                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInSchool, searchInName, searchInSchoolYear, searchInStatus);
-
-                predicates.add(combinedSearchPredicate);
+                predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
             } else {
                 if (filter.schoolId() != null) {
                     Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);

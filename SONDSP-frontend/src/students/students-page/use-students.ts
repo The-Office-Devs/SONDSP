@@ -10,7 +10,7 @@ import type { AxiosError } from "axios";
 import { handleApiError } from "@/lib/utils";
 import { 
   createStudentService, 
-  deleteStudentService, 
+  inactivateStudentService, 
   getStudentService, 
   listStudentsService, 
   updateStudentService 
@@ -52,11 +52,11 @@ export function useCreateStudent() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
-      toast.success('Aluno cadastrado com sucesso!');
+      toast.success('Aluno cadastrado com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao cadastrar aluno.')
   });
 }
 
@@ -78,27 +78,27 @@ export function useUpdateStudent() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
-      toast.success('Aluno atualizado com sucesso!');
+      toast.success('Aluno atualizado com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao atualizar aluno.')
   });
 }
 
-export function useDeleteStudent() {
+export function useInactivateStudent() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: number) => 
-      deleteStudentService(id),
+      inactivateStudentService(id),
 
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
-      toast.success(message || 'Status do aluno alterado com sucesso!');
+      toast.success(message || 'Status do aluno alterado com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao alterar status do aluno.')
   });
 }

@@ -1,19 +1,19 @@
 import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, X } from 'lucide-react';
 
 import { schoolSchema, type SchoolFormData } from '../school.schema';
 import { useCreateSchool, useSchool, useUpdateSchool } from '../use-schools';
+import { getTitle } from '@/lib/card-utils';
 import { getSubmitLabel } from '@/lib/form-utils';
 
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card } from "@/components/Card/Card";
 import { TextField } from '@/components/HookForm/fields/TextField';
 
 const defaultValues: SchoolFormData = {
   name: "",
   principalName: "",
+  codigoInep: "",
   status: true
 };
 
@@ -32,6 +32,7 @@ export function SchoolUpsertPanel({
 
   const isEditMode = schoolIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+  const title = getTitle("Escola", isEditMode, false);
   const submitLabel = getSubmitLabel(isPending, isEditMode);
 
   const form = useForm<SchoolFormData>({
@@ -50,6 +51,7 @@ export function SchoolUpsertPanel({
       form.reset({ 
         name: school.name,
         principalName: school.principalName,
+        codigoInep: school.codigoInep ?? "",
         status: true
       });
     }
@@ -81,47 +83,22 @@ export function SchoolUpsertPanel({
     onCancelEdit();
   };
 
+  const isSubmitDisabled = isPending || isLoadingSchool || !form.formState.isValid;
   return (
-    <Card className="border-0 bg-[#efefef] px-5 py-5 shadow-sm">
-      <div className="space-y-5">
-        <h2 className="text-lg font-semibold text-slate-950">
-          {isEditMode ? "Edição de Escola" : "Cadastro de Escola"}
-        </h2>
-
-        <FormProvider {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
-          >
-            <TextField name="name" label="Nome" placeholder="Nome da escola" />
-
-            <TextField name="principalName" label="Diretor" placeholder="Nome do diretor" />
-
-            <div className="flex gap-2 items-end justify-end">
-              {isEditMode && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  isRounded={true}
-                  onClick={handleCancelEdit}
-                >
-                  <X className="size-4" />
-                  Cancelar
-                </Button>
-              )}
-
-              <Button
-                type="submit"
-                isRounded={true}
-                disabled={isPending || isLoadingSchool || !form.formState.isValid}
-              >
-                <Check className="size-4" />
-                {submitLabel}
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
-      </div>
-    </Card>
+    <FormProvider {...form}>
+      <Card
+        title={title} 
+        submitLabel={submitLabel}
+        isEditMode={isEditMode} 
+        isSubmitDisabled={isSubmitDisabled}
+        onSubmit={form.handleSubmit(onSubmit)}
+        onCancelEdit={handleCancelEdit}
+        collapsible
+      >
+        <TextField name="name" label="Nome" placeholder="Nome da escola" />
+        <TextField name="principalName" label="Diretor" placeholder="Nome do diretor" />
+        <TextField name="codigoInep" label="Código INEP" placeholder="Código INEP" onlyNumbers maxLength={8} />
+      </Card>
+    </FormProvider>
   );
 }

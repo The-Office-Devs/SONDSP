@@ -5,7 +5,7 @@ export function DesktopShellFooter() {
   const { footer } = useShell();
 
   return (
-    <footer className="min-w-0 overflow-hidden border-t border-white/10 bg-[#0a4b93] px-4 py-4 text-sm font-medium text-white lg:px-6">
+    <footer className="min-w-0 overflow-hidden border-t border-white/10 bg-[#0a4b93] px-4 py-6 text-sm font-medium text-white lg:px-6">
       <div className="grid min-w-0 grid-cols-[minmax(0,auto)_minmax(0,1fr)_minmax(0,auto)] items-center gap-2">
         <div className="min-w-0 flex justify-start overflow-hidden">
           {footer.leftAction && (

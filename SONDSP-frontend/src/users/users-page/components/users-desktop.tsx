@@ -8,14 +8,14 @@ import { buildPaginationProps } from "@/api/types";
 import { UserUpsertPanel } from "./user-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
-import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
+import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<UserListItem>[] = [
-  { id: "registration", header: "Registro Funcional (RF)", width: "140px" },
-  { id: "name", header: "Nome", width: "180px" },
-  { id: "email", header: "Email", width: "260px" },
-  { id: "role", header: "Função", width: "140px" },
-  { id: "status", header: "Status", width: "120px" }
+  { id: "registration", header: "Registro Funcional (RF)", width: "14%" },
+  { id: "name", header: "Nome", width: "20%" },
+  { id: "email", header: "Email", width: "26%" },
+  { id: "role", header: "Função", width: "16%" },
+  { id: "status", header: "Status", width: "10%" }
 ];
 
 export function UsersDesktop() {
@@ -33,7 +33,7 @@ export function UsersDesktop() {
 
   const actions: RowAction<UserListItem>[] = [
     { type: "edit", onClick: (user) => setEditUserId(user.id), disabled: (user) => !user.status },
-    { type: "delete", onClick: (user) => setStatusUser(user), isActive: (user) => user.status },
+    { type: "inactivate", onClick: (user) => setStatusUser(user), isActive: (user) => user.status },
   ];
 
   if (isLoading) {
@@ -63,7 +63,7 @@ export function UsersDesktop() {
         pagination={usersPage ? buildPaginationProps(usersPage, setPage) : undefined}
       />
 
-      <DeleteDialog<UserListItem>
+      <InactivateDialog<UserListItem>
         data={statusUser}
         title={statusUser?.status ? "Inativar Usuário" : "Ativar Usuário"}
         open={statusUser !== null}
@@ -71,7 +71,13 @@ export function UsersDesktop() {
         isPending={isPending}
         onConfirm={(user) => 
           mutate(user.id, {
-            onSuccess: () => setStatusUser(null)
+            onSuccess: () => {
+              setStatusUser(null);
+              
+              if (user.id === editUserId) {
+                setEditUserId(null);
+              }
+            } 
           })
         }
       />

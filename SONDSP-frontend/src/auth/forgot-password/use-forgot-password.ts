@@ -12,7 +12,7 @@ export function useForgotPassword() {
 
     onSuccess: () => {
       navigate('/login');
-      toast.success("Link de redefinição de senha enviado!");
+      toast.success("Link de redefinição de senha enviado.");
     },
 
     onError: () => {

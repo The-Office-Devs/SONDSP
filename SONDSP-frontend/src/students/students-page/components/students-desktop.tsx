@@ -1,21 +1,22 @@
 import { useState } from "react";
 
 import { useTableState } from "@/hooks/useTableState";
-import { useDeleteStudent, useStudents } from "../use-students";
+import { useInactivateStudent, useStudents } from "../use-students";
 import { buildPaginationProps } from "@/api/types";
 
 import type { StudentListItem } from "@/students/students.types";
 import { StudentUpsertPanel } from "./student-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
-import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
+import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<StudentListItem>[] = [
-  { id: "rowNumber", header: "N° Chamada", width: "180px" },
-  { id: "registration", header: "Matrícula", width: "180px", },
-  { id: "name", header: "Nome", width: "180px" },
-  { id: "schoolClass", header: "Turma", width: "260px", accessor: (row) => row.schoolClass ? `${row.schoolClass.name} - ${row.schoolClass.school.name}` : "-" },
-  { id: "status", header: "Status", width: "180px" },
+  { id: "rowNumber", header: "N° Chamada", width: "10%" },
+  { id: "registration", header: "Matrícula", width: "14%", },
+  { id: "name", header: "Nome", width: "20%" },
+  { id: "schoolName", header: "Escola", width: "22%", accessor: (row) => row.schoolClass ? row.schoolClass.school.name : "-" },
+  { id: "schoolClass", header: "Turma", width: "12%", accessor: (row) => row.schoolClass ? row.schoolClass.name : "-" },
+  { id: "status", header: "Status", width: "8%" },
 ];
 
 export function StudentsDesktop() {
@@ -26,14 +27,14 @@ export function StudentsDesktop() {
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
-  const { mutate, isPending } = useDeleteStudent();
+  const { mutate, isPending } = useInactivateStudent();
 
   const [editStudentId, setEditStudentId] = useState<number | null>(null);
-  const [deleteStudent, setDeleteStudent] = useState<StudentListItem | null>(null);
+  const [inactivateStudent, setInactivateStudent] = useState<StudentListItem | null>(null);
 
   const actions: RowAction<StudentListItem>[] = [
     { type: "edit", onClick: (studentItem) => setEditStudentId(studentItem.id), disabled: (studentItem) => !studentItem.status },
-    { type: "delete", onClick: (studentItem) => setDeleteStudent(studentItem), isActive: (studentItem) => studentItem.status }
+    { type: "inactivate", onClick: (studentItem) => setInactivateStudent(studentItem), isActive: (studentItem) => studentItem.status }
   ];
   
   if (isLoading) {
@@ -63,15 +64,21 @@ export function StudentsDesktop() {
         pagination={studentsPage ? buildPaginationProps(studentsPage, setPage) : undefined}
       />
 
-      <DeleteDialog<StudentListItem>
-        data={deleteStudent}
-        title={deleteStudent?.status ? "Inativar Aluno" : "Ativar Aluno"}
-        open={deleteStudent !== null}
-        onOpenChange={(open) => { if (!open) setDeleteStudent(null); }}
+      <InactivateDialog<StudentListItem>
+        data={inactivateStudent}
+        title={inactivateStudent?.status ? "Inativar Aluno" : "Ativar Aluno"}
+        open={inactivateStudent !== null}
+        onOpenChange={(open) => { if (!open) setInactivateStudent(null); }}
         isPending={isPending}
         onConfirm={(studentItem) => 
           mutate(studentItem.id, {
-            onSuccess: () => setDeleteStudent(null)
+            onSuccess: () => {
+              setInactivateStudent(null);
+
+              if (studentItem.id === editStudentId) {
+                setEditStudentId(null);
+              }
+            } 
           })
         }
       />

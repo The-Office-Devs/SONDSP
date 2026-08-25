@@ -1,9 +1,10 @@
 package br.com.sondsp.dtos;
 
-import br.com.sondsp.entities.Permission;
-import br.com.sondsp.entities.User;
+import br.com.sondsp.entities.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record UserDTO(
         Integer id,
@@ -13,8 +14,9 @@ public record UserDTO(
         String role,
         List<String> permissions,
         Boolean status,
-        List<String> schools,
-        List<String> schoolClasses) {
+        List<SchoolClassesDTO> schools
+) {
+
     public UserDTO(User user) {
         this(
                 user.getId(),
@@ -25,10 +27,30 @@ public record UserDTO(
                 user.getPermissions() != null ?
                         user.getPermissions().stream().map(Permission::getPermission).toList() : List.of(),
                 user.getStatus(),
-                user.getSchools() != null ?
-                        user.getSchools().stream().map(s -> s.getSchool().getName()).toList() : List.of(),
-                user.getSchoolClasses() != null ?
-                        user.getSchoolClasses().stream().map(sc -> sc.getSchoolClass().getName()).toList() : List.of()
+                user.getSchools() != null && user.getSchoolClasses() != null
+                        ? buildSchoolClassesDTO(user.getSchoolClasses(), user.getSchools())
+                        : null
         );
+    }
+
+    private static List<SchoolClassesDTO> buildSchoolClassesDTO(Set<UserSchoolClass> schoolClasses, Set<UserSchool> schools) {
+        if (schools == null || schools.isEmpty()) {
+            return null;
+        }
+
+        return schools.stream()
+                .map(UserSchool::getSchool)
+                .map(school -> {
+                    List<SchoolClassDTO> classesLinkedToThisSchool = schoolClasses == null ? List.of() :
+                            schoolClasses.stream()
+                                    .map(UserSchoolClass::getSchoolClass)
+                                    .filter(schoolClass -> schoolClass.getSchool() != null &&
+                                            schoolClass.getSchool().getId().equals(school.getId()))
+                                    .map(schoolClass -> new SchoolClassDTO(schoolClass, false))
+                                    .toList();
+
+                    return new SchoolClassesDTO(school, classesLinkedToThisSchool);
+                })
+                .toList();
     }
 }

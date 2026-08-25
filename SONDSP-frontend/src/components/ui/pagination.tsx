@@ -122,8 +122,6 @@ function AppPagination({
   onPageChange,
   hasNext,
   hasPrevious,
-  totalElements,
-  size,
   className,
 }: AppPaginationProps) {
   const currentPage = page; // 0-indexed
