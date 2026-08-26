@@ -13,10 +13,10 @@ import { LinkUsersDialog } from "./link-users-dialog";
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<School>[] = [
-  { id: "codigoInep", header: "Código INEP", width: "20%" },
-  { id: "name", header: "Nome", width: "34%" },
+  { id: "codigoInep", header: "Código INEP", width: "10%" },
+  { id: "name", header: "Nome", width: "30%" },
   { id: "principalName", header: "Diretor", width: "30%" },
-  { id: "status", header: "Status", width: "16%"}
+  { id: "status", header: "Status", width: "10%"}
 ];
 
 export function SchoolsDesktop() {

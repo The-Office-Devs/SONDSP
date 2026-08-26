@@ -57,7 +57,9 @@ export function StudentUpsertPanel({
 
   const isEditMode = studentIdToEdit !== null;
   const isPending = isCreating || isUpdating;
-  const submitLabel = getSubmitLabel(isPending, isEditMode);
+  
+  const submitType = isEditMode ? "edit" : "insert";
+  const submitLabel = getSubmitLabel(isPending, submitType);
   
   const form = useForm<StudentFormInput, unknown, StudentFormData>({
     resolver: zodResolver(studentSchema),
@@ -222,7 +224,7 @@ export function StudentUpsertPanel({
                     disabled={!schoolId}
                   />
         
-                  <div className="flex gap-2 items-end justify-end xl:col-start-3">
+                  <div className="flex gap-2 items-end justify-end xl:col-start-3 self-start mt-[2rem]">
                     {isEditMode && (
                       <Button
                         type="button"

@@ -8,9 +8,11 @@ import { surveySchema, type SurveyFormData, type SurveyFormInput } from "../surv
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
+import { getSubmitLabel } from "@/lib/form-utils";
 
 interface SurveyFilterPanelProps {
   onSearch: (data: SurveyFormData) => void;
+  onClear: () => void;
   isSearching: boolean;
 }
 
@@ -19,10 +21,16 @@ const defaultValues: SurveyFormInput = {
   schoolClassId: 0
 };
 
-export function SurveysFilterPanel({ onSearch, isSearching }: SurveyFilterPanelProps) {
+export function SurveysFilterPanel({ 
+  onSearch, 
+  onClear, 
+  isSearching 
+}: SurveyFilterPanelProps) {
   const userId = useAuthStore((state) => state.user)?.id;
   const { data: userData } = useUser(userId!);
   const schools = userData?.schools ?? [];
+
+  const submitLabel = getSubmitLabel(isSearching, 'filter');
 
   const form = useForm<SurveyFormInput, unknown, SurveyFormData>({
     resolver: zodResolver(surveySchema),
@@ -33,6 +41,11 @@ export function SurveysFilterPanel({ onSearch, isSearching }: SurveyFilterPanelP
   const schoolId = useWatch({ control: form.control, name: "schoolId" });
 
   const onSubmit = (data: SurveyFormData) => onSearch(data);
+
+  const handleReset = () => {
+    form.reset(defaultValues);
+    onClear();
+  }
 
   const schoolOptions = schools.map((school) => ({
     value: String(school.id),
@@ -49,19 +62,15 @@ export function SurveysFilterPanel({ onSearch, isSearching }: SurveyFilterPanelP
       label: `${schoolClass.name} - ${schoolClass.schoolYear}`
     })) ?? [];
 
-  // Ver o limpar filtros + Colocar submitLabel para buscar e buscando
-  // ajustar responsividade quando clico em buscar e da erro  (ver se na outra branch isso ja esta pronto) +
-  // ver melhor todas as props do card (na outra branch)
-    // onValueChange={() => form.setValue("schoolClassId", 0, { shouldValidate: true })} --> ver se isso eh realmente necessario
-
   const isSubmitDisabled = !form.formState.isValid || isSearching;
   return (
     <FormProvider {...form}>
       <Card 
         title="Sondagens"
-        submitLabel="Buscar"
+        submitLabel={submitLabel}
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
+        onReset={handleReset}
         collapsible
       >
         <SelectField

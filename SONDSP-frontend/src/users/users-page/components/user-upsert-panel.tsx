@@ -49,8 +49,10 @@ export function UserUpsertPanel({
 
   const isEditMode = userIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+  
   const title = getTitle("Usuário", isEditMode, false);
-  const submitLabel = getSubmitLabel(isPending, isEditMode);
+  const submitType = isEditMode ? "edit" : "insert";
+  const submitLabel = getSubmitLabel(isPending, submitType);
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
@@ -108,9 +110,10 @@ export function UserUpsertPanel({
         title={title} 
         submitLabel={submitLabel}
         isEditMode={isEditMode} 
+        isFilter={false}
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
-        onCancelEdit={handleCancelEdit}
+        onReset={handleCancelEdit}
         collapsible
       >
         <TextField

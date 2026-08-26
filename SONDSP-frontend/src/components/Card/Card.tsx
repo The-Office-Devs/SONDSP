@@ -2,22 +2,24 @@ import {
   Check, 
   ChevronDown, 
   ChevronUp, 
+  FilterX, 
   Search, 
   X 
 } from "lucide-react";
 
 import { Card as PrimitiveCard } from "@/components/ui/card";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { Children, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface CardProps {
   title: string;
   submitLabel: string;
   isSubmitDisabled: boolean;
+  isFilter?: boolean;
   isEditMode?: boolean;
   onSubmit: React.SubmitEventHandler<HTMLFormElement>;
-  onCancelEdit?: () => void;
+  onReset?: () => void;
   collapsible?: boolean;
   children: React.ReactNode;
 }
@@ -26,14 +28,17 @@ export function Card({
   title,
   submitLabel,
   isSubmitDisabled = false,
+  isFilter = true,
   isEditMode = false,
   onSubmit,
-  onCancelEdit,
+  onReset,
   collapsible = false,
   children 
 }: Readonly<CardProps>) {
   const [open, setOpen] = useState(true);
   const isOpen = !collapsible || open;
+  const fieldCount = Children.count(children);
+  const hasThreefields = fieldCount % 3 === 0;
 
   const form = (
     <form
@@ -42,16 +47,22 @@ export function Card({
     >
       {children}
 
-      <div className="flex gap-2 items-end justify-end xl:col-start-3">
-        {isEditMode && (
+      <div className={cn(
+        "flex gap-2 justify-end self-start mt-[2rem] xl:col-start-3",
+        hasThreefields && "xl:mt-0 xl:self-auto"
+      )}>
+        {(isEditMode || isFilter) && (
           <Button
             type="button"
             variant="outline"
             isRounded
-            onClick={onCancelEdit}
+            onClick={onReset}
           >
-            <X className="size-4" />
-            Cancelar
+            {(() => {
+              const Icon = !isFilter ? X : FilterX;
+              return <Icon className="size-4" />;
+            })()}
+            {!isFilter ? "Cancelar" : "Limpar Campos"}
           </Button>
         )}
 
@@ -61,7 +72,7 @@ export function Card({
           disabled={isSubmitDisabled}
         >
           {(() => {
-            const Icon = onCancelEdit ? Check : Search;
+            const Icon = onReset ? Check : Search;
             return <Icon className="size-4" />;
           })()}
           {submitLabel}

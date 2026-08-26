@@ -20,7 +20,7 @@ export function SurveysDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
   const [appliedFilters, setAppliedFilters] = useState<SurveyFormData | null>(null);
 
-  const { data: studentsPage, isFetching } = useStudents(
+  const { data: studentsPage, isFetching, isLoading } = useStudents(
     {
       page,
       size,
@@ -35,10 +35,20 @@ export function SurveysDesktop() {
   const actions: RowAction<StudentListItem>[] = [
     { type: "edit", onClick: (studentItem) => /*setEditStudentId(studentItem.id)*/ null },
   ];
+
+  const handleClear = () => {
+    setAppliedFilters(null);
+    setFilter("");
+    setPage(0);
+  };
   
   return (
     <div className="space-y-4 p-4 lg:p-6">
-      <SurveysFilterPanel onSearch={setAppliedFilters} isSearching={isFetching} />
+      <SurveysFilterPanel 
+        onSearch={setAppliedFilters}
+        onClear={handleClear} 
+        isSearching={isLoading} 
+      />
       
       {!appliedFilters ? (
         <div className="flex flex-col items-center p-4 text-center">
