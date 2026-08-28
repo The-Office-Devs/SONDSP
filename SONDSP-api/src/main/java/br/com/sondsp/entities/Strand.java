@@ -16,7 +16,7 @@ public class Strand {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "eixo")
+    @Column(name = "nome")
     private String name;
 
     @Column(name = "materia")

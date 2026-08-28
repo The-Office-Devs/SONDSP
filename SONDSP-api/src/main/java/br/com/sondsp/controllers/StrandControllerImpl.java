@@ -19,24 +19,19 @@ public class StrandControllerImpl {
     private StrandService strandService;
 
     @PostMapping()
-    public ResponseEntity<StrandDTO> createStrand(@Valid @RequestBody StrandForm form) {
+    public ResponseEntity<StrandDTO> createStrand(@Valid @RequestBody StrandForm form) throws Exception {
         return ResponseEntity.ok().body(new StrandDTO(strandService.createStrand(form)));
     }
 
     @PatchMapping("/{id}/changeStatus")
-    public ResponseEntity<String> changeStrandStatus(@PathVariable Integer id) {
-        return ResponseEntity.ok().body(strandService.changeStrandStatus(id));
+    public ResponseEntity<?> changeStrandStatus(@PathVariable Integer id) {
+        return ResponseEntity.ok().body(new StrandDTO(strandService.changeStrandStatus(id)));
     }
 
     @GetMapping()
     public ResponseEntity<Page<StrandDTO>> getAllStrand(
-            @RequestParam(value = "search", required = false) String search,
-            StrandFilter filter,
+            @ModelAttribute StrandFilter filter,
             Pageable pageable) {
-
-        if (search != null && !search.trim().isEmpty()) {
-            filter.setGeneralFilter(search.trim());
-        }
 
         return ResponseEntity.ok().body(strandService.getAllStrands(filter, pageable));
     }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static br.com.sondsp.util.SystemMessages.EMPTY_DATA;
 import static br.com.sondsp.util.SystemMessages.STRAND_NOT_FOUND;
 
 @Service
@@ -24,7 +25,9 @@ public class StrandService {
     private final StrandRepository strandRepository;
     private final SpecificationFilter specificationFilter;
 
-    public Strand createStrand(StrandForm form) {
+    public Strand createStrand(StrandForm form) throws Exception {
+        if(!this.validateStrand(form)) throw new Exception(EMPTY_DATA);
+
         Strand strand = Strand
                 .builder()
                 .name(form.name())
@@ -35,15 +38,10 @@ public class StrandService {
         return strandRepository.save(strand);
     }
 
-    public String changeStrandStatus(Integer id) {
-        Strand strand = this.strandRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(STRAND_NOT_FOUND)
-        );
-
+    public Strand changeStrandStatus(Integer id) {
+        Strand strand = this.getStrand(id);
         strand.setStatus(!strand.getStatus());
-        strandRepository.save(strand);
-
-        return "Status alterado com sucesso";
+        return strandRepository.save(strand);
     }
 
     public Page<StrandDTO> getAllStrands(StrandFilter filter, Pageable pageable) {
@@ -57,5 +55,15 @@ public class StrandService {
         Page<Strand> strandsPage = strandRepository.findAll(spec, pageable);
 
         return strandsPage.map(StrandDTO::new);
+    }
+
+    private Strand getStrand(Integer id) {
+        return this.strandRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(STRAND_NOT_FOUND)
+        );
+    }
+
+    private boolean validateStrand(StrandForm form) {
+        return form.name() != null && form.subject() != null;
     }
 }

@@ -35,6 +35,7 @@ public final class SystemMessages {
     public static final String INVALID_INEP_FORMAT = "Formato de código INEP inválido (deve ter 8 dígitos)";
 
     // Empty properties
+    public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";
     public static final String EMPTY_NAME = "Um nome deve ser informado.";
     public static final String EMPTY_EMAIL = "Um email deve ser informado.";
     public static final String EMPTY_REGISTRATION = "Um registro funcional deve ser informado.";

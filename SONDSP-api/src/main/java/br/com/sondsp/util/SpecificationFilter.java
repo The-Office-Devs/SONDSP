@@ -61,7 +61,7 @@ public class SpecificationFilter {
         Map<String, Object> filterMap = objectMapper.convertValue(filter, new TypeReference<>() {});
 
         if (Boolean.TRUE.equals(isGeneralFilter(filterMap))){
-            String generalFilter = (String) filterMap.get("generalFilter");
+            String generalFilter = (String) filterMap.get("search");
             String filterPattern = "%" + generalFilter.toLowerCase() + "%";
             List<Predicate> orPredicates = new ArrayList<>();
 
@@ -76,7 +76,7 @@ public class SpecificationFilter {
 
         } else {
             filterMap.forEach((columnKey, filterValue) -> {
-                if (!"generalFilter".equals(columnKey) && filterValue != null && !filterValue.toString().isBlank()) {
+                if (!"search".equals(columnKey) && filterValue != null && !filterValue.toString().isBlank()) {
 
                     FilterColumn filterColumn = filterColumns.stream()
                             .filter(col -> col.filterKey.equals(columnKey))
@@ -97,7 +97,7 @@ public class SpecificationFilter {
     }
 
     private Boolean isGeneralFilter(Map<String, Object> filterMap){
-        Object generalFilter = filterMap.get("generalFilter");
+        Object generalFilter = filterMap.get("search");
         return generalFilter != null && !generalFilter.toString().isBlank();
     }
 
