@@ -37,8 +37,21 @@ export function Card({
 }: Readonly<CardProps>) {
   const [open, setOpen] = useState(true);
   const isOpen = !collapsible || open;
+
   const fieldCount = Children.count(children);
-  const hasThreefields = fieldCount % 3 === 0;
+  const inlineAtMd = fieldCount % 2 !== 0;
+  const inlineAtXl = fieldCount % 3 !== 0;
+
+  const actionsClass = cn("flex gap-2 justify-end",
+    inlineAtMd
+      ? "md:mt-[2rem] md:self-start"
+      : "md:col-start-2 md:mt-0 md:self-auto",
+    inlineAtXl
+      ? "xl:col-auto xl:mt-[2rem] xl:self-start"
+      : "xl:col-start-3 xl:mt-0 xl:self-auto"
+  );
+  const ResetIcon = isFilter ? FilterX : X;
+  const SubmitIcon = onReset ? Check : Search;
 
   const form = (
     <form
@@ -47,10 +60,7 @@ export function Card({
     >
       {children}
 
-      <div className={cn(
-        "flex gap-2 justify-end self-start mt-[2rem] xl:col-start-3",
-        hasThreefields && "xl:mt-0 xl:self-auto"
-      )}>
+      <div className={actionsClass}>
         {(isEditMode || isFilter) && (
           <Button
             type="button"
@@ -58,11 +68,8 @@ export function Card({
             isRounded
             onClick={onReset}
           >
-            {(() => {
-              const Icon = !isFilter ? X : FilterX;
-              return <Icon className="size-4" />;
-            })()}
-            {!isFilter ? "Cancelar" : "Limpar Campos"}
+            <ResetIcon className="size-4" />
+            {isFilter ? "Limpar Campos" : "Cancelar"}
           </Button>
         )}
 
@@ -71,10 +78,7 @@ export function Card({
           isRounded
           disabled={isSubmitDisabled}
         >
-          {(() => {
-            const Icon = onReset ? Check : Search;
-            return <Icon className="size-4" />;
-          })()}
+          <SubmitIcon className="size-4" />
           {submitLabel}
         </Button>
       </div>
