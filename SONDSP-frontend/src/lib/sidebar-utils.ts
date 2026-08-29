@@ -1,6 +1,7 @@
 import { 
   BarChart3, 
   ClipboardList, 
+  ClipboardPenLine, 
   LayoutGrid, 
   School, 
   UserRound, 
@@ -8,15 +9,16 @@ import {
 } from "lucide-react";
 
 export const administratorItems = [
-  { label: 'Usuários', icon: Users, to: '/usuarios' },
+  { label: 'Alunos', icon: UserRound, to: '/alunos' },
+  { label: 'Eixos', icon: ClipboardPenLine, to: '/eixos' },
   { label: 'Escolas', icon: School, to: '/escolas' },
   { label: 'Turmas', icon: ClipboardList, to: '/turmas' },
-  { label: 'Alunos', icon: UserRound, to: '/alunos' },
+  { label: 'Usuários', icon: Users, to: '/usuarios' },
 ];
 
 export const applicationItems = [
+  { label: 'Alunos', icon: UserRound, to: '/app-alunos' },
   { label: 'Dashboards', icon: BarChart3, to: '/dashboards' },
   { label: 'Mapa de Classe', icon: LayoutGrid, to: '/mapa-classe' },
   { label: 'Turmas', icon: ClipboardList, to: '/app-turmas' },
-  { label: 'Alunos', icon: UserRound, to: '/app-alunos' },
 ];

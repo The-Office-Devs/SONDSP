@@ -96,6 +96,7 @@ export function ClassUpsertPanel({
       <Card
         title={title} 
         submitLabel={submitLabel}
+        isFilter={false}
         isEditMode={isEditMode} 
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}

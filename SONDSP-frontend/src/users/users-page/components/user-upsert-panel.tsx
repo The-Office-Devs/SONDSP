@@ -107,10 +107,11 @@ export function UserUpsertPanel({
       <Card 
         title={title} 
         submitLabel={submitLabel}
-        isEditMode={isEditMode} 
         isSubmitDisabled={isSubmitDisabled}
+        isFilter={false}
+        isEditMode={isEditMode} 
         onSubmit={form.handleSubmit(onSubmit)}
-        onCancelEdit={handleCancelEdit}
+        onClearFields={handleCancelEdit}
         collapsible
       >
         <TextField

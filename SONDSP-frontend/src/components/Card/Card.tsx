@@ -15,9 +15,10 @@ interface CardProps {
   title: string;
   submitLabel: string;
   isSubmitDisabled: boolean;
-  isEditMode: boolean;
   onSubmit: React.SubmitEventHandler<HTMLFormElement>;
-  onCancelEdit?: () => void;
+  isFilter?: boolean;
+  isEditMode?: boolean;
+  onClearFields?: () => void;
   collapsible?: boolean;
   children: React.ReactNode;
 }
@@ -26,9 +27,10 @@ export function Card({
   title,
   submitLabel,
   isSubmitDisabled = false,
-  isEditMode = false,
   onSubmit,
-  onCancelEdit,
+  isFilter = true,
+  isEditMode = false,
+  onClearFields,
   collapsible = false,
   children 
 }: Readonly<CardProps>) {
@@ -43,15 +45,15 @@ export function Card({
       {children}
 
       <div className="flex gap-2 items-end justify-end xl:col-start-3">
-        {isEditMode && (
+        {isEditMode || isFilter && (
           <Button
             type="button"
             variant="outline"
             isRounded
-            onClick={onCancelEdit}
+            onClick={onClearFields}
           >
-            <X className="size-4" />
-            Cancelar
+            {!isFilter ? <X className="size-4" /> : null}
+            {isFilter ? "Limpar Campos" : "Cancelar"}
           </Button>
         )}
 
@@ -61,7 +63,7 @@ export function Card({
           disabled={isSubmitDisabled}
         >
           {(() => {
-            const Icon = onCancelEdit ? Check : Search;
+            const Icon = isFilter ? Search : Check;
             return <Icon className="size-4" />;
           })()}
           {submitLabel}

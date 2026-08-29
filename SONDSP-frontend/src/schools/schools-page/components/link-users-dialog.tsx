@@ -10,7 +10,7 @@ import {
 import type { UserListItem } from "@/users/users.types";
 import { useUsers } from '../use-schools';
 import { DataTable, type ColumnDef, type RowAction } from '@/components/DataTable/DataTable';
-import { useTableState } from '@/hooks/useTableState';
+import { useTableState } from '@/hooks/use-table-state';
 import { buildPaginationProps } from '@/api/types';
 
 interface LinkUsersDialogProps {

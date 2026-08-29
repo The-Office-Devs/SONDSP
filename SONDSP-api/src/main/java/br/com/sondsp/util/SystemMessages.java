@@ -35,6 +35,7 @@ public final class SystemMessages {
     public static final String INVALID_INEP_FORMAT = "Formato de código INEP inválido (deve ter 8 dígitos)";
 
     // Empty properties
+    public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";
     public static final String EMPTY_NAME = "Um nome deve ser informado.";
     public static final String EMPTY_EMAIL = "Um email deve ser informado.";
     public static final String EMPTY_REGISTRATION = "Um registro funcional deve ser informado.";
@@ -52,6 +53,7 @@ public final class SystemMessages {
     // User errors
     public static final String USER_NOT_FOUND = "O usuário não foi encontrado.";
     public static final String EMAIL_NOT_FOUND = "O email não foi encontrado.";
+    public static final String STRAND_NOT_FOUND = "O eixo não foi encontrado.";
     public static final String EMAIL_OR_REGISTRATION_NOT_FOUND = "O email ou o registro funcional são inválidos.";
     public static final String SCHOOL_CLASS_NOT_FOUND = "A turma não foi encontrada.";
     public static final String STUDENT_NOT_FOUND = "O aluno não foi encontrado.";

@@ -90,9 +90,10 @@ export function SchoolUpsertPanel({
         title={title} 
         submitLabel={submitLabel}
         isEditMode={isEditMode} 
+        isFilter={false}
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
-        onCancelEdit={handleCancelEdit}
+        onClearFields={handleCancelEdit}
         collapsible
       >
         <TextField name="name" label="Nome" placeholder="Nome da escola" />

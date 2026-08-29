@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDebounce } from "./useDebounce";
+import { useDebounce } from "./use-debounce";
 
 export function useTableState(initialSize = 5) {
   const [filter, setFilter] = useState("");
