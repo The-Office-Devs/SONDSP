@@ -1,3 +1,5 @@
+import { Children, useState } from "react";
+import { cn } from "@/lib/utils";
 import { 
   Check, 
   ChevronDown, 
@@ -9,8 +11,6 @@ import {
 
 import { Card as PrimitiveCard } from "@/components/ui/card";
 import { Button } from "../ui/button";
-import { Children, useState } from "react";
-import { cn } from "@/lib/utils";
 
 interface CardProps {
   title: string;
@@ -51,7 +51,7 @@ export function Card({
       : "xl:col-start-3 xl:mt-0 xl:self-auto"
   );
   const ResetIcon = isFilter ? FilterX : X;
-  const SubmitIcon = onReset ? Check : Search;
+  const SubmitIcon = isFilter ? Search : Check;
 
   const form = (
     <form

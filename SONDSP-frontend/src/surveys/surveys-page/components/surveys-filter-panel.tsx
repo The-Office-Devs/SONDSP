@@ -69,6 +69,7 @@ export function SurveysFilterPanel({
         title="Sondagens"
         submitLabel={submitLabel}
         isSubmitDisabled={isSubmitDisabled}
+        isFilter
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleReset}
         collapsible

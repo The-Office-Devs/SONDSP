@@ -1,5 +1,18 @@
 import { cn } from "@/lib/utils";
 import { 
+  AlarmSmoke, 
+  BookOpenCheck, 
+  Check, 
+  Link2, 
+  Link2Off, 
+  Loader2, 
+  NotebookPen, 
+  PencilLine, 
+  X, 
+  type LucideIcon
+} from "lucide-react";
+
+import { 
   Table, 
   TableBody, 
   TableCell, 
@@ -7,17 +20,25 @@ import {
   TableHeader, 
   TableRow 
 } from "../ui/table";
-import { 
-  AlarmSmoke, 
-  Check, 
-  Link2, 
-  Link2Off, 
-  Loader2, 
-  PencilLine, 
-  X 
-} from "lucide-react";
 import { Button } from "../ui/button";
 import { AppPagination } from "../ui/pagination";
+
+type RowActionType = 
+  | 'apply' 
+  | 'edit' 
+  | 'finish'
+  | 'inactivate' 
+  | 'link' 
+  | 'normal' 
+
+export type RowAction<T> = {
+  type: RowActionType;
+  onClick: (row: T) => void;
+  disabled?: boolean | ((row: T) => boolean);
+  label?: string;
+  className?: string;
+  isActive?: (row: T) => boolean;
+}
 
 export type ColumnDef<T> = {
   id: keyof T;
@@ -27,31 +48,24 @@ export type ColumnDef<T> = {
   accessor?: (row: T) => unknown;
 }
 
-export type RowAction<T> = {
-  type: 'edit' | 'inactivate' | 'link' | 'normal';
-  onClick: (row: T) => void;
-  disabled?: boolean | ((row: T) => boolean);
-  label?: string;
-  className?: string;
-  isActive?: (row: T) => boolean;
-}
+type TablePagination = {
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
+  totalElements?: number;
+  size?: number;
+};
 
 interface DataTableProps<T> {
   data: T[];
   columns: ColumnDef<T>[];
   rowKey: (row: T) => React.Key;
-  actions: RowAction<T>[];
+  actions: RowAction<T>[] | ((row: T) => RowAction<T>[]);
   emptyMessage: string;
   isFetching?: boolean;
-  pagination?: {
-    page: number;
-    totalPages: number;
-    onPageChange: (page: number) => void;
-    hasNext?: boolean;
-    hasPrevious?: boolean;
-    totalElements?: number;
-    size?: number;
-  };
+  pagination?: TablePagination;
 }
 
 export function DataTable<T>({
@@ -69,6 +83,8 @@ export function DataTable<T>({
     if (value === null || value === undefined || value === "") return "-";
     return String(value);
   };
+
+  const maxActions = typeof actions === "function" ? 1 : actions.length;
 
   if (data.length === 0) {
     return (
@@ -105,7 +121,7 @@ export function DataTable<T>({
                 style={{ width: column.width }}
               />
             ))}
-            <col style={{ width: actions.length > 2 ? "18%" : "14%" }} />
+            <col style={{ width: maxActions > 2 ? "18%" : "14%" }} />
           </colgroup>
 
           <TableHeader className="bg-primary text-white">
@@ -119,7 +135,7 @@ export function DataTable<T>({
                 </TableHead>
               ))}
 
-              {actions.length > 0 && (
+              {maxActions > 0 && (
                 <TableHead className="px-6 py-3 text-center font-semibold text-white">
                   Ações
                 </TableHead>
@@ -143,14 +159,12 @@ export function DataTable<T>({
 
                 <TableCell className="px-4 py-3">
                   <div className="flex items-center justify-center gap-2 whitespace-nowrap">
-                    {actions.map((action) => {
-                      const isDisabled =
-                        typeof action.disabled === "function"
+                    {(typeof actions === "function" ? actions(row) : actions).map((action) => {
+                      const isDisabled = typeof action.disabled === "function"
                           ? action.disabled(row)
                           : action.disabled ?? false;
 
                       const isActive = action.isActive ? action.isActive(row) : undefined;
-
                       return (
                         <ActionButton
                           key={`${action.type}-${action.label}`}
@@ -186,8 +200,33 @@ export function DataTable<T>({
   );
 }
 
+type ActionAppearance = {
+  title: string;
+  icon: LucideIcon;
+  variant?: React.ComponentProps<typeof Button>["variant"];
+  className?: string;
+};
+
+const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppearance> = {
+  apply: () => ({ title: "Aplicar", icon: NotebookPen }),
+  edit: () => ({ title: "Editar", icon: PencilLine }),
+  finish: () => ({ title: "Finalizar", icon: BookOpenCheck }),
+
+  link: (isLinked) => 
+    isLinked 
+      ? { title: "Desvincular", icon: Link2Off, variant: "destructive" }
+      : { title: "Vincular", icon: Link2, variant: "outline" },
+      
+  inactivate: (isActive) => 
+    isActive
+      ? { title: "Inativar", icon: X, variant: "destructive" }
+      : { title: "Ativar", icon: Check, className: "bg-emerald-600 hover:bg-emerald-500 text-white border-transparent" },
+
+  normal: () => ({ title: "", icon: AlarmSmoke })
+}
+
 type ActionButtonProps = Readonly<{
-  type: "edit" | "inactivate" | "link" | "normal";
+  type: RowActionType;
   onClick: () => void;
   disabled?: boolean;
   className?: string;
@@ -203,68 +242,18 @@ function ActionButton({
   disabled = false,
   isActive
 }: ActionButtonProps) {
-  const shared = cn("w-14", className);
-
-  if (type === "edit") {
-    return (
-      <Button
-        title="Editar"
-        aria-label="Editar"
-        className={cn(shared)}
-        disabled={disabled}
-        onClick={onClick}
-      >
-        <PencilLine className="size-4" />
-        {label}
-      </Button>
-    );
-  }
-
-  if (type === "link") {
-    const isLinked = isActive ?? false;
-    return (
-      <Button
-        title={isLinked ? "Desvincular" : "Vincular"}
-        aria-label={isLinked ? "Desvincular" : "Vincular"}
-        variant={isLinked ? "destructive" : "outline"}
-        className={cn(shared,)}
-        disabled={disabled}
-        onClick={onClick}
-      >
-        {isLinked ? <Link2Off className="size-4" /> : <Link2 className="size-4" />}
-        {label}
-      </Button>
-    );
-  }
-
-  if (type === "inactivate") {
-    const active = isActive ?? true;
-    const isInactive = !active;
-    return (
-      <Button
-        title={isInactive ? "Ativar" : "Inativar"}
-        aria-label={isInactive ? "Ativar" : "Inativar"}
-        variant={isInactive ? "default" : "destructive"}
-        className={cn(
-          shared,
-          isInactive && "bg-emerald-600 hover:bg-emerald-500 text-white border-transparent"
-        )}
-        disabled={disabled}
-        onClick={onClick}
-      >
-        {isInactive ? <Check className="size-4" /> : <X className="size-4" />}
-        {label}
-      </Button>
-    );
-  }
+  const { title, icon: Icon, variant, className: stateClass } = ACTION_APPEARANCE[type](isActive!);
 
   return (
     <Button
-      className={cn(shared)}
+      title={title}
+      aria-label={title}
+      variant={variant}
+      className={cn("w-14", stateClass, className)}
       disabled={disabled}
       onClick={onClick}
     >
-      <AlarmSmoke className="size-4" />
+      <Icon className="size-4" />
       {label}
     </Button>
   );
