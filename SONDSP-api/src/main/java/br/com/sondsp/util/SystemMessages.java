@@ -33,6 +33,8 @@ public final class SystemMessages {
     public static final String STUDENT_CANNOT_ACTIVATE = "O aluno não pode ser ativado, pois a turma está inativa.";
     public static final String INEP_ALREADY_EXISTS = "Este código INEP já está cadastrado";
     public static final String INVALID_INEP_FORMAT = "Formato de código INEP inválido (deve ter 8 dígitos)";
+    public static final String MUST_HAVE_CLASS = "O aluno deve estar em uma turma para ter número da chamada.";
+    public static final String MUST_HAVE_ROW_NUMBER = "O aluno deve possuir um número de chamada na turma.";
 
     // Empty properties
     public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";

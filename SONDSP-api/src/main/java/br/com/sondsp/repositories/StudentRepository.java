@@ -11,4 +11,5 @@ public interface StudentRepository extends JpaRepository<Student, Integer>, JpaS
     Boolean existsBySchoolClassIdAndRowNumberAndIdNot(Integer schoolClassId, Integer rowNumberm, Integer studentId);
     Boolean existsBySchoolClassIdAndRowNumber(Integer schoolClassId, Integer rowNumberm);
     Boolean existsByRegistration(String registration);
+    Boolean existsByRegistrationAndIdNot(String registration, Integer id);
 }
