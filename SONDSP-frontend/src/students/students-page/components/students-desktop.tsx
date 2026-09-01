@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useTableState } from "@/hooks/useTableState";
+import { useTableState } from "@/hooks/use-table-state";
 import { useInactivateStudent, useStudents } from "../use-students";
 import { buildPaginationProps } from "@/api/types";
 

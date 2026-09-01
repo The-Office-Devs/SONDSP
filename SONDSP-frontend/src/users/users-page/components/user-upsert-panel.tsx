@@ -49,7 +49,7 @@ export function UserUpsertPanel({
 
   const isEditMode = userIdToEdit !== null;
   const isPending = isCreating || isUpdating;
-  
+
   const title = getTitle("Usuário", isEditMode, false);
   const submitType = isEditMode ? "edit" : "insert";
   const submitLabel = getSubmitLabel(isPending, submitType);
@@ -109,7 +109,7 @@ export function UserUpsertPanel({
       <Card 
         title={title} 
         submitLabel={submitLabel}
-        isEditMode={isEditMode} 
+        isEditMode={isEditMode}
         isFilter={false}
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}

@@ -25,13 +25,13 @@ import static br.com.sondsp.util.SystemMessages.*;
 @AllArgsConstructor
 public class UsersService {
     private UsersRepository repository;
-    private final RolesRepository rolesRepository;
+    private final RolesService rolesService;
     private final PermissionsRepository permissionsRepository;
 
     private SchoolClassService schoolClassService;
     private SchoolService schoolService;
 
-    public User registerUser(RegisterForm form) {
+    public User registerUser(UserForm form) {
         User verifyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
 
         if (verifyUser != null) {
@@ -45,7 +45,7 @@ public class UsersService {
         return save(User.builder()
                 .name(form.name())
                 .registration(form.registration())
-                .role(rolesRepository.getRoleByName(form.role()))
+                .role(rolesService.getRoleByName(form.role()))
                 .status(false)
                 .email(form.email())
                 .password(null)
@@ -82,7 +82,7 @@ public class UsersService {
 
         user.setName(form.name());
         user.setRegistration(form.registration());
-        user.setRole(rolesRepository.getRoleByName(form.role()));
+        user.setRole(rolesService.getRoleByName(form.role()));
         user.setEmail(form.email());
         user.setPermissions(permissionsRepository.findAllByPermissionIn(form.permissions()));
 

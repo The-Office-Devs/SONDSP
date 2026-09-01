@@ -98,6 +98,7 @@ export function ClassUpsertPanel({
       <Card
         title={title} 
         submitLabel={submitLabel}
+        isFilter={false}
         isEditMode={isEditMode} 
         isFilter={false}
         isSubmitDisabled={isSubmitDisabled}

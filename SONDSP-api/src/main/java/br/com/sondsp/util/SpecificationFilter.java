@@ -61,12 +61,12 @@ public class SpecificationFilter {
         Map<String, Object> filterMap = objectMapper.convertValue(filter, new TypeReference<>() {});
 
         if (Boolean.TRUE.equals(isGeneralFilter(filterMap))){
-            String generalFilter = (String) filterMap.get("generalFilter");
+            String generalFilter = (String) filterMap.get("search");
             String filterPattern = "%" + generalFilter.toLowerCase() + "%";
             List<Predicate> orPredicates = new ArrayList<>();
 
             filterColumns.forEach((column) -> {
-                Predicate predicate = buildPredicate(builder, root, filterPattern, column);
+                Predicate predicate = buildPredicate(builder, root, filterPattern, column, generalFilter);
                 if (predicate != null) orPredicates.add(predicate);
             });
 
@@ -76,7 +76,7 @@ public class SpecificationFilter {
 
         } else {
             filterMap.forEach((columnKey, filterValue) -> {
-                if (!"generalFilter".equals(columnKey) && filterValue != null && !filterValue.toString().isBlank()) {
+                if (!"search".equals(columnKey) && filterValue != null && !filterValue.toString().isBlank()) {
 
                     FilterColumn filterColumn = filterColumns.stream()
                             .filter(col -> col.filterKey.equals(columnKey))
@@ -84,8 +84,9 @@ public class SpecificationFilter {
                             .orElse(null);
 
                     if (filterColumn != null) {
-                        String filterPattern = "%" + filterValue.toString().toLowerCase() + "%";
-                        Predicate predicate = buildPredicate(builder, root, filterPattern, filterColumn);
+                        String rawValue = filterValue.toString();
+                        String filterPattern = "%" + rawValue.toLowerCase() + "%";
+                        Predicate predicate = buildPredicate(builder, root, filterPattern, filterColumn, rawValue);
                         if (predicate != null) predicates.add(predicate);
                     }
                 }
@@ -96,7 +97,7 @@ public class SpecificationFilter {
     }
 
     private Boolean isGeneralFilter(Map<String, Object> filterMap){
-        Object generalFilter = filterMap.get("generalFilter");
+        Object generalFilter = filterMap.get("search");
         return generalFilter != null && !generalFilter.toString().isBlank();
     }
 
@@ -104,18 +105,33 @@ public class SpecificationFilter {
             CriteriaBuilder criteriaBuilder,
             Root<T> root,
             String filterPattern,
-            FilterColumn column
+            FilterColumn column,
+            String rawFilterValue
     ){
-        Expression<String> path;
+        Path<?> path;
 
         if (column.isJoin()) {
             Join<Object, Object> expressionJoin = root.join(column.joinRelation, column.joinType);
             path = expressionJoin.get(column.attributeName);
-
         } else {
             path = root.get(column.attributeName);
         }
 
-        return criteriaBuilder.like(criteriaBuilder.lower(path), filterPattern);
+        Class<?> javaType = path.getJavaType();
+
+        if (javaType.equals(Boolean.class) || javaType.equals(boolean.class)) {
+            String term = rawFilterValue.toLowerCase().trim();
+
+            if (term.equals("true") || "ativo".contains(term)) {
+                return criteriaBuilder.isTrue(path.as(Boolean.class));
+            }
+            else if (term.equals("false") || "inativo".contains(term)) {
+                return criteriaBuilder.isFalse(path.as(Boolean.class));
+            }
+
+            return null;
+        }
+
+        return criteriaBuilder.like(criteriaBuilder.lower(path.as(String.class)), filterPattern);
     }
 }

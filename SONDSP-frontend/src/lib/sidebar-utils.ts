@@ -1,8 +1,9 @@
 import { 
   BarChart3, 
-  BookOpenText, 
-  ClipboardList, 
-  LayoutGrid, 
+  BookOpenText,
+  ClipboardList,
+  ClipboardPenLine,
+  LayoutGrid,
   School, 
   UserRound, 
   Users 
@@ -10,6 +11,7 @@ import {
 
 export const administratorItems = [
   { label: 'Alunos', icon: UserRound, to: '/alunos' },
+  { label: 'Eixos', icon: ClipboardPenLine, to: '/eixos' },
   { label: 'Escolas', icon: School, to: '/escolas' },
   { label: 'Turmas', icon: ClipboardList, to: '/turmas' },
   { label: 'Usuários', icon: Users, to: '/usuarios' },

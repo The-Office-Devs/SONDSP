@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useInactivateSchool, useSchools } from "../use-schools";
 import { useLinkUserToSchool } from "@/users/users-page/use-users";
-import { useTableState } from "@/hooks/useTableState";
+import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
 
 import type { School } from "@/schools/schools.types";

@@ -1,11 +1,11 @@
 import { Children, useState } from "react";
 import { cn } from "@/lib/utils";
-import { 
+import {
   Check, 
   ChevronDown, 
   ChevronUp, 
-  FilterX, 
-  Search, 
+  FilterX,
+  Search,
   X 
 } from "lucide-react";
 

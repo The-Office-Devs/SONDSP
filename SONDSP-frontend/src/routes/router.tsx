@@ -10,6 +10,7 @@ import { UsersPage } from '@/users/users-page/users-page';
 import { SchoolsPage } from '@/schools/schools-page/schools-page';
 import { ClassesPage } from '@/classes/classes-page/classes-page';
 import { StudentsPage } from '@/students/students-page/students.page';
+import { StrandsPage } from '@/strands/strands-page/strands-page';
 import { SurveysPage } from '@/surveys/surveys-page/surveys-page';
 
 export const router = createBrowserRouter([
@@ -43,10 +44,11 @@ export const router = createBrowserRouter([
           {
             path: 'gerenciamento',
             children: [
+              { path: 'alunos', element: <StudentsPage /> },
+              { path: 'eixos', element: <StrandsPage /> },
               { path: 'usuarios', element: <UsersPage /> },
               { path: 'escolas', element: <SchoolsPage /> },
               { path: 'turmas', element: <ClassesPage /> },
-              { path: 'alunos', element: <StudentsPage /> }
             ],
           },
           { path: 'sondagens', element: <SurveysPage /> }

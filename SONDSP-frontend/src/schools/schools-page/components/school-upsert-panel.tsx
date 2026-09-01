@@ -32,7 +32,7 @@ export function SchoolUpsertPanel({
 
   const isEditMode = schoolIdToEdit !== null;
   const isPending = isCreating || isUpdating;
-  
+
   const title = getTitle("Escola", isEditMode, false);
   const submitType = isEditMode ? "edit" : "insert";
   const submitLabel = getSubmitLabel(isPending, submitType);

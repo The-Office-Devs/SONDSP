@@ -6,6 +6,7 @@ import br.com.sondsp.entities.Student;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.services.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +26,12 @@ public class StudentControllerImpl implements StudentController {
     private StudentService service;
 
     @PostMapping()
-    public ResponseEntity<?> createStudent(@RequestBody StudentForm form) {
+    public ResponseEntity<?> createStudent(@RequestBody @Valid StudentForm form) {
         return ResponseEntity.ok().body(new StudentDTO(service.createStudent(form)));
     }
 
     @PostMapping("/load")
-    public ResponseEntity<?> createStudents(@RequestBody List<StudentForm> forms) {
+    public ResponseEntity<?> createStudents(@RequestBody @Valid List<StudentForm> forms) {
         return ResponseEntity.ok().body(service.createStudents(forms).stream().map(StudentDTO::new));
     }
 
@@ -64,7 +65,7 @@ public class StudentControllerImpl implements StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable Integer id, @RequestBody StudentForm form) {
+    public ResponseEntity<?> updateStudent(@PathVariable Integer id, @Valid @RequestBody StudentForm form) {
         return ResponseEntity.ok().body(new StudentDTO(service.updateStudent(id, form)));
     }
 
