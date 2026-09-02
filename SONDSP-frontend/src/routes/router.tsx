@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
               { path: 'turmas', element: <ClassesPage /> },
             ],
           },
-          { path: 'sondagens', element: <SurveysPage /> }
+          { path: 'app-sondagens', element: <SurveysPage /> }
         ]
       }
     ],
