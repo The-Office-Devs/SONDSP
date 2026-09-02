@@ -3,12 +3,13 @@ import { useState } from "react";
 import type { StudentListItem } from "@/students/students.types";
 import { type SurveyFormData } from "../survey-schema";
 import { useStudents } from "@/students/students-page/use-students";
-import { useTableState } from "@/hooks/useTableState";
+import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
 
 import { SurveysFilterPanel } from "./surveys-filter-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
+import { StartSurveyDialog } from "@/components/Dialog/StartSurveyDialog";
 
 const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "20%" },
@@ -19,6 +20,7 @@ const columns: ColumnDef<StudentListItem>[] = [
 export function SurveysDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
   const [appliedFilters, setAppliedFilters] = useState<SurveyFormData | null>(null);
+  const [applyStudentId, setApplyStudentId] = useState<number | null>(null);
 
   const { data: studentsPage, isFetching, isLoading } = useStudents(
     {
@@ -31,9 +33,8 @@ export function SurveysDesktop() {
     { enabled: !!appliedFilters }
   );
 
-  // [ Finalizar Sondagem ] se houver sondagem aberta, ou [ Aplicar Sondagem ] caso contrário
   const actions: RowAction<StudentListItem>[] = [
-    { type: "edit", onClick: (studentItem) => /*setEditStudentId(studentItem.id)*/ null },
+    { type: "start", label: "Iniciar", className: "w-30", onClick: (studentItem) => setApplyStudentId(studentItem.id) }
   ];
 
   const handleClear = () => {
@@ -68,6 +69,12 @@ export function SurveysDesktop() {
             emptyMessage="Nenhum aluno encontrado"
             isFetching={isFetching}
             pagination={studentsPage ? buildPaginationProps(studentsPage, setPage) : undefined}
+          />
+
+          <StartSurveyDialog
+            studentId={applyStudentId}
+            open={applyStudentId !== null}
+            onOpenChange={(open) => { if (!open) setApplyStudentId(null); }}
           />
         </>
       )}

@@ -8,6 +8,7 @@ import {
   Loader2, 
   NotebookPen, 
   PencilLine, 
+  Play, 
   X, 
   type LucideIcon
 } from "lucide-react";
@@ -30,6 +31,7 @@ type RowActionType =
   | 'inactivate' 
   | 'link' 
   | 'normal' 
+  | 'start'
 
 export type RowAction<T> = {
   type: RowActionType;
@@ -222,7 +224,8 @@ const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppe
       ? { title: "Inativar", icon: X, variant: "destructive" }
       : { title: "Ativar", icon: Check, className: "bg-emerald-600 hover:bg-emerald-500 text-white border-transparent" },
 
-  normal: () => ({ title: "", icon: AlarmSmoke })
+  normal: () => ({ title: "", icon: AlarmSmoke }),
+  start: () => ({ title: "Iniciar", icon: Play })
 }
 
 type ActionButtonProps = Readonly<{
