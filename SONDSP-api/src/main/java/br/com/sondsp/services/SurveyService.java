@@ -12,6 +12,7 @@ import br.com.sondsp.repositories.SurveyRepository;
 import br.com.sondsp.repositories.UsersRepository;
 import br.com.sondsp.util.SpecificationFilter;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.xml.bind.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,10 +75,13 @@ public class SurveyService {
         return surveyRepository.save(survey);
     }
 
-    public void deleteSurvey(Integer id){
+    public void deleteSurvey(Integer id) throws ValidationException {
         Survey survey = findSurveyById(id);
-        survey.setStatus(false);
-        surveyRepository.save(survey);
+        if(Boolean.FALSE.equals(survey.getStatus())){
+            surveyRepository.delete(survey);
+        } else {
+            throw new ValidationException(SURVEY_CANNOT_DELETE);
+        }
     }
 
     private Survey findSurveyById(Integer id){

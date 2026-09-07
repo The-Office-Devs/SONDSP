@@ -13,6 +13,7 @@ public final class SystemMessages {
     public static final String SCHOOL_DEACTIVATED = "Escola desativada com sucesso.";
     public static final String SCHOOL_CLASS_ACTIVATED = "Turma ativada com sucesso.";
     public static final String SCHOOL_CLASS_DEACTIVATED = "Turma desativada com sucesso.";
+    public static final String SURVEY_DELETED = "Sondagem excluída com sucesso.";
 
     // Linking
     public static final String USER_LINKED_TO_SCHOOL_CLASS = "Usuário vinculado à turma com sucesso.";
@@ -55,6 +56,7 @@ public final class SystemMessages {
     public static final String INVALID_REGISTRATION_FORMAT = "O formato do registro funcional está incorreto.";
     public static final String MUST_HAVE_CLASS = "O aluno deve estar em uma turma para ter número da chamada.";
     public static final String MUST_HAVE_ROW_NUMBER = "O aluno deve possuir um número de chamada na turma.";
+    public static final String SURVEY_CANNOT_DELETE = "A sondagem não foi encontrada.";
 
     // Empty properties
     public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";
