@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { UserListItem } from "@/users/users.types";
 import { useChangeUserStatus, useUsers } from "../use-users";
-import { useTableState } from "@/hooks/useTableState";
+import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
 
 import { UserUpsertPanel } from "./user-upsert-panel";
@@ -11,11 +11,11 @@ import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTabl
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<UserListItem>[] = [
-  { id: "registration", header: "Registro Funcional (RF)", width: "140px" },
-  { id: "name", header: "Nome", width: "180px" },
-  { id: "email", header: "Email", width: "260px" },
-  { id: "role", header: "Função", width: "140px" },
-  { id: "status", header: "Status", width: "120px" }
+  { id: "registration", header: "Registro Funcional (RF)", width: "14%" },
+  { id: "name", header: "Nome", width: "20%" },
+  { id: "email", header: "Email", width: "26%" },
+  { id: "role", header: "Função", width: "16%" },
+  { id: "status", header: "Status", width: "10%" }
 ];
 
 export function UsersDesktop() {
@@ -71,7 +71,13 @@ export function UsersDesktop() {
         isPending={isPending}
         onConfirm={(user) => 
           mutate(user.id, {
-            onSuccess: () => setStatusUser(null)
+            onSuccess: () => {
+              setStatusUser(null);
+              
+              if (user.id === editUserId) {
+                setEditUserId(null);
+              }
+            } 
           })
         }
       />

@@ -50,11 +50,11 @@ export function useCreateClass() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CLASSES_QUERY_KEY });
-      toast.success('Turma cadastrada com sucesso!');
+      toast.success('Turma cadastrada com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao cadastrar turma.')
   });
 }
 
@@ -74,11 +74,11 @@ export function useUpdateClass() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CLASSES_QUERY_KEY });
-      toast.success('Turma atualizada com sucesso!');
+      toast.success('Turma atualizada com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao atualizar turma.')
   });
 }
 
@@ -91,10 +91,10 @@ export function useInactivateClass() {
 
     onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: CLASSES_QUERY_KEY });
-      toast.success(message || 'Status da turma alterado com sucesso!');
+      toast.success(message || 'Status da turma alterado com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao alterar status da turma.')
   });
 }

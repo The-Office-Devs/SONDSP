@@ -9,7 +9,8 @@ export function SelectField<T extends FieldValues>({
   label, 
   placeholder,
   options,
-  onValueChange
+  onValueChange,
+  disabled
 }: SelectFieldProps<T>) {
   return (
     <FormField name={name} label={label} labelClassName="text-base">
@@ -20,7 +21,7 @@ export function SelectField<T extends FieldValues>({
             field.onChange(value);
             onValueChange?.(value);
           }}
-          disabled={field.disabled}
+          disabled={disabled || field.disabled}
         >
           <SelectTrigger
             id={fieldId}

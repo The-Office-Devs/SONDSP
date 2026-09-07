@@ -25,13 +25,13 @@ import static br.com.sondsp.util.SystemMessages.*;
 @AllArgsConstructor
 public class UsersService {
     private UsersRepository repository;
-    private final RolesRepository rolesRepository;
+    private final RolesService rolesService;
     private final PermissionsRepository permissionsRepository;
 
     private SchoolClassService schoolClassService;
     private SchoolService schoolService;
 
-    public User registerUser(RegisterForm form) {
+    public User registerUser(UserForm form) {
         User verifyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
 
         if (verifyUser != null) {
@@ -45,7 +45,7 @@ public class UsersService {
         return save(User.builder()
                 .name(form.name())
                 .registration(form.registration())
-                .role(rolesRepository.getRoleByName(form.role()))
+                .role(rolesService.getRoleByName(form.role()))
                 .status(false)
                 .email(form.email())
                 .password(null)
@@ -82,7 +82,7 @@ public class UsersService {
 
         user.setName(form.name());
         user.setRegistration(form.registration());
-        user.setRole(rolesRepository.getRoleByName(form.role()));
+        user.setRole(rolesService.getRoleByName(form.role()));
         user.setEmail(form.email());
         user.setPermissions(permissionsRepository.findAllByPermissionIn(form.permissions()));
 
@@ -113,16 +113,27 @@ public class UsersService {
         User user = getUser(id);
         School school = schoolService.getSchool(form.schoolId());
 
-        // Se encontrar a escola, remove ela
-        if (user.getSchools()
-                .removeIf(usc -> usc.getSchool().getId().equals(form.schoolId()))) {
+        // Se o usuário possui vínculo com a escola
+        if (user.getSchools().stream().anyMatch(usc -> usc.getSchool().getId().equals(school.getId()))) {
+            // Remove o vínculo do usuario com todas as turmas da escola
+            user.getSchoolClasses().removeIf(sc -> sc.getSchoolClass().getSchool().getId().equals(school.getId()));
+
+            // Remove o vínculo com a escola
+            user.getSchools().removeIf(usc -> usc.getSchool().getId().equals(school.getId()));
+
             save(user);
             return false;
         }
 
-        // Se não tiver removido, adiciona a escola e retorna true
+        // Se não possui vínculo com a escola, deve criá-lo
+        if (form.function() == null || form.function().isBlank()) {
+            // Caso esteja criando um vínculo, deve ser passada a função do usuário na escola
+            throw new ValidationException(EMPTY_FUNCTION);
+        }
+
         UserSchool newSchool = UserSchool.builder().user(user).school(school).atuacao(form.function()).build();
         user.getSchools().add(newSchool);
+
         save(user);
         return true;
     }
@@ -131,7 +142,7 @@ public class UsersService {
         User user = getUser(id);
 
         if (user.getPassword() == null)
-            throw new ValidationException(FIRST_ACESS_NOT_DONE);
+            throw new ValidationException(FIRST_ACCESS_NOT_DONE);
 
         user.setStatus(!user.getStatus());
 
@@ -164,16 +175,26 @@ public class UsersService {
             if (filter.search() != null && !filter.search().isBlank()) {
                 Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
 
-                String searchPattern = "%" + filter.search().toLowerCase() + "%";
+                String search = filter.search().toLowerCase();
+                String searchPattern = "%" + search + "%";
 
-                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
-                Predicate searchInEmail = criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), searchPattern);
-                Predicate searchInRegistration = criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern);
-                Predicate searchInRole = criteriaBuilder.like(criteriaBuilder.lower(roleJoin.get("name")), searchPattern);
+                List<Predicate> orPredicates = new ArrayList<>();
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(roleJoin.get("name")), searchPattern));
 
-                Predicate combinedSearchPredicate = criteriaBuilder.or(searchInName, searchInEmail, searchInRegistration, searchInRole);
+                Boolean status = null;
+                if ("ativo".startsWith(search)) {
+                    status = true;
+                } else if ("inativo".startsWith(search)) {
+                    status = false;
+                }
 
-                predicates.add(combinedSearchPredicate);
+                if (status != null)
+                    orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
+
+                predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
             } else {
                 if (filter.name() != null && !filter.name().isBlank())
                     predicates.add(criteriaBuilder.like(criteriaBuilder

@@ -8,7 +8,7 @@ export const classSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "O nome da turma é obrigatória"),
+    .min(1, "O nome da turma é obrigatório"),
   schoolYear: z
     .string()
     .length(4, "O ano letivo deve ter exatamente 4 caracteres")

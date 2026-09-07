@@ -6,6 +6,7 @@ public record SchoolDTO(
         Integer id,
         String name,
         String principalName,
+        String codigoInep,
         Boolean status
 ) {
     public SchoolDTO(School school) {
@@ -13,6 +14,7 @@ public record SchoolDTO(
                 school.getId(),
                 school.getName(),
                 school.getPrincipalName(),
+                school.getCodigoInep(),
                 school.getStatus()
         );
     }

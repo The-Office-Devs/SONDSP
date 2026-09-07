@@ -19,7 +19,8 @@ export function ComboboxField<T extends FieldValues>({
   placeholder,
   options,
   emptyMessage = "Nenhum resultado encontrado.",
-  onValueChange
+  onValueChange,
+  disabled
 }: ComboboxFieldProps<T>) {
   return (
     <FormField name={name} label={label} labelClassName="text-base">
@@ -37,7 +38,7 @@ export function ComboboxField<T extends FieldValues>({
             }}
             itemToStringLabel={(item: Option) => item.label}
             isItemEqualToValue={(a: Option, b: Option) => a.value === b.value}
-            disabled={field.disabled}
+            disabled={disabled || field.disabled}
           >
             <ComboboxInput
               id={fieldId}
@@ -45,7 +46,7 @@ export function ComboboxField<T extends FieldValues>({
               onBlur={field.onBlur}
               aria-invalid={invalid}
               placeholder={placeholder}
-              disabled={field.disabled}
+              disabled={disabled || field.disabled}
             >
               <ComboboxContent>
                 <ComboboxEmpty>{emptyMessage}</ComboboxEmpty>

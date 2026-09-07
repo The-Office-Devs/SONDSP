@@ -64,6 +64,7 @@ function ComboboxInput({
     <InputGroup
       className={cn(
         "h-12 w-full rounded-md border-input bg-background",
+        "has-disabled:bg-background dark:has-disabled:bg-background has-disabled:cursor-not-allowed",
         className
       )}
     >
@@ -71,12 +72,12 @@ function ComboboxInput({
         render={
           <InputGroupInput
             disabled={disabled}
-            className="h-12 px-3 text-base placeholder:text-muted-foreground"
+            className="h-12 px-3 text-base placeholder:text-muted-foreground disabled:opacity-100"
           />
         }
         {...props}
       />
-      <InputGroupAddon align="inline-end">
+      <InputGroupAddon align="inline-end" className="group-has-disabled/input-group:cursor-not-allowed">
         {showTrigger && (
           <InputGroupButton
             size="icon-sm"

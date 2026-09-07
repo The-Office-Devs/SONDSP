@@ -32,17 +32,13 @@ public class StudentService {
     private SchoolClassService schoolClassService;
 
     public Student createStudent(StudentForm form) {
-        if (repository.existsBySchoolClassIdAndRowNumber(form.schoolClassId(), form.rowNumber()))
-            throw new ValidationException(ROW_NUMBER_TAKEN);
-
-        if (repository.existsByRegistration(form.registration()))
-            throw new ValidationException(STUDENT_REGISTRATION_ALREADY_EXISTS);
+        validadeStudent(form, null);
 
         return repository.save(Student.builder()
                 .name(form.name())
                 .registration(form.registration())
                 .schoolClass(form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null)
-                .rowNumber(form.schoolClassId() != null ? form.rowNumber() : null)
+                .rowNumber(form.rowNumber())
                 .status(true)
                 .build());
     }
@@ -63,16 +59,9 @@ public class StudentService {
     public Student updateStudent(Integer id, StudentForm form) {
         Student student = getStudent(id);
 
-        // Se o numero da chamada e a turma não forem nulos, valida se já existe
-        if (form.rowNumber() != null && form.schoolClassId() != null) {
-            if (repository.existsBySchoolClassIdAndRowNumberAndIdNot(form.schoolClassId(), form.rowNumber(), id))
-                throw new ValidationException(ROW_NUMBER_TAKEN);
-        }
+        validadeStudent(form, id);
 
-        student.setSchoolClass(form.schoolClassId() != null
-                ? schoolClassService.getSchoolClass(form.schoolClassId())
-                : null);
-
+        student.setSchoolClass(form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null);
         student.setRowNumber(form.rowNumber());
         student.setName(form.name());
         student.setRegistration(form.registration());
@@ -82,6 +71,11 @@ public class StudentService {
 
     public Boolean changeStatus(Integer id) {
         Student student = getStudent(id);
+
+        if (!student.getSchoolClass().getStatus()) {
+            throw new ValidationException(STUDENT_CANNOT_ACTIVATE);
+        }
+
         student.setStatus(!student.getStatus());
         repository.save(student);
 
@@ -99,7 +93,8 @@ public class StudentService {
                 Join<Student, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
                 Join<SchoolClass, School> schoolJoin = schoolClassJoin.join("school", JoinType.INNER);
 
-                String searchPattern = "%" + filter.search().toLowerCase() + "%";
+                String search = filter.search().toLowerCase();
+                String searchPattern = "%" + search + "%";
 
                 Expression<String> schoolClass = criteriaBuilder.concat(
                         criteriaBuilder.concat(schoolClassJoin.get("name"), " - "),
@@ -112,15 +107,23 @@ public class StudentService {
                         criteriaBuilder.literal("FM999999999")
                 );
 
-                Predicate searchInName = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern);
-                Predicate searchInRegistration = criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern);
-                Predicate searchInSchoolClass = criteriaBuilder.like(criteriaBuilder.lower(schoolClass), searchPattern);
-                Predicate searchInRowNumber = criteriaBuilder.like(rowNumberString, searchPattern);
+                List<Predicate> orPredicates = new ArrayList<>();
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(schoolClass), searchPattern));
+                orPredicates.add(criteriaBuilder.like(rowNumberString, searchPattern));
 
-                Predicate combinedSearchPredicate = criteriaBuilder.or(
-                        searchInName, searchInRegistration, searchInSchoolClass, searchInRowNumber);
+                Boolean status = null;
+                if ("ativo".startsWith(search)) {
+                    status = true;
+                } else if ("inativo".startsWith(search)) {
+                    status = false;
+                }
 
-                predicates.add(combinedSearchPredicate);
+                if (status != null)
+                    orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
+
+                predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
             } else {
                 if (filter.name() != null && !filter.name().isBlank()) {
                     predicates.add(criteriaBuilder.like(criteriaBuilder
@@ -156,5 +159,32 @@ public class StudentService {
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private void validadeStudent(StudentForm form, Integer id) {
+        // Valida se existe algum aluno com a mesma matrícula
+        boolean registrationExists = (id != null)
+                ? repository.existsByRegistrationAndIdNot(form.registration(), id)
+                : repository.existsByRegistration(form.registration());
+
+        if (registrationExists)
+            throw new ValidationException(STUDENT_REGISTRATION_ALREADY_EXISTS);
+
+        if (form.schoolClassId() != null) {
+            // O aluno deve ter um número da chamada da turma
+            if (form.rowNumber() == null) {
+                throw new ValidationException(MUST_HAVE_ROW_NUMBER);
+            }
+
+            // Valida se existe algum aluno com o mesmo número da chamada na turma
+            boolean rowTaken = (id != null)
+                    ? repository.existsBySchoolClassIdAndRowNumberAndIdNot(form.schoolClassId(), form.rowNumber(), id)
+                    : repository.existsBySchoolClassIdAndRowNumber(form.schoolClassId(), form.rowNumber());
+
+            if (rowTaken)
+                throw new ValidationException(ROW_NUMBER_TAKEN);
+        } else if (form.rowNumber() != null) {
+            throw new ValidationException(MUST_HAVE_CLASS);
+        }
     }
 }

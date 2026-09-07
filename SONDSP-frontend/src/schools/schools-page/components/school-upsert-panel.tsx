@@ -13,6 +13,7 @@ import { TextField } from '@/components/HookForm/fields/TextField';
 const defaultValues: SchoolFormData = {
   name: "",
   principalName: "",
+  codigoInep: "",
   status: true
 };
 
@@ -50,6 +51,7 @@ export function SchoolUpsertPanel({
       form.reset({ 
         name: school.name,
         principalName: school.principalName,
+        codigoInep: school.codigoInep ?? "",
         status: true
       });
     }
@@ -88,12 +90,15 @@ export function SchoolUpsertPanel({
         title={title} 
         submitLabel={submitLabel}
         isEditMode={isEditMode} 
+        isFilter={false}
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
-        onCancelEdit={handleCancelEdit}
+        onClearFields={handleCancelEdit}
+        collapsible
       >
         <TextField name="name" label="Nome" placeholder="Nome da escola" />
         <TextField name="principalName" label="Diretor" placeholder="Nome do diretor" />
+        <TextField name="codigoInep" label="Código INEP" placeholder="Código INEP" onlyNumbers maxLength={8} />
       </Card>
     </FormProvider>
   );

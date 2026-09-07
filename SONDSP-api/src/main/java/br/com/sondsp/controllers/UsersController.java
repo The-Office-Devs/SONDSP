@@ -8,7 +8,6 @@ import br.com.sondsp.dtos.UsersListDTO;
 import br.com.sondsp.filters.UserFilter;
 import br.com.sondsp.form.LinkSchoolClassForm;
 import br.com.sondsp.form.LinkSchoolForm;
-import br.com.sondsp.form.RegisterForm;
 import br.com.sondsp.form.UserForm;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -30,7 +29,7 @@ public interface UsersController {
                     )
             )
     })
-    ResponseEntity<?> register(RegisterForm form);
+    ResponseEntity<?> register(UserForm form);
 
     @GetMapping("/{id}")
     @Operation(description = "Retorna o usuário com o id passado.", responses = {

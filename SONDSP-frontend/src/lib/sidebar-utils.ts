@@ -1,6 +1,7 @@
 import { 
   BarChart3, 
   ClipboardList, 
+  ClipboardPenLine, 
   LayoutGrid, 
   NotebookPen, 
   School, 
@@ -10,6 +11,7 @@ import {
 
 export const administratorItems = [
   { label: 'Alunos', icon: UserRound, to: '/alunos' },
+  { label: 'Eixos', icon: ClipboardPenLine, to: '/eixos' },
   { label: 'Escolas', icon: School, to: '/escolas' },
   { label: 'Modelos de Atividades', icon: NotebookPen, to: '/modelos-atividades' },
   { label: 'Turmas', icon: ClipboardList, to: '/turmas' },
