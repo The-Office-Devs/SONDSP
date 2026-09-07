@@ -1,9 +1,9 @@
 package br.com.sondsp.filters;
 
 public record SurveyFilter (
-        String subject,
-        String axios,
+        String search,
         String result,
-        String isDigital
+        String isDigital,
+        Boolean status
 ){
 }

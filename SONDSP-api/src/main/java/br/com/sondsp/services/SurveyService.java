@@ -48,13 +48,9 @@ public class SurveyService {
     private SpecificationFilter specificationFilter;
 
     public Survey createSurvey(SurveyForm form, User administrator) {
-        Survey survey = new Survey(form);
         Student student = findStudentById(form.studentId());
         Activity activity = findActivityById(form.activityId());
-
-        survey.setAdministrator(administrator);
-        survey.setStudent(student);
-        survey.setActivity(activity);
+        Survey survey = new Survey(form, administrator, student, activity);
 
         if (form.image() != null && !form.image().isEmpty()) {
             String savedImagePath = storeImageLocal(form.image());
@@ -68,6 +64,12 @@ public class SurveyService {
         Survey survey = findSurveyById(id);
         survey.setResult(form.result());
         survey.setObservations(form.observations());
+        survey.setStatus(true);
+
+        if (form.image() != null && !form.image().isEmpty()) {
+            String savedImagePath = storeImageLocal(form.image());
+            survey.setSurveyImagePath(savedImagePath);
+        }
 
         return surveyRepository.save(survey);
     }
@@ -104,8 +106,6 @@ public class SurveyService {
 
     public List<Survey> listSurveys(SurveyFilter filter){
         List<SpecificationFilter.FilterColumn> columnsConfig = List.of(
-                new SpecificationFilter.FilterColumn("subject", "subject"),
-                new SpecificationFilter.FilterColumn("axis", "axis"),
                 new SpecificationFilter.FilterColumn("result", "result"),
                 new SpecificationFilter.FilterColumn("isDigital", "isDigital"),
                 new SpecificationFilter.FilterColumn("status", "status")

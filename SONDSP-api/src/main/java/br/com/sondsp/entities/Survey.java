@@ -25,12 +25,6 @@ public class Survey {
     @JoinColumn(name = "id_aluno", referencedColumnName = "id")
     private Student student;
 
-    @Column(name = "materia")
-    private String subject;
-
-    @Column(name = "eixo")
-    private String axis;
-
     @Column(name = "resultado")
     private String result;
 
@@ -50,12 +44,13 @@ public class Survey {
     @Column(name = "status")
     private Boolean status;
 
-    public Survey(SurveyForm form) {
-        this.subject = form.subject();
-        this.axis = form.axis();
+    public Survey(SurveyForm form, User administrator, Student student, Activity activity) {
+        this.administrator = administrator;
+        this.student = student;
+        this.activity = activity;
         this.result = form.result();
         this.observations = form.observations();
         this.isDigital = form.isDigital();
-        this.status = true;
+        this.status = false;
     }
 }
