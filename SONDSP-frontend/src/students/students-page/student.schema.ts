@@ -13,7 +13,7 @@ export const studentSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "O nome do aluno é obrigatório"),
+    .min(1, "O nome completo do aluno é obrigatório"),
   schoolId: z.coerce
     .number()
     .int()

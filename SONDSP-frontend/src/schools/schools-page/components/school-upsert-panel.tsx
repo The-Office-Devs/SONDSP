@@ -32,8 +32,10 @@ export function SchoolUpsertPanel({
 
   const isEditMode = schoolIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+
   const title = getTitle("Escola", isEditMode, false);
-  const submitLabel = getSubmitLabel(isPending, isEditMode);
+  const submitType = isEditMode ? "edit" : "insert";
+  const submitLabel = getSubmitLabel(isPending, submitType);
 
   const form = useForm<SchoolFormData>({
     resolver: zodResolver(schoolSchema),
@@ -93,12 +95,12 @@ export function SchoolUpsertPanel({
         isFilter={false}
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
-        onClearFields={handleCancelEdit}
+        onReset={handleCancelEdit}
         collapsible
       >
-        <TextField name="name" label="Nome" placeholder="Nome da escola" />
-        <TextField name="principalName" label="Diretor" placeholder="Nome do diretor" />
         <TextField name="codigoInep" label="Código INEP" placeholder="Código INEP" onlyNumbers maxLength={8} />
+        <TextField name="name" label="Nome" placeholder="Nome da escola" />
+        <TextField name="principalName" label="Diretor" placeholder="Nome completo do diretor" />
       </Card>
     </FormProvider>
   );

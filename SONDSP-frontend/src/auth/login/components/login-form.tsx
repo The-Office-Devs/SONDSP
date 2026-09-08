@@ -84,7 +84,7 @@ export function LoginForm({
             name="login"
             label="E-mail institucional"
             type="email"
-            placeholder="nome@sme.prefeitura.gov.br"
+            placeholder="seu.nome@instituicao.br"
             ui={linksStyle}
           />
 

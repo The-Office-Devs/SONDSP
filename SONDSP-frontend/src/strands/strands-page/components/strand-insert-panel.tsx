@@ -21,7 +21,7 @@ const defaultValues: StrandFormData = {
 
 export function StrandInsertPanel() {
   const { mutate: createStrand, isPending } = useCreateStrand();
-  const submitLabel = getSubmitLabel(isPending, false);
+  const submitLabel = getSubmitLabel(isPending, "insert");
   
   const form = useForm<StrandFormData>({
     resolver: zodResolver(strandSchema),
@@ -38,7 +38,6 @@ export function StrandInsertPanel() {
   }
 
   const isSubmitDisabled = isPending || !form.formState.isValid;
-
   return (
     <FormProvider {...form}>
       <Card 
@@ -47,6 +46,7 @@ export function StrandInsertPanel() {
         isSubmitDisabled={isSubmitDisabled}
         isFilter={false}
         onSubmit={form.handleSubmit(onSubmit)}
+        collapsible
       >
         <TextField name="name" label="Nome" placeholder="Nome do eixo" />
 

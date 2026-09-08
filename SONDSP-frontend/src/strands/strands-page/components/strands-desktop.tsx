@@ -11,9 +11,9 @@ import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTabl
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<Strand>[] = [
-  { id: "name", header: "Nome", width: "180px" },
-  { id: "subject", header: "Matéria", width: "180px" },
-  { id: "status", header: "Status", width: "120px" }
+  { id: "name", header: "Nome", width: "40%" },
+  { id: "subject", header: "Matéria", width: "36%" },
+  { id: "status", header: "Status", width: "10%" }
 ];
 
 export function StrandsDesktop() {
