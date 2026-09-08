@@ -27,8 +27,8 @@ interface StartSurveyDialogProps {
 
 // DADOS MOCKADOS
 const activityModels = [
-  { id: 1, name: "Atividade 1", schoolYear: "2026", bimester: "1 bimestre", strand: "Eixo 1", imageUrl: "/teste.png" },
-  { id: 2, name: "Atividade 2", schoolYear: "2026", bimester: "2 bimestre", strand: "Eixo 2", imageUrl: "/teste.png" }
+  { id: 1, name: "Sondagem Teste1 (Atualizado)", schoolYear: "2026", bimester: "1 bimestre", strand: "Geometria", imageUrl: "/teste.png" },
+  { id: 3, name: "Sondagem Teste2", schoolYear: "2026", bimester: "2 bimestre", strand: "Álgebra", imageUrl: "/teste.png" }
 ];
 
 export function StartSurveyDialog({
@@ -38,6 +38,7 @@ export function StartSurveyDialog({
 }: Readonly<StartSurveyDialogProps>) {
   // const { mutate: startSurvey, isPending } = useStartSurvey();
   // Criar essa chamada na pasta de survey
+  // VER SE ISSO JA EXISTE E CASO JA EXISTA USAR
   const isPending = false;
 
   const form = useForm<StartSurveyFormInput, unknown, StartSurveyFormData>({
@@ -64,7 +65,8 @@ export function StartSurveyDialog({
   };
 
   const onSubmit = (data: StartSurveyFormData) => {
-    console.log(studentId, data);
+    console.log(studentId, data); 
+    // envia id do aluno e da atividade pro back
     onOpenChange(false);
   };
 
@@ -81,8 +83,8 @@ export function StartSurveyDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <ComboboxField
               name="activityModelId"
-              label="Modelos de Atividades"
-              placeholder="Selecione os modelos de atividades"
+              label="Modelo de Atividade"
+              placeholder="Selecione o modelo de atividade"
               options={activityOptions}
               emptyMessage="Nenhum modelo de atividade encontrado"
             />
@@ -99,7 +101,7 @@ export function StartSurveyDialog({
               onClick={handleDownload}
             >
               <Download className="size-4" />
-              Baixar modelo de atividade
+              Baixar Modelo de Atividade
             </Button>
 
             <DialogFooter>
