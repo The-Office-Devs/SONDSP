@@ -13,6 +13,8 @@ public final class SystemMessages {
     public static final String SCHOOL_DEACTIVATED = "Escola desativada com sucesso.";
     public static final String SCHOOL_CLASS_ACTIVATED = "Turma ativada com sucesso.";
     public static final String SCHOOL_CLASS_DEACTIVATED = "Turma desativada com sucesso.";
+    public static final String STRAND_ACTIVATED = "Eixo ativado com sucesso.";
+    public static final String STRAND_DEACTIVATED = "Eixo desativado com sucesso.";
 
     // Linking
     public static final String USER_LINKED_TO_SCHOOL_CLASS = "Usuário vinculado à turma com sucesso.";

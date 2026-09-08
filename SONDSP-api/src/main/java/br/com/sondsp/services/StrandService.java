@@ -1,6 +1,5 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.dtos.StrandDTO;
 import br.com.sondsp.entities.Strand;
 import br.com.sondsp.filters.StrandFilter;
 import br.com.sondsp.form.StrandForm;
@@ -40,10 +39,11 @@ public class StrandService {
         return strandRepository.save(strand);
     }
 
-    public Strand changeStrandStatus(Integer id) {
+    public boolean changeStrandStatus(Integer id) {
         Strand strand = this.getStrand(id);
         strand.setStatus(!strand.getStatus());
-        return strandRepository.save(strand);
+        strandRepository.save(strand);
+        return strand.getStatus();
     }
 
     public Page<Strand> getAllStrands(StrandFilter filter, Pageable pageable) {
