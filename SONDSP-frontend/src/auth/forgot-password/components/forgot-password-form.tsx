@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useForgotPassword } from "../use-forgot-password";
 
 const forgotPasswordSchema = z.object({
-  email: z.email("Digite um e-mail válido ").endsWith("@sme.prefeitura.gov.br", "O e-mail deve ser institucional")
+  email: z.email("Digite um e-mail válido ").regex(/@sme\.prefeitura\.gov\.br$/i, "O e-mail deve ser institucional"),
 });
 
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;

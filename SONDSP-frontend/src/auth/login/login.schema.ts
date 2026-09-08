@@ -3,7 +3,7 @@ import { z } from 'zod/v4';
 export const loginSchema = z.object({
   login: z
     .email('Digite um e-mail válido')
-    .endsWith('@sme.prefeitura.gov.br', 'O e-mail deve ser institucional'),
+    .regex(/@sme\.prefeitura\.gov\.br$/i, "O e-mail deve ser institucional"),
   password: z
     .string()
     .min(1, 'Insira a senha'),

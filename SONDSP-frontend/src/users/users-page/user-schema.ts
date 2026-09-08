@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 export const userSchema = z.object({
   email: z
     .email("Digite um e-mail válido")
-    .endsWith("@sme.prefeitura.gov.br", "O e-mail deve ser institucional"),
+    .regex(/@sme\.prefeitura\.gov\.br$/i, "O e-mail deve ser institucional"),
   registration: z
     .string()
     .trim()
