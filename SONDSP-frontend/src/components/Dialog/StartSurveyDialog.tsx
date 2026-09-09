@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
 import { Download } from "lucide-react";
 
+import { useStartSurvey } from "@/surveys/use-surveys";
+
 import { Dialog, DialogContent, DialogFooter } from "../ui/dialog";
 import { ComboboxField } from "../HookForm/fields/ComboBoxField";
 import { ReadOnlyField } from "../ReadOnlyField/ReadOnlyField";
@@ -27,8 +29,8 @@ interface StartSurveyDialogProps {
 
 // DADOS MOCKADOS
 const activityModels = [
-  { id: 1, name: "Sondagem Teste1 (Atualizado)", schoolYear: "2026", bimester: "1 bimestre", strand: "Geometria", imageUrl: "/teste.png" },
-  { id: 3, name: "Sondagem Teste2", schoolYear: "2026", bimester: "2 bimestre", strand: "Álgebra", imageUrl: "/teste.png" }
+  { id: 1, name: "Sondagem Teste1 (Atualizado)", schoolYear: "2026", bimester: "1º bimestre", strand: "Geometria", imageUrl: "/teste.png" },
+  { id: 3, name: "Sondagem Teste2", schoolYear: "2026", bimester: "2º bimestre", strand: "Álgebra", imageUrl: "/teste.png" }
 ];
 
 export function StartSurveyDialog({
@@ -36,10 +38,7 @@ export function StartSurveyDialog({
   open,
   onOpenChange
 }: Readonly<StartSurveyDialogProps>) {
-  // const { mutate: startSurvey, isPending } = useStartSurvey();
-  // Criar essa chamada na pasta de survey
-  // VER SE ISSO JA EXISTE E CASO JA EXISTA USAR
-  const isPending = false;
+  const { mutate: startSurvey, isPending } = useStartSurvey();
 
   const form = useForm<StartSurveyFormInput, unknown, StartSurveyFormData>({
     resolver: zodResolver(startSurveySchema),
@@ -65,9 +64,10 @@ export function StartSurveyDialog({
   };
 
   const onSubmit = (data: StartSurveyFormData) => {
-    console.log(studentId, data); 
-    // envia id do aluno e da atividade pro back
-    onOpenChange(false);
+    startSurvey(
+      { studentId: studentId!, activityModelId: data.activityModelId },
+      { onSuccess: () => onOpenChange(false) }
+    )
   };
 
   const activityOptions = activityModels.map((model) => ({
