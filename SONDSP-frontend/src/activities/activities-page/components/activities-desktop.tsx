@@ -1,63 +1,68 @@
-import { useState } from "react";
-
-import { useTableState } from "@/hooks/useTableState";
-
+import { useState, useMemo } from "react";
 import type { ActivityListItem } from "@/activities/activities.types";
 import { ActivityInsertPanel } from "./activity-insert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 import { ViewFileDialog } from "@/components/Dialog/ViewFileDialog";
-
-const mockData: ActivityListItem[] = [
-  { 
-    id: 1, 
-    name: "Atividade 1",
-    subject: "Matemática",
-    strand: "Números",
-    bimester: "1° Bimestre",
-    schoolYear: "1° Ano",
-    activityModelRef: "imagem", // back ja vai enviar o arquivo aqui ou precisa de uma requisição especifica
-    status: true 
-  },
-  { 
-    id: 2, 
-    name: "Atividade 2", 
-    subject: "Matemática", 
-    strand: "Mais Números",
-    bimester: "2° Bimestre",
-    schoolYear: "1° Ano",
-    activityModelRef: "imagem 2",
-    status: false 
-  }
-];
+import { useActivities, useChangeActivityStatus, useActivityImage } from "../use-activities";
+import { buildPaginationProps } from "@/api/types";
 
 const columns: ColumnDef<ActivityListItem>[] = [
   { id: "name", header: "Nome", width: "180px" },
-  { id: "subject", header: "Matéria", width: "120px" },
-  { id: "strand", header: "Eixo", width: "180px", },
+  { id: "subject", header: "Matéria", width: "120px", accessor: (row) => row.strand?.subject },
+  { id: "strand", header: "Eixo", width: "180px", accessor: (row) => row.strand?.name },
   { id: "bimester", header: "Bimestre", width: "180px", accessor: (row) => `${row.bimester} - ${row.schoolYear}` },
   { id: "status", header: "Status", width: "180px" },
 ];
 
 export function ActivitiesDesktop() {
-  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
+  const [filter, setFilter] = useState("");
+  const [page, setPage] = useState(0);
 
   const [viewActivity, setViewActivity] = useState<ActivityListItem | null>(null);
   const [inactivateActivity, setInactivateActivity] = useState<ActivityListItem | null>(null);
+
+  const { data: activitiesPage, isFetching, isLoading } = useActivities({ 
+    page, 
+    size: 5, 
+    search: filter 
+  });
+
+  const { mutate: changeStatus, isPending: isChangingStatus } = useChangeActivityStatus();
+  
+  const { data: imageBlob, isFetching: isFetchingImage } = useActivityImage(viewActivity?.id);
 
   const actions: RowAction<ActivityListItem>[] = [
     { type: "view", onClick: (activityItem) => setViewActivity(activityItem) },
     { type: "inactivate", onClick: (activityItem) => setInactivateActivity(activityItem), isActive: (activityItem) => activityItem.status }
   ];
 
-  /*if (isLoading) {
+  const viewFile = useMemo(() => {
+    if (viewActivity && imageBlob) {
+      const type = imageBlob.type || "application/octet-stream";
+      
+      let extension = "";
+      if (type === "application/pdf") extension = ".pdf";
+      else if (type === "image/jpeg") extension = ".jpg";
+      else if (type === "image/png") extension = ".png";
+      else if (type === "image/webp") extension = ".webp";
+
+      const safeName = viewActivity.name.replace(/[^a-zA-Z0-9 ]/g, "");
+      const fileName = `${safeName}${extension}`;
+
+      return new File([imageBlob], fileName, { type });
+    }
+    return undefined;
+  }, [viewActivity, imageBlob]);
+
+  if (isLoading && !activitiesPage) {
     return (
       <div className="flex items-center justify-center p-12">
         <p className="text-sm text-slate-500">Carregando modelos de atividades...</p>
       </div>
     );
-  }*/
+  }
 
   return (
     <div className="space-y-4 p-4 lg:p-6">
@@ -66,13 +71,13 @@ export function ActivitiesDesktop() {
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<ActivityListItem>
-        data={mockData}
+        data={activitiesPage?.content || []}
         columns={columns}
         rowKey={(activityItem) => activityItem.id}
         actions={actions}
         emptyMessage="Nenhum modelo de atividade encontrado"
-        /*isFetching={isFetching}
-        pagination={studentsPage ? buildPaginationProps(studentsPage, setPage) : undefined}*/
+        isFetching={isFetching}
+        pagination={activitiesPage ? buildPaginationProps(activitiesPage, setPage) : undefined}
       />
 
       <InactivateDialog<ActivityListItem>
@@ -80,19 +85,17 @@ export function ActivitiesDesktop() {
         title={inactivateActivity?.status ? "Inativar Modelo de Atividade" : "Ativar Modelo de Atividade"}
         open={inactivateActivity !== null}
         onOpenChange={(open) => { if (!open) setInactivateActivity(null); }}
-        isPending={false}
-        onConfirm={() => null}
-        /*isPending={isPending}
-        onConfirm={(ativityItem) => 
-          mutate(ativityItem.id, {
+        isPending={isChangingStatus}
+        onConfirm={(activityItem) => 
+          changeStatus(activityItem.id, {
             onSuccess: () => setInactivateActivity(null)
           })
-        }*/
+        }
       />
 
       <ViewFileDialog
-        file="aaaa"
-        title={viewActivity?.name ?? ""}
+        file={viewFile}
+        title={isFetchingImage ? "Baixando arquivo..." : (viewActivity?.name ?? "")}
         open={viewActivity !== null}
         onOpenChange={(open) => { if (!open) setViewActivity(null) }}
       />

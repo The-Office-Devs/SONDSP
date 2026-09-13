@@ -11,15 +11,11 @@ import { TextField } from "@/components/HookForm/fields/TextField";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { FileDropzone } from "@/components/ui/file-dropzone";
 import { Button } from "@/components/ui/button";
+import { useCreateActivity, useStrandsBySubject } from "../use-activities";
 
 const subjectOptions = [
   { value: "1", label: "Matemática" },
   { value: "2", label: "Língua Portuguesa" }
-];
-
-const strandOptions = [
-  { value: "1", label: "Números" },
-  { value: "2", label: "Mais Números" }
 ];
 
 const schoolYearOptions = [1, 2, 3].map((n) => {
@@ -44,8 +40,8 @@ const defaultValues: ActivityFormInput = {
 const FILE_ACCEPT = ".png,.jpg,.jpeg,.webp,.pdf,image/*,application/pdf";
 
 export function ActivityInsertPanel() {
-  // const { mutate: createStrand, isPending } = useCreateActivity();
-  const submitLabel = getSubmitLabel(/*isPending*/false, false);
+  const { mutate: createActivity, isPending } = useCreateActivity();
+  const submitLabel = getSubmitLabel(isPending, false);
 
   const form = useForm<ActivityFormInput, unknown, ActivityFormData>({
     resolver: zodResolver(activitySchema),
@@ -53,22 +49,33 @@ export function ActivityInsertPanel() {
     defaultValues
   });
 
-  const activityModelFile = useWatch({ control: form.control, name: "activityModelFile"}) as File | undefined;
+  const isSubmitDisabled = isPending || !form.formState.isValid;
+
+  const selectedSubjectValue = useWatch({ control: form.control, name: "subjectId" });
+  const selectedSubjectLabel = subjectOptions.find(
+    (opt) => String(opt.value) === String(selectedSubjectValue)
+  )?.label;
+
+  const { data: strandsResponse, isLoading: isLoadingStrands } = useStrandsBySubject(selectedSubjectLabel);
+
+  const dynamicStrandOptions = strandsResponse?.map((strand: any) => ({
+    value: String(strand.id), 
+    label: strand.name,
+  })) || [];
+
+  const activityModelFile = useWatch({ control: form.control, name: "activityModelFile" }) as File | undefined;
 
   const onSubmit = (data: ActivityFormData) => {
-    console.log(data);
-    form.reset(defaultValues);
-    toast.success("Modelo de Atividade cadastrado com sucesso");
-    /*createStrand(data, {
+    createActivity(data, {
       onSuccess: () => {
         form.reset(defaultValues);
       },
-    });*/
+      onError: () => {
+        toast.error("Erro ao cadastrar modelo de atividade.");
+      }
+    });
   }
-  
-  const isSubmitDisabled = /*isPending || isLoadingActivity||*/ !form.formState.isValid
-  // Trocar select do eixo para combobox e ter um comportamento a tela de alunos -> quando back ficar pronto
-  // ta aparecendo o icone de search pq a alteração que corrige isso foi feita na outra branch
+
   return (
     <FormProvider {...form}>
       <Card
@@ -89,8 +96,9 @@ export function ActivityInsertPanel() {
         <SelectField 
           name="strandId"
           label="Eixo"
-          placeholder="Selecione o eixo"
-          options={strandOptions}
+          placeholder={isLoadingStrands ? "Carregando eixos..." : "Selecione o eixo"}
+          options={dynamicStrandOptions}
+          disabled={!selectedSubjectValue || isLoadingStrands}
         />
 
         <SelectField

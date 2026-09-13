@@ -21,6 +21,7 @@ public final class SystemMessages {
     public static final String USER_UNLINKED_TO_SCHOOL = "Usuário desvinculado da escola com sucesso.";
 
     // Not found
+    public static final String ACTIVITY_NOT_FOUND = "A atividade não foi encontrada.";
     public static final String USER_NOT_FOUND = "O usuário não foi encontrado.";
     public static final String EMAIL_NOT_FOUND = "O email não foi encontrado.";
     public static final String STRAND_NOT_FOUND = "O eixo não foi encontrado.";
@@ -53,6 +54,8 @@ public final class SystemMessages {
     public static final String INVALID_REGISTRATION_FORMAT = "O formato do registro funcional está incorreto.";
     public static final String MUST_HAVE_CLASS = "O aluno deve estar em uma turma para ter número da chamada.";
     public static final String MUST_HAVE_ROW_NUMBER = "O aluno deve possuir um número de chamada na turma.";
+    public static final String ERROR_SAVING_IMAGE = "Não foi possível salvar o arquivo de imagem.";
+    public static final String ERROR_RETRIEVING_IMAGE = "Não foi possível recuperar o arquivo de imagem.";
 
     // Empty properties
     public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";

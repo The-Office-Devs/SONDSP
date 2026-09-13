@@ -34,6 +34,11 @@ public class StrandControllerImpl {
         return ResponseEntity.ok().body(new StrandDTO(strandService.changeStrandStatus(id)));
     }
 
+    @GetMapping("strands-by-subject")
+    public ResponseEntity<List<StrandDTO>> findBySubject(@RequestParam String subject) {
+        return ResponseEntity.ok().body(strandService.getAllStrandsBySubject(subject));
+    }
+
     @GetMapping()
     public ResponseEntity<PageResponse<StrandDTO>> getAllStrand(
             @ModelAttribute StrandFilter filter,

@@ -1,19 +1,23 @@
-// Ajustar quando o back tiver pronto
-export interface ActivityListItem {
+export interface StrandDTO {
   id: number;
   name: string;
-  subject?: string;
-  strand?: string;
-  schoolYear: string;
-  bimester: string;
-  activityModelRef: /*File*/ string;
+  subject: string;
   status: boolean;
 }
 
-export interface CreateActivityRequest {
+export interface ActivityListItem {
+  id: number;
   name: string;
-  strandId: number;
+  strand: StrandDTO;
   schoolYear: string;
-  activityModelFile: File;
-  bimester: string;
+  bimester: string; 
+  strandImagePath: string; 
+  status: boolean;
+}
+export interface PageResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
 }
