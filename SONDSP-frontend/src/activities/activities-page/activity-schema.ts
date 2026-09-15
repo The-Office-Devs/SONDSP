@@ -27,11 +27,11 @@ export const activitySchema = z.object({
     .string()
     .min(1, "Selecione um bimestre"),
   activityModelFile: z
-    .instanceof(File, { message: "Selecione o modelo de atividade" })
-    .refine(
-      (f) => ACCEPTED_FILE_TYPES.includes(f.type),
-      "Apenas imagens ou PDF são permitidos"
-    )
+  .instanceof(File, { message: "Selecione um modelo de atividade" })
+  .refine(
+    (f) => ACCEPTED_FILE_TYPES.includes(f.type),
+    "Apenas imagens ou PDF são permitidos"
+  ),
 });
 
 export type ActivityFormInput = z.input<typeof activitySchema>;

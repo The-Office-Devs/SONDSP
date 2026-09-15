@@ -8,10 +8,34 @@ import { toast } from "sonner";
 import type { AxiosError } from "axios";
 
 import { handleApiError } from "@/lib/utils";
-import { changeActivityStatusService, createActivityService, getActivitiesService, getActivityImageService, getStrandsBySubjectService } from "./activities.service";
+import { 
+  createActivityService, 
+  getActivitiesService, 
+  getActivityImageService, 
+  getStrandsBySubjectService, 
+  inactivateActivityService
+} from "../activities.service";
+import type { ActivityFilter } from "../activities.types";
 import type { ActivityFormData } from "./activity-schema";
+import type { PaginationParams } from "@/api/types";
 
 const ACTIVITIES_QUERY_KEY = ['activities'] as const;
+
+export function useActivities(filter?: ActivityFilter & PaginationParams) {
+  return useQuery({
+    queryKey: [...ACTIVITIES_QUERY_KEY, filter],
+    queryFn: () => getActivitiesService(filter),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useStrandsBySubject(subjectLabel?: string) {
+  return useQuery({
+    queryKey: ['strands', subjectLabel],
+    queryFn: () => getStrandsBySubjectService(subjectLabel!),
+    enabled: !!subjectLabel,
+  });
+}
 
 export function useCreateActivity() {
   const queryClient = useQueryClient();
@@ -36,33 +60,17 @@ export function useCreateActivity() {
   });
 }
 
-export function useStrandsBySubject(subjectLabel?: string) {
-  return useQuery({
-    queryKey: ['strands', subjectLabel],
-    queryFn: () => getStrandsBySubjectService(subjectLabel!),
-    enabled: !!subjectLabel,
-  });
-}
-
-export function useActivities(params: { page: number; size: number; search?: string }) {
-  return useQuery({
-    queryKey: [...ACTIVITIES_QUERY_KEY, params],
-    queryFn: () => getActivitiesService(params),
-    placeholderData: keepPreviousData,
-  });
-}
-
-export function useChangeActivityStatus() {
+export function useInactivateActivity() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => changeActivityStatusService(id),
-    onSuccess: () => {
+    mutationFn: (id: number) => inactivateActivityService(id),
+    onSuccess: (message) => {
       queryClient.invalidateQueries({ queryKey: ACTIVITIES_QUERY_KEY });
-      toast.success('Status da atividade alterado com sucesso.');
+      toast.success(message || 'Status do modelo de atividade alterado com sucesso.');
     },
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error)
+      handleApiError(error || 'Erro ao alterar status do modelo de atividade.')
   });
 }
 

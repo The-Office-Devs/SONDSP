@@ -1,6 +1,22 @@
 import { api } from "@/api/axios";
 
-import type { CreateActivityRequest } from "../activities.types";
+import type { ActivityFilter, ActivityListItem, CreateActivityRequest } from "./activities.types";
+import type { Strand } from "@/strands/strands.types";
+import type { PageResponse, PaginationParams } from "@/api/types";
+
+export async function getActivitiesService(
+  filter?: ActivityFilter & PaginationParams
+): Promise<PageResponse<ActivityListItem>> {
+  const response = await api.get<PageResponse<ActivityListItem>>('/activity', { params: filter });
+  return response.data;
+}
+
+export async function getStrandsBySubjectService(subject: string) {
+  const response = await api.get<Strand[]>('/strand/strands-by-subject', {
+    params: { subject }
+  });
+  return response.data;
+}
 
 export async function createActivityService(data: CreateActivityRequest) {
   const formData = new FormData();
@@ -19,23 +35,11 @@ export async function createActivityService(data: CreateActivityRequest) {
       "Content-Type": "multipart/form-data",
     },
   });
-  
+
   return response.data;
 }
 
-export async function getStrandsBySubjectService(subject: string) {
-  const response = await api.get('/strand/strands-by-subject', {
-    params: { subject }
-  });
-  return response.data;
-}
-
-export async function getActivitiesService(params: { page: number; size: number; search?: string }) {
-  const response = await api.get('/activity', { params });
-  return response.data;
-}
-
-export async function changeActivityStatusService(id: number) {
+export async function inactivateActivityService(id: number) {
   const response = await api.put(`/activity/${id}`);
   return response.data;
 }

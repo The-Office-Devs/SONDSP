@@ -5,31 +5,30 @@ import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 import { ViewFileDialog } from "@/components/Dialog/ViewFileDialog";
-import { useActivities, useChangeActivityStatus, useActivityImage } from "../use-activities";
+import { useActivities,  useActivityImage, useInactivateActivity } from "../use-activities";
 import { buildPaginationProps } from "@/api/types";
+import { useTableState } from "@/hooks/use-table-state";
 
 const columns: ColumnDef<ActivityListItem>[] = [
-  { id: "name", header: "Nome", width: "180px" },
-  { id: "subject", header: "Matéria", width: "120px", accessor: (row) => row.strand?.subject },
-  { id: "strand", header: "Eixo", width: "180px", accessor: (row) => row.strand?.name },
-  { id: "bimester", header: "Bimestre", width: "180px", accessor: (row) => `${row.bimester} - ${row.schoolYear}` },
-  { id: "status", header: "Status", width: "180px" },
+  { id: "name", header: "Nome", width: "25%" },
+  { id: "subject", header: "Matéria", width: "15%", accessor: (row) => row.strand?.subject },
+  { id: "strand", header: "Eixo", width: "15%", accessor: (row) => row.strand?.name },
+  { id: "bimester", header: "Bimestre", width: "21%", accessor: (row) => `${row.bimester} - ${row.schoolYear}` },
+  { id: "status", header: "Status", width: "10%" },
 ];
 
 export function ActivitiesDesktop() {
-  const [filter, setFilter] = useState("");
-  const [page, setPage] = useState(0);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
+
+  const { data: activitiesPage, isFetching } = useActivities({ 
+    page, 
+    size, 
+    ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
+  });
+  const { mutate, isPending } = useInactivateActivity();
 
   const [viewActivity, setViewActivity] = useState<ActivityListItem | null>(null);
   const [inactivateActivity, setInactivateActivity] = useState<ActivityListItem | null>(null);
-
-  const { data: activitiesPage, isFetching, isLoading } = useActivities({ 
-    page, 
-    size: 5, 
-    search: filter 
-  });
-
-  const { mutate: changeStatus, isPending: isChangingStatus } = useChangeActivityStatus();
   
   const { data: imageBlob, isFetching: isFetchingImage } = useActivityImage(viewActivity?.id);
 
@@ -56,14 +55,6 @@ export function ActivitiesDesktop() {
     return undefined;
   }, [viewActivity, imageBlob]);
 
-  if (isLoading && !activitiesPage) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <p className="text-sm text-slate-500">Carregando modelos de atividades...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <ActivityInsertPanel />
@@ -85,9 +76,9 @@ export function ActivitiesDesktop() {
         title={inactivateActivity?.status ? "Inativar Modelo de Atividade" : "Ativar Modelo de Atividade"}
         open={inactivateActivity !== null}
         onOpenChange={(open) => { if (!open) setInactivateActivity(null); }}
-        isPending={isChangingStatus}
+        isPending={isPending}
         onConfirm={(activityItem) => 
-          changeStatus(activityItem.id, {
+          mutate(activityItem.id, {
             onSuccess: () => setInactivateActivity(null)
           })
         }

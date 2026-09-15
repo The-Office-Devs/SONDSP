@@ -46,7 +46,6 @@ export const router = createBrowserRouter([
             children: [
               { path: 'alunos', element: <StudentsPage /> },
               { path: 'eixos', element: <StrandsPage /> },
-              { path: 'usuarios', element: <UsersPage /> },
               { path: 'escolas', element: <SchoolsPage /> },
               { path: 'modelos-atividades', element: <ActivitiesPage /> },
               { path: 'usuarios', element: <UsersPage /> },

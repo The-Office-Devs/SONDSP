@@ -1,23 +1,24 @@
-export interface StrandDTO {
-  id: number;
-  name: string;
-  subject: string;
-  status: boolean;
-}
+import type { Strand } from "@/strands/strands.types";
 
 export interface ActivityListItem {
   id: number;
   name: string;
-  strand: StrandDTO;
+  strand: Strand;
   schoolYear: string;
   bimester: string; 
   strandImagePath: string; 
   status: boolean;
 }
-export interface PageResponse<T> {
-  content: T[];
-  totalPages: number;
-  totalElements: number;
-  size: number;
-  number: number;
+
+export interface ActivityFilter {
+  search?: string;
+  status?: boolean;
+}
+
+export interface CreateActivityRequest {
+  name: string;
+  strandId: number;
+  schoolYear: string;
+  bimester: string;
+  activityModelFile: File;
 }

@@ -5,13 +5,13 @@ import { toast } from "sonner";
 
 import { type ActivityFormData, activitySchema, type ActivityFormInput } from "../activity-schema";
 import { getSubmitLabel } from "@/lib/form-utils";
+import { useCreateActivity, useStrandsBySubject } from "../use-activities";
 
 import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/HookForm/fields/TextField";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { FileDropzone } from "@/components/ui/file-dropzone";
 import { Button } from "@/components/ui/button";
-import { useCreateActivity, useStrandsBySubject } from "../use-activities";
 
 const subjectOptions = [
   { value: "1", label: "Matemática" },
@@ -41,7 +41,8 @@ const FILE_ACCEPT = ".png,.jpg,.jpeg,.webp,.pdf,image/*,application/pdf";
 
 export function ActivityInsertPanel() {
   const { mutate: createActivity, isPending } = useCreateActivity();
-  const submitLabel = getSubmitLabel(isPending, false);
+
+  const submitLabel = getSubmitLabel(isPending, 'insert');
 
   const form = useForm<ActivityFormInput, unknown, ActivityFormData>({
     resolver: zodResolver(activitySchema),
@@ -49,21 +50,20 @@ export function ActivityInsertPanel() {
     defaultValues
   });
 
-  const isSubmitDisabled = isPending || !form.formState.isValid;
+  const subject = useWatch({ control: form.control, name: "subjectId" });
+  const activityModelFile = useWatch({ control: form.control, name: "activityModelFile" }) as File | undefined;
 
-  const selectedSubjectValue = useWatch({ control: form.control, name: "subjectId" });
-  const selectedSubjectLabel = subjectOptions.find(
-    (opt) => String(opt.value) === String(selectedSubjectValue)
+  const subjectLabel = subjectOptions.find(
+    (opt) => opt.value === subject
   )?.label;
 
-  const { data: strandsResponse, isLoading: isLoadingStrands } = useStrandsBySubject(selectedSubjectLabel);
+  const { data: strandsResponse, isLoading: isLoadingStrands } = useStrandsBySubject(subjectLabel);
 
-  const dynamicStrandOptions = strandsResponse?.map((strand: any) => ({
-    value: String(strand.id), 
-    label: strand.name,
-  })) || [];
-
-  const activityModelFile = useWatch({ control: form.control, name: "activityModelFile" }) as File | undefined;
+  const strandOptions = 
+    strandsResponse?.map((strand) => ({
+      value: String(strand.id), 
+      label: strand.name,
+    })) ?? [];
 
   const onSubmit = (data: ActivityFormData) => {
     createActivity(data, {
@@ -76,13 +76,16 @@ export function ActivityInsertPanel() {
     });
   }
 
+  const isSubmitDisabled = isPending || !form.formState.isValid;
   return (
     <FormProvider {...form}>
       <Card
         title="Cadastro de Modelo de Atividade"
         submitLabel={submitLabel}
+        isFilter={false}
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
+        collapsible
       >
         <TextField name="name" label="Nome" placeholder="Nome do modelo de atividade" />
 
@@ -91,14 +94,15 @@ export function ActivityInsertPanel() {
           label="Matéria"
           placeholder="Selecione a matéria"
           options={subjectOptions}
+          onValueChange={() => form.setValue("strandId", 0, { shouldValidate: true })}
         />
 
         <SelectField 
           name="strandId"
           label="Eixo"
           placeholder={isLoadingStrands ? "Carregando eixos..." : "Selecione o eixo"}
-          options={dynamicStrandOptions}
-          disabled={!selectedSubjectValue || isLoadingStrands}
+          options={strandOptions}
+          disabled={!subject || isLoadingStrands}
         />
 
         <SelectField
