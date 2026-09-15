@@ -1,13 +1,15 @@
 import { useState, useMemo } from "react";
+
 import type { ActivityListItem } from "@/activities/activities.types";
+import { useActivities,  useActivityImage, useInactivateActivity } from "../use-activities";
+import { useTableState } from "@/hooks/use-table-state";
+import { buildPaginationProps } from "@/api/types";
+
 import { ActivityInsertPanel } from "./activity-insert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 import { ViewFileDialog } from "@/components/Dialog/ViewFileDialog";
-import { useActivities,  useActivityImage, useInactivateActivity } from "../use-activities";
-import { buildPaginationProps } from "@/api/types";
-import { useTableState } from "@/hooks/use-table-state";
 
 const columns: ColumnDef<ActivityListItem>[] = [
   { id: "name", header: "Nome", width: "25%" },
