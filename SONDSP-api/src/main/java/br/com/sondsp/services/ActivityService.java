@@ -1,18 +1,15 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.dtos.ActivityDTO;
-import br.com.sondsp.entities.Activity;
-import br.com.sondsp.entities.Strand;
-import br.com.sondsp.entities.User;
+import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.ActivityFilter;
-import br.com.sondsp.filters.StrandFilter;
 import br.com.sondsp.form.ActivityForm;
 import br.com.sondsp.repositories.ActivityRepository;
 import br.com.sondsp.repositories.StrandRepository;
 import br.com.sondsp.util.SpecificationFilter;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,9 +76,9 @@ public class ActivityService {
         );
     }
 
-    public Page<ActivityDTO> getActivities(ActivityFilter filter, Pageable pageable) {
+    public Page<Activity> getActivities(ActivityFilter filter, Pageable pageable) {
         Specification<Activity> spec = this.buildFilter(filter);
-        return activityRepository.findAll(spec, pageable).map(ActivityDTO::new);
+        return activityRepository.findAll(spec, pageable);
     }
 
     public Activity changeActivityStatus(Integer idActivity) {
@@ -131,6 +128,8 @@ public class ActivityService {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
             if (filter.search() != null && !filter.search().isBlank()) {
+                Join<Activity, Strand> strandJoin = root.join("strand", JoinType.INNER);
+
                 String search = filter.search().toLowerCase();
                 String searchPattern = "%" + search + "%";
 
@@ -138,6 +137,8 @@ public class ActivityService {
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("period")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(strandJoin.get("subject")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(strandJoin.get("name")), searchPattern));
 
                 Boolean status = null;
                 if ("ativo".startsWith(search)) {

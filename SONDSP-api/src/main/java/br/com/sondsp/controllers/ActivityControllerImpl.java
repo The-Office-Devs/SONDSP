@@ -1,13 +1,14 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.ActivityDTO;
+import br.com.sondsp.dtos.PageResponse;
+import br.com.sondsp.entities.Activity;
 import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.ActivityFilter;
 import br.com.sondsp.form.ActivityForm;
 import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.ActivityService;
 import br.com.sondsp.util.SystemMessages;
-import jakarta.xml.bind.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
 
 import static br.com.sondsp.util.SystemMessages.ERROR_RETRIEVING_IMAGE;
@@ -53,11 +55,27 @@ public class ActivityControllerImpl {
     }
 
     @GetMapping()
-    public ResponseEntity<Page<ActivityDTO>> listActivity(
+    public ResponseEntity<PageResponse<ActivityDTO>> listActivity(
             @ModelAttribute ActivityFilter filter,
             @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable){
 
-        return ResponseEntity.ok().body(activityService.getActivities(filter, pageable));
+        Page<Activity> activityPage = activityService.getActivities(filter, pageable);
+
+        List<ActivityDTO> contentDTO = activityPage.getContent().stream()
+                .map(ActivityDTO::new)
+                .toList();
+
+        PageResponse<ActivityDTO> response = new PageResponse<>(
+                contentDTO,
+                activityPage.getNumber(),
+                activityPage.getSize(),
+                activityPage.getTotalElements(),
+                activityPage.getTotalPages(),
+                activityPage.hasNext(),
+                activityPage.hasPrevious()
+        );
+
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/{id}")

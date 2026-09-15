@@ -1,5 +1,6 @@
 package br.com.sondsp.services;
 
+import br.com.sondsp.dtos.StrandDTO;
 import br.com.sondsp.entities.Strand;
 import br.com.sondsp.filters.StrandFilter;
 import br.com.sondsp.form.StrandForm;
