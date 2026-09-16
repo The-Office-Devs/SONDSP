@@ -50,7 +50,7 @@ public class SurveyService {
 
     public Survey createSurvey(SurveyForm form, User administrator) {
         Student student = findStudentById(form.studentId());
-        Activity activity = findActivityById(form.activityId());
+        Activity activity = findActivityById(form.activityModelId());
         Survey survey = new Survey(form, administrator, student, activity);
 
         if (form.image() != null && !form.image().isEmpty()) {

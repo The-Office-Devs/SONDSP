@@ -7,7 +7,7 @@ public record SurveyForm(
         String result,
         Boolean isDigital,
         String observations,
-        Integer activityId,
+        Integer activityModelId,
         MultipartFile image
 ) {
 }

@@ -32,6 +32,8 @@ export function SurveysDesktop() {
     },
     { enabled: !!appliedFilters }
   );
+  
+  console.log(studentsPage?.content)
 
   const actions: RowAction<StudentListItem>[] = [
     { type: "start", label: "Iniciar", className: "w-30", onClick: (studentItem) => setApplyStudentId(studentItem.id) }

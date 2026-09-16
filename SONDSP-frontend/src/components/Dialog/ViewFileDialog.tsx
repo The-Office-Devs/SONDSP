@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { downloadUrl } from "@/lib/file-utils";
+
 import { 
   Dialog, 
   DialogContent, 
@@ -38,12 +40,7 @@ export function ViewFileDialog({
 
   const handleDownload = () => {
     if (!file || !url) return;
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = file.name || "modelo_atividade";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    downloadUrl(url, file.name);
   };
 
   const isImage = file?.type.startsWith("image/");

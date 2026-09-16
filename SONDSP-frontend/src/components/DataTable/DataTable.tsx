@@ -1,15 +1,16 @@
 import { cn } from "@/lib/utils";
-import {
-  AlarmSmoke,
-  BookOpenCheck,
+import { 
+  AlarmSmoke, 
+  BookOpenCheck, 
   Check,
-  Link2,
-  Link2Off,
-  Loader2,
-  NotebookPen,
-  PencilLine,
-  Play,
-  X,
+  Eye,
+  Link2, 
+  Link2Off, 
+  Loader2, 
+  NotebookPen, 
+  PencilLine, 
+  Play, 
+  X, 
   type LucideIcon
 } from "lucide-react";
 
@@ -21,16 +22,6 @@ import {
   TableHeader, 
   TableRow 
 } from "../ui/table";
-import { 
-  AlarmSmoke, 
-  Check,
-  Eye,
-  Link2, 
-  Link2Off, 
-  Loader2, 
-  PencilLine, 
-  X 
-} from "lucide-react";
 import { Button } from "../ui/button";
 import { AppPagination } from "../ui/pagination";
 

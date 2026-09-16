@@ -4,6 +4,7 @@ import type { ActivityListItem } from "@/activities/activities.types";
 import { useActivities,  useActivityImage, useInactivateActivity } from "../use-activities";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
+import { blobToFile } from "@/lib/file-utils";
 
 import { ActivityInsertPanel } from "./activity-insert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
@@ -40,20 +41,7 @@ export function ActivitiesDesktop() {
   ];
 
   const viewFile = useMemo(() => {
-    if (viewActivity && imageBlob) {
-      const type = imageBlob.type || "application/octet-stream";
-      
-      let extension = "";
-      if (type === "application/pdf") extension = ".pdf";
-      else if (type === "image/jpeg") extension = ".jpg";
-      else if (type === "image/png") extension = ".png";
-      else if (type === "image/webp") extension = ".webp";
-
-      const safeName = viewActivity.name.replace(/[^a-zA-Z0-9 ]/g, "");
-      const fileName = `${safeName}${extension}`;
-
-      return new File([imageBlob], fileName, { type });
-    }
+    if (viewActivity && imageBlob) return blobToFile(imageBlob, viewActivity.name);
     return undefined;
   }, [viewActivity, imageBlob]);
 
