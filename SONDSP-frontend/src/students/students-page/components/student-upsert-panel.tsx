@@ -205,7 +205,7 @@ export function StudentUpsertPanel({
                     onlyNumbers
                   />
 
-                  <TextField name="name" label="Nome"placeholder="Nome do aluno" />
+                  <TextField name="name" label="Nome Completo" placeholder="Nome completo do aluno" />
 
                   <SelectField
                     name="schoolId"

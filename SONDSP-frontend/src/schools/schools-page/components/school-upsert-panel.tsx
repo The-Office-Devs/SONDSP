@@ -98,9 +98,9 @@ export function SchoolUpsertPanel({
         onReset={handleCancelEdit}
         collapsible
       >
-        <TextField name="name" label="Nome" placeholder="Nome da escola" />
-        <TextField name="principalName" label="Diretor" placeholder="Nome do diretor" />
         <TextField name="codigoInep" label="Código INEP" placeholder="Código INEP" onlyNumbers maxLength={8} />
+        <TextField name="name" label="Nome" placeholder="Nome da escola" />
+        <TextField name="principalName" label="Diretor" placeholder="Nome completo do diretor" />
       </Card>
     </FormProvider>
   );

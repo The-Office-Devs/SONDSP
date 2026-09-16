@@ -17,42 +17,35 @@ public class Activity {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "nome")
+    private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_eixo", referencedColumnName = "id")
+    private Strand strand;
+
+    @Column(name = "imagem_ref")
+    private String strandImagePath;
+
+    @Column(name = "ativo")
+    private Boolean status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_criador", referencedColumnName = "id")
     private User creator;
 
-    @Column(name = "nome")
-    private String name;
+    @Column(name = "ano_escolar")
+    private String schoolYear;
 
-    @Column(name = "materia")
-    private String subject;
+    @Column(name = "bimestre")
+    private String period;
 
-    @Column(name = "eixo")
-    private String axis;
-
-    @Column(name = "modelo")
-    private String model;
-
-    @Column(name = "status")
-    private Boolean status;
-
-    public Activity(ActivityForm form, User creator) {
-        this.creator = creator;
+    public Activity(ActivityForm form, Strand strand, User creator) {
         this.name = form.name();
-        this.subject = form.subject();
-        this.axis = form.axis();
-        this.model = form.model();
-        this.status = form.status();
-    }
-
-    public static Activity builderUpdatedActivity(ActivityForm activityForm, User creator) {
-        return Activity.builder()
-                .creator(creator)
-                .name(activityForm.name())
-                .subject(activityForm.subject())
-                .axis(activityForm.axis())
-                .model(activityForm.model())
-                .status(activityForm.status())
-                .build();
+        this.strand = strand;
+        this.creator = creator;
+        this.schoolYear = form.schoolYear();
+        this.period = form.bimester();
+        this.status = true;
     }
 }

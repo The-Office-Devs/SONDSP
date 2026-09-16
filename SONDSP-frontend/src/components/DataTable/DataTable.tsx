@@ -1,19 +1,19 @@
 import { cn } from "@/lib/utils";
-import { 
-  AlarmSmoke, 
-  BookOpenCheck, 
-  Check, 
-  Link2, 
-  Link2Off, 
-  Loader2, 
-  NotebookPen, 
-  PencilLine, 
-  Play, 
-  X, 
+import {
+  AlarmSmoke,
+  BookOpenCheck,
+  Check,
+  Link2,
+  Link2Off,
+  Loader2,
+  NotebookPen,
+  PencilLine,
+  Play,
+  X,
   type LucideIcon
 } from "lucide-react";
 
-import { 
+import {
   Table, 
   TableBody, 
   TableCell, 
@@ -21,17 +21,28 @@ import {
   TableHeader, 
   TableRow 
 } from "../ui/table";
+import { 
+  AlarmSmoke, 
+  Check,
+  Eye,
+  Link2, 
+  Link2Off, 
+  Loader2, 
+  PencilLine, 
+  X 
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { AppPagination } from "../ui/pagination";
 
-type RowActionType = 
-  | 'apply' 
-  | 'edit' 
+type RowActionType =
+  | 'apply'
+  | 'edit'
   | 'finish'
-  | 'inactivate' 
-  | 'link' 
-  | 'normal' 
+  | 'inactivate'
+  | 'link'
+  | 'normal'
   | 'start'
+  | 'view'
 
 export type RowAction<T> = {
   type: RowActionType;
@@ -214,18 +225,19 @@ const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppe
   edit: () => ({ title: "Editar", icon: PencilLine }),
   finish: () => ({ title: "Finalizar", icon: BookOpenCheck }),
 
-  link: (isLinked) => 
-    isLinked 
+  link: (isLinked) =>
+    isLinked
       ? { title: "Desvincular", icon: Link2Off, variant: "destructive" }
       : { title: "Vincular", icon: Link2, variant: "outline" },
-      
-  inactivate: (isActive) => 
+
+  inactivate: (isActive) =>
     isActive
       ? { title: "Inativar", icon: X, variant: "destructive" }
       : { title: "Ativar", icon: Check, className: "bg-emerald-600 hover:bg-emerald-500 text-white border-transparent" },
 
   normal: () => ({ title: "", icon: AlarmSmoke }),
-  start: () => ({ title: "Iniciar", icon: Play })
+  start: () => ({ title: "Iniciar", icon: Play }),
+  view: () => ({ title: "Visualizar", icon: Eye, variant: "outline" })
 }
 
 type ActionButtonProps = Readonly<{

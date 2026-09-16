@@ -4,6 +4,7 @@ export interface Strand {
   subject: string;
   status: boolean;
 };
+
 export interface StrandFilter {
   search?: string;
   name?: string;

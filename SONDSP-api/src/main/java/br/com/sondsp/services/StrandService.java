@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static br.com.sondsp.util.SystemMessages.EMPTY_DATA;
@@ -40,10 +41,11 @@ public class StrandService {
         return strandRepository.save(strand);
     }
 
-    public Strand changeStrandStatus(Integer id) {
+    public boolean changeStrandStatus(Integer id) {
         Strand strand = this.getStrand(id);
         strand.setStatus(!strand.getStatus());
-        return strandRepository.save(strand);
+        strandRepository.save(strand);
+        return strand.getStatus();
     }
 
     public Page<Strand> getAllStrands(StrandFilter filter, Pageable pageable) {
@@ -55,6 +57,11 @@ public class StrandService {
         return this.strandRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(STRAND_NOT_FOUND)
         );
+    }
+
+    public List<StrandDTO> getAllStrandsBySubject(String subject) {
+        if (subject == null) return Collections.emptyList();
+        return this.strandRepository.findAllBySubjectAndStatusTrue(subject, true);
     }
 
     private boolean validateStrand(StrandForm form) {

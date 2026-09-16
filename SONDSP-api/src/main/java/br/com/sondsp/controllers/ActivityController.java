@@ -1,100 +1,60 @@
 package br.com.sondsp.controllers;
 
-import br.com.sondsp.dtos.ActivityDTO;
-import br.com.sondsp.dtos.StandardErrorDTO;
-import br.com.sondsp.entities.User;
+import br.com.sondsp.dtos.*;
 import br.com.sondsp.filters.ActivityFilter;
 import br.com.sondsp.form.ActivityForm;
-import br.com.sondsp.security.AuthenticationService;
-import br.com.sondsp.services.ActivityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-
-@RestController
-@RequestMapping("/activity")
-public class ActivityController {
-    @Autowired
-    private ActivityService activityService;
-
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @PostMapping()
-    @Operation(description = "Cria uma nova atividade.", responses = {
+public interface ActivityController {
+    @Operation(description = "Registra uma nova atividade", responses = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Atividade criada com sucesso",
+                    description = "Atividade registrado com sucesso.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ActivityDTO.class)
                     )
             )
     })
-    public ResponseEntity<?> createActivity(@RequestBody ActivityForm form) {
-        Optional<User> creator = authenticationService.getCurrentUser();
-        if (creator.isPresent()) {
-            return ResponseEntity.ok().body(new ActivityDTO(activityService.createActivity(form, creator.get())));
+    ResponseEntity<?> registerActivity(ActivityForm form);
 
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Error Recovering User");
-        }
-    }
+    @Operation(description = "Retorna a atividade com id passado.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Atividade retornada com sucesso.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ActivityDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> getActivityById(Integer id);
 
-    @GetMapping()
     @Operation(
-            description = "Retorna uma lista das Atividades com base no filtro passado. Se nenhum filtro for passado, retorna todas as Atividades.",
+            description = "Retorna uma lista das atividades de forma paginada com base no filtro passado. É possível passar page, size e sort na URL.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Atividades retornadas.",
+                            description = "Retorna as atividades encontradas",
                             content = @Content(
                                     mediaType = "application/json",
                                     array = @ArraySchema(schema = @Schema(implementation = ActivityDTO.class))
                             )
                     )
-            })
-    public ResponseEntity<?> getActivities(@ModelAttribute ActivityFilter filter) {
-        return ResponseEntity.ok().body(activityService.listActivities(filter).stream().map(ActivityDTO::new));
-    }
+            }
+    )
+    ResponseEntity<PageResponse<ActivityDTO>> listActivities(ActivityFilter filter, Pageable pageable);
 
-    @PutMapping("/{id}")
-    @Operation(description = "Atualiza a atividade com o id passado.", responses = {
+    @Operation(description = "Altera o status da atividade", responses = {
             @ApiResponse(
                     responseCode = "200",
                     description = "Atividade atualizada com sucesso",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ActivityDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "ActivityDTO não encontrada.",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = StandardErrorDTO.class)
-                    )
-            )
-    })
-    public ResponseEntity<?> updateActivity(@PathVariable Integer id, @RequestBody ActivityForm form) {
-        return ResponseEntity.ok().body(new ActivityDTO(activityService.updateActivity(id, form)));
-    }
-
-    @DeleteMapping("/{id}")
-    @Operation(description = "Desativa a Atividade com o id passado.", responses = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Atividade desativada com sucesso.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ActivityDTO.class)
@@ -109,8 +69,25 @@ public class ActivityController {
                     )
             )
     })
-    public ResponseEntity<?> deleteActivity(@PathVariable Integer id) {
-        activityService.deleteActivity(id);
-        return ResponseEntity.ok("Atividade desativada com sucesso.");
-    }
+    ResponseEntity<?> changeActivityStatus(Integer id);
+
+    @Operation(description = "Recupera a imagem da atividade", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Imagem recuperada com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ActivityDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Atividade não encontrada.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = StandardErrorDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> getActivityImage(Integer id);
 }

@@ -49,7 +49,7 @@ export function ActivateAccountForm({
           name="email"
           label="E-mail Institucional"
           type="email"
-          placeholder="nome@sme.prefeitura.gov.br"
+          placeholder="seu.nome@instituicao.br"
           ui={ui}
         />
 

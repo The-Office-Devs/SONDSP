@@ -11,6 +11,7 @@ import { SchoolsPage } from '@/schools/schools-page/schools-page';
 import { ClassesPage } from '@/classes/classes-page/classes-page';
 import { StudentsPage } from '@/students/students-page/students.page';
 import { StrandsPage } from '@/strands/strands-page/strands-page';
+import { ActivitiesPage } from '@/activities/activities-page/activities-page';
 import { SurveysPage } from '@/surveys/surveys-page/surveys-page';
 
 export const router = createBrowserRouter([
@@ -46,8 +47,9 @@ export const router = createBrowserRouter([
             children: [
               { path: 'alunos', element: <StudentsPage /> },
               { path: 'eixos', element: <StrandsPage /> },
-              { path: 'usuarios', element: <UsersPage /> },
               { path: 'escolas', element: <SchoolsPage /> },
+              { path: 'modelos-atividades', element: <ActivitiesPage /> },
+              { path: 'usuarios', element: <UsersPage /> },
               { path: 'turmas', element: <ClassesPage /> },
             ],
           },

@@ -8,7 +8,7 @@ export const schoolSchema = z.object({
   principalName: z
     .string()
     .trim()
-    .min(1, 'O nome do diretor é obrigatório'),
+    .min(1, 'O nome completo do diretor é obrigatório'),
   codigoInep: z
     .string()
     .trim()

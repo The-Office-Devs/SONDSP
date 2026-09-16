@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static br.com.sondsp.util.SystemMessages.STRAND_ACTIVATED;
+import static br.com.sondsp.util.SystemMessages.STRAND_DEACTIVATED;
+
 @RestController
 @RequestMapping("/strand")
 public class StrandControllerImpl {
@@ -31,7 +34,15 @@ public class StrandControllerImpl {
 
     @PatchMapping("/{id}/changeStatus")
     public ResponseEntity<?> changeStrandStatus(@PathVariable Integer id) {
-        return ResponseEntity.ok().body(new StrandDTO(strandService.changeStrandStatus(id)));
+        if (strandService.changeStrandStatus(id))
+            return ResponseEntity.ok(STRAND_ACTIVATED);
+
+        return ResponseEntity.ok(STRAND_DEACTIVATED);
+    }
+
+    @GetMapping("strands-by-subject")
+    public ResponseEntity<List<StrandDTO>> findBySubject(@RequestParam String subject) {
+        return ResponseEntity.ok().body(strandService.getAllStrandsBySubject(subject));
     }
 
     @GetMapping()

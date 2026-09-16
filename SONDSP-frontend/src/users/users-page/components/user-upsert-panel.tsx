@@ -119,7 +119,7 @@ export function UserUpsertPanel({
         <TextField
           name="email"
           label="E-mail Institucional"
-          placeholder="nome@sme.prefeitura.gov.br"
+          placeholder="seu.nome@instituicao.br"
         />
 
         <TextField 
@@ -129,7 +129,7 @@ export function UserUpsertPanel({
           onlyNumbers 
         />
 
-        <TextField name="name" label="Nome" placeholder="Nome do usuário" />
+        <TextField name="name" label="Nome Completo" placeholder="Nome completo do usuário" />
 
         <SelectField
           name="role"

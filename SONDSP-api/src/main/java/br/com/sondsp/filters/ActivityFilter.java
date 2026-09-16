@@ -1,10 +1,12 @@
 package br.com.sondsp.filters;
 
 public record ActivityFilter(
+        String search,
         String name,
         String subject,
-        String axis,
-        String model,
-        String generalFilter
+        String strand,
+        String schoolYear,
+        String bimester,
+        String status
 ) {
 }
