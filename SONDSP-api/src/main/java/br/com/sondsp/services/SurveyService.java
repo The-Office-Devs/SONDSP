@@ -77,7 +77,7 @@ public class SurveyService {
 
     public void deleteSurvey(Integer id) throws ValidationException {
         Survey survey = findSurveyById(id);
-        if(Boolean.FALSE.equals(survey.getStatus())){
+        if(survey.getStatus().equals(false) && survey.getSurveyImagePath().isEmpty() && survey.getResult().isEmpty()) {
             surveyRepository.delete(survey);
         } else {
             throw new ValidationException(SURVEY_CANNOT_DELETE);
@@ -119,6 +119,10 @@ public class SurveyService {
         return surveyRepository.findAll(spec);
     }
 
+    public List<Survey> listStudentSurveys(Student student, User applicator){
+        return this.surveyRepository.findAllByStudentAndAdministrator(student, applicator);
+    }
+
     private String storeImageLocal(MultipartFile file) {
         try {
             Path uploadPath = Paths.get(this.uploadDir).toAbsolutePath().normalize();
@@ -134,7 +138,7 @@ public class SurveyService {
             return targetLocation.toString();
 
         } catch (IOException ex) {
-            throw new RuntimeException("Não foi possível salvar o arquivo de imagem. Tente novamente!", ex);
+            throw new RuntimeException(ERROR_SAVING_IMAGE, ex);
         }
     }
 }

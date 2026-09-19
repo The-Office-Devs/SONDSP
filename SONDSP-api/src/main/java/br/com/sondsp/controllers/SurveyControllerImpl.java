@@ -34,8 +34,8 @@ public class SurveyControllerImpl {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @PostMapping
-    public ResponseEntity<?> createSurvey(@RequestBody SurveyForm form) {
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createSurvey(@ModelAttribute SurveyForm form) {
         Optional<User> creator = authenticationService.getCurrentUser();
         if (creator.isPresent()) {
             return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form, creator.get())));
