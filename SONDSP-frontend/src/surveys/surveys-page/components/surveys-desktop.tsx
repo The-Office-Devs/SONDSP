@@ -36,8 +36,8 @@ export function SurveysDesktop() {
   );
 
   const actions: RowAction<StudentListItem>[] = [
-    { type: "start", label: "Iniciar", className: "w-30", onClick: (studentItem) => setApplyStudentId(studentItem.id) },
-    { type: "list", label: "Listar", className: "w-30", onClick: (studentItem) => goToListar(studentItem.id) },
+    { type: "start", label: "Iniciar", onClick: (studentItem) => setApplyStudentId(studentItem.id) },
+    { type: "list", label: "Listar", onClick: (studentItem) => goToListar(studentItem.id) },
   ];
 
   const goToListar = (studentId: number) => navigator(`historico/aluno/${studentId}`);

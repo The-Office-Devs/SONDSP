@@ -18,9 +18,9 @@ import { ViewFileDialog } from "@/components/Dialog/ViewFileDialog";
 import { ReadOnlyField } from "@/components/ReadOnlyField/ReadOnlyField";
 
 const columns: ColumnDef<SurveyListItem>[] = [
-  { id: "activity", key: "activityName", header: "Modelo de Atividade", width: "25%", accessor: (row) => row.activity?.name },
-  { id: "activity", key: "subject", header: "Matéria", width: "15%", accessor: (row) => row.activity?.strand?.subject },
-  { id: "activity", key: "strandName", header: "Eixo", width: "17%", accessor: (row) => row.activity?.strand?.name },
+  { id: "activity", key: "activityName", header: "Modelo de Atividade", width: "20%", accessor: (row) => row.activity?.name },
+  { id: "activity", key: "subject", header: "Matéria", width: "10%", accessor: (row) => row.activity?.strand?.subject },
+  { id: "activity", key: "strandName", header: "Eixo", width: "15%", accessor: (row) => row.activity?.strand?.name },
   { id: "activity", key: "bimester", header: "Bimestre", width: "15%", accessor: (row) => `${row.activity?.bimester} - ${row.activity?.schoolYear}` },
   { id: "status", header: "Status", width: "10%", accessor: (row) => row.status ? "Finalizada" : "Em Aberto" }
 ];
@@ -63,7 +63,6 @@ export function SurveysHistoryDesktop() {
     { 
       type: "finish", 
       label: "Finalizar", 
-      className: "w-30", 
       onClick: (surveyItem) => setSelectedSurvey(surveyItem), 
       disabled: (surveyItem) => surveyItem.status 
     },

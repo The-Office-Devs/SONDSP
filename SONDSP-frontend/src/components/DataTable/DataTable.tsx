@@ -94,6 +94,10 @@ export function DataTable<T>({
 
   const maxActions = typeof actions === "function" ? 1 : actions.length;
 
+  const labeledActions = typeof actions === "function"
+    ? 0
+    : actions.filter((action) => action.label).length;
+
   if (data.length === 0) {
     return (
       <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-500 shadow-sm">
@@ -129,7 +133,11 @@ export function DataTable<T>({
                 style={{ width: column.width }}
               />
             ))}
-            <col style={{ width: maxActions > 2 ? "18%" : "14%" }} />
+            <col style={{ 
+              width: labeledActions > 0 
+                ? `${maxActions * (labeledActions > 1 ? 10 : 8)}%` 
+                : (maxActions > 2 ? "18%" : "14%") 
+            }} />
           </colgroup>
 
           <TableHeader className="bg-primary text-white">
@@ -262,7 +270,7 @@ function ActionButton({
       title={title}
       aria-label={title}
       variant={variant}
-      className={cn("w-14", stateClass, className)}
+      className={cn(label ? "w-30" : "w-14", stateClass, className)}
       disabled={disabled}
       onClick={onClick}
     >
