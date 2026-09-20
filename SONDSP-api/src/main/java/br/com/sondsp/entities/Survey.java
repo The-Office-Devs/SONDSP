@@ -29,7 +29,7 @@ public class Survey {
     private String result;
 
     @Column(name = "observacoes")
-    private String observations;
+    private String notes;
 
     @Column(name = "imagem_sondagem")
     private String surveyImagePath;
@@ -49,7 +49,7 @@ public class Survey {
         this.student = student;
         this.activity = activity;
         this.result = form.result();
-        this.observations = form.observations();
+        this.notes = form.notes();
         this.isDigital = form.isDigital();
         this.status = false;
     }

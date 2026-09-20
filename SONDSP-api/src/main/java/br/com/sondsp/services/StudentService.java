@@ -1,9 +1,6 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.dtos.StudentSurveyDTO;
-import br.com.sondsp.dtos.SurveyDTO;
 import br.com.sondsp.entities.*;
-import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.repositories.StudentRepository;
@@ -54,18 +51,6 @@ public class StudentService {
     public Page<Student> getStudents(StudentFilter filter, Pageable pageable) {
         Specification<Student> spec = buildFilter(filter);
         return repository.findAll(spec, pageable);
-    }
-
-    public StudentSurveyDTO getStudentSurveys(Integer id, User applicator) {
-        Student student = getStudent(id);
-
-        List<Survey> surveys = this.surveyService.listStudentSurveys(student, applicator);
-
-        List<SurveyDTO> surveyDTOs = surveys.stream()
-                .map(SurveyDTO::new)
-                .toList();
-
-        return new StudentSurveyDTO(student, surveyDTOs);
     }
 
     public Student updateStudent(Integer id, StudentForm form) {

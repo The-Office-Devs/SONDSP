@@ -106,7 +106,7 @@ public class ActivityService {
         }
     }
 
-    private Resource getImageLocal(String filePath){
+    public Resource getImageLocal(String filePath){
         try {
             Path path = Paths.get(filePath).normalize();
             Resource resource = new UrlResource(path.toUri());

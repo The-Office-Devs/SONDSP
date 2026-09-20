@@ -6,7 +6,7 @@ public record SurveyForm(
         Integer studentId,
         String result,
         Boolean isDigital,
-        String observations,
+        String notes,
         Integer activityModelId,
         MultipartFile image
 ) {

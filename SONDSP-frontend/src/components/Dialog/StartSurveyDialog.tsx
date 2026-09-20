@@ -4,14 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
 import { Download } from "lucide-react";
 
+import { useActivities, useActivityImage } from "@/activities/activities-page/use-activities";
 import { useStartSurvey } from "@/surveys/use-surveys";
+import { blobToFile, downloadUrl } from "@/lib/file-utils";
 
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "../ui/dialog";
 import { ComboboxField } from "../HookForm/fields/ComboBoxField";
 import { ReadOnlyField } from "../ReadOnlyField/ReadOnlyField";
 import { Button } from "../ui/button";
-import { useActivities, useActivityImage } from "@/activities/activities-page/use-activities";
-import { blobToFile, downloadUrl } from "@/lib/file-utils";
 
 const startSurveySchema = z.object({
   activityModelId: z.coerce

@@ -2,27 +2,21 @@ package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.StudentDTO;
-import br.com.sondsp.dtos.StudentSurveyDTO;
 import br.com.sondsp.entities.Student;
-import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.StudentService;
-import br.com.sondsp.util.SystemMessages;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static br.com.sondsp.util.SystemMessages.*;
 
@@ -72,17 +66,6 @@ public class StudentControllerImpl implements StudentController {
         );
 
         return ResponseEntity.ok().body(response);
-    }
-
-    @GetMapping("/student-survey/{id}")
-    public ResponseEntity<StudentSurveyDTO> getStudentSurveys(@PathVariable Integer id) {
-        Optional<User> applicator = authenticationService.getCurrentUser();
-
-        if (applicator.isPresent()) {
-            return ResponseEntity.ok().body(this.service.getStudentSurveys(id, applicator.get()));
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, SystemMessages.USER_NOT_FOUND);
-        }
     }
 
     @PutMapping("/{id}")

@@ -8,11 +8,11 @@ public record SurveyDTO(
         Integer administratorId,
         String studentName,
         Integer studentId,
+        ActivityDTO activity,
         String result,
-        String observations,
+        String notes,
         String surveyImage,
         Boolean isDigital,
-        String activityName,
         Boolean status
 ) {
     public SurveyDTO(Survey survey){
@@ -22,11 +22,11 @@ public record SurveyDTO(
                 survey.getAdministrator() != null ? survey.getAdministrator().getId() :null,
                 survey.getStudent() != null ? survey.getStudent().getName() :null,
                 survey.getStudent() != null ? survey.getStudent().getId() :null,
+                survey.getActivity() != null ? new ActivityDTO(survey.getActivity()) : null,
                 survey.getResult(),
-                survey.getObservations(),
+                survey.getNotes(),
                 survey.getSurveyImagePath(),
                 survey.getIsDigital(),
-                survey.getActivity() != null ? survey.getActivity().getName() :null,
                 survey.getStatus()
         );
     }

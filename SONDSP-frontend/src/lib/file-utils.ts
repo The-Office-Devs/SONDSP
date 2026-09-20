@@ -19,3 +19,12 @@ export function downloadUrl(url: string, fileName: string) {
   a.click();
   a.remove();
 }
+
+export const ACCEPTED_FILE_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "application/pdf",
+];
+
+export const FILE_ACCEPT = ".png,.jpg,.jpeg,.webp,.pdf,image/*,application/pdf";

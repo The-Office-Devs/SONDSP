@@ -1,5 +1,6 @@
 package br.com.sondsp.controllers;
 
+import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.StandardErrorDTO;
 import br.com.sondsp.dtos.StudentDTO;
 import br.com.sondsp.dtos.SurveyDTO;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 public interface SurveyController {
@@ -37,7 +39,37 @@ public interface SurveyController {
                             )
                     )
             })
-    ResponseEntity<?> getActivities(SurveyFilter filter);
+    ResponseEntity<?> getSurveys(SurveyFilter filter);
+
+    @Operation(
+            description = "Retorna as Sondagens de um aluno de forma paginada, restritas ao aplicador autenticado, com base no filtro passado.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sondagens retornadas com sucesso.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Usuário não autenticado.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = StandardErrorDTO.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Aluno não encontrado.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = StandardErrorDTO.class)
+                            )
+                    )
+            })
+    ResponseEntity<PageResponse<SurveyDTO>> getStudentSurveys(Integer id, SurveyFilter filter, Pageable pageable);
 
     @Operation(description = "Atualiza a sondagem com o id passado.", responses = {
             @ApiResponse(

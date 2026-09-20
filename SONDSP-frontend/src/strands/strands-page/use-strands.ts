@@ -14,6 +14,7 @@ import {
   getStrandService, 
   listStrandsService
 } from "../strands.service";
+import { useStrandsBySubject } from "@/activities/activities-page/use-activities";
 import type { StrandFilter } from "../strands.types";
 import type { StrandFormData } from "./strand.schema";
 import type { PaginationParams } from "@/api/types";
@@ -71,4 +72,16 @@ export function useChangeStrandStatus() {
     onError: (error: AxiosError<{ error: string }>) =>
       handleApiError(error || 'Erro ao alterar status do eixo.')
   });
+}
+
+export function useStrandOptions(subjectLabel?: string) {
+  const { data, isLoading } = useStrandsBySubject(subjectLabel);
+
+  const options =
+    data?.map((strand) => ({ 
+      value: String(strand.id), 
+      label: strand.name 
+    })) ?? [];
+
+  return { options, isLoading };
 }

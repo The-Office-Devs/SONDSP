@@ -281,7 +281,7 @@ export function StudentUpsertPanel({
                   <Button
                     type="button"
                     isRounded
-                    disabled={!batchFile /* || isPending --> quando back ficar pronto */}
+                    disabled={!batchFile || isPending}
                     onClick={() => {}}
                   >
                     <Check className="size-4" />

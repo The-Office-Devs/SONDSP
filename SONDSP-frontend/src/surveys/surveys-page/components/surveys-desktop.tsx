@@ -4,6 +4,7 @@ import type { StudentListItem } from "@/students/students.types";
 import { type SurveyFormData } from "../survey-schema";
 import { useStudents } from "@/students/students-page/use-students";
 import { useTableState } from "@/hooks/use-table-state";
+import { useNavigate } from "react-router-dom";
 import { buildPaginationProps } from "@/api/types";
 
 import { SurveysFilterPanel } from "./surveys-filter-panel";
@@ -12,12 +13,13 @@ import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTabl
 import { StartSurveyDialog } from "@/components/Dialog/StartSurveyDialog";
 
 const columns: ColumnDef<StudentListItem>[] = [
-  { id: "rowNumber", header: "N° Chamada", width: "20%" },
-  { id: "registration", header: "Matrícula", width: "20%", },
-  { id: "name", header: "Nome", width: "46%" }
+  { id: "rowNumber", header: "N° Chamada", width: "10%" },
+  { id: "registration", header: "Matrícula", width: "10%", },
+  { id: "name", header: "Nome", width: "40%" }
 ];
 
 export function SurveysDesktop() {
+  const navigator = useNavigate();
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
   const [appliedFilters, setAppliedFilters] = useState<SurveyFormData | null>(null);
   const [applyStudentId, setApplyStudentId] = useState<number | null>(null);
@@ -32,12 +34,13 @@ export function SurveysDesktop() {
     },
     { enabled: !!appliedFilters }
   );
-  
-  console.log(studentsPage?.content)
 
   const actions: RowAction<StudentListItem>[] = [
-    { type: "start", label: "Iniciar", className: "w-30", onClick: (studentItem) => setApplyStudentId(studentItem.id) }
+    { type: "start", label: "Iniciar", className: "w-30", onClick: (studentItem) => setApplyStudentId(studentItem.id) },
+    { type: "list", label: "Listar", className: "w-30", onClick: (studentItem) => goToListar(studentItem.id) },
   ];
+
+  const goToListar = (studentId: number) => navigator(`historico/aluno/${studentId}`);
 
   const handleClear = () => {
     setAppliedFilters(null);

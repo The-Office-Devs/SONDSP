@@ -3,12 +3,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useAuthStore } from "@/auth/auth.store";
 import { useUser } from "@/users/users-page/use-users";
+import { getSubmitLabel } from "@/lib/form-utils";
 import { surveySchema, type SurveyFormData, type SurveyFormInput } from "../survey-schema";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
-import { getSubmitLabel } from "@/lib/form-utils";
 
 interface SurveyFilterPanelProps {
   onSearch: (data: SurveyFormData) => void;

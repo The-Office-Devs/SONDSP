@@ -6,6 +6,7 @@ import {
   Eye,
   Link2, 
   Link2Off, 
+  List,
   Loader2, 
   NotebookPen, 
   PencilLine, 
@@ -27,10 +28,12 @@ import { AppPagination } from "../ui/pagination";
 
 type RowActionType =
   | 'apply'
+  | 'delete'
   | 'edit'
   | 'finish'
   | 'inactivate'
   | 'link'
+  | 'list'
   | 'normal'
   | 'start'
   | 'view'
@@ -46,6 +49,7 @@ export type RowAction<T> = {
 
 export type ColumnDef<T> = {
   id: keyof T;
+  key?: string;
   header: React.ReactNode;
   width: string;
   className?: string;
@@ -121,7 +125,7 @@ export function DataTable<T>({
           <colgroup>
             {columns.map((column) => (
               <col  
-                key={String(column.id)}
+                key={column.key ?? String(column.id)}
                 style={{ width: column.width }}
               />
             ))}
@@ -132,7 +136,7 @@ export function DataTable<T>({
             <TableRow className="hover:bg-transparent">
               {columns.map((column) => (
                 <TableHead
-                  key={String(column.id)}
+                  key={column.key ?? String(column.id)}
                   className="px-6 py-3 text-left font-semibold text-white"
                 >
                   {column.header}
@@ -152,7 +156,7 @@ export function DataTable<T>({
               <TableRow key={rowKey(row)} className="border-slate-200">
                 {columns.map((column) => (
                   <TableCell 
-                    key={String(column.id)}
+                    key={column.key ?? String(column.id)}
                     className={cn("px-6 py-4 text-slate-900 font-semibold truncate", column.className)}
                   >
                     {formatCellValue(
@@ -213,6 +217,7 @@ type ActionAppearance = {
 
 const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppearance> = {
   apply: () => ({ title: "Aplicar", icon: NotebookPen }),
+  delete: () => ({ title: "Excluir", icon: X, variant: "destructive" }),
   edit: () => ({ title: "Editar", icon: PencilLine }),
   finish: () => ({ title: "Finalizar", icon: BookOpenCheck }),
 
@@ -220,6 +225,8 @@ const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppe
     isLinked
       ? { title: "Desvincular", icon: Link2Off, variant: "destructive" }
       : { title: "Vincular", icon: Link2, variant: "outline" },
+
+  list: () => ({ title: "Listar", icon: List }),
 
   inactivate: (isActive) =>
     isActive

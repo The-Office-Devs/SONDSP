@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { downloadUrl } from "@/lib/file-utils";
 
@@ -16,13 +16,15 @@ interface ViewFileDialogProps {
   title: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  children?: React.ReactNode;
 }
  
 export function ViewFileDialog({
   file,
   title,
   open,
-  onOpenChange
+  onOpenChange,
+  children
 }: Readonly<ViewFileDialogProps>) {
   const [url, setUrl] = useState<string | null>(null);
 
@@ -66,6 +68,8 @@ export function ViewFileDialog({
             </p>
           )}
         </div>
+
+        {children}
         
         <DialogFooter>
           <Button 
