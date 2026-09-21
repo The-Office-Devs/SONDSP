@@ -8,7 +8,6 @@ import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.UserFilter;
 import br.com.sondsp.form.LinkSchoolClassForm;
 import br.com.sondsp.form.LinkSchoolForm;
-import br.com.sondsp.form.RegisterForm;
 import br.com.sondsp.form.UserForm;
 import br.com.sondsp.services.UsersService;
 import jakarta.validation.Valid;
@@ -31,7 +30,7 @@ public class UsersControllerImpl implements UsersController {
     private UsersService service;
 
     @PostMapping()
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterForm form) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserForm form) {
         return ResponseEntity.ok().body(new RegisterDTO(service.registerUser(form)));
     }
 

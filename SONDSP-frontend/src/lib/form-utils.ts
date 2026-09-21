@@ -1,7 +1,24 @@
-export function getSubmitLabel(isPending: boolean, isEditMode: boolean) {
+export function getSubmitLabel(
+  isPending: boolean, 
+  type: 'insert' | 'edit' | 'filter'
+) {
   if (isPending) {
-    return isEditMode ? "Salvando..." : "Cadastrando...";
+    switch (type) {
+      case 'insert':
+        return "Cadastrando...";
+      case 'edit': 
+        return "Salvando...";
+      case 'filter':
+        return "Buscando...";
+    }
   }
 
-  return isEditMode ? "Salvar" : "Cadastrar";
+  switch (type) {
+    case 'insert':
+      return "Cadastrar";
+    case 'edit': 
+      return "Salvar";
+    case 'filter':
+      return "Buscar";
+  }
 }

@@ -34,8 +34,10 @@ export function ClassUpsertPanel({
 
   const isEditMode = classIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+
   const title = getTitle("Turma", isEditMode, false);
-  const submitLabel = getSubmitLabel(isPending, isEditMode);
+  const submitType = isEditMode ? "edit" : "insert";
+  const submitLabel = getSubmitLabel(isPending, submitType);
   
   const form = useForm<ClassFormInput, unknown, ClassFormData>({
     resolver: zodResolver(classSchema),
@@ -96,10 +98,11 @@ export function ClassUpsertPanel({
       <Card
         title={title} 
         submitLabel={submitLabel}
+        isFilter={false}
         isEditMode={isEditMode} 
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
-        onCancelEdit={handleCancelEdit}
+        onReset={handleCancelEdit}
         collapsible
       >
         <SelectField

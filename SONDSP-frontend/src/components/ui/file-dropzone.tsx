@@ -79,7 +79,7 @@ function FileDropzone({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={cn(
-        "flex min-h-28 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-input bg-white",
+        "flex min-h-28 w-full cursor-pointer flex-col justify-center gap-2 rounded-lg border border-dashed border-input bg-white",
         "hover:bg-muted/40 data-[dragging=true]:border-ring data-[dragging=true]:bg-muted/60",
         className
       )}

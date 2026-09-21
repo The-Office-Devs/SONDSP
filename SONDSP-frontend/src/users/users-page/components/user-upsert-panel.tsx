@@ -49,8 +49,10 @@ export function UserUpsertPanel({
 
   const isEditMode = userIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+
   const title = getTitle("Usuário", isEditMode, false);
-  const submitLabel = getSubmitLabel(isPending, isEditMode);
+  const submitType = isEditMode ? "edit" : "insert";
+  const submitLabel = getSubmitLabel(isPending, submitType);
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
@@ -107,16 +109,17 @@ export function UserUpsertPanel({
       <Card 
         title={title} 
         submitLabel={submitLabel}
-        isEditMode={isEditMode} 
         isSubmitDisabled={isSubmitDisabled}
+        isFilter={false}
+        isEditMode={isEditMode} 
         onSubmit={form.handleSubmit(onSubmit)}
-        onCancelEdit={handleCancelEdit}
+        onReset={handleCancelEdit}
         collapsible
       >
         <TextField
           name="email"
           label="E-mail Institucional"
-          placeholder="nome@sme.prefeitura.gov.br"
+          placeholder="seu.nome@instituicao.br"
         />
 
         <TextField 
@@ -126,7 +129,7 @@ export function UserUpsertPanel({
           onlyNumbers 
         />
 
-        <TextField name="name" label="Nome" placeholder="Nome do usuário" />
+        <TextField name="name" label="Nome Completo" placeholder="Nome completo do usuário" />
 
         <SelectField
           name="role"

@@ -57,7 +57,9 @@ export function StudentUpsertPanel({
 
   const isEditMode = studentIdToEdit !== null;
   const isPending = isCreating || isUpdating;
-  const submitLabel = getSubmitLabel(isPending, isEditMode);
+  
+  const submitType = isEditMode ? "edit" : "insert";
+  const submitLabel = getSubmitLabel(isPending, submitType);
   
   const form = useForm<StudentFormInput, unknown, StudentFormData>({
     resolver: zodResolver(studentSchema),
@@ -203,7 +205,7 @@ export function StudentUpsertPanel({
                     onlyNumbers
                   />
 
-                  <TextField name="name" label="Nome"placeholder="Nome do aluno" />
+                  <TextField name="name" label="Nome Completo" placeholder="Nome completo do aluno" />
 
                   <SelectField
                     name="schoolId"

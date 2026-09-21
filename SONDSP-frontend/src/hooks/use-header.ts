@@ -2,7 +2,6 @@ import { useEffect, useRef, type DependencyList } from "react";
 import { DEFAULT_HEADER, type HeaderConfig } from "@/contexts/shell-context";
 import { useShell } from "./use-shell";
 
-// Deps apenas para o seguir o mesmo padrão do footer
 export function useHeader(config: HeaderConfig, deps: DependencyList = []) {
   const { setHeader } = useShell();
 
