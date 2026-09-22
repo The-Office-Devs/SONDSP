@@ -73,7 +73,6 @@ public final class SystemMessages {
     public static final String EMPTY_PERMISSION = "Pelo menos uma permissão deve ser informada.";
     public static final String EMPTY_SCHOOL = "Uma escola deve ser informada.";
     public static final String EMPTY_YEAR = "Um ano letivo deve ser informado.";
-    public static final String EMPTY_PRINCIPAL = "O nome de diretor deve ser informado.";
     public static final String EMPTY_INEP = "O código INEP é obrigatório.";
     public static final String EMPTY_FUNCTION = "A função do usuário deve ser informada.";
     public static final String EMPTY_SCHOOL_CLASS = "Uma turma deve ser informada.";
