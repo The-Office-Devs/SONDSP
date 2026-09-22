@@ -113,6 +113,7 @@ export function UserUpsertPanel({
           name="registration" 
           label="Registro Funcional (RF)" 
           placeholder="Registro funcional do usuário"
+          maxLength={8}
           onlyNumbers 
         />
 
