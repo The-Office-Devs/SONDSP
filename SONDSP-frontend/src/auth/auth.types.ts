@@ -31,8 +31,9 @@ export interface LoginResponse {
 }
 
 export interface ResetPasswordRequest {
-  email: string;
-  password: string;
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 export interface ActivateAccountRequest {

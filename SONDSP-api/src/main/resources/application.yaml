@@ -40,9 +40,9 @@ spring:
         enabled: false
       include-exception: false
   mail:
-    host: live.smtp.mailtrap.io
-    port: 587
-    username: api
+    host: "${MAIL_HOST:sandbox.smtp.mailtrap.io}"
+    port: "${MAIL_PORT:587}"
+    username: "${MAIL_USERNAME}"
     password: "${MAIL_PASSWORD}"
     properties:
       mail:
@@ -54,4 +54,8 @@ server:
   port: 8081
 jwt:
   secret: "${JWT_SECRET:secret_caso_encontre}"
+app:
+  frontend-url: "${FRONTEND_URL:http://localhost:5173/redefinir-senha}"
+  mail-from: "${MAIL_FROM:${MAIL_USERNAME}}"
+  password-reset-expiration-minutes: "${PASSWORD_RESET_EXPIRATION_MINUTES:15}"
 upload-dir: "C:/sondsp/sondagens/"
