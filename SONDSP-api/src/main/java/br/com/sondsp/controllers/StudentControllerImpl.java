@@ -5,6 +5,7 @@ import br.com.sondsp.dtos.StudentDTO;
 import br.com.sondsp.entities.Student;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
+import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ import static br.com.sondsp.util.SystemMessages.*;
 public class StudentControllerImpl implements StudentController {
     @Autowired
     private StudentService service;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @PostMapping()
     public ResponseEntity<?> createStudent(@RequestBody @Valid StudentForm form) {

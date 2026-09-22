@@ -33,6 +33,7 @@ export function ProtectedRoute() {
       getMeService()
         .then((userData) => {
           setUser({
+            id: userData.id,
             name: userData.name,
             registration: userData.registration,
             email: userData.email,

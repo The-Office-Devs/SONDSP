@@ -19,9 +19,6 @@ public class School {
     @Column(name = "nome")
     private String name;
 
-    @Column(name = "diretor")
-    private String principalName;
-
     @Column(name = "codigo_inep", unique = true, nullable = false, length = 8)
     private String codigoInep;
 

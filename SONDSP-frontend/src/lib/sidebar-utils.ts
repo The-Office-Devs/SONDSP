@@ -2,9 +2,10 @@ import {
   BarChart3, 
   ClipboardList, 
   ClipboardPenLine, 
-  LayoutGrid, 
-  NotebookPen, 
-  School, 
+  LayoutGrid,
+  NotebookPen,
+  BookOpenText,
+  School,
   UserRound, 
   Users 
 } from "lucide-react";
@@ -22,5 +23,6 @@ export const applicationItems = [
   { label: 'Alunos', icon: UserRound, to: '/app-alunos' },
   { label: 'Dashboards', icon: BarChart3, to: '/dashboards' },
   { label: 'Mapa de Classe', icon: LayoutGrid, to: '/mapa-classe' },
+  { label: 'Sondagens', icon: BookOpenText, to: '/app-sondagens' },
   { label: 'Turmas', icon: ClipboardList, to: '/app-turmas' },
 ];

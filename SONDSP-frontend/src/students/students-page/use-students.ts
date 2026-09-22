@@ -15,17 +15,21 @@ import {
   listStudentsService, 
   updateStudentService 
 } from "../students.service";
-import type { StudentFilter } from "../students.types";
+import type { StudentFilter, UseStudentsOption } from "../students.types";
 import type { StudentFormData } from "./student.schema";
 import type { PaginationParams } from "@/api/types";
 
 const STUDENTS_QUERY_KEY = ['students'] as const;
 
-export function useStudents(filter?: StudentFilter & PaginationParams) {
+export function useStudents(
+  filter?: StudentFilter & PaginationParams,
+  options?: UseStudentsOption
+) {
   return useQuery({
     queryKey: [...STUDENTS_QUERY_KEY, filter],
     queryFn: () => listStudentsService(filter),
     placeholderData: keepPreviousData,
+    ...options
   });
 }
 

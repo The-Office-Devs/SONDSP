@@ -22,7 +22,7 @@ const columns: ColumnDef<ClassListItem>[] = [
 export function ClassesDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: classesPage, isLoading, isFetching } = useClasses({
+  const { data: classesPage, isFetching } = useClasses({
     page,
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
@@ -44,14 +44,6 @@ export function ClassesDesktop() {
     { type: "link", onClick: (classItem) => setLinkTeachersClass(classItem), disabled: (classItem) => !classItem.status },
     { type: "inactivate", onClick: (classItem) => setInactivateClass(classItem), isActive: (classItem) => classItem.status }
   ];
-  
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <p className="text-sm text-slate-500">Carregando turmas...</p>
-      </div>
-    );
-  }
   
   return (
     <div className="space-y-4 p-4 lg:p-6">

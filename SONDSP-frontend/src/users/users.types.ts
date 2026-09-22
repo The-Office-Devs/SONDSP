@@ -1,3 +1,5 @@
+import type { SchoolWithClass } from "@/schools/schools.types";
+
 export interface User {
   id: number;
   name: string;
@@ -5,6 +7,7 @@ export interface User {
   email: string;
   role: string;
   permissions: string[];
+  schools: SchoolWithClass[];
 }
 
 export interface UserListItem {

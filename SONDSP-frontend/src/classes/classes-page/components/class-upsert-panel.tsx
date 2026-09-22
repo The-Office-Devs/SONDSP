@@ -100,6 +100,7 @@ export function ClassUpsertPanel({
         submitLabel={submitLabel}
         isFilter={false}
         isEditMode={isEditMode} 
+        isFilter={false}
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleCancelEdit}

@@ -15,6 +15,10 @@ export interface ActivityFilter {
   status?: boolean;
 }
 
+export interface UseActivitiesOption {
+  enabled?: boolean;
+}
+
 export interface CreateActivityRequest {
   name: string;
   strandId: number;

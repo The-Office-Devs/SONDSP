@@ -6,25 +6,12 @@ import { type UserFormData, userSchema } from "../user-schema";
 import { useCreateUser, useUpdateUser, useUser } from "../use-users";
 import { getTitle } from "@/lib/card-utils";
 import { getSubmitLabel } from "@/lib/form-utils";
+import { permissionsOptions, roleOptions } from "@/lib/options-utils";
 
 import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/HookForm/fields/TextField";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { MultiSelectField } from "@/components/HookForm/fields/MultiSelectField";
-
-const roleOptions = [
-  { value: "Administrador", label: "Administrador" },
-  { value: "Administrador da Escola", label: "Administrador Escolar" },
-  { value: "Coordenador", label: "Coordenador" },
-  { value: "Professor", label: "Professor" },
-  { value: "POA", label: "Professor Orientador de Área" }
-];
-
-const permissionsOptions = [
-  { value: "CREATE_USER", label: "Criar usuário" },
-  { value: "UPDATE_USER", label: "Editar usuário" },
-  { value: "DELETE_USER", label: "Excluir usuário" }
-];
 
 const defaultValues: UserFormData = {
   email: "",
@@ -109,9 +96,9 @@ export function UserUpsertPanel({
       <Card 
         title={title} 
         submitLabel={submitLabel}
-        isSubmitDisabled={isSubmitDisabled}
+        isEditMode={isEditMode}
         isFilter={false}
-        isEditMode={isEditMode} 
+        isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleCancelEdit}
         collapsible
@@ -119,13 +106,14 @@ export function UserUpsertPanel({
         <TextField
           name="email"
           label="E-mail Institucional"
-          placeholder="seu.nome@instituicao.br"
+          placeholder="email@sme.prefeitura.gov.br"
         />
 
         <TextField 
           name="registration" 
           label="Registro Funcional (RF)" 
           placeholder="Registro funcional do usuário"
+          maxLength={8}
           onlyNumbers 
         />
 

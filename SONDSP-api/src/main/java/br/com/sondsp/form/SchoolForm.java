@@ -8,9 +8,6 @@ import static br.com.sondsp.util.SystemMessages.*;
 public record SchoolForm(
         @NotBlank(message = EMPTY_NAME)
         String name,
-
-        @NotBlank(message = EMPTY_PRINCIPAL)
-        String principalName,
         
         @NotBlank(message = EMPTY_INEP)
         @Pattern(regexp = "^\\d{8}$", message = INVALID_INEP_FORMAT)

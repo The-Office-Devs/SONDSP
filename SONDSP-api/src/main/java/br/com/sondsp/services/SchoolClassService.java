@@ -77,7 +77,7 @@ public class SchoolClassService {
             throw new ValidationException(SCHOOL_CLASS_CANNOT_ACTIVATE);
 
         List<Student> students = studentRepository.findAllBySchoolClassIdAndStatusTrue(id);
-        System.out.println(students.isEmpty());
+
         if (!students.isEmpty()) {
             throw new ValidationException(SCHOOL_CLASS_CANNOT_INACTIVATE);
         }

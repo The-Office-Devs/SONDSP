@@ -15,6 +15,11 @@ export type Student = StudentListItem;
 export interface StudentFilter {
   search?: string;
   status?: boolean;
+  schoolClassId?: number;
+}
+
+export interface UseStudentsOption {
+  enabled?: boolean;
 }
 
 export interface CreateStudentRequest {

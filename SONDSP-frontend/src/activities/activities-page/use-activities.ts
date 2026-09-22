@@ -15,17 +15,21 @@ import {
   getStrandsBySubjectService, 
   inactivateActivityService
 } from "../activities.service";
-import type { ActivityFilter } from "../activities.types";
+import type { ActivityFilter, UseActivitiesOption } from "../activities.types";
 import type { ActivityFormData } from "./activity-schema";
 import type { PaginationParams } from "@/api/types";
 
 const ACTIVITIES_QUERY_KEY = ['activities'] as const;
 
-export function useActivities(filter?: ActivityFilter & PaginationParams) {
+export function useActivities(
+  filter?: ActivityFilter & PaginationParams,
+  options?: UseActivitiesOption
+) {
   return useQuery({
     queryKey: [...ACTIVITIES_QUERY_KEY, filter],
     queryFn: () => getActivitiesService(filter),
     placeholderData: keepPreviousData,
+    ...options
   });
 }
 

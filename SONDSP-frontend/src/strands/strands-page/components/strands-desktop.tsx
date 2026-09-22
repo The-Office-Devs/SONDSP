@@ -18,8 +18,9 @@ const columns: ColumnDef<Strand>[] = [
 
 export function StrandsDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
+  const [inactivateStrand, setInactivateStrand] = useState<Strand | null>(null);
 
-  const { data: strandsPage, isLoading, isFetching } = useStrands({
+  const { data: strandsPage, isFetching } = useStrands({
     page,
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
@@ -27,19 +28,9 @@ export function StrandsDesktop() {
 
   const { mutate, isPending } = useChangeStrandStatus();
 
-  const [inactivateStrand, setInactivateStrand] = useState<Strand | null>(null);
-
   const actions: RowAction<Strand>[] = [
     { type: "inactivate", onClick: (strand) => setInactivateStrand(strand), isActive: (strand) => strand.status }
   ];
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <p className="text-sm text-slate-500">Carregando eixos...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4 lg:p-6">
