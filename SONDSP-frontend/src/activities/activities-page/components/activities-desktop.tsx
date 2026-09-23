@@ -16,7 +16,7 @@ const columns: ColumnDef<ActivityListItem>[] = [
   { id: "name", header: "Nome", width: "25%" },
   { id: "subject", header: "Matéria", width: "15%", accessor: (row) => row.strand?.subject },
   { id: "strand", header: "Eixo", width: "15%", accessor: (row) => row.strand?.name },
-  { id: "bimester", header: "Bimestre", width: "21%", accessor: (row) => `${row.bimester} - ${row.gradeLevel}` },
+  { id: "bimester", header: "Ano - Bimestre", width: "21%", accessor: (row) => `${row.gradeLevel} - ${row.bimester}` },
   { id: "status", header: "Status", width: "10%" },
 ];
 
