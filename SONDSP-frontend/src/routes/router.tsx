@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '@/routes/protected-route';
 import { AppLayout } from '@/layouts/app-layout';
+import { HomeRedirect, RoleRoute } from './role-route';
 
 import { LoginPage } from '@/auth/login/login-page';
 import { ResetPasswordPage } from '@/auth/reset-password/reset-password-page';
@@ -45,9 +46,11 @@ export const router = createBrowserRouter([
       {
         element: <AppLayout />,
         children: [
+          { index: true, element: <HomeRedirect /> },
           {
             path: 'gerenciamento',
             children: [
+              { index: true, element: <Navigate to="usuarios" replace /> },
               { path: 'alunos', element: <StudentsPage /> },
               { path: 'eixos', element: <StrandsPage /> },
               { path: 'escolas', element: <SchoolsPage /> },
@@ -56,14 +59,16 @@ export const router = createBrowserRouter([
               { path: 'turmas', element: <ClassesPage /> },
             ],
           },
-          { path: 'app-sondagens', element: <SurveysPage /> },
-          { path: 'app-sondagens/historico/aluno/:id', element: <SurveysHistoryPage /> }
+          {
+            element: <RoleRoute area="application" />,
+            children: [
+              { path: 'app-sondagens', element: <SurveysPage /> },
+              { path: 'app-sondagens/historico/aluno/:id', element: <SurveysHistoryPage /> },
+            ],
+          },
         ]
       }
     ],
   },
-  {
-    path: '*',
-    element: <Navigate to="/login" replace />,
-  },
+  { path: '*', element: <HomeRedirect /> },
 ]);
