@@ -14,7 +14,7 @@ export const activitySchema = z.object({
     .number()
     .int()
     .positive("Selecione um eixo"),
-  schoolYear: z
+  gradeLevel: z
     .string()
     .min(1, "Selecione um ano escolar"),
   bimester: z

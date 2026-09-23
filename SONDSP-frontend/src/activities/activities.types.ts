@@ -4,7 +4,7 @@ export interface ActivityListItem {
   id: number;
   name: string;
   strand: Strand;
-  schoolYear: string;
+  gradeLevel: string;
   bimester: string; 
   strandImagePath: string; 
   status: boolean;
@@ -22,7 +22,7 @@ export interface UseActivitiesOption {
 export interface CreateActivityRequest {
   name: string;
   strandId: number;
-  schoolYear: string;
+  gradeLevel: string;
   bimester: string;
   activityModelFile: File;
 }

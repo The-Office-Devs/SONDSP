@@ -92,7 +92,7 @@ export function StartSurveyDialog({
               emptyMessage="Nenhum modelo de atividade encontrado"
             />
 
-            <ReadOnlyField label="Ano Escolar" value={selectedModel?.schoolYear} />
+            <ReadOnlyField label="Ano Escolar" value={selectedModel?.gradeLevel} />
             <ReadOnlyField label="Bimestre" value={selectedModel?.bimester} />
             <ReadOnlyField label="Eixo" value={selectedModel?.strand.name} />
 

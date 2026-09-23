@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { type ActivityFormData, activitySchema, type ActivityFormInput } from "../activity-schema";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { FILE_ACCEPT } from "@/lib/file-utils";
-import { bimesterOptions, schoolYearOptions, subjectOptions } from "@/lib/options-utils";
+import { bimesterOptions, gradeLevelOptions, subjectOptions } from "@/lib/options-utils";
 import { useCreateActivity } from "../use-activities";
 import { useStrandOptions } from "@/strands/strands-page/use-strands";
 
@@ -18,7 +18,7 @@ const defaultValues: ActivityFormInput = {
   name: "",
   subjectId: 0,
   strandId: 0,
-  schoolYear: "",
+  gradeLevel: "",
   bimester: "",
   activityModelFile: undefined as unknown as File
 }
@@ -82,10 +82,10 @@ export function ActivityInsertPanel() {
         />
 
         <SelectField
-          name="schoolYear"
+          name="gradeLevel"
           label="Ano Escolar"
           placeholder="Selecione o ano escolar"
-          options={schoolYearOptions}
+          options={gradeLevelOptions}
         />
 
         <SelectField

@@ -7,7 +7,7 @@ public record ActivityDTO(
         Integer id,
         String name,
         StrandDTO strand,
-        String schoolYear,
+        String gradeLevel,
         String bimester,
         String activityModelRef,
         Boolean status
@@ -17,7 +17,7 @@ public record ActivityDTO(
                 activity.getId(),
                 activity.getName(),
                 new StrandDTO(activity.getStrand()),
-                activity.getSchoolYear(),
+                activity.getGradeLevel(),
                 activity.getPeriod(),
                 activity.getStrandImagePath(),
                 activity.getStatus()

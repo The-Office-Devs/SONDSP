@@ -23,7 +23,7 @@ export async function createActivityService(data: CreateActivityRequest) {
 
   formData.append("name", data.name);
   formData.append("strandId", String(data.strandId));
-  formData.append("schoolYear", data.schoolYear);
+  formData.append("gradeLevel", data.gradeLevel);
   formData.append("bimester", data.bimester); 
 
   if (data.activityModelFile) {

@@ -49,7 +49,7 @@ export function useCreateActivity() {
       createActivityService({
         name: data.name,
         strandId: data.strandId,
-        schoolYear: data.schoolYear,
+        gradeLevel: data.gradeLevel,
         bimester: data.bimester,
         activityModelFile:  data.activityModelFile
       }),

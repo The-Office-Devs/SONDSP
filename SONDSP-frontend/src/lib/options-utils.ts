@@ -22,7 +22,7 @@ export const bimesterOptions = ["Inicial", 1, 2, 3, 4].map((n) => {
   return { value: label, label };
 });
 
-export const schoolYearOptions = [1, 2, 3].map((n) => {
+export const gradeLevelOptions = [1, 2, 3].map((n) => {
   const label = `${n}° Ano`;
   return { value: label, label };
 });
