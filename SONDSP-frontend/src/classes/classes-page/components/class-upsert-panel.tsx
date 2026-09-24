@@ -7,6 +7,7 @@ import { useClass, useCreateClass, useUpdateClass } from "../use-classes";
 import { useSchools } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { getTitle } from "@/lib/card-utils";
+import { gradeLevelOptions, shiftOptions } from "@/lib/options-utils";
 
 import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/HookForm/fields/TextField";
@@ -15,7 +16,9 @@ import { SelectField } from "@/components/HookForm/fields/SelectField";
 const defaultValues: ClassFormInput = {
   schoolId: 0,
   name: "",
-  schoolYear: ""
+  gradeLevel: "",
+  schoolYear: "",
+  shift: ""
 };
 
 type ClassUpsertPanelProps = {
@@ -55,7 +58,9 @@ export function ClassUpsertPanel({
       form.reset({ 
         schoolId: schoolClass.school.id,
         name: schoolClass.name,
+        gradeLevel: schoolClass.gradeLevel,
         schoolYear: schoolClass.schoolYear,
+        shift: schoolClass.shift
       });
     }
   }, [isEditMode, schoolClass, form]);
@@ -100,7 +105,6 @@ export function ClassUpsertPanel({
         submitLabel={submitLabel}
         isFilter={false}
         isEditMode={isEditMode} 
-        isFilter={false}
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleCancelEdit}
@@ -114,6 +118,13 @@ export function ClassUpsertPanel({
         />
             
         <TextField name="name" label="Nome" placeholder="Nome da turma" />
+
+        <SelectField
+          name="gradeLevel"
+          label="Ano Escolar"
+          placeholder="Selecione o ano escolar"
+          options={gradeLevelOptions}
+        />
   
         <TextField
           name="schoolYear"
@@ -121,6 +132,13 @@ export function ClassUpsertPanel({
           placeholder="Ano letivo da turma"
           onlyNumbers
           maxLength={4}
+        />
+
+        <SelectField
+          name="shift"
+          label="Turno"
+          placeholder="Selecione o turno"
+          options={shiftOptions}
         />
       </Card>
     </FormProvider>

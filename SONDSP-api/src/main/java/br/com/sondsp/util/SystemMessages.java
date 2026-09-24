@@ -76,6 +76,8 @@ public final class SystemMessages {
     public static final String EMPTY_INEP = "O código INEP é obrigatório.";
     public static final String EMPTY_FUNCTION = "A função do usuário deve ser informada.";
     public static final String EMPTY_SCHOOL_CLASS = "Uma turma deve ser informada.";
+    public static final String EMPTY_GRADE_LEVEL = "Um ano escolar deve ser informado.";
+    public static final String EMPTY_SHIFT = "Um turno deve ser informado.";
 
     // Private constructor makes class not instantiable
     private SystemMessages() {}

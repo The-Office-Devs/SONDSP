@@ -9,9 +9,15 @@ export const classSchema = z.object({
     .string()
     .trim()
     .min(1, "O nome da turma é obrigatório"),
+  gradeLevel: z
+    .string()
+    .min(1, "Selecione um ano escolar"),
   schoolYear: z
     .string()
-    .length(4, "O ano letivo deve ter exatamente 4 caracteres")
+    .length(4, "O ano letivo deve ter exatamente 4 caracteres"),
+  shift: z
+    .string()
+    .min(1, "Selecione um turno"),
 });
 
 export type ClassFormInput = z.input<typeof classSchema>;

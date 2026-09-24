@@ -14,9 +14,11 @@ import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<ClassListItem>[] = [
   { id: "school", header: "Escola", width: "30%", accessor: (row) => row.school.name },
-  { id: "name", header: "Nome", width: "28%" },
+  { id: "name", header: "Nome", width: "10%" },
+  { id: "shift", header: "Turno", width: "10%" },
+  { id: "gradeLevel", header: "Ano Escolar", width: "10%" },
   { id: "schoolYear", header: "Ano Letivo", width: "12%" },
-  { id: "status", header: "Status", width: "12%" },
+  { id: "status", header: "Status", width: "10%" },
 ];
 
 export function ClassesDesktop() {
