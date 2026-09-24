@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,7 +61,11 @@ public class SurveyControllerImpl {
     public ResponseEntity<PageResponse<SurveyDTO>> getStudentSurveys(
             @PathVariable Integer id,
             @ModelAttribute SurveyFilter filter,
-            @PageableDefault(size = 5, sort = {"status", "id"}, direction = Sort.Direction.ASC) Pageable pageable) {
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "status", direction = Sort.Direction.ASC),
+                    @SortDefault(sort = "activity.strand.subject", direction = Sort.Direction.ASC),
+                    @SortDefault(sort = "activity.name", direction = Sort.Direction.ASC, caseSensitive = false)
+            }) Pageable pageable) {
 
         User applicator = authenticationService.getCurrentUser()
                 .orElseThrow(() -> new ResponseStatusException(

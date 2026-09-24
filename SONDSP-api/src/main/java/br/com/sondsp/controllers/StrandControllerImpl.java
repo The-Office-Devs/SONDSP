@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,7 +49,11 @@ public class StrandControllerImpl {
     @GetMapping()
     public ResponseEntity<PageResponse<StrandDTO>> getAllStrand(
             @ModelAttribute StrandFilter filter,
-            @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "status", direction = Sort.Direction.DESC),
+                    @SortDefault(sort = "subject", direction = Sort.Direction.ASC),
+                    @SortDefault(sort = "name", direction = Sort.Direction.ASC, caseSensitive = false)
+            }) Pageable pageable) {
 
         Page<Strand> strandsPage = strandService.getAllStrands(filter, pageable);
 
