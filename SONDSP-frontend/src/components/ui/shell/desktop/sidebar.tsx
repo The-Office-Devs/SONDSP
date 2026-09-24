@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { administratorItems, applicationItems } from '@/lib/sidebar-utils';
+import { administratorItems, applicationItems, isPathActive } from '@/lib/sidebar-utils';
 import { useAuthStore } from '@/auth/auth.store';
 import { canAccess, getHomePath } from '@/auth/role-access';
 
@@ -49,11 +49,11 @@ export function DesktopShellSidebar() {
     }
   };
 
-  const adminHasActiveChild = administratorItems.some(
-    (item) => location.pathname === `/gerenciamento${item.to}`,
+  const adminHasActiveChild = administratorItems.some((item) =>
+    isPathActive(location.pathname, `/gerenciamento${item.to}`),
   );
-  const applicationHasActiveChild = applicationItems.some(
-    (item) => location.pathname === item.to,
+  const applicationHasActiveChild = applicationItems.some((item) =>
+    isPathActive(location.pathname, item.to),
   );
 
   return (
@@ -82,7 +82,7 @@ export function DesktopShellSidebar() {
               icon={House}
               label="Início"
               expanded={expanded}
-              active={location.pathname === '/'}
+              active={isPathActive(location.pathname, homePath, true)}
               onClick={() => navigate(homePath)}
             />
 
@@ -109,7 +109,7 @@ export function DesktopShellSidebar() {
                           icon={item.icon}
                           label={item.label}
                           expanded={expanded}
-                          active={location.pathname === path}
+                          active={isPathActive(location.pathname, path)}
                           indent={expanded}
                           onClick={() => navigate(path)}
                         />
@@ -141,7 +141,7 @@ export function DesktopShellSidebar() {
                         icon={item.icon}
                         label={item.label}
                         expanded={expanded}
-                        active={location.pathname === item.to}
+                        active={isPathActive(location.pathname, item.to)}
                         indent={expanded}
                         onClick={() => navigate(item.to)}
                       />
