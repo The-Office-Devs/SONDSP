@@ -20,5 +20,5 @@ export function useForgotPassword() {
     }
   });
 
-  return { mutate: mutation.mutate };
+  return { mutate: mutation.mutate, isPending: mutation.isPending };
 };
