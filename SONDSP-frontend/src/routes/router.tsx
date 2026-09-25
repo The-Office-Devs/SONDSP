@@ -20,10 +20,6 @@ import { SurveysHistoryPage } from '@/surveys/surveys-history/surveys-history-pa
 
 export const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Navigate to="/escolas" replace />,
-  },
-  {
     path: '/login',
     element: <LoginPage />,
   },
@@ -48,15 +44,20 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <HomeRedirect /> },
           {
-            path: 'gerenciamento',
+            element: <RoleRoute area="admin" />,
             children: [
-              { index: true, element: <Navigate to="usuarios" replace /> },
-              { path: 'alunos', element: <StudentsPage /> },
-              { path: 'eixos', element: <StrandsPage /> },
-              { path: 'escolas', element: <SchoolsPage /> },
-              { path: 'modelos-atividades', element: <ActivitiesPage /> },
-              { path: 'usuarios', element: <UsersPage /> },
-              { path: 'turmas', element: <ClassesPage /> },
+              {
+                path: 'gerenciamento',
+                children: [
+                  { index: true, element: <Navigate to="usuarios" replace /> },
+                  { path: 'alunos', element: <StudentsPage /> },
+                  { path: 'eixos', element: <StrandsPage /> },
+                  { path: 'escolas', element: <SchoolsPage /> },
+                  { path: 'modelos-atividades', element: <ActivitiesPage /> },
+                  { path: 'usuarios', element: <UsersPage /> },
+                  { path: 'turmas', element: <ClassesPage /> },
+                ],
+              },
             ],
           },
           {
@@ -64,6 +65,7 @@ export const router = createBrowserRouter([
             children: [
               { path: 'app-sondagens', element: <SurveysPage /> },
               { path: 'app-sondagens/historico/aluno/:id', element: <SurveysHistoryPage /> },
+              { path: 'app-turmas', element: <SurveysPage />}
             ],
           },
         ]

@@ -23,8 +23,14 @@ public class SchoolClass {
     @Column(name = "nome")
     private String name;
 
+    @Column(name = "ano_escolar")
+    private String gradeLevel;
+
     @Column(name = "ano_letivo")
     private String schoolYear;
+
+    @Column(name = "turno")
+    private String shift;
 
     @Column(name = "status")
     private Boolean status;

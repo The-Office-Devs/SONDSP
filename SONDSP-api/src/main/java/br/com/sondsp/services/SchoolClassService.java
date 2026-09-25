@@ -31,14 +31,22 @@ public class SchoolClassService {
     private StudentRepository studentRepository;
 
     public SchoolClass createSchoolClass(SchoolClassForm form) {
-        if (repository.existsBySchoolIdAndNameAndSchoolYear(form.schoolId(), form.name(), form.schoolYear()))
+        if (repository.existsBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShift(
+                form.schoolId(),
+                form.name(),
+                form.gradeLevel(),
+                form.schoolYear(),
+                form.shift()
+        ))
             throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
 
         School school = schoolService.getSchool(form.schoolId());
 
         return repository.save(SchoolClass.builder()
                 .name(form.name())
+                .gradeLevel(form.gradeLevel())
                 .schoolYear(form.schoolYear())
+                .shift(form.shift())
                 .school(school)
                 .status(true)
                 .build());
@@ -54,13 +62,22 @@ public class SchoolClassService {
     }
 
     public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
-        if (repository.existsBySchoolIdAndNameAndSchoolYearAndIdNot(form.schoolId(), form.name(), form.schoolYear(), id))
+        if (repository.existsBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShiftAndIdNot(
+                form.schoolId(),
+                form.name(),
+                form.gradeLevel(),
+                form.schoolYear(),
+                form.shift(),
+                id
+        ))
             throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
 
         SchoolClass schoolClass = getSchoolClass(id);
 
         schoolClass.setName(form.name());
+        schoolClass.setGradeLevel(form.gradeLevel());
         schoolClass.setSchoolYear(form.schoolYear());
+        schoolClass.setShift(form.shift());
 
         if (!java.util.Objects.equals(schoolClass.getSchool().getId(), form.schoolId())) {
             schoolClass.setSchool(schoolService.getSchool(form.schoolId()));
@@ -104,7 +121,9 @@ public class SchoolClassService {
                 List<Predicate> orPredicates = new ArrayList<>();
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(schoolJoin.get("name")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("gradeLevel")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("shift")), searchPattern));
 
                 Boolean status = null;
                 if ("ativo".startsWith(search)) {
@@ -136,8 +155,16 @@ public class SchoolClassService {
                             .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
                 }
 
+                if (filter.gradeLevel() != null && !filter.gradeLevel().isBlank()) {
+                    predicates.add(criteriaBuilder.equal(root.get("gradeLevel"), filter.gradeLevel()));
+                }
+
                 if (filter.schoolYear() != null && !filter.schoolYear().isBlank()) {
                     predicates.add(criteriaBuilder.equal(root.get("schoolYear"), filter.schoolYear()));
+                }
+
+                if (filter.shift() != null && !filter.shift().isBlank()) {
+                    predicates.add(criteriaBuilder.equal(root.get("shift"), filter.shift()));
                 }
             }
 

@@ -4,7 +4,9 @@ export interface ClassListItem {
   id: number;
   name: string;
   school: School;
+  gradeLevel: string;
   schoolYear: string;
+  shift: string;
   status: boolean;
 }
 
@@ -18,7 +20,9 @@ export interface ClassFilter {
 export interface CreateClassRequest {
   schoolId: number;
   name: string;
+  gradeLevel: string;
   schoolYear: string;
+  shift: string;
 }
 
 export type UpdateClassRequest = CreateClassRequest;

@@ -1,0 +1,3 @@
+ALTER TABLE turma
+    ADD COLUMN ano_escolar VARCHAR(10) NOT NULL DEFAULT '1° Ano',
+    ADD COLUMN turno VARCHAR(30) NOT NULL DEFAULT 'Manhã';

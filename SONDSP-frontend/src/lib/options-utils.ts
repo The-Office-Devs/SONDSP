@@ -27,6 +27,12 @@ export const gradeLevelOptions = [1, 2, 3].map((n) => {
   return { value: label, label };
 });
 
+export const shiftOptions = [
+  { value: "Manhã", label: "Manhã" },
+  { value: "Tarde", label: "Tarde" },
+  { value: "Integral", label: "Integral" }
+];
+
 export const statusOptions = [
   { value: "all", label: "Todos" },
   { value: "false", label: "Aberto" },

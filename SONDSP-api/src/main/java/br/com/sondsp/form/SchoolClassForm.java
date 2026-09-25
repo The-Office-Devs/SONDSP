@@ -11,8 +11,12 @@ public record SchoolClassForm(
         Integer schoolId,
         @NotBlank(message = EMPTY_NAME)
         String name,
+        @NotBlank(message = EMPTY_GRADE_LEVEL)
+        String gradeLevel,
         @NotBlank(message = EMPTY_YEAR)
         @ValidSchoolYear(message = INVALID_YEAR)
-        String schoolYear
+        String schoolYear,
+        @NotBlank(message = EMPTY_SHIFT)
+        String shift
 ) {
 }
