@@ -10,8 +10,9 @@ import {
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { administratorItems, applicationItems } from '@/lib/sidebar-utils';
+import { administratorItems, applicationItems, isPathActive } from '@/lib/sidebar-utils';
 import { useAuthStore } from '@/auth/auth.store';
+import { canAccess, getHomePath } from '@/auth/role-access';
 
 export function DesktopShellSidebar() {
   const user = useAuthStore((state) => state.user);
@@ -25,6 +26,10 @@ export function DesktopShellSidebar() {
   const logout = useAuthStore((state) => state.logout);
 
   if (!user) return null;
+
+  const homePath = getHomePath(user.role);
+  const showAdmin = canAccess(user.role, 'admin');
+  const showApplication = canAccess(user.role, 'application');
 
   const handleLogout = () => {
     logout();
@@ -44,11 +49,11 @@ export function DesktopShellSidebar() {
     }
   };
 
-  const adminHasActiveChild = administratorItems.some(
-    (item) => location.pathname === `/gerenciamento${item.to}`,
+  const adminHasActiveChild = administratorItems.some((item) =>
+    isPathActive(location.pathname, `/gerenciamento${item.to}`),
   );
-  const applicationHasActiveChild = applicationItems.some(
-    (item) => location.pathname === item.to,
+  const applicationHasActiveChild = applicationItems.some((item) =>
+    isPathActive(location.pathname, item.to),
   );
 
   return (
@@ -77,68 +82,74 @@ export function DesktopShellSidebar() {
               icon={House}
               label="Início"
               expanded={expanded}
-              active={location.pathname === '/'}
-              onClick={() => navigate('/gerenciamento/usuarios')}
+              active={isPathActive(location.pathname, homePath, true)}
+              onClick={() => navigate(homePath)}
             />
 
-            <div className="group/admin">
-              <SidebarItem
-                icon={PencilLine}
-                label="Área do Administrador"
-                expanded={expanded}
-                onClick={() => handleParentClick('admin')}
-                className={cn(
-                  'group-hover/admin:bg-white/10',
-                  adminHasActiveChild && 'bg-white/10',
-                )}
-              />
-              {expanded && openSections.admin && (
-                <div className="mt-3 flex flex-col gap-3">
-                  {administratorItems.map((item) => {
-                    const path = `/gerenciamento${item.to}`;
+            {showAdmin && (
+              <div className="group/admin">
+                <SidebarItem
+                  icon={PencilLine}
+                  label="Área do Administrador"
+                  expanded={expanded}
+                  onClick={() => handleParentClick('admin')}
+                  className={cn(
+                    'group-hover/admin:bg-white/10',
+                    adminHasActiveChild && 'bg-white/10',
+                  )}
+                />
+                {expanded && openSections.admin && (
+                  <div className="mt-3 flex flex-col gap-3">
+                    {administratorItems.map((item) => {
+                      const path = `/gerenciamento${item.to}`;
 
-                    return (
+                      return (
+                        <SidebarItem
+                          key={item.label}
+                          icon={item.icon}
+                          label={item.label}
+                          expanded={expanded}
+                          active={isPathActive(location.pathname, path)}
+                          indent={expanded}
+                          onClick={() => navigate(path)}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {showApplication && (
+
+              <div className="group/application">
+                <SidebarItem
+                  icon={ClipboardList}
+                  label="Área do Professor"
+                  expanded={expanded}
+                  onClick={() => handleParentClick('application')}
+                  className={cn(
+                    'group-hover/application:bg-white/10',
+                    applicationHasActiveChild && 'bg-white/10',
+                  )}
+                />
+                {expanded && openSections.application && (
+                  <div className="mt-3 flex flex-col gap-3">
+                    {applicationItems.map((item) => (
                       <SidebarItem
                         key={item.label}
                         icon={item.icon}
                         label={item.label}
                         expanded={expanded}
-                        active={location.pathname === path}
+                        active={isPathActive(location.pathname, item.to)}
                         indent={expanded}
-                        onClick={() => navigate(path)}
+                        onClick={() => navigate(item.to)}
                       />
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <div className="group/application">
-              <SidebarItem
-                icon={ClipboardList}
-                label="Área de Aplicação"
-                expanded={expanded}
-                onClick={() => handleParentClick('application')}
-                className={cn(
-                  'group-hover/application:bg-white/10',
-                  applicationHasActiveChild && 'bg-white/10',
+                    ))}
+                  </div>
                 )}
-              />
-              {expanded && openSections.application && (
-                <div className="mt-3 flex flex-col gap-3">
-                  {applicationItems.map((item) => (
-                    <SidebarItem
-                      key={item.label}
-                      icon={item.icon}
-                      label={item.label}
-                      expanded={expanded}
-                      indent={expanded}
-                      onClick={() => navigate(item.to)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             <div className="flex flex-col gap-3">
               <SidebarItem icon={CircleHelp} label="Ajuda" expanded={expanded} onClick={() => {}} />

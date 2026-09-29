@@ -41,7 +41,7 @@ export function ForgotPasswordForm({
           name="email"
           label="E-mail Institucional"
           type="email"
-          placeholder="seu.nome@instituicao.br"
+          placeholder="Digite o seu e-mail institucional"
           ui={ui}
         />
 

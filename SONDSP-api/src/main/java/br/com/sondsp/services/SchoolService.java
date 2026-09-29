@@ -34,7 +34,6 @@ public class SchoolService {
 
         return repository.save(School.builder()
                 .name(form.name())
-                .principalName(form.principalName())
                 .codigoInep(form.codigoInep())
                 .status(true)
                 .build());
@@ -57,7 +56,6 @@ public class SchoolService {
         }
 
         school.setName(form.name());
-        school.setPrincipalName(form.principalName());
         school.setCodigoInep(form.codigoInep());
 
         return repository.save(school);
@@ -93,7 +91,6 @@ public class SchoolService {
 
                 List<Predicate> orPredicates = new ArrayList<>();
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
-                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("principalName")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("codigoInep")), searchPattern));
 
                 Boolean status = null;
@@ -111,11 +108,6 @@ public class SchoolService {
                 if (filter.name() != null && !filter.name().isBlank()) {
                     predicates.add(criteriaBuilder.like(criteriaBuilder
                             .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
-                }
-
-                if (filter.principalName() != null && !filter.principalName().isBlank()) {
-                    predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(root.get("principalName")), "%" + filter.principalName().toLowerCase() + "%"));
                 }
             }
 

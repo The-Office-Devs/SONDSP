@@ -1,4 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useResetPassword } from "../use-reset-password";
@@ -16,6 +17,8 @@ export function ResetPasswordForm({
   ui = 'desktop'
 }: Readonly<ResetPasswordProps>) {
   const { mutate, isPending } = useResetPassword();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token") ?? "";
 
   const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -27,10 +30,27 @@ export function ResetPasswordForm({
     shouldFocusError: false,
   });
 
+  if (!token) {
+    return (
+      <div className="space-y-4 text-center py-2">
+        <p className="text-sm font-medium text-destructive">
+          Token de recuperação não encontrado no link acessado.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Verifique se copiou o link completo recebido no e-mail ou solicite um novo link de recuperação.
+        </p>
+        <Button asChild variant="outline" className="w-full">
+          <Link to="/esqueci-senha">Solicitar nova recuperação</Link>
+        </Button>
+      </div>
+    );
+  }
+
   const onSubmit = (data: ResetPasswordFormData) => {
     mutate({
-      email: "admin@teste.com",
-      password: data.newPassword,
+      token,
+      newPassword: data.newPassword,
+      confirmPassword: data.confirmNewPassword,
     });
   }
 

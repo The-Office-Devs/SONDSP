@@ -5,7 +5,7 @@ public record ActivityFilter(
         String name,
         String subject,
         String strand,
-        String schoolYear,
+        String gradeLevel,
         String bimester,
         String status
 ) {

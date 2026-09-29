@@ -48,7 +48,7 @@ export function ComboboxField<T extends FieldValues>({
               placeholder={placeholder}
               disabled={disabled || field.disabled}
             >
-              <ComboboxContent>
+              <ComboboxContent className="z-[60] pointer-events-auto">
                 <ComboboxEmpty>{emptyMessage}</ComboboxEmpty>
                 <ComboboxList>
                   {(item: Option) => (

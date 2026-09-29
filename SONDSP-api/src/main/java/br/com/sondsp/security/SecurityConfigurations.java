@@ -35,10 +35,12 @@ public class SecurityConfigurations {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/auth/me").authenticated()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/**").hasAuthority("ROLE_ADMINISTRADOR")
+                                .requestMatchers("/api/auth/me").authenticated()
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                                .requestMatchers("/api/**").permitAll()
+                        // TODO: Mapeamento de Permissões ainda será implementado
+                        //.requestMatchers("/api/**").hasAuthority("ROLE_ADMINISTRADOR")
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

@@ -8,7 +8,9 @@ public record SchoolClassDTO(
         Integer id,
         SchoolDTO school,
         String name,
+        String gradeLevel,
         String schoolYear,
+        String shift,
         Boolean status
 ) {
     public SchoolClassDTO(SchoolClass schoolClass) {
@@ -20,7 +22,9 @@ public record SchoolClassDTO(
                 schoolClass.getId(),
                 includeSchool && schoolClass.getSchool() != null ? new SchoolDTO(schoolClass.getSchool()) : null,
                 schoolClass.getName(),
+                schoolClass.getGradeLevel(),
                 schoolClass.getSchoolYear(),
+                schoolClass.getShift(),
                 schoolClass.getStatus()
         );
     }

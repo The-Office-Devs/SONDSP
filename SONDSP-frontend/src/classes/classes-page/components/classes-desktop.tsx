@@ -14,15 +14,17 @@ import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<ClassListItem>[] = [
   { id: "school", header: "Escola", width: "30%", accessor: (row) => row.school.name },
-  { id: "name", header: "Nome", width: "28%" },
+  { id: "name", header: "Nome", width: "10%" },
+  { id: "shift", header: "Turno", width: "10%" },
+  { id: "gradeLevel", header: "Ano Escolar", width: "10%" },
   { id: "schoolYear", header: "Ano Letivo", width: "12%" },
-  { id: "status", header: "Status", width: "12%" },
+  { id: "status", header: "Status", width: "10%" },
 ];
 
 export function ClassesDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: classesPage, isLoading, isFetching } = useClasses({
+  const { data: classesPage, isFetching } = useClasses({
     page,
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
@@ -44,14 +46,6 @@ export function ClassesDesktop() {
     { type: "link", onClick: (classItem) => setLinkTeachersClass(classItem), disabled: (classItem) => !classItem.status },
     { type: "inactivate", onClick: (classItem) => setInactivateClass(classItem), isActive: (classItem) => classItem.status }
   ];
-  
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <p className="text-sm text-slate-500">Carregando turmas...</p>
-      </div>
-    );
-  }
   
   return (
     <div className="space-y-4 p-4 lg:p-6">

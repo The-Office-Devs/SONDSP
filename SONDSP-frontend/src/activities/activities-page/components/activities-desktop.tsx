@@ -4,6 +4,7 @@ import type { ActivityListItem } from "@/activities/activities.types";
 import { useActivities,  useActivityImage, useInactivateActivity } from "../use-activities";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
+import { blobToFile } from "@/lib/file-utils";
 
 import { ActivityInsertPanel } from "./activity-insert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
@@ -15,7 +16,7 @@ const columns: ColumnDef<ActivityListItem>[] = [
   { id: "name", header: "Nome", width: "25%" },
   { id: "subject", header: "Matéria", width: "15%", accessor: (row) => row.strand?.subject },
   { id: "strand", header: "Eixo", width: "15%", accessor: (row) => row.strand?.name },
-  { id: "bimester", header: "Bimestre", width: "21%", accessor: (row) => `${row.bimester} - ${row.schoolYear}` },
+  { id: "bimester", header: "Ano - Bimestre", width: "21%", accessor: (row) => `${row.gradeLevel} - ${row.bimester}` },
   { id: "status", header: "Status", width: "10%" },
 ];
 
@@ -40,20 +41,7 @@ export function ActivitiesDesktop() {
   ];
 
   const viewFile = useMemo(() => {
-    if (viewActivity && imageBlob) {
-      const type = imageBlob.type || "application/octet-stream";
-      
-      let extension = "";
-      if (type === "application/pdf") extension = ".pdf";
-      else if (type === "image/jpeg") extension = ".jpg";
-      else if (type === "image/png") extension = ".png";
-      else if (type === "image/webp") extension = ".webp";
-
-      const safeName = viewActivity.name.replace(/[^a-zA-Z0-9 ]/g, "");
-      const fileName = `${safeName}${extension}`;
-
-      return new File([imageBlob], fileName, { type });
-    }
+    if (viewActivity && imageBlob) return blobToFile(imageBlob, viewActivity.name);
     return undefined;
   }, [viewActivity, imageBlob]);
 

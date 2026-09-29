@@ -12,6 +12,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/auth/auth.store';
 import { administratorItems, applicationItems } from '@/lib/sidebar-utils';
+import { canAccess, getHomePath } from '@/auth/role-access';
 
 interface MobileShellSidebarProps {
   open: boolean;
@@ -36,6 +37,10 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
   }, [open]);
 
   if (!user) return null;
+
+  const homePath = getHomePath(user.role);
+  const showAdmin = canAccess(user.role, 'admin');
+  const showApplication = canAccess(user.role, 'application');
 
   const goTo = (to: string) => {
     navigate(to);
@@ -93,42 +98,49 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
               icon={House}
               label="Início"
               active={location.pathname === '/'}
-              onClick={() => goTo('/')}
+              onClick={() => navigate(homePath)}
             />
 
-            <MobileSidebarSection title="Área do Administrador" icon={PencilLine} />
+            {showAdmin && (
+              <>
+                <MobileSidebarSection title="Área do Administrador" icon={PencilLine} />
+                <div className="space-y-1">
+                  {administratorItems.map((item) => {
+                    const path = `/gerenciamento${item.to}`;
 
-            <div className="space-y-1">
-              {administratorItems.map((item) => {
-                const path = `/gerenciamento${item.to}`;
+                    return (
+                      <MobileSidebarItem
+                        key={item.label}
+                        icon={item.icon}
+                        label={item.label}
+                        indent
+                        active={location.pathname === path}
+                        onClick={() => goTo(path)}
+                      />
+                    );
+                  })}
+                </div>
+              </>
+            )}
 
-                return (
-                  <MobileSidebarItem
-                    key={item.label}
-                    icon={item.icon}
-                    label={item.label}
-                    indent
-                    active={location.pathname === path}
-                    onClick={() => goTo(path)}
-                  />
-                );
-              })}
-            </div>
-
-            <MobileSidebarSection title="Área de Aplicação" icon={ClipboardList} />
-            
-            <div className="space-y-1">
-              {applicationItems.map((item) => (
-                <MobileSidebarItem
-                  key={item.label}
-                  icon={item.icon}
-                  label={item.label}
-                  indent
-                  active={location.pathname === item.to}
-                  onClick={() => goTo(item.to)}
-                />
-              ))}
-            </div>
+            {showApplication && (
+              <>
+                <MobileSidebarSection title="Área do Professor" icon={ClipboardList} />
+                
+                <div className="space-y-1">
+                  {applicationItems.map((item) => (
+                    <MobileSidebarItem
+                      key={item.label}
+                      icon={item.icon}
+                      label={item.label}
+                      indent
+                      active={location.pathname === item.to}
+                      onClick={() => goTo(item.to)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
 
             <div className="mt-2 space-y-1">
               <MobileSidebarItem icon={CircleHelp} label="Ajuda" onClick={onClose} />

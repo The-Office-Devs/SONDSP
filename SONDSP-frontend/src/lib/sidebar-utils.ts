@@ -2,12 +2,14 @@ import {
   BarChart3, 
   ClipboardList, 
   ClipboardPenLine, 
-  LayoutGrid, 
-  NotebookPen, 
-  School, 
+  LayoutGrid,
+  NotebookPen,
+  BookOpenText,
+  School,
   UserRound, 
   Users 
 } from "lucide-react";
+import { matchPath } from "react-router-dom";
 
 export const administratorItems = [
   { label: 'Alunos', icon: UserRound, to: '/alunos' },
@@ -22,5 +24,10 @@ export const applicationItems = [
   { label: 'Alunos', icon: UserRound, to: '/app-alunos' },
   { label: 'Dashboards', icon: BarChart3, to: '/dashboards' },
   { label: 'Mapa de Classe', icon: LayoutGrid, to: '/mapa-classe' },
+  { label: 'Sondagens', icon: BookOpenText, to: '/app-sondagens' },
   { label: 'Turmas', icon: ClipboardList, to: '/app-turmas' },
 ];
+
+export function isPathActive(pathname: string, to: string, exact = false) {
+  return matchPath({ path: to, end: exact }, pathname) !== null;
+}

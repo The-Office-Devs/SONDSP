@@ -8,6 +8,7 @@ import br.com.sondsp.form.FirstAccessForm;
 import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.UsersService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,22 +33,22 @@ public class AuthenticationControllerImpl implements AuthenticationController{
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody AuthenticationForm form) throws LoginException {
+    public ResponseEntity<?> login(AuthenticationForm form) throws LoginException {
         return ResponseEntity.ok().body(new AuthenticationDTO(service.loginUser(form)));
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> sendChangePasswordEmail(@RequestBody String email) throws Exception {
+    public ResponseEntity<?> sendChangePasswordEmail(String email) {
         return ResponseEntity.ok().body(service.sendChangePasswordEmail(email));
     }
 
     @PostMapping("/first-access")
-    public ResponseEntity<?> firstAccess(@RequestBody FirstAccessForm form) {
+    public ResponseEntity<?> firstAccess(FirstAccessForm form) {
         return ResponseEntity.ok().body(new UserDTO(service.firstAccess(form)));
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form) {
+    public ResponseEntity<?> changePassword(ChangePasswordForm form) {
         return ResponseEntity.ok().body(new UserDTO(usersService.changePassword(form)));
     }
 }

@@ -45,7 +45,9 @@ export function useCreateClass() {
       createClassService({
         schoolId: data.schoolId,
         name: data.name,
-        schoolYear: data.schoolYear
+        gradeLevel: data.gradeLevel,
+        schoolYear: data.schoolYear,
+        shift: data.shift
       }),
 
     onSuccess: () => {
@@ -68,7 +70,9 @@ export function useUpdateClass() {
         {
           schoolId: data.schoolId,
           name: data.name,
-          schoolYear: data.schoolYear
+          gradeLevel: data.gradeLevel,
+          schoolYear: data.schoolYear,
+          shift: data.shift
         }
       ),
 

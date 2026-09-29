@@ -84,7 +84,7 @@ export function LoginForm({
             name="login"
             label="E-mail institucional"
             type="email"
-            placeholder="seu.nome@instituicao.br"
+            placeholder="Digite o seu e-mail institucional"
             ui={linksStyle}
           />
 

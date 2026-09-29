@@ -1,10 +1,6 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.entities.School;
-import br.com.sondsp.entities.SchoolClass;
-import br.com.sondsp.entities.Student;
-import br.com.sondsp.entities.User;
-import br.com.sondsp.exceptions.UserAlreadyExistsException;
+import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.repositories.StudentRepository;
@@ -30,6 +26,7 @@ import static br.com.sondsp.util.SystemMessages.*;
 public class StudentService {
     private StudentRepository repository;
     private SchoolClassService schoolClassService;
+    private SurveyService surveyService;
 
     public Student createStudent(StudentForm form) {
         validadeStudent(form, null);

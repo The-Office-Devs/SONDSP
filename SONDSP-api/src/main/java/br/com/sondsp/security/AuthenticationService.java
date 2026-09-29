@@ -5,6 +5,7 @@ import br.com.sondsp.form.AuthenticationForm;
 import br.com.sondsp.form.FirstAccessForm;
 import br.com.sondsp.repositories.PermissionsRepository;
 import br.com.sondsp.repositories.RolesRepository;
+import br.com.sondsp.services.EmailService;
 import br.com.sondsp.services.UsersService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
@@ -33,6 +34,7 @@ public class AuthenticationService implements UserDetailsService {
 
     private final UsersService usersService;
     private final TokenService tokenService;
+    private final EmailService emailService;
 
     private final AuthenticationManager authenticationManager;
 
@@ -40,10 +42,11 @@ public class AuthenticationService implements UserDetailsService {
     public AuthenticationService(UsersService usersService,
                                  RolesRepository rolesRepository,
                                  TokenService tokenService,
-                                 PermissionsRepository permissionsRepository,
+                                 PermissionsRepository permissionsRepository, EmailService emailService,
                                  @Lazy AuthenticationManager authenticationManager) {
         this.usersService = usersService;
         this.tokenService = tokenService;
+        this.emailService = emailService;
         this.authenticationManager = authenticationManager;
     }
 
@@ -109,11 +112,10 @@ public class AuthenticationService implements UserDetailsService {
         return new User();
     }
 
-    public User sendChangePasswordEmail(String email) throws Exception {
-        if (email != null)
-            throw new Exception("Troca de senha por email não feita.");
+    public String sendChangePasswordEmail(String email) {
+        emailService.sendSimpleEmail(email, "Teste SONDSP", "Teste");
 
-        return new User();
+        return "Teste de email enviado!";
     }
 
     public Optional<User> getCurrentUser() {

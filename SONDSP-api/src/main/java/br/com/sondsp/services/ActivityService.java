@@ -106,7 +106,7 @@ public class ActivityService {
         }
     }
 
-    private Resource getImageLocal(String filePath){
+    public Resource getImageLocal(String filePath){
         try {
             Path path = Paths.get(filePath).normalize();
             Resource resource = new UrlResource(path.toUri());
@@ -135,7 +135,7 @@ public class ActivityService {
 
                 List<Predicate> orPredicates = new ArrayList<>();
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
-                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern));
+                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("gradeLevel")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("period")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(strandJoin.get("subject")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(strandJoin.get("name")), searchPattern));
@@ -156,9 +156,9 @@ public class ActivityService {
                     predicates.add(criteriaBuilder.like(criteriaBuilder
                             .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
 
-                if (filter.schoolYear() != null && !filter.schoolYear().isBlank())
+                if (filter.gradeLevel() != null && !filter.gradeLevel().isBlank())
                     predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(root.get("schoolYear")), "%" + filter.schoolYear().toLowerCase() + "%"));
+                            .lower(root.get("gradeLevel")), "%" + filter.gradeLevel().toLowerCase() + "%"));
 
                 if (filter.bimester() != null && !filter.bimester().isBlank())
                     predicates.add(criteriaBuilder.like(criteriaBuilder

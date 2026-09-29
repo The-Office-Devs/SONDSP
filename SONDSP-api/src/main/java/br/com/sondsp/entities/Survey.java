@@ -1,5 +1,6 @@
 package br.com.sondsp.entities;
 
+import br.com.sondsp.form.SurveyForm;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "atividade")
+@Table(name = "sondagem")
 public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,23 +22,17 @@ public class Survey {
     private User administrator;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_estudante", referencedColumnName = "id")
+    @JoinColumn(name = "id_aluno", referencedColumnName = "id")
     private Student student;
-
-    @Column(name = "materia")
-    private String subject;
-
-    @Column(name = "eixo")
-    private String axis;
 
     @Column(name = "resultado")
     private String result;
 
     @Column(name = "observacoes")
-    private String observations;
+    private String notes;
 
     @Column(name = "imagem_sondagem")
-    private String surveyImage;
+    private String surveyImagePath;
 
     @Column(name = "ind_digital")
     private Boolean isDigital;
@@ -45,4 +40,17 @@ public class Survey {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_atividade", referencedColumnName = "id")
     private Activity activity;
+
+    @Column(name = "status")
+    private Boolean status;
+
+    public Survey(SurveyForm form, User administrator, Student student, Activity activity) {
+        this.administrator = administrator;
+        this.student = student;
+        this.activity = activity;
+        this.result = form.result();
+        this.notes = form.notes();
+        this.isDigital = form.isDigital();
+        this.status = false;
+    }
 }

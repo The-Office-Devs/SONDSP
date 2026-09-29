@@ -5,6 +5,7 @@ import br.com.sondsp.dtos.StudentDTO;
 import br.com.sondsp.entities.Student;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
+import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,9 @@ import static br.com.sondsp.util.SystemMessages.*;
 public class StudentControllerImpl implements StudentController {
     @Autowired
     private StudentService service;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @PostMapping()
     public ResponseEntity<?> createStudent(@RequestBody @Valid StudentForm form) {
@@ -43,7 +48,11 @@ public class StudentControllerImpl implements StudentController {
     @GetMapping()
     public ResponseEntity<PageResponse<StudentDTO>> getStudents(
             @ModelAttribute StudentFilter filter,
-            @PageableDefault(size = 5, sort = "rowNumber", direction = Sort.Direction.ASC) Pageable pageable) {
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "status", direction = Sort.Direction.DESC),
+                    @SortDefault(sort = "rowNumber", direction = Sort.Direction.ASC),
+                    @SortDefault(sort = "name", direction = Sort.Direction.ASC, caseSensitive = false)
+            }) Pageable pageable) {
 
         Page<Student> studentPage = service.getStudents(filter, pageable);
 

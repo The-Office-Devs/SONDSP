@@ -224,7 +224,7 @@ export function StudentUpsertPanel({
                     disabled={!schoolId}
                   />
         
-                  <div className="flex gap-2 items-end justify-end xl:col-start-3">
+                  <div className="flex gap-2 items-end justify-end xl:col-start-3 self-start mt-[2rem]">
                     {isEditMode && (
                       <Button
                         type="button"
@@ -281,7 +281,7 @@ export function StudentUpsertPanel({
                   <Button
                     type="button"
                     isRounded
-                    disabled={!batchFile /* || isPending --> quando back ficar pronto */}
+                    disabled={!batchFile || isPending}
                     onClick={() => {}}
                   >
                     <Check className="size-4" />

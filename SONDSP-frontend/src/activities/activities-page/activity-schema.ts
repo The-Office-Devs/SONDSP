@@ -1,11 +1,5 @@
 import { z } from "zod/v4";
-
-const ACCEPTED_FILE_TYPES = [
-  "image/png",
-  "image/jpeg",
-  "image/webp",
-  "application/pdf",
-];
+import { ACCEPTED_FILE_TYPES } from "@/lib/file-utils";
 
 export const activitySchema = z.object({
   name: z
@@ -20,18 +14,18 @@ export const activitySchema = z.object({
     .number()
     .int()
     .positive("Selecione um eixo"),
-  schoolYear: z
+  gradeLevel: z
     .string()
     .min(1, "Selecione um ano escolar"),
   bimester: z
     .string()
     .min(1, "Selecione um bimestre"),
   activityModelFile: z
-  .instanceof(File, { message: "Selecione um modelo de atividade" })
-  .refine(
-    (f) => ACCEPTED_FILE_TYPES.includes(f.type),
-    "Apenas imagens ou PDF são permitidos"
-  ),
+    .instanceof(File, { message: "Selecione um modelo de atividade" })
+    .refine(
+      (f) => ACCEPTED_FILE_TYPES.includes(f.type),
+      "Apenas imagens ou PDF são permitidos"
+    ),
 });
 
 export type ActivityFormInput = z.input<typeof activitySchema>;

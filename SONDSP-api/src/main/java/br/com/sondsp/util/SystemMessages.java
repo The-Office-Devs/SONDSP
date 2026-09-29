@@ -15,6 +15,7 @@ public final class SystemMessages {
     public static final String SCHOOL_CLASS_DEACTIVATED = "Turma desativada com sucesso.";
     public static final String STRAND_ACTIVATED = "Eixo ativado com sucesso.";
     public static final String STRAND_DEACTIVATED = "Eixo desativado com sucesso.";
+    public static final String SURVEY_DELETED = "Sondagem excluída com sucesso.";
 
     // Linking
     public static final String USER_LINKED_TO_SCHOOL_CLASS = "Usuário vinculado à turma com sucesso.";
@@ -23,13 +24,14 @@ public final class SystemMessages {
     public static final String USER_UNLINKED_TO_SCHOOL = "Usuário desvinculado da escola com sucesso.";
 
     // Not found
-    public static final String ACTIVITY_NOT_FOUND = "A atividade não foi encontrada.";
     public static final String USER_NOT_FOUND = "O usuário não foi encontrado.";
     public static final String EMAIL_NOT_FOUND = "O email não foi encontrado.";
     public static final String STRAND_NOT_FOUND = "O eixo não foi encontrado.";
     public static final String SCHOOL_CLASS_NOT_FOUND = "A turma não foi encontrada.";
     public static final String STUDENT_NOT_FOUND = "O aluno não foi encontrado.";
     public static final String SCHOOL_NOT_FOUND = "A escola não foi encontrada.";
+    public static final String ACTIVITY_NOT_FOUND = "A atividade não foi encontrada.";
+    public static final String SURVEY_NOT_FOUND = "A sondagem não foi encontrada.";
     public static final String ROLE_NOT_FOUND = "A função não foi encontrada.";
 
     // Auth
@@ -51,13 +53,14 @@ public final class SystemMessages {
     public static final String ROW_NUMBER_TAKEN = "O número de chamada passado já está sendo utilizado por um aluno na turma.";
     public static final String STUDENT_REGISTRATION_ALREADY_EXISTS = "A matrícula já está sendo utilizada.";
     public static final String STUDENT_CANNOT_ACTIVATE = "O aluno não pode ser ativado, pois a turma está inativa.";
-    public static final String INEP_ALREADY_EXISTS = "Este código INEP já está cadastrado";
-    public static final String INVALID_INEP_FORMAT = "Formato de código INEP inválido (deve ter 8 dígitos)";
+    public static final String INEP_ALREADY_EXISTS = "Este código INEP já está cadastrado.";
+    public static final String INVALID_INEP_FORMAT = "Formato de código INEP inválido (deve ter 8 dígitos).";
     public static final String INVALID_REGISTRATION_FORMAT = "O formato do registro funcional está incorreto.";
     public static final String MUST_HAVE_CLASS = "O aluno deve estar em uma turma para ter número da chamada.";
     public static final String MUST_HAVE_ROW_NUMBER = "O aluno deve possuir um número de chamada na turma.";
     public static final String ERROR_SAVING_IMAGE = "Não foi possível salvar o arquivo de imagem.";
     public static final String ERROR_RETRIEVING_IMAGE = "Não foi possível recuperar o arquivo de imagem.";
+    public static final String SURVEY_CANNOT_DELETE = "A sondagem não foi encontrada.";
 
     // Empty properties
     public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";
@@ -70,10 +73,11 @@ public final class SystemMessages {
     public static final String EMPTY_PERMISSION = "Pelo menos uma permissão deve ser informada.";
     public static final String EMPTY_SCHOOL = "Uma escola deve ser informada.";
     public static final String EMPTY_YEAR = "Um ano letivo deve ser informado.";
-    public static final String EMPTY_PRINCIPAL = "O nome de diretor deve ser informado.";
-    public static final String EMPTY_INEP = "O código INEP é obrigatório";
+    public static final String EMPTY_INEP = "O código INEP é obrigatório.";
     public static final String EMPTY_FUNCTION = "A função do usuário deve ser informada.";
     public static final String EMPTY_SCHOOL_CLASS = "Uma turma deve ser informada.";
+    public static final String EMPTY_GRADE_LEVEL = "Um ano escolar deve ser informado.";
+    public static final String EMPTY_SHIFT = "Um turno deve ser informado.";
 
     // Private constructor makes class not instantiable
     private SystemMessages() {}

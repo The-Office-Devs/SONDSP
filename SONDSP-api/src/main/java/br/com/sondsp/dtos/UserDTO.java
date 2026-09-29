@@ -51,6 +51,7 @@ public record UserDTO(
 
                     return new SchoolClassesDTO(school, classesLinkedToThisSchool);
                 })
+                .filter(dto -> !dto.schoolClass().isEmpty())
                 .toList();
     }
 }

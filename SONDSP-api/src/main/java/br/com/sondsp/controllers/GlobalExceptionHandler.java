@@ -13,12 +13,20 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import org.springframework.web.server.ResponseStatusException;
+
 import javax.security.auth.login.LoginException;
 
 import static br.com.sondsp.util.SystemMessages.UNEXPECTED_ERROR;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<StandardErrorDTO> responseStatusException(ResponseStatusException e) {
+        String message = e.getReason() != null ? e.getReason() : e.getMessage();
+        return ResponseEntity.status(e.getStatusCode()).body(new StandardErrorDTO(message));
+    }
+
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<StandardErrorDTO> invalidArg(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardErrorDTO(e.getMessage()));

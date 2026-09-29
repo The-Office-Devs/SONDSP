@@ -7,7 +7,8 @@ export const userSchema = z.object({
   registration: z
     .string()
     .trim()
-    .min(1, "O registro funcional é obrigatório"),
+    .min(1, "O registro funcional é obrigatório")
+    .length(8, "O registro funcional deve ter exatamente 8 dígitos"),
   name: z
     .string()
     .trim()

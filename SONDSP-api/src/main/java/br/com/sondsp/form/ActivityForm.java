@@ -9,7 +9,8 @@ public record ActivityForm(
         @NotBlank(message = EMPTY_NAME)
         String name,
         Integer strandId,
-        String schoolYear,
+        @NotBlank(message = EMPTY_GRADE_LEVEL)
+        String gradeLevel,
         String bimester,
         Boolean status,
         MultipartFile activityModelFile

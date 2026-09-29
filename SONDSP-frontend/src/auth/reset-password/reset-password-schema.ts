@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 
 const passwordSchema = z
   .string()
-  .min(6, { error: "" })
+  .min(8, { error: "" })
   .regex(/[0-9]/, { error: "" })
   .regex(/[A-Z]/, { error: "" })
   .regex(/[a-z]/, { error: "" });

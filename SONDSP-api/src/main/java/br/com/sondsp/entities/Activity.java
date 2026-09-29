@@ -35,7 +35,7 @@ public class Activity {
     private User creator;
 
     @Column(name = "ano_escolar")
-    private String schoolYear;
+    private String gradeLevel;
 
     @Column(name = "bimestre")
     private String period;
@@ -44,7 +44,7 @@ public class Activity {
         this.name = form.name();
         this.strand = strand;
         this.creator = creator;
-        this.schoolYear = form.schoolYear();
+        this.gradeLevel = form.gradeLevel();
         this.period = form.bimester();
         this.status = true;
     }

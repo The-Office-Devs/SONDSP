@@ -22,7 +22,7 @@ const columns: ColumnDef<StudentListItem>[] = [
 export function StudentsDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
 
-  const { data: studentsPage, isLoading, isFetching } = useStudents({
+  const { data: studentsPage, isFetching } = useStudents({
     page,
     size,
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
@@ -36,14 +36,6 @@ export function StudentsDesktop() {
     { type: "edit", onClick: (studentItem) => setEditStudentId(studentItem.id), disabled: (studentItem) => !studentItem.status },
     { type: "inactivate", onClick: (studentItem) => setInactivateStudent(studentItem), isActive: (studentItem) => studentItem.status }
   ];
-  
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <p className="text-sm text-slate-500">Carregando alunos...</p>
-      </div>
-    );
-  }
   
   return (
     <div className="space-y-4 p-4 lg:p-6">

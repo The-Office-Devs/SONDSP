@@ -16,9 +16,9 @@ export async function activateAccountService(data: ActivateAccountRequest): Prom
 }
 
 export async function forgotPasswordService(email: string): Promise<void> {
-  await api.post('/auth/change-password', { email });
+  await api.post('/auth/password-recovery', { email });
 }
 
 export async function resetPasswordService(data: ResetPasswordRequest): Promise<void> {
-  await api.put('/auth/change-password', data);
+  await api.post('/auth/password-reset', data);
 }
