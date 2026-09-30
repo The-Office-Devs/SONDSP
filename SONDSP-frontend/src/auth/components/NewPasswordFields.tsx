@@ -12,8 +12,8 @@ type Requirement = {
 
 const requirements: Requirement[] = [
   {
-    label: 'Pelo menos 6 caracteres',
-    test: (v) => v.length >= 6
+    label: 'Pelo menos 8 caracteres',
+    test: (v) => v.length >= 8
   },
   {
     label: '1 número',
