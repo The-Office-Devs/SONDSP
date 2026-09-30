@@ -30,6 +30,7 @@ public class UsersService {
 
     private SchoolClassService schoolClassService;
     private SchoolService schoolService;
+    private AccountActivationService accountActivationService;
 
     public User registerUser(UserForm form) {
         User verifyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
@@ -42,7 +43,7 @@ public class UsersService {
                 throw new UserAlreadyExistsException(REGISTRATION_ALREADY_EXISTS);
         }
 
-        return save(User.builder()
+        User savedUser = save(User.builder()
                 .name(form.name())
                 .registration(form.registration())
                 .role(rolesService.getRoleByName(form.role()))
@@ -51,6 +52,13 @@ public class UsersService {
                 .password(null)
                 .permissions(permissionsRepository.findAllByPermissionIn(form.permissions()))
                 .build());
+
+        try {
+            accountActivationService.generateAndSendCode(savedUser, null);
+        } catch (Exception ignored) {
+        }
+
+        return savedUser;
     }
 
     public User getUser(Integer id) {
