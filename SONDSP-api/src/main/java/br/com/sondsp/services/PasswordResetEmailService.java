@@ -38,7 +38,7 @@ public class PasswordResetEmailService {
 
             Context context = new Context();
             context.setVariable("userName", user.getName());
-            context.setVariable("resetUrl", frontendUrl + "?token=" + token);
+            context.setVariable("resetUrl", frontendUrl + "/redefinir-senha?token=" + token);
             context.setVariable("expirationMinutes", expirationMinutes);
             helper.setText(templateEngine.process("email/password-reset", context), true);
             mailSender.send(message);
