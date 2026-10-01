@@ -4,11 +4,13 @@ import br.com.sondsp.security.UserAuthResult;
 
 public record AuthenticationDTO(
         String login,
-        String token) {
+        String token,
+        String refreshToken) {
     public AuthenticationDTO(UserAuthResult userAuth) {
         this (
                 userAuth.user().getEmail(),
-                userAuth.token()
+                userAuth.token(),
+                userAuth.refreshToken()
         );
     }
 }
