@@ -21,8 +21,8 @@ spring:
   main:
     allow-circular-references: true
   datasource:
-    url: jdbc:postgresql://db.xhlevrhoytrxeglnvcjf.supabase.co:6543/postgres
-    username: postgres
+    url: "${DB_URL:jdbc:postgresql://db.xhlevrhoytrxeglnvcjf.supabase.co:6543/postgres}"
+    username: "${DB_USERNAME:postgres}"
     password: "${DB_PASSWORD:postgres}"
     driver-class-name: org.postgresql.Driver
     hikari:
