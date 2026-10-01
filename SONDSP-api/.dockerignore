@@ -1,0 +1,12 @@
+.git
+.gitignore
+.gradle
+build
+bin
+.env
+.env.*
+doc
+C:
+*.bat
+.idea
+*.iml
