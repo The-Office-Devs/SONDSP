@@ -52,6 +52,10 @@ spring:
           auth: true
           starttls:
             enable: true
+  supabase:
+    url: ${SUPABASE_URL}
+    key: ${SUPABASE_KEY}
+    bucket: ${SUPABASE_BUCKET}
 server:
   port: 8081
 jwt:

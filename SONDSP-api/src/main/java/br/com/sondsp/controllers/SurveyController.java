@@ -1,9 +1,6 @@
 package br.com.sondsp.controllers;
 
-import br.com.sondsp.dtos.PageResponse;
-import br.com.sondsp.dtos.StandardErrorDTO;
-import br.com.sondsp.dtos.StudentDTO;
-import br.com.sondsp.dtos.SurveyDTO;
+import br.com.sondsp.dtos.*;
 import br.com.sondsp.filters.SurveyFilter;
 import br.com.sondsp.form.SurveyForm;
 import io.swagger.v3.oas.annotations.Operation;
@@ -110,4 +107,24 @@ public interface SurveyController {
             )
     })
     ResponseEntity<?> deleteSurvey(Integer id);
+
+    @Operation(description = "Recupera a imagem da sondaggem", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Imagem recuperada com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ImageDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Sondagem não encontrada.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = StandardErrorDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<?> getSurveyImage(Integer id);
 }

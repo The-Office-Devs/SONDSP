@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 public interface ActivityController {
     @Operation(description = "Registra uma nova atividade", responses = {
@@ -77,7 +79,7 @@ public interface ActivityController {
                     description = "Imagem recuperada com sucesso",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = ActivityDTO.class)
+                            schema = @Schema(implementation = ImageDTO.class)
                     )
             ),
             @ApiResponse(
