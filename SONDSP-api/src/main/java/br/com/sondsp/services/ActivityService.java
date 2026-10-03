@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
 import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
@@ -57,7 +58,7 @@ public class ActivityService {
             return null;
         }
 
-        return storageService.generateSignedUrl(activity.getStrandImagePath(), 3600);
+        return storageService.generateSignedUrl(activity.getStrandImagePath(), IMAGE_URL_EXPIRATION_TIME);
     }
 
     private Strand getStrand(Integer id) {

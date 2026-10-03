@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
 import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
@@ -121,7 +122,7 @@ public class SurveyService {
         }
 
         // Gera uma URL assinada válida por 1 hora (3600 segundos)
-        return storageService.generateSignedUrl(survey.getSurveyImagePath(), 3600);
+        return storageService.generateSignedUrl(survey.getSurveyImagePath(), IMAGE_URL_EXPIRATION_TIME);
     }
 
     private Specification<Survey> belongsToStudent(Integer studentId) {
