@@ -1,3 +1,6 @@
+export const ALL_VALUE = "all";
+const ALL_OPTION = { value: ALL_VALUE, label: "Todos" };
+
 export const roleOptions = [
   { value: "Administrador", label: "Administrador" },
   { value: "Administrador da Escola", label: "Administrador Escolar" },
@@ -27,14 +30,18 @@ export const gradeLevelOptions = [1, 2, 3].map((n) => {
   return { value: label, label };
 });
 
+export const gradeLevelOptionsWithAll = [ALL_OPTION, ...gradeLevelOptions];
+
 export const shiftOptions = [
   { value: "Manhã", label: "Manhã" },
   { value: "Tarde", label: "Tarde" },
-  { value: "Integral", label: "Integral" }
+  { value: "Integral", label: "Integral" },
 ];
 
+export const shiftOptionsWithAll = [ALL_OPTION, ...shiftOptions];
+
 export const statusOptions = [
-  { value: "all", label: "Todos" },
+  ALL_OPTION,
   { value: "false", label: "Aberto" },
   { value: "true", label: "Finalizado" }
 ];

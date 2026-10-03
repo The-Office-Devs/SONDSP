@@ -15,17 +15,21 @@ import {
   listClassesService, 
   updateClassService 
 } from "../classes.service";
-import type { ClassFilter } from "../classes.types";
+import type { ClassFilter, UseClassesOptions } from "../classes.types";
 import type { ClassFormData } from "./class.schema";
 import type { PaginationParams } from "@/api/types";
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
 
-export function useClasses(filter?: ClassFilter & PaginationParams) {
+export function useClasses(
+  filter?: ClassFilter & PaginationParams,
+  options?: UseClassesOptions
+) {
   return useQuery({
     queryKey: [...CLASSES_QUERY_KEY, filter],
     queryFn: () => listClassesService(filter),
     placeholderData: keepPreviousData,
+    ...options
   });
 }
 

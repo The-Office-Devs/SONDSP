@@ -10,7 +10,7 @@ import {
     type SurveyHistoryFormInput, 
     type SurveyHistoryFormData,
     surveyHistorySchema
-} from "../survey-history-schema";
+} from "../survey-history.schema";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";

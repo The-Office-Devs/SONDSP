@@ -168,8 +168,15 @@ public class SurveyService {
             if (filter == null)
                 return cb.and(predicates.toArray(new Predicate[0]));
 
-            if (filter.search() != null && !filter.search().isBlank()) {
-                Join<Survey, Activity> activityJoin = root.join("activity", JoinType.INNER);
+            boolean hasSearch = filter.search() != null && !filter.search().isBlank();
+            boolean hasStrand = filter.strandId() != null && filter.strandId() > 0;
+            boolean hasBimester = filter.bimester() != null && !filter.bimester().isBlank();
+
+            Join<Survey, Activity> activityJoin = (hasSearch || hasStrand || hasBimester)
+                    ? root.join("activity", JoinType.INNER)
+                    : null;
+
+            if (hasSearch) {
                 Join<Activity, Strand> strandJoin = activityJoin.join("strand", JoinType.INNER);
 
                 String search = filter.search().toLowerCase();
@@ -192,23 +199,16 @@ public class SurveyService {
                     orPredicates.add(cb.equal(root.get("status"), status));
 
                 predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
-            } else {
-                boolean hasStrand = filter.strandId() != null && filter.strandId() > 0;
-                boolean hasBimester = filter.bimester() != null && !filter.bimester().isBlank();
-
-                if (hasStrand || hasBimester) {
-                    Join<Survey, Activity> activityJoin = root.join("activity", JoinType.INNER);
-
-                    if (hasStrand)
-                        predicates.add(cb.equal(activityJoin.get("strand").get("id"), filter.strandId()));
-
-                    if (hasBimester)
-                        predicates.add(cb.equal(activityJoin.get("period"), filter.bimester()));
-                }
-
-                if (filter.status() != null)
-                    predicates.add(cb.equal(root.get("status"), filter.status()));
             }
+
+            if (hasStrand)
+                predicates.add(cb.equal(activityJoin.get("strand").get("id"), filter.strandId()));
+
+            if (hasBimester)
+                predicates.add(cb.equal(activityJoin.get("period"), filter.bimester()));
+
+            if (filter.status() != null)
+                predicates.add(cb.equal(root.get("status"), filter.status()));
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };

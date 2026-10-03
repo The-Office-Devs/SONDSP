@@ -3,6 +3,8 @@ import {
   AlarmSmoke, 
   BookOpenCheck, 
   Check,
+  ClipboardList,
+  Download,
   Eye,
   Link2, 
   Link2Off, 
@@ -29,12 +31,14 @@ import { AppPagination } from "../ui/pagination";
 type RowActionType =
   | 'apply'
   | 'delete'
+  | 'download'
   | 'edit'
   | 'finish'
   | 'inactivate'
   | 'link'
   | 'list'
   | 'normal'
+  | 'openClass'
   | 'start'
   | 'view'
 
@@ -225,6 +229,7 @@ type ActionAppearance = {
 
 const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppearance> = {
   apply: () => ({ title: "Aplicar", icon: NotebookPen }),
+  download: () => ({ title: "Gerar Relatório", icon: Download }),
   delete: () => ({ title: "Excluir", icon: X, variant: "destructive" }),
   edit: () => ({ title: "Editar", icon: PencilLine }),
   finish: () => ({ title: "Finalizar", icon: BookOpenCheck }),
@@ -242,6 +247,7 @@ const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppe
       : { title: "Ativar", icon: Check, className: "bg-emerald-600 hover:bg-emerald-500 text-white border-transparent" },
 
   normal: () => ({ title: "", icon: AlarmSmoke }),
+  openClass: () => ({ title: "Abrir Turma", icon: ClipboardList }),
   start: () => ({ title: "Iniciar", icon: Play }),
   view: () => ({ title: "Visualizar", icon: Eye, variant: "outline" })
 }

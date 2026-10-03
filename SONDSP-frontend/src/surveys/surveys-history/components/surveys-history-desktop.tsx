@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import type { SurveyListItem } from "@/surveys/surveys.types";
-import type { SurveyHistoryFormData } from "../survey-history-schema";
+import type { SurveyHistoryFormData } from "../survey-history.schema";
 import { useDeleteSurvey, useStudentSurveys, useSurveyImage } from "@/surveys/use-surveys";
 import { useActivityImage } from "@/activities/activities-page/use-activities";
 import { useTableState } from "@/hooks/use-table-state";

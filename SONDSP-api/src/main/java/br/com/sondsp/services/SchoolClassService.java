@@ -124,6 +124,8 @@ public class SchoolClassService {
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("gradeLevel")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern));
                 orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("shift")), searchPattern));
+                if (search.matches("\\d{1,9}"))
+                    orPredicates.add(criteriaBuilder.equal(root.get("numStudents"), Integer.valueOf(search)));
 
                 Boolean status = null;
                 if ("ativo".startsWith(search)) {
@@ -136,40 +138,47 @@ public class SchoolClassService {
                     orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
                 predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
-            } else {
-                if (filter.schoolId() != null) {
-                    Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
+            }
 
-                    predicates.add(criteriaBuilder.equal(schoolJoin.get("id"), filter.schoolId()));
-                }
+            if (filter.schoolId() != null) {
+                Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 
-                if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
-                    Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
+                predicates.add(criteriaBuilder.equal(schoolJoin.get("id"), filter.schoolId()));
+            }
 
-                    predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(schoolJoin.get("name")), "%" + filter.schoolName().toLowerCase() + "%"));
-                }
+            if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
+                Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 
-                if (filter.name() != null && !filter.name().isBlank()) {
-                    predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
-                }
+                predicates.add(criteriaBuilder.like(criteriaBuilder
+                        .lower(schoolJoin.get("name")), "%" + filter.schoolName().toLowerCase() + "%"));
+            }
 
-                if (filter.gradeLevel() != null && !filter.gradeLevel().isBlank()) {
-                    predicates.add(criteriaBuilder.equal(root.get("gradeLevel"), filter.gradeLevel()));
-                }
+            if (filter.name() != null && !filter.name().isBlank()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder
+                        .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+            }
 
-                if (filter.schoolYear() != null && !filter.schoolYear().isBlank()) {
-                    predicates.add(criteriaBuilder.equal(root.get("schoolYear"), filter.schoolYear()));
-                }
+            if (filter.gradeLevel() != null && !filter.gradeLevel().isBlank()) {
+                predicates.add(criteriaBuilder.equal(root.get("gradeLevel"), filter.gradeLevel()));
+            }
 
-                if (filter.shift() != null && !filter.shift().isBlank()) {
-                    predicates.add(criteriaBuilder.equal(root.get("shift"), filter.shift()));
-                }
+            if (filter.schoolYear() != null && !filter.schoolYear().isBlank()) {
+                predicates.add(criteriaBuilder.equal(root.get("schoolYear"), filter.schoolYear()));
+            }
+
+            if (filter.shift() != null && !filter.shift().isBlank()) {
+                predicates.add(criteriaBuilder.equal(root.get("shift"), filter.shift()));
+            }
+
+            if (filter.numStudents() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("numStudents"), filter.numStudents()));
             }
 
             if (filter.status() != null)
                 predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
+
+            if (Boolean.TRUE.equals(filter.hasStudents()))
+                predicates.add(criteriaBuilder.greaterThan(root.get("numStudents"), 0));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };

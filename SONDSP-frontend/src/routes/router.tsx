@@ -17,6 +17,7 @@ import { ActivitiesPage } from '@/activities/activities-page/activities-page';
 
 import { SurveysPage } from '@/surveys/surveys-page/surveys-page';
 import { SurveysHistoryPage } from '@/surveys/surveys-history/surveys-history-page';
+import { ClassesFilterPage } from '@/classes/classes-filter-page/classes-filter-page';
 
 export const router = createBrowserRouter([
   {
@@ -65,7 +66,7 @@ export const router = createBrowserRouter([
             children: [
               { path: 'app-sondagens', element: <SurveysPage /> },
               { path: 'app-sondagens/historico/aluno/:id', element: <SurveysHistoryPage /> },
-              { path: 'app-turmas', element: <SurveysPage />}
+              { path: 'app-turmas', element: <ClassesFilterPage />}
             ],
           },
         ]

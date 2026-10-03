@@ -7,6 +7,7 @@ export interface ClassListItem {
   gradeLevel: string;
   schoolYear: string;
   shift: string;
+  numStudents: string;
   status: boolean;
 }
 
@@ -15,6 +16,15 @@ export type Class = ClassListItem;
 export interface ClassFilter {
   search?: string;
   status?: boolean;
+  hasStudents?: boolean;
+  schoolId?: number;
+  shift?: string;
+  gradeLevel?: string;
+  schoolYear?: string;
+}
+
+export interface UseClassesOptions {
+  enabled?: boolean;
 }
 
 export interface CreateClassRequest {
