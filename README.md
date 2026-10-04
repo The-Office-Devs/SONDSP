@@ -1,15 +1,40 @@
-# SONDSP Sondagem Educacional em São Paulo.
+# SONDSP — Sondagem Educacional em São Paulo
 
-O *SONDSP* é um sistema de aplicação e gerenciamento de sondagens educacionais voltado para crianças do Ensino Fundamental I na cidade de São Paulo. O objetivo do projeto é auxiliar professores e profissionais da educação a acompanhar o desenvolvimento pedagógico dos alunos de forma ágil e centralizada.
+O **SONDSP** é um sistema de aplicação e gerenciamento de sondagens educacionais voltado para crianças do Ensino Fundamental I na cidade de São Paulo. O objetivo é auxiliar professores e profissionais da educação a acompanhar o desenvolvimento pedagógico dos alunos de forma ágil e centralizada.
 
 ## Tecnologias Principais
-* **Back-end:** Java / Spring Boot / PostgreSQL / Docker (localizado em `/SONDSP-api`)
-* **Front-end:** React Native / Expo (localizado em `/SONDSP-frontend`)
+* **Back-end:** Java 21, Spring Boot, Spring Security, Flyway e PostgreSQL (localizado em [`SONDSP-api/`](./SONDSP-api/)).
+* **Front-end:** React 19, TypeScript, Vite, Tailwind CSS e React Router (localizado em [`SONDSP-frontend/`](./SONDSP-frontend/)).
+
+## Documentação
+
+Cada parte do sistema possui uma documentação específica:
+
+* [Documentação geral e fluxo de contribuição](./README.md)
+* [Documentação do back-end](./SONDSP-api/doc/doc.md)
+* [Documentação do front-end](./SONDSP-frontend/doc/doc.md)
+
+## Execução local
+
+### Back-end
+
+Consulte [`SONDSP-api/doc/doc.md`](./SONDSP-api/doc/doc.md) para as configurações do Spring Boot, banco de dados, migrations e acesso ao Swagger.
+
+### Front-end
+
+```bash
+cd SONDSP-frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+O endereço da API é configurado por `VITE_API_BASE_URL`. O valor utilizado no exemplo é `http://localhost:8081/api`.
 
 ## Desenvolvimento e fluxo de trabalho
 Para garantir a qualidade das entregas e a organização do código, seguimos um padrão de versionamento e escrita de commits.
 
-### Organização das Branchs
+### Organização das branches
 O repositório possui duas branches de integração contínua:
 * `main`: Código funcional, estável e pronto para produção.
 * `dev`: Ambiente de integração contínua; onde novas funcionalidades são testadas em conjunto.
@@ -34,9 +59,3 @@ O repositório possui duas branches de integração contínua:
 * **Sempre atualize** sua branch local com a `dev` antes de iniciar o trabalho do dia e antes de abrir o seu Pull Request (`git pull origin dev`).
 * **Atenção ao `.gitignore`:** Nunca envie arquivos pesados ou desnecessários para o repositório (ex: pastas de build, node_modules, `.expo`, ou variáveis de ambiente `.env`).
 * **Comunicação em primeiro lugar:** Se tiver qualquer dúvida sobre conflitos de código ou arquitetura, consulte o time antes de realizar o merge.
-
-## Documentação do Projeto
-O projeto SONDSP adota uma estrutura descentralizada de documentação. Cada parte do sistema possui suas especificidades documentadas em sua respectiva pasta `/doc`:
-
-* **Back-end:** Toda a documentação de arquitetura, rotas e APIs do servidor está localizada no diretório [`/SONDSP-api/doc/`](./SONDSP-api/doc/).
-* **Front-end:** Toda a documentação de interface, fluxos e componentes do aplicativo está localizada no diretório [`/SONDSP-frontend/doc/`](./SONDSP-frontend/doc/).
