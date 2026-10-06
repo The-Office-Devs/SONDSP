@@ -1,10 +1,12 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.AuthenticationDTO;
+import br.com.sondsp.dtos.RefreshDTO;
 import br.com.sondsp.dtos.UserDTO;
 import br.com.sondsp.form.AuthenticationForm;
 import br.com.sondsp.form.ChangePasswordForm;
 import br.com.sondsp.form.FirstAccessForm;
+import br.com.sondsp.form.RefreshTokenForm;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -65,4 +66,16 @@ public interface AuthenticationController {
             )
     })
     ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form);
+
+    @Operation(description = "Gera novo token de autenticação para o usuário.", responses = {
+        @ApiResponse(
+                responseCode = "200",
+                description = "Token gerado com sucesso.",
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = RefreshDTO.class)
+                )
+        )
+    })
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenForm form) throws LoginException ;
 }

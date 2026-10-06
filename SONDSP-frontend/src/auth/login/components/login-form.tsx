@@ -15,7 +15,7 @@ import { useLogin } from '../use-login';
 import { useNavigate } from 'react-router-dom';
 
 type LoginFormProps = {
-  showRemember?: boolean;
+  showKeepMeSigned?: boolean;
   linksStyle?: Ui;
 };
 
@@ -48,12 +48,13 @@ function renderLinks(style: Ui, handleForgotPassword: () => void, handleActivate
 }
 
 export function LoginForm({
-  showRemember = false,
+  showKeepMeSigned = false,
   linksStyle = 'desktop',
 }: Readonly<LoginFormProps>) {
   const [showPassword, setShowPassword] = useState(false);
   const { mutate, isPending } = useLogin();
   const navigate = useNavigate();
+  const [keepMeSigned, setKeepMeSigned] = useState(false);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -65,7 +66,10 @@ export function LoginForm({
   });
 
   const onSubmit = (data: LoginFormData) => { 
-    mutate(data);
+    mutate({
+      ...data,
+      keepMeSigned,
+    });
   };
 
   const handleForgotPassword = () => {
@@ -101,10 +105,15 @@ export function LoginForm({
             ui={linksStyle}
           />
 
-          {showRemember && (
+          {showKeepMeSigned && (
             <div className="flex items-center space-x-2">
-              <Checkbox id="remember" />
-              <Label htmlFor="remember" className="cursor-pointer text-sm font-normal">
+              <Checkbox 
+                id="keepMeSigned" 
+                onCheckedChange={(checked) => {
+                  setKeepMeSigned(!!checked)
+                }}
+              />
+              <Label htmlFor="keepMeSigned" className="cursor-pointer text-sm font-normal">
                 Manter-me conectado
               </Label>
             </div>

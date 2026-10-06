@@ -4,6 +4,7 @@ import br.com.sondsp.entities.User;
 
 public record UserAuthResult(
         User user,
-        String token
+        String token,
+        String refreshToken
 ) {
 }
