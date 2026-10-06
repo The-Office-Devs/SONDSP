@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import type { AuthUser } from './auth.types';
 
 const TOKEN_KEY = 'sondsp-token';
+const REFRESH_TOKEN_KEY = 'refreshToken';
 
 interface AuthState {
   token: string | null;
@@ -60,6 +61,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     localStorage.removeItem(TOKEN_KEY);
+
+    // Limpa os tokens de refresh
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(REFRESH_TOKEN_KEY);
     
     set({
       token: null,

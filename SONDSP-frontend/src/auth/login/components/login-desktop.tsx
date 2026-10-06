@@ -7,7 +7,7 @@ export function LoginDesktop() {
   return (
     <DesktopLayout>
       <AuthCard type="desktop">
-        <LoginForm showRemember />
+        <LoginForm showKeepMeSigned />
       </AuthCard>
     </DesktopLayout>
   );

@@ -8,16 +8,33 @@ import { loginService } from '../auth.service';
 import type { LoginFormData } from './login.schema';
 import type { AxiosError } from 'axios';
 
+type LoginVariables = LoginFormData & {
+  keepMeSigned: boolean;
+};
+
 export function useLogin() {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
 
   const mutation = useMutation({
-    mutationFn: (data: LoginFormData) =>
-      loginService({ login: data.login.toLowerCase(), password: data.password }),
+    mutationFn: (data: LoginVariables) => {
+      return loginService({ 
+        login: data.login.toLowerCase(), 
+        password: data.password
+      });
+    },
 
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
       login(response.token);
+
+      if (response.refreshToken) {
+        if (variables.keepMeSigned) {
+          localStorage.setItem('refreshToken', response.refreshToken);
+        } else {
+          sessionStorage.setItem('refreshToken', response.refreshToken);
+        }
+      }
+
       navigate('/gerenciamento/usuarios');
     },
 

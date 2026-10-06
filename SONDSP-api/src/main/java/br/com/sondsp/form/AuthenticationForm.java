@@ -9,7 +9,6 @@ public record AuthenticationForm(
         @NotBlank(message = EMPTY_EMAIL)
         String login,
         @NotBlank(message = EMPTY_PASSWORD)
-        String password,
-        Boolean keepMeSigned
+        String password
 ) {
 }

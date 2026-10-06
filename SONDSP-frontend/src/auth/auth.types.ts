@@ -28,6 +28,7 @@ export interface LoginResponse {
   role: string;
   token: string;
   permissions: string[];
+  refreshToken: string;
 }
 
 export interface ResetPasswordRequest {

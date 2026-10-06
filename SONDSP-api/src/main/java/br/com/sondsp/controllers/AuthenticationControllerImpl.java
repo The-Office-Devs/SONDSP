@@ -1,14 +1,14 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.AuthenticationDTO;
+import br.com.sondsp.dtos.RefreshDTO;
 import br.com.sondsp.dtos.UserDTO;
 import br.com.sondsp.form.AuthenticationForm;
 import br.com.sondsp.form.ChangePasswordForm;
 import br.com.sondsp.form.FirstAccessForm;
+import br.com.sondsp.form.RefreshTokenForm;
 import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.UsersService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,5 +50,10 @@ public class AuthenticationControllerImpl implements AuthenticationController{
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(ChangePasswordForm form) {
         return ResponseEntity.ok().body(new UserDTO(usersService.changePassword(form)));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(RefreshTokenForm form) throws LoginException {
+        return ResponseEntity.ok().body(new RefreshDTO(service.refreshToken(form.refreshToken())));
     }
 }
