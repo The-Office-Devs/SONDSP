@@ -4,6 +4,8 @@ import br.com.sondsp.form.SurveyForm;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -44,6 +46,9 @@ public class Survey {
     @Column(name = "status")
     private Boolean status;
 
+    @Column(name = "data")
+    private LocalDateTime date;
+
     public Survey(SurveyForm form, User administrator, Student student, Activity activity) {
         this.administrator = administrator;
         this.student = student;
@@ -52,5 +57,6 @@ public class Survey {
         this.notes = form.notes();
         this.isDigital = form.isDigital();
         this.status = false;
+        this.date = LocalDateTime.now();
     }
 }
