@@ -1,0 +1,8 @@
+ALTER TABLE sondagem
+ADD COLUMN data TIMESTAMP;
+
+UPDATE sondagem
+SET    data = LOCALTIMESTAMP;
+
+ALTER TABLE sondagem
+ALTER COLUMN data SET NOT NULL;

@@ -2,6 +2,8 @@ package br.com.sondsp.dtos;
 
 import br.com.sondsp.entities.Survey;
 
+import java.time.LocalDateTime;
+
 public record SurveyDTO(
         Integer id,
         String administratorName,
@@ -13,7 +15,8 @@ public record SurveyDTO(
         String notes,
         String surveyImage,
         Boolean isDigital,
-        Boolean status
+        Boolean status,
+        LocalDateTime date
 ) {
     public SurveyDTO(Survey survey){
         this(
@@ -27,7 +30,8 @@ public record SurveyDTO(
                 survey.getNotes(),
                 survey.getSurveyImagePath(),
                 survey.getIsDigital(),
-                survey.getStatus()
+                survey.getStatus(),
+                survey.getDate()
         );
     }
 }
