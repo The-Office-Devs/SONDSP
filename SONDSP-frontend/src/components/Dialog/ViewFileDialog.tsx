@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type ReactNode } from "react";
 
 import { downloadUrl } from "@/lib/file-utils";
 
@@ -12,41 +12,28 @@ import {
 import { Button } from "../ui/button";
 
 interface ViewFileDialogProps {
-  file?: File | null;
+  fileUrl?: string | null;
   title: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
  
 export function ViewFileDialog({
-  file,
+  fileUrl,
   title,
   open,
   onOpenChange,
   children
 }: Readonly<ViewFileDialogProps>) {
-  const [url, setUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!file) {
-      setUrl(null);
-      return;
-    }
-    
-    const objectUrl = URL.createObjectURL(file);
-    setUrl(objectUrl);
-    
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [file]);
 
   const handleDownload = () => {
-    if (!file || !url) return;
-    downloadUrl(url, file.name);
+    if (!fileUrl) return;
+    downloadUrl(fileUrl, title);
   };
 
-  const isImage = file?.type.startsWith("image/");
-  const isPdf = file?.type === "application/pdf";
+  const isPdf = fileUrl?.toLowerCase().includes(".pdf");
+  const isImage = !isPdf;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -56,13 +43,13 @@ export function ViewFileDialog({
         </DialogHeader>
 
         <div className="flex max-h-[75vh] items-center justify-center overflow-auto rounded-md min-h-[200px] min-w-[300px]">
-          {url && isImage && (
-            <img src={url} alt={title} className="h-auto w-auto max-h-[55vh] max-w-full" />
+          {fileUrl && isImage && (
+            <img src={fileUrl} alt={title} className="h-auto w-auto max-h-[55vh] max-w-full" />
           )}
-          {url && isPdf && (
-            <iframe src={url} title={title} className="h-[55vh] w-[60vw] max-w-full" />
+          {fileUrl && isPdf && (
+            <iframe src={fileUrl} title={title} className="h-[55vh] w-[60vw] max-w-full" />
           )}
-          {(!url) && (
+          {!fileUrl && (
             <p className="p-8 text-sm text-slate-500 animate-pulse">
               Carregando arquivo...
             </p>
@@ -76,7 +63,7 @@ export function ViewFileDialog({
             variant="ghost"
             className="text-slate-600 hover:text-slate-900"
             onClick={handleDownload} 
-            disabled={!file}
+            disabled={!fileUrl}
           >
             Baixar
           </Button>

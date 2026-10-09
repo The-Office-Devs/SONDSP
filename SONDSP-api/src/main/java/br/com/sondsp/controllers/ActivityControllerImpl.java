@@ -1,6 +1,7 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.ActivityDTO;
+import br.com.sondsp.dtos.ImageDTO;
 import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.entities.Activity;
 import br.com.sondsp.entities.User;
@@ -10,25 +11,18 @@ import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.ActivityService;
 import br.com.sondsp.util.SystemMessages;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
-
-import static br.com.sondsp.util.SystemMessages.ERROR_RETRIEVING_IMAGE;
 
 @RestController
 @RequestMapping("/activity")
@@ -40,7 +34,7 @@ public class ActivityControllerImpl {
     private AuthenticationService authenticationService;
 
     @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<?> registerActivity(@ModelAttribute ActivityForm activityForm) {
+    public ResponseEntity<?> registerActivity(@ModelAttribute ActivityForm activityForm) throws IOException {
         Optional<User> creator = authenticationService.getCurrentUser();
         if (creator.isPresent()) {
             return ResponseEntity.ok().body(
@@ -89,19 +83,9 @@ public class ActivityControllerImpl {
     }
 
     @GetMapping("get-activity-image/{id}")
-    public ResponseEntity<Resource> getActivityImage(@PathVariable Integer id) {
-        Resource resource = activityService.getActivityImage(id);
+    public ResponseEntity<?> getActivityImage(@PathVariable Integer id) {
+        String imageUrl = activityService.getActivityImageSignedUrl(id);
 
-        String contentType = "application/octet-stream";
-        try {
-            contentType = Files.probeContentType(resource.getFile().toPath());
-        } catch (IOException e) {
-            throw new RuntimeException(ERROR_RETRIEVING_IMAGE);
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+        return ResponseEntity.ok().body(new ImageDTO(imageUrl));
     }
 }

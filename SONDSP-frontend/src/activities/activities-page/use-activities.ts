@@ -69,9 +69,9 @@ export function useInactivateActivity() {
 
   return useMutation({
     mutationFn: (id: number) => inactivateActivityService(id),
-    onSuccess: (message) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ACTIVITIES_QUERY_KEY });
-      toast.success(message || 'Status do modelo de atividade alterado com sucesso.');
+      toast.success('Status do modelo de atividade alterado com sucesso.');
     },
     onError: (error: AxiosError<{ error: string }>) =>
       handleApiError(error || 'Erro ao alterar status do modelo de atividade.')

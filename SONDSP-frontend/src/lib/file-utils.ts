@@ -11,13 +11,30 @@ export function blobToFile(blob: Blob, name: string): File {
   return new File([blob], `${safeName}${extension}`, { type });
 }
 
-export function downloadUrl(url: string, fileName: string) {
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName || "modelo_atividade";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+export async function downloadUrl(url: string, fileName: string) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Falha ao baixar o arquivo.");
+    
+    const blob = await response.blob();
+    
+    const file = blobToFile(blob, fileName);
+    
+    const blobUrl = window.URL.createObjectURL(file);
+    
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = file.name;
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error("Erro ao realizar o download:", error);
+    window.open(url, "_blank");
+  }
 }
 
 export const ACCEPTED_FILE_TYPES = [

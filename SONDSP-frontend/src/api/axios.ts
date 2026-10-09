@@ -77,7 +77,7 @@ api.interceptors.response.use(
 
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
-        return api(newToken ? api(originalRequest) : Promise.reject(error));
+        return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
         

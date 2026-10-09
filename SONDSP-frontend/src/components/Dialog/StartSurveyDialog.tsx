@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod/v4";
+import { z } from "zod"; // Ajustado para z normal (conforme o padrão da lib)
 import { Download } from "lucide-react";
 
 import { useActivities, useActivityImage } from "@/activities/activities-page/use-activities";
 import { useStartSurvey } from "@/surveys/use-surveys";
-import { blobToFile, downloadUrl } from "@/lib/file-utils";
+import { downloadUrl } from "@/lib/file-utils";
 
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "../ui/dialog";
 import { ComboboxField } from "../HookForm/fields/ComboBoxField";
@@ -50,19 +50,18 @@ export function StartSurveyDialog({
   const activityModelId = useWatch({ control: form.control, name: "activityModelId" });
   const selectedModel = activityModels.find((model) => String(model.id) === activityModelId);
 
-  const { data: imageBlob, isFetching: isFetchingImage } = useActivityImage(selectedModel?.id);
+  // Agora recebemos a Signed URL (string) em vez de um Blob
+  const { data: imageUrl, isFetching: isFetchingImage } = useActivityImage(selectedModel?.id);
 
   useEffect(() => {
     if (!open) form.reset({ activityModelId: 0 });
   }, [open, form]);
 
   const handleDownload = () => {
-    if (!selectedModel || !imageBlob) return;
+    if (!selectedModel || !imageUrl) return;
 
-    const file = blobToFile(imageBlob, selectedModel.name);
-    const url = URL.createObjectURL(file);
-    downloadUrl(url, file.name);
-    URL.revokeObjectURL(url);
+    // Chama a função de download passando a Signed URL e o nome do modelo
+    downloadUrl(imageUrl, selectedModel.name);
   };
 
   const onSubmit = (data: StartSurveyFormData) => {
@@ -100,7 +99,7 @@ export function StartSurveyDialog({
               type="button"
               variant="ghost" 
               className="text-slate-600 hover:text-slate-900" 
-              disabled={!hasSelectedActivity || !imageBlob || isFetchingImage}
+              disabled={!hasSelectedActivity || !imageUrl || isFetchingImage}
               onClick={handleDownload}
             >
               <Download className="size-4" />
