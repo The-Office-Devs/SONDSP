@@ -44,9 +44,7 @@ export async function inactivateActivityService(id: number) {
   return response.data;
 }
 
-export async function getActivityImageService(id: number): Promise<Blob> {
-  const response = await api.get(`/activity/get-activity-image/${id}`, {
-    responseType: 'blob',
-  });
-  return response.data;
+export async function getActivityImageService(id: number): Promise<string> {
+  const response = await api.get(`/activity/get-activity-image/${id}`);
+  return response.data.imageUrl;
 }
