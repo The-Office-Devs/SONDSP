@@ -17,6 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.security.auth.login.LoginException;
 
+import java.nio.file.AccessDeniedException;
+
 import static br.com.sondsp.util.SystemMessages.UNEXPECTED_ERROR;
 
 @RestControllerAdvice
@@ -59,6 +61,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<StandardErrorDTO> databaseException(DataAccessException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new StandardErrorDTO("Erro ao atualizar dados no banco"));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<StandardErrorDTO> unauthorizedException(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardErrorDTO(e.getMessage()));
     }
 
     // Fallback para exceções não esperadas
