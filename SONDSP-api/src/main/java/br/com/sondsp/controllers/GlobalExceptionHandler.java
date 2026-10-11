@@ -6,17 +6,14 @@ import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.security.auth.login.LoginException;
-
 import java.nio.file.AccessDeniedException;
 
 import static br.com.sondsp.util.SystemMessages.UNEXPECTED_ERROR;
@@ -57,11 +54,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardErrorDTO(errorMessage));
     }
 
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<StandardErrorDTO> databaseException(DataAccessException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new StandardErrorDTO("Erro ao atualizar dados no banco"));
-    }
+//    @ExceptionHandler(DataAccessException.class)
+//    public ResponseEntity<StandardErrorDTO> databaseException(DataAccessException e) {
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(new StandardErrorDTO("Erro ao atualizar dados no banco"));
+//    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<StandardErrorDTO> unauthorizedException(AccessDeniedException e) {

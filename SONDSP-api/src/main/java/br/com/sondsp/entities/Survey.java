@@ -1,8 +1,20 @@
 package br.com.sondsp.entities;
 
 import br.com.sondsp.form.SurveyForm;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -12,45 +24,50 @@ import lombok.*;
 @NoArgsConstructor
 @Table(name = "sondagem")
 public class Survey {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_aplicador", referencedColumnName = "id")
-    private User administrator;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_aluno", referencedColumnName = "id")
-    private Student student;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_aplicador", referencedColumnName = "id")
+	private User administrator;
 
-    @Column(name = "resultado")
-    private String result;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_aluno", referencedColumnName = "id")
+	private Student student;
 
-    @Column(name = "observacoes")
-    private String notes;
+	@Column(name = "resultado")
+	private String result;
 
-    @Column(name = "imagem_sondagem")
-    private String surveyImagePath;
+	@Column(name = "observacoes")
+	private String notes;
 
-    @Column(name = "ind_digital")
-    private Boolean isDigital;
+	@Column(name = "imagem_sondagem")
+	private String surveyImagePath;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_atividade", referencedColumnName = "id")
-    private Activity activity;
+	@Column(name = "ind_digital")
+	private Boolean isDigital;
 
-    @Column(name = "status")
-    private Boolean status;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_atividade", referencedColumnName = "id")
+	private Activity activity;
 
-    public Survey(SurveyForm form, User administrator, Student student, Activity activity) {
-        this.administrator = administrator;
-        this.student = student;
-        this.activity = activity;
-        this.result = form.result();
-        this.notes = form.notes();
-        this.isDigital = form.isDigital();
-        this.status = false;
-    }
+	@Column(name = "status")
+	private Boolean status;
+
+	@Column(name = "bimestre_aplicacao")
+	private String aplicationPeriod;
+
+	public Survey(SurveyForm form, User administrator, Student student, Activity activity) {
+		this.administrator = administrator;
+		this.student = student;
+		this.activity = activity;
+		this.result = form.result();
+		this.notes = form.notes();
+		this.isDigital = form.isDigital();
+		this.status = false;
+		this.aplicationPeriod = form.aplicationPeriod();
+	}
 }
