@@ -11,7 +11,7 @@ import { bimesterOptions } from "@/lib/options-utils";
 
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "../ui/dialog";
 import { ComboboxField } from "../HookForm/fields/ComboBoxField";
-import { ReadOnlyField } from "../ReadOnlyField/ReadOnlyField";
+import { ReadOnlyField } from "../ReadOnlyFields/ReadOnlyField";
 import { Button } from "../ui/button";
 import { SelectField } from "../HookForm/fields/SelectField";
 

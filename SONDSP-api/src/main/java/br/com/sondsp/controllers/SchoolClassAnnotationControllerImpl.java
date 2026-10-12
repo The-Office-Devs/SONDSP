@@ -4,6 +4,7 @@ import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.SchoolClassAnnotationDTO;
 
 import br.com.sondsp.entities.SchoolClassAnnotation;
+import br.com.sondsp.filters.SchoolClassAnnotationFilter;
 import br.com.sondsp.form.SchoolClassAnnotationForm;
 import br.com.sondsp.services.SchoolClassAnnotationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,12 @@ public class SchoolClassAnnotationControllerImpl implements SchoolClassAnnotatio
     }
 
     @GetMapping
-    public ResponseEntity<?> getAnnotations(Integer schoolClassId, Pageable pageable) {
-        Page<SchoolClassAnnotation> schoolClassAnnotationPage = service.getAnnotations(schoolClassId, pageable);
+    public ResponseEntity<?> getAnnotations(
+            Integer schoolClassId,
+            SchoolClassAnnotationFilter filter,
+            Pageable pageable) {
+
+        Page<SchoolClassAnnotation> schoolClassAnnotationPage = service.getAnnotations(schoolClassId, filter, pageable);
 
         List<SchoolClassAnnotationDTO> contentDTO = schoolClassAnnotationPage.getContent().stream()
                 .map(SchoolClassAnnotationDTO::new)

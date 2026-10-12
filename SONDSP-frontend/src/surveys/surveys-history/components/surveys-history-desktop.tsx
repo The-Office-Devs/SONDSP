@@ -14,7 +14,7 @@ import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTabl
 import { FinishSurveyDialog } from "@/components/Dialog/FinishSurveyDialog";
 import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 import { ViewFileDialog } from "@/components/Dialog/ViewFileDialog";
-import { ReadOnlyField } from "@/components/ReadOnlyField/ReadOnlyField";
+import { ReadOnlyField } from "@/components/ReadOnlyFields/ReadOnlyField";
 
 const columns: ColumnDef<SurveyListItem>[] = [
   { id: "activity", key: "activityName", header: "Modelo de Atividade", width: "20%", accessor: (row) => row.activity?.name },

@@ -38,11 +38,6 @@ export async function inactivateClassService(id: number): Promise<string> {
 }
 
 export async function getClassStudentsService(id: number, filter: ClassStudentsFilter): Promise<ClassStudents[]> {
-  const response = await api.get<ClassStudents[]>(`/schoolClass/${id}/students-pannel`, {
-    params: {
-      applicationPeriod: filter.applicationPeriod,
-      strandId: filter.strandId
-    }
-  });
+  const response = await api.get<ClassStudents[]>(`/schoolClass/${id}/students-pannel`, { params: filter });
   return response.data; 
 }

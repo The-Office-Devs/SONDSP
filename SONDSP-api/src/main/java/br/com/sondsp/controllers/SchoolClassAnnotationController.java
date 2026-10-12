@@ -3,6 +3,7 @@ package br.com.sondsp.controllers;
 import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.SchoolClassAnnotationDTO;
 import br.com.sondsp.dtos.StandardErrorDTO;
+import br.com.sondsp.filters.SchoolClassAnnotationFilter;
 import br.com.sondsp.form.SchoolClassAnnotationForm;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -63,7 +65,9 @@ public interface SchoolClassAnnotationController {
     )
     ResponseEntity<?> getAnnotations(
             @PathVariable Integer schoolClassId,
+            @ModelAttribute SchoolClassAnnotationFilter filter,
             @SortDefault.SortDefaults({
+                    @SortDefault(sort = "creationDate", direction = Sort.Direction.DESC),
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             }) Pageable pageable
     );

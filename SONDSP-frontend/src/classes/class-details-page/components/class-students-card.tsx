@@ -28,12 +28,12 @@ export function ClassStudentsCard({
   isFetching = false
 }: Readonly<ClassStudentsCardProps>) {
   const total = students.length;
-  // mudar a rota que o link manda
+
   return (
     <section
       aria-label={title}
       aria-busy={isFetching}
-      className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100 lg:w-1/2"
+      className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100"
     >
       {isFetching && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
@@ -57,7 +57,7 @@ export function ClassStudentsCard({
             Nenhum aluno vinculado a esta turma.
           </p>
         ) : (
-          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid max-h-[30rem] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2 xl:grid-cols-3">
             {students.map((student) => {
               const resultLabel = getResultLabel(student.result);
 
@@ -66,7 +66,7 @@ export function ClassStudentsCard({
                   <Link
                     to={`app-alunos/aluno/${student.studentId}`}
                     title={`${student.studentName} (${resultLabel})`}
-                    className="group flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm hover:border-slate-300 hover:bg-slate-100"
+                    className="group flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm hover:border-slate-300 hover:bg-slate-50"
                   >
                     <span 
                       aria-hidden="true"
@@ -76,7 +76,7 @@ export function ClassStudentsCard({
                       )}
                     />
 
-                     <span className="truncate underline-offset-2 group-hover:underline">
+                    <span className="truncate underline-offset-2 group-hover:underline">
                       {student.studentName}
                     </span>
                   </Link>

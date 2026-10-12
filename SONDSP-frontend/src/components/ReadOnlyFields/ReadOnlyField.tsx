@@ -10,7 +10,7 @@ export function ReadOnlyField({ label, value }: Readonly<ReadOnlyFieldProps>) {
   return (
     <Field>
       <FieldLabel className="text-base">{label}</FieldLabel>
-      <Input value={value ?? ""} disabled readOnly />
+      <Input value={value ?? ""} readOnly />
     </Field>
   );
 }
