@@ -6,7 +6,6 @@ import br.com.sondsp.form.SurveyForm;
 import br.com.sondsp.repositories.ActivityRepository;
 import br.com.sondsp.repositories.StudentRepository;
 import br.com.sondsp.repositories.SurveyRepository;
-import br.com.sondsp.repositories.UsersRepository;
 import br.com.sondsp.util.SpecificationFilter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
@@ -15,66 +14,52 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.xml.bind.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
+import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
 import static br.com.sondsp.util.SystemMessages.*;
-
 
 @Service
 @RequiredArgsConstructor
 public class SurveyService {
 
     private final SurveyRepository surveyRepository;
-    private final UsersRepository usersRepository;
     private final StudentRepository studentRepository;
     private final ActivityRepository activityRepository;
-
-    private final ActivityService activityService;
-
-    @Value("${upload-dir:/sondsp/sondagens}")
-    private String uploadDir;
+    private final SupabaseStorageService storageService;
 
     @Autowired
     private SpecificationFilter specificationFilter;
 
-    public Survey createSurvey(SurveyForm form, User administrator) {
+    public Survey createSurvey(SurveyForm form, User administrator) throws IOException {
         Student student = findStudentById(form.studentId());
         Activity activity = findActivityById(form.activityModelId());
         Survey survey = new Survey(form, administrator, student, activity);
 
         if (form.image() != null && !form.image().isEmpty()) {
-            String savedImagePath = storeImageLocal(form.image());
+            String savedImagePath = storageService.uploadImage(form.image());
             survey.setSurveyImagePath(savedImagePath);
         }
 
         return surveyRepository.save(survey);
     }
 
-    public Survey updateSurvey(Integer id, SurveyForm form){
+    public Survey updateSurvey(Integer id, SurveyForm form) throws IOException {
         Survey survey = findSurveyById(id);
         survey.setResult(form.result());
         survey.setNotes(form.notes());
         survey.setStatus(true);
 
         if (form.image() != null && !form.image().isEmpty()) {
-            String savedImagePath = storeImageLocal(form.image());
+            String savedImagePath = storageService.uploadImage(form.image());
             survey.setSurveyImagePath(savedImagePath);
         }
 
@@ -129,28 +114,15 @@ public class SurveyService {
         return surveyRepository.findAll(spec, pageable);
     }
 
-    private String storeImageLocal(MultipartFile file) {
-        try {
-            Path uploadPath = Paths.get(this.uploadDir).toAbsolutePath().normalize();
-            Files.createDirectories(uploadPath);
-
-            String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-            String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
-
-            Path targetLocation = uploadPath.resolve(uniqueFileName);
-
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            return targetLocation.toString();
-
-        } catch (IOException ex) {
-            throw new RuntimeException(ERROR_SAVING_IMAGE, ex);
-        }
-    }
-
-    public Resource getSurveyImage(Integer id) {
+    public String getSurveyImageSignedUrl(Integer id) {
         Survey survey = findSurveyById(id);
-        return activityService.getImageLocal(survey.getSurveyImagePath());
+
+        if (survey.getSurveyImagePath() == null || survey.getSurveyImagePath().isBlank()) {
+            return null;
+        }
+
+        // Gera uma URL assinada válida por 1 hora (3600 segundos)
+        return storageService.generateSignedUrl(survey.getSurveyImagePath(), IMAGE_URL_EXPIRATION_TIME);
     }
 
     private Specification<Survey> belongsToStudent(Integer studentId) {

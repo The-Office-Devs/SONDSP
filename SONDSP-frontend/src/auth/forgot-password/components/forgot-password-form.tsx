@@ -1,6 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
+import { Loader2 } from "lucide-react";
 
 import type { Ui } from "@/components/HookForm/types";
 
@@ -22,7 +23,7 @@ interface ForgotPasswordFormProps {
 export function ForgotPasswordForm({
   ui = 'desktop'
 }: Readonly<ForgotPasswordFormProps>) {
-  const { mutate } = useForgotPassword();
+  const { mutate, isPending } = useForgotPassword();
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -42,15 +43,23 @@ export function ForgotPasswordForm({
           label="E-mail Institucional"
           type="email"
           placeholder="Digite o seu e-mail institucional"
+          disabled={isPending}
           ui={ui}
         />
 
         <Button
           type="submit"
           variant="secondary"
-          disabled={!form.formState.isValid}
+          disabled={isPending || !form.formState.isValid}
         >
-          Enviar link de redefinição
+          {isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Enviando e-mail...</span>
+            </>
+          ) : (
+            "Enviar link de redefinição"
+          )}
         </Button>
       </form>
     </FormProvider>

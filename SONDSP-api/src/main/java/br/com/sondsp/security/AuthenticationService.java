@@ -56,13 +56,12 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public UserAuthResult loginUser(AuthenticationForm form) throws LoginException {
-        ///TODO: IMPLEMENTS KEEPMESIGNED
         User user = authenticateUser(form);
 
         if (!user.getStatus())
             throw new LoginException(INVALID_CREDENTIALS);
 
-        return new UserAuthResult(user, getToken(user));
+        return new UserAuthResult(user, getToken(user), getRefreshToken(user));
     }
 
     public User authenticateUser(AuthenticationForm form) throws LoginException {
@@ -82,6 +81,10 @@ public class AuthenticationService implements UserDetailsService {
 
     public String getToken(User user) {
         return tokenService.generateToken(user);
+    }
+
+    public String getRefreshToken(User user) {
+        return tokenService.generateRefreshToken(user);
     }
 
     public User firstAccess(FirstAccessForm form) {
@@ -126,5 +129,21 @@ public class AuthenticationService implements UserDetailsService {
         }
 
         return Optional.empty();
+    }
+
+    public String refreshToken(String refreshToken) throws LoginException {
+        String email = tokenService.validateToken(refreshToken);
+
+        if (email == null || email.isBlank()) {
+            throw new LoginException(INVALID_CREDENTIALS);
+        }
+
+        User user = usersService.getByEmail(email);
+
+        if (user == null || !user.getStatus()) {
+            throw new LoginException(INVALID_CREDENTIALS);
+        }
+
+        return getToken(user);
     }
 }

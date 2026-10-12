@@ -3,6 +3,7 @@ package br.com.sondsp.util;
 public final class SystemMessages {
     // System errors
     public static final String UNEXPECTED_ERROR = "Ocorreu um erro inesperado: ";
+    public static final String UNABLE_TO_SAVE_IMAGE = "Ocorreu um erro ao salvar a imagem";
 
     // Status toggling
     public static final String USER_ACTIVATED = "Usuário ativado com sucesso.";

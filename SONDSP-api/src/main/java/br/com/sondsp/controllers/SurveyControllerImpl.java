@@ -1,5 +1,6 @@
 package br.com.sondsp.controllers;
 
+import br.com.sondsp.dtos.ImageDTO;
 import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.SurveyDTO;
 import br.com.sondsp.entities.Survey;
@@ -42,7 +43,7 @@ public class SurveyControllerImpl {
     private AuthenticationService authenticationService;
 
     @PostMapping
-    public ResponseEntity<?> createSurvey(@RequestBody SurveyForm form) {
+    public ResponseEntity<?> createSurvey(@RequestBody SurveyForm form) throws IOException {
         Optional<User> creator = authenticationService.getCurrentUser();
         if (creator.isPresent()) {
             return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form, creator.get())));
@@ -91,7 +92,7 @@ public class SurveyControllerImpl {
     }
 
     @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
-    public ResponseEntity<?> updateSurvey(@PathVariable Integer id, @ModelAttribute SurveyForm form) {
+    public ResponseEntity<?> updateSurvey(@PathVariable Integer id, @ModelAttribute SurveyForm form) throws IOException {
         return ResponseEntity.ok().body(new SurveyDTO(surveyService.updateSurvey(id, form)));
     }
 
@@ -102,19 +103,8 @@ public class SurveyControllerImpl {
     }
 
     @GetMapping("get-survey-image/{id}")
-    public ResponseEntity<Resource> getSurveyImage(@PathVariable Integer id) {
-        Resource resource = surveyService.getSurveyImage(id);
-
-        String contentType = "application/octet-stream";
-        try {
-            contentType = Files.probeContentType(resource.getFile().toPath());
-        } catch (IOException e) {
-            throw new RuntimeException(ERROR_RETRIEVING_IMAGE);
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+    public ResponseEntity<?> getSurveyImage(@PathVariable Integer id) {
+        String imageUrl = surveyService.getSurveyImageSignedUrl(id);
+        return ResponseEntity.ok().body(new ImageDTO(imageUrl));
     }
 }

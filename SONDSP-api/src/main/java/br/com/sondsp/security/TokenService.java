@@ -34,17 +34,63 @@ public class TokenService {
     public String validateToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.require(algorithm)
+            var decoded = JWT.require(algorithm)
                     .build()
-                    .verify(token)
-                    .getSubject();
+                    .verify(token);
+            if (decoded.getClaim("purpose").asString() != null) {
+                return null;
+            }
+            return decoded.getSubject();
         } catch (JWTVerificationException exception) {
             log.error("Error while validating token: {}", String.valueOf(exception));
             return null;
         }
     }
 
+    public String generateActivationToken(User user) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.create()
+                    .withSubject(user.getEmail())
+                    .withClaim("purpose", "ACCOUNT_ACTIVATION")
+                    .withExpiresAt(Instant.now().plusSeconds(15 * 60))
+                    .sign(algorithm);
+        } catch (JWTCreationException exception) {
+            throw new RuntimeException("Error while generating Activation Token: " + exception);
+        }
+    }
+
+    public String validateActivationToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm)
+                    .withClaim("purpose", "ACCOUNT_ACTIVATION")
+                    .build()
+                    .verify(token)
+                    .getSubject();
+        } catch (JWTVerificationException exception) {
+            log.error("Error while validating activation token: {}", String.valueOf(exception));
+            return null;
+        }
+    }
+
+    public String generateRefreshToken(User user) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.create()
+                    .withSubject(user.getEmail())
+                    .withExpiresAt(this.genExpirationRefreshDate())
+                    .sign(algorithm);
+        } catch (JWTCreationException exception) {
+            throw new RuntimeException("Error while generation Token: " + exception);
+        }
+    }
+
     private Instant genExpirationDate(){
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    }
+
+    private Instant genExpirationRefreshDate() {
+        return LocalDateTime.now().plusDays(30).toInstant(ZoneOffset.of("-03:00"));
     }
 }

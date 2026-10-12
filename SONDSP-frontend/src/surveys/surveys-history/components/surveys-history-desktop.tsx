@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import type { SurveyListItem } from "@/surveys/surveys.types";
@@ -6,7 +6,6 @@ import type { SurveyHistoryFormData } from "../survey-history.schema";
 import { useDeleteSurvey, useStudentSurveys, useSurveyImage } from "@/surveys/use-surveys";
 import { useActivityImage } from "@/activities/activities-page/use-activities";
 import { useTableState } from "@/hooks/use-table-state";
-import { blobToFile } from "@/lib/file-utils";
 import { buildPaginationProps } from "@/api/types";
 
 import { SurveysHistoryFilterPanel } from "./surveys-history-filter-panel";
@@ -50,8 +49,8 @@ export function SurveysHistoryDesktop() {
   const useSurveyImg = !!viewFile && viewFile.status === true;
 
   const { mutate: deleteSurvey, isPending } = useDeleteSurvey();
-  const { data: activityImageBlob, isFetching: isFetchingActivity } = useActivityImage(useSurveyImg ? undefined : viewFile?.activity?.id);
-  const { data: surveyImageBlob, isFetching: isFetchingSurvey } = useSurveyImage(useSurveyImg ? viewFile?.id : undefined);
+  const { data: activityImageUrl, isFetching: isFetchingActivity } = useActivityImage(useSurveyImg ? undefined : viewFile?.activity?.id);
+  const { data: surveyImageUrl, isFetching: isFetchingSurvey } = useSurveyImage(useSurveyImg ? viewFile?.id : undefined);
 
   const actions: RowAction<SurveyListItem>[] = [
     { type: "view", onClick: (surveyItem) => setViewFile(surveyItem) },
@@ -74,13 +73,8 @@ export function SurveysHistoryDesktop() {
     setPage(0);
   };
 
-  const imageBlob = useSurveyImg ? surveyImageBlob : activityImageBlob;
+  const imageUrl = useSurveyImg ? surveyImageUrl : activityImageUrl;
   const isFetchingImage = useSurveyImg ? isFetchingSurvey : isFetchingActivity;
-
-  const file = useMemo(() => {
-    if (viewFile && imageBlob) return blobToFile(imageBlob, viewFile?.activity.name);
-    return undefined;
-  }, [viewFile, imageBlob]);
 
   return (
     <div className="space-y-4 p-4 lg:p-6">
@@ -104,8 +98,8 @@ export function SurveysHistoryDesktop() {
       />
 
       <ViewFileDialog
-        file={file}
-        title={isFetchingImage ? "Baixando arquivo..." : (viewFile?.activity.name ?? "")}
+        fileUrl={imageUrl}
+        title={isFetchingImage ? "Carregando arquivo..." : (viewFile?.activity.name ?? "")}
         open={viewFile !== null}
         onOpenChange={(open) => { if (!open) setViewFile(null) }}
       >

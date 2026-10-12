@@ -9,7 +9,6 @@ public record ActivityDTO(
         StrandDTO strand,
         String gradeLevel,
         String bimester,
-        String activityModelRef,
         Boolean status
 ) {
     public ActivityDTO(Activity activity){
@@ -19,7 +18,6 @@ public record ActivityDTO(
                 new StrandDTO(activity.getStrand()),
                 activity.getGradeLevel(),
                 activity.getPeriod(),
-                activity.getStrandImagePath(),
                 activity.getStatus()
         );
     }

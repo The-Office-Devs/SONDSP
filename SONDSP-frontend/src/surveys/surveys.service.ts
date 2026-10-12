@@ -49,9 +49,7 @@ export async function deleteSurveyService(id: number) {
   return response.data;
 }
 
-export async function getSurveyImageService(id: number): Promise<Blob> {
-  const response = await api.get(`/survey/get-survey-image/${id}`, {
-    responseType: 'blob',
-  });
-  return response.data;
+export async function getSurveyImageService(id: number): Promise<string> {
+  const response = await api.get<{ imageUrl: string }>(`/survey/get-survey-image/${id}`);
+  return response.data.imageUrl;
 }

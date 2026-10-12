@@ -16,6 +16,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -60,6 +62,9 @@ public class Survey {
 	@Column(name = "bimestre_aplicacao")
 	private String aplicationPeriod;
 
+    @Column(name = "data")
+    private LocalDateTime date;
+
 	public Survey(SurveyForm form, User administrator, Student student, Activity activity) {
 		this.administrator = administrator;
 		this.student = student;
@@ -69,5 +74,6 @@ public class Survey {
 		this.isDigital = form.isDigital();
 		this.status = false;
 		this.aplicationPeriod = form.aplicationPeriod();
+        this.date = LocalDateTime.now();
 	}
 }

@@ -1,5 +1,7 @@
 package br.com.sondsp.filters;
 
+import java.time.LocalDate;
+
 public record SurveyFilter(
 	String search,
 	Integer strandId,
@@ -7,5 +9,6 @@ public record SurveyFilter(
 	String result,
 	String isDigital,
 	Boolean status,
-	String aplicationPeriod
+	String aplicationPeriod,
+    LocalDate date
 ) {}

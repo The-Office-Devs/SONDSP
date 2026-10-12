@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ativação de Conta - SONDSP</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+    <p>Olá, <strong th:text="${userName}">usuário</strong>!</p>
+    <p>Sua conta no <strong>SONDSP - Sistema de Sondagem Educacional</strong> foi cadastrada.</p>
+    <p>Para ativar sua conta e cadastrar sua senha de acesso, utilize o código de ativação abaixo:</p>
+    <div style="margin: 20px 0; padding: 15px 25px; background-color: #f1f5f9; border-radius: 8px; display: inline-block; font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #0f172a; border: 1px solid #cbd5e1;">
+        <span th:text="${activationCode}">ABC123</span>
+    </div>
+    <p>Você também pode acessar diretamente a página de ativação pelo link:</p>
+    <p>
+        <a th:href="${activationUrl}" style="color: #2563eb; text-decoration: underline;">Ativar minha conta no SONDSP</a>
+    </p>
+    <p>Este código expira em <strong th:text="${expirationDays}">3</strong> dias.</p>
+    <p>Se você não reconhece este cadastro, por favor desconsidere este e-mail.</p>
+</body>
+</html>

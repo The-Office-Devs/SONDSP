@@ -52,7 +52,7 @@ export type RowAction<T> = {
 }
 
 export type ColumnDef<T> = {
-  id: keyof T;
+  id: keyof T | (string & {});
   key?: string;
   header: React.ReactNode;
   width: string;

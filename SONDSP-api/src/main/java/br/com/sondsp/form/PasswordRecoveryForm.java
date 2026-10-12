@@ -1,9 +1,9 @@
-package br.com.sondsp.dtos;
+package br.com.sondsp.form;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record PasswordRecoveryRequest(
+public record PasswordRecoveryForm(
         @NotBlank @Email String email
 ) {
 }

@@ -1,10 +1,10 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.dtos.PasswordRecoveryRequest;
-import br.com.sondsp.dtos.PasswordResetRequest;
 import br.com.sondsp.entities.PasswordRecoveryAttempt;
 import br.com.sondsp.entities.PasswordResetToken;
 import br.com.sondsp.entities.User;
+import br.com.sondsp.form.PasswordRecoveryForm;
+import br.com.sondsp.form.PasswordResetForm;
 import br.com.sondsp.repositories.PasswordRecoveryAttemptRepository;
 import br.com.sondsp.repositories.PasswordResetTokenRepository;
 import br.com.sondsp.repositories.UsersRepository;
@@ -22,6 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,14 +42,14 @@ public class PasswordRecoveryService {
     private long expirationMinutes;
 
     @Transactional
-    public String requestReset(PasswordRecoveryRequest request, String requestIp) {
+    public String requestReset(PasswordRecoveryForm form, String requestIp) {
         LocalDateTime now = LocalDateTime.now();
-        String normalizedEmail = request.email().trim().toLowerCase();
+        String normalizedEmail = form.email().trim().toLowerCase();
         String emailHash = sha256(normalizedEmail);
         LocalDateTime since = now.minusMinutes(15);
 
-        if (attemptRepository.countByEmailHashSince(emailHash, since) >= 3
-                || attemptRepository.countByRequestIpSince(requestIp, since) >= 10) {
+        if (attemptRepository.countByEmailHashAndAttemptedAtGreaterThanEqual(emailHash, since) >= 3
+                || attemptRepository.countByRequestIpAndAttemptedAtGreaterThanEqual(requestIp, since) >= 10) {
             saveAttempt(emailHash, requestIp, now, "RATE_LIMITED", "Rate limit exceeded");
             return GENERIC_MESSAGE;
         }
@@ -59,7 +60,7 @@ public class PasswordRecoveryService {
             return GENERIC_MESSAGE;
         }
 
-        tokenRepository.invalidateActiveTokens(user.getId(), now, now);
+        invalidateActiveTokens(user.getId(), now);
         String rawToken = generateToken();
         PasswordResetToken resetToken = PasswordResetToken.builder()
                 .user(user)
@@ -75,10 +76,10 @@ public class PasswordRecoveryService {
     }
 
     @Transactional
-    public void resetPassword(PasswordResetRequest request, String requestIp) {
-        validatePassword(request);
+    public void resetPassword(PasswordResetForm form, String requestIp) {
+        validatePassword(form);
         LocalDateTime now = LocalDateTime.now();
-        String tokenHash = sha256(request.token());
+        String tokenHash = sha256(form.token());
         PasswordResetToken resetToken = tokenRepository.findByTokenHash(tokenHash)
                 .orElseThrow(() -> invalidResetRequest(tokenHash, requestIp, now, "Token not found"));
 
@@ -90,16 +91,25 @@ public class PasswordRecoveryService {
         }
 
         User user = resetToken.getUser();
-        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        user.setPassword(passwordEncoder.encode(form.newPassword()));
         usersRepository.save(user);
         resetToken.setUsedAt(now);
         tokenRepository.save(resetToken);
-        tokenRepository.invalidateActiveTokens(user.getId(), now, now);
+        invalidateActiveTokens(user.getId(), now);
     }
 
-    private void validatePassword(PasswordResetRequest request) {
-        if (!request.newPassword().equals(request.confirmPassword())
-                || !request.newPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
+    private void invalidateActiveTokens(Integer userId, LocalDateTime now) {
+        List<PasswordResetToken> activeTokens =
+                tokenRepository.findAllByUserIdAndUsedAtIsNullAndExpiresAtGreaterThan(userId, now);
+        if (!activeTokens.isEmpty()) {
+            activeTokens.forEach(token -> token.setUsedAt(now));
+            tokenRepository.saveAll(activeTokens);
+        }
+    }
+
+    private void validatePassword(PasswordResetForm form) {
+        if (!form.newPassword().equals(form.confirmPassword())
+                || !form.newPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha inválida.");
         }
     }

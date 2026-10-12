@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import brasaoSp from "@/assets/brasao-sp.png";
 
 import type { Ui } from "@/components/HookForm/types";
 
@@ -35,7 +36,7 @@ export function AuthCard({ type = 'desktop', children }: LoginCardProps) {
         <div className="mb-8 text-center">
           <div className="mx-auto mb-3 flex h-24 w-24 items-center justify-center">
             <img
-              src="/src/assets/brasao-sp.png"
+              src={brasaoSp}
               alt="Brasão Estado de São Paulo"
               className="h-full w-full object-contain"
             />
