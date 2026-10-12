@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useClasses } from "@/classes/classes-page/use-classes";
 import { useTableState } from "@/hooks/use-table-state";
@@ -19,6 +20,7 @@ const columns: ColumnDef<ClassListItem>[] = [
 ];
 
 export function ClassesFilterDesktop() {
+  const navigator = useNavigate();
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
   const [appliedFilters, setAppliedFilters] = useState<ClassFilterFormData | null>(null);
 
@@ -42,8 +44,7 @@ export function ClassesFilterDesktop() {
       type: "openClass", 
       label: "Abrir Turma", 
       className: "w-40",
-      onClick: (classItem) => null, 
-      disabled: (classItem) => !classItem.status 
+      onClick: (classItem) => goToTurma(classItem.id), 
     },
     { 
       type: "download", 
@@ -58,6 +59,8 @@ export function ClassesFilterDesktop() {
     setFilter("");
     setPage(0);
   };
+
+  const goToTurma = (classId: number) => navigator(`turma/${classId}`);
 
   const generateReport = (classId: number) => {
     // TODO: Implementar a logica para gerar o relatorio da turma!!!

@@ -60,8 +60,7 @@ export function ActivityInsertPanel() {
         submitLabel={submitLabel}
         isFilter={false}
         isSubmitDisabled={isSubmitDisabled}
-        onSubmit={form.handleSubmit(onSubmit)}
-        collapsible
+        onSubmit={form.handleSubmit(onSubmit)} 
       >
         <TextField name="name" label="Nome" placeholder="Nome do modelo de atividade" />
 

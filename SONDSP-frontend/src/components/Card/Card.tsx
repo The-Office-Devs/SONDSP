@@ -32,7 +32,7 @@ export function Card({
   isEditMode = false,
   onSubmit,
   onReset,
-  collapsible = false,
+  collapsible = true,
   children 
 }: Readonly<CardProps>) {
   const [open, setOpen] = useState(true);

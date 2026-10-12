@@ -72,7 +72,6 @@ export function ClassesFilterPanel({
         isFilter
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleReset}
-        collapsible
       >
         <SelectField
           name="schoolId"

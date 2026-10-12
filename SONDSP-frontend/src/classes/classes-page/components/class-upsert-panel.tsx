@@ -108,7 +108,6 @@ export function ClassUpsertPanel({
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleCancelEdit}
-        collapsible
       >
         <SelectField
           name="schoolId"
