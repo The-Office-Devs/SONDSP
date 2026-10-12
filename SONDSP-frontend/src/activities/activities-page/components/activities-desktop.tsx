@@ -1,10 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 import type { ActivityListItem } from "@/activities/activities.types";
-import { useActivities,  useActivityImage, useInactivateActivity } from "../use-activities";
+import { useActivities, useActivityImage, useInactivateActivity } from "../use-activities";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
-import { blobToFile } from "@/lib/file-utils";
 
 import { ActivityInsertPanel } from "./activity-insert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
@@ -33,17 +32,12 @@ export function ActivitiesDesktop() {
   const [viewActivity, setViewActivity] = useState<ActivityListItem | null>(null);
   const [inactivateActivity, setInactivateActivity] = useState<ActivityListItem | null>(null);
   
-  const { data: imageBlob, isFetching: isFetchingImage } = useActivityImage(viewActivity?.id);
+  const { data: imageUrl, isFetching: isFetchingImage } = useActivityImage(viewActivity?.id);
 
   const actions: RowAction<ActivityListItem>[] = [
     { type: "view", onClick: (activityItem) => setViewActivity(activityItem) },
     { type: "inactivate", onClick: (activityItem) => setInactivateActivity(activityItem), isActive: (activityItem) => activityItem.status }
   ];
-
-  const viewFile = useMemo(() => {
-    if (viewActivity && imageBlob) return blobToFile(imageBlob, viewActivity.name);
-    return undefined;
-  }, [viewActivity, imageBlob]);
 
   return (
     <div className="space-y-4 p-4 lg:p-6">
@@ -75,10 +69,10 @@ export function ActivitiesDesktop() {
       />
 
       <ViewFileDialog
-        file={viewFile}
-        title={isFetchingImage ? "Baixando arquivo..." : (viewActivity?.name ?? "")}
+        fileUrl={imageUrl}
+        title={isFetchingImage ? "Carregando arquivo..." : (viewActivity?.name ?? "")}
         open={viewActivity !== null}
-        onOpenChange={(open) => { if (!open) setViewActivity(null) }}
+        onOpenChange={(open) => { if (!open) setViewActivity(null); }}
       />
     </div>
   )
