@@ -26,12 +26,21 @@ public class SupabaseStorageService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String uploadImage(MultipartFile arquivo) throws IOException {
-        String fileName = UUID.randomUUID() + "_" + arquivo.getOriginalFilename();
+        return uploadImage(arquivo, null);
+    }
+
+    public String uploadImage(MultipartFile arquivo, String customFileName) throws IOException {
+        String fileName = (customFileName != null && !customFileName.isBlank())
+                ? customFileName
+                : UUID.randomUUID() + "_" + arquivo.getOriginalFilename();
+
         String url = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + supabaseKey);
-        headers.setContentType(MediaType.valueOf(arquivo.getContentType()));
+        headers.set("x-upsert", "true");
+        String contentType = arquivo.getContentType();
+        headers.setContentType(contentType != null ? MediaType.valueOf(contentType) : MediaType.APPLICATION_OCTET_STREAM);
 
         HttpEntity<byte[]> requestEntity = new HttpEntity<>(arquivo.getBytes(), headers);
 

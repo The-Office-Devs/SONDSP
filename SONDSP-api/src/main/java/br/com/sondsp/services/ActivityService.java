@@ -22,6 +22,7 @@ import java.util.List;
 
 import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
 import static br.com.sondsp.util.SystemMessages.*;
+import br.com.sondsp.util.FileNameUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,11 @@ public class ActivityService {
         Activity activity = new Activity(activityForm, strand, creator);
 
         if (activityForm.activityModelFile() != null && !activityForm.activityModelFile().isEmpty()) {
-            String savedImagePath = storageService.uploadImage(activityForm.activityModelFile());
+            String fileName = FileNameUtils.formatActivityFileName(
+                    activity.getName(),
+                    activityForm.activityModelFile().getOriginalFilename()
+            );
+            String savedImagePath = storageService.uploadImage(activityForm.activityModelFile(), fileName);
             activity.setStrandImagePath(savedImagePath);
         }
 

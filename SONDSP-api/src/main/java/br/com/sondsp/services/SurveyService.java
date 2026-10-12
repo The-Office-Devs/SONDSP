@@ -26,6 +26,7 @@ import java.util.List;
 
 import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
 import static br.com.sondsp.util.SystemMessages.*;
+import br.com.sondsp.util.FileNameUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +46,12 @@ public class SurveyService {
         Survey survey = new Survey(form, administrator, student, activity);
 
         if (form.image() != null && !form.image().isEmpty()) {
-            String savedImagePath = storageService.uploadImage(form.image());
+            String fileName = FileNameUtils.formatSurveyFileName(
+                    student.getName(),
+                    survey.getDate(),
+                    form.image().getOriginalFilename()
+            );
+            String savedImagePath = storageService.uploadImage(form.image(), fileName);
             survey.setSurveyImagePath(savedImagePath);
         }
 
@@ -59,7 +65,13 @@ public class SurveyService {
         survey.setStatus(true);
 
         if (form.image() != null && !form.image().isEmpty()) {
-            String savedImagePath = storageService.uploadImage(form.image());
+            String studentName = survey.getStudent() != null ? survey.getStudent().getName() : "aluno";
+            String fileName = FileNameUtils.formatSurveyFileName(
+                    studentName,
+                    survey.getDate(),
+                    form.image().getOriginalFilename()
+            );
+            String savedImagePath = storageService.uploadImage(form.image(), fileName);
             survey.setSurveyImagePath(savedImagePath);
         }
 
