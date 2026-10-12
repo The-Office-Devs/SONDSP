@@ -1,5 +1,7 @@
 package br.com.sondsp.services;
 
+import static br.com.sondsp.util.SystemMessages.*;
+
 import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
@@ -10,178 +12,188 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.ValidationException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static br.com.sondsp.util.SystemMessages.*;
-
 @Service
 @AllArgsConstructor
 public class StudentService {
-    private StudentRepository repository;
-    private SchoolClassService schoolClassService;
-    private SurveyService surveyService;
 
-    public Student createStudent(StudentForm form) {
-        validadeStudent(form, null);
+	private StudentRepository repository;
+	private SchoolClassService schoolClassService;
 
-        return repository.save(Student.builder()
-                .name(form.name())
-                .registration(form.registration())
-                .schoolClass(form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null)
-                .rowNumber(form.rowNumber())
-                .status(true)
-                .build());
-    }
+	public Student createStudent(StudentForm form) {
+		validadeStudent(form, null);
 
-    public List<Student> createStudents(List<StudentForm> forms) {
-        return forms.stream().map(this::createStudent).toList();
-    }
+		return repository.save(
+			Student
+				.builder()
+				.name(form.name())
+				.registration(form.registration())
+				.schoolClass(
+					form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null
+				)
+				.rowNumber(form.rowNumber())
+				.status(true)
+				.build()
+		);
+	}
 
-    public Student getStudent(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(STUDENT_NOT_FOUND));
-    }
+	public List<Student> createStudents(List<StudentForm> forms) {
+		return forms.stream().map(this::createStudent).toList();
+	}
 
-    public Page<Student> getStudents(StudentFilter filter, Pageable pageable) {
-        Specification<Student> spec = buildFilter(filter);
-        return repository.findAll(spec, pageable);
-    }
+	public Student getStudent(Integer id) {
+		return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(STUDENT_NOT_FOUND));
+	}
 
-    public Student updateStudent(Integer id, StudentForm form) {
-        Student student = getStudent(id);
+	public Page<Student> getStudents(StudentFilter filter, Pageable pageable) {
+		Specification<Student> spec = buildFilter(filter);
+		return repository.findAll(spec, pageable);
+	}
 
-        validadeStudent(form, id);
+	public Student updateStudent(Integer id, StudentForm form) {
+		Student student = getStudent(id);
 
-        student.setSchoolClass(form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null);
-        student.setRowNumber(form.rowNumber());
-        student.setName(form.name());
-        student.setRegistration(form.registration());
+		validadeStudent(form, id);
 
-        return repository.save(student);
-    }
+		student.setSchoolClass(
+			form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null
+		);
+		student.setRowNumber(form.rowNumber());
+		student.setName(form.name());
+		student.setRegistration(form.registration());
 
-    public Boolean changeStatus(Integer id) {
-        Student student = getStudent(id);
+		return repository.save(student);
+	}
 
-        if (!student.getSchoolClass().getStatus()) {
-            throw new ValidationException(STUDENT_CANNOT_ACTIVATE);
-        }
+	public Boolean changeStatus(Integer id) {
+		Student student = getStudent(id);
 
-        student.setStatus(!student.getStatus());
-        repository.save(student);
+		if (!student.getSchoolClass().getStatus()) {
+			throw new ValidationException(STUDENT_CANNOT_ACTIVATE);
+		}
 
-        return student.getStatus();
-    }
+		student.setStatus(!student.getStatus());
+		repository.save(student);
 
-    private Specification<Student> buildFilter(StudentFilter filter) {
-        return (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+		return student.getStatus();
+	}
 
-            if (filter == null)
-                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+	private Specification<Student> buildFilter(StudentFilter filter) {
+		return (root, query, criteriaBuilder) -> {
+			List<Predicate> predicates = new ArrayList<>();
 
-            if (filter.search() != null && !filter.search().isBlank()) {
-                Join<Student, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
-                Join<SchoolClass, School> schoolJoin = schoolClassJoin.join("school", JoinType.INNER);
+			if (filter == null) return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
-                String search = filter.search().toLowerCase();
-                String searchPattern = "%" + search + "%";
+			if (filter.search() != null && !filter.search().isBlank()) {
+				Join<Student, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
+				Join<SchoolClass, School> schoolJoin = schoolClassJoin.join("school", JoinType.INNER);
 
-                Expression<String> schoolClass = criteriaBuilder.concat(
-                        criteriaBuilder.concat(schoolClassJoin.get("name"), " - "),
-                        schoolJoin.get("name")
-                );
+				String search = filter.search().toLowerCase();
+				String searchPattern = "%" + search + "%";
 
-                Expression<String> rowNumberString = criteriaBuilder.function(
-                        "to_char", String.class,
-                        root.get("rowNumber"),
-                        criteriaBuilder.literal("FM999999999")
-                );
+				Expression<String> schoolClass = criteriaBuilder.concat(
+					criteriaBuilder.concat(schoolClassJoin.get("name"), " - "),
+					schoolJoin.get("name")
+				);
 
-                List<Predicate> orPredicates = new ArrayList<>();
-                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
-                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern));
-                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(schoolClass), searchPattern));
-                orPredicates.add(criteriaBuilder.like(rowNumberString, searchPattern));
+				Expression<String> rowNumberString = criteriaBuilder.function(
+					"to_char",
+					String.class,
+					root.get("rowNumber"),
+					criteriaBuilder.literal("FM999999999")
+				);
 
-                Boolean status = null;
-                if ("ativo".startsWith(search)) {
-                    status = true;
-                } else if ("inativo".startsWith(search)) {
-                    status = false;
-                }
+				List<Predicate> orPredicates = new ArrayList<>();
+				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern));
+				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(schoolClass), searchPattern));
+				orPredicates.add(criteriaBuilder.like(rowNumberString, searchPattern));
 
-                if (status != null)
-                    orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
+				Boolean status = null;
+				if ("ativo".startsWith(search)) {
+					status = true;
+				} else if ("inativo".startsWith(search)) {
+					status = false;
+				}
 
-                predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
-            } else {
-                if (filter.name() != null && !filter.name().isBlank()) {
-                    predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
-                }
+				if (status != null) orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
-                if (filter.registration() != null && !filter.registration().isBlank()) {
-                    predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(root.get("registration")), "%" + filter.registration().toLowerCase() + "%"));
-                }
+				predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
+			} else {
+				if (filter.name() != null && !filter.name().isBlank()) {
+					predicates.add(
+						criteriaBuilder.like(
+							criteriaBuilder.lower(root.get("name")),
+							"%" + filter.name().toLowerCase() + "%"
+						)
+					);
+				}
 
-                if (filter.schoolClassId() != null) {
-                    Join<User, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
-                    predicates.add(criteriaBuilder.equal(schoolClassJoin.get("id"), filter.schoolClassId()));
-                }
+				if (filter.registration() != null && !filter.registration().isBlank()) {
+					predicates.add(
+						criteriaBuilder.like(
+							criteriaBuilder.lower(root.get("registration")),
+							"%" + filter.registration().toLowerCase() + "%"
+						)
+					);
+				}
 
-                if (filter.schoolClassName() != null && !filter.schoolClassName().isBlank()) {
-                    Join<User, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
+				if (filter.schoolClassId() != null) {
+					Join<User, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
+					predicates.add(criteriaBuilder.equal(schoolClassJoin.get("id"), filter.schoolClassId()));
+				}
 
-                    predicates.add(criteriaBuilder.like(
-                            criteriaBuilder.lower(schoolClassJoin.get("name")),
-                            "%" + filter.schoolClassName().toLowerCase() + "%"
-                    ));
-                }
+				if (filter.schoolClassName() != null && !filter.schoolClassName().isBlank()) {
+					Join<User, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
 
-                if (filter.rowNumber() != null) {
-                    predicates.add(criteriaBuilder.equal(root.get("rowNumber"), filter.rowNumber()));
-                }
-            }
+					predicates.add(
+						criteriaBuilder.like(
+							criteriaBuilder.lower(schoolClassJoin.get("name")),
+							"%" + filter.schoolClassName().toLowerCase() + "%"
+						)
+					);
+				}
 
-            if (filter.status() != null)
-                predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
+				if (filter.rowNumber() != null) {
+					predicates.add(criteriaBuilder.equal(root.get("rowNumber"), filter.rowNumber()));
+				}
+			}
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-    }
+			if (filter.status() != null) predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
 
-    private void validadeStudent(StudentForm form, Integer id) {
-        // Valida se existe algum aluno com a mesma matrícula
-        boolean registrationExists = (id != null)
-                ? repository.existsByRegistrationAndIdNot(form.registration(), id)
-                : repository.existsByRegistration(form.registration());
+			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+		};
+	}
 
-        if (registrationExists)
-            throw new ValidationException(STUDENT_REGISTRATION_ALREADY_EXISTS);
+	private void validadeStudent(StudentForm form, Integer id) {
+		// Valida se existe algum aluno com a mesma matrícula
+		boolean registrationExists = (id != null)
+			? repository.existsByRegistrationAndIdNot(form.registration(), id)
+			: repository.existsByRegistration(form.registration());
 
-        if (form.schoolClassId() != null) {
-            // O aluno deve ter um número da chamada da turma
-            if (form.rowNumber() == null) {
-                throw new ValidationException(MUST_HAVE_ROW_NUMBER);
-            }
+		if (registrationExists) throw new ValidationException(STUDENT_REGISTRATION_ALREADY_EXISTS);
 
-            // Valida se existe algum aluno com o mesmo número da chamada na turma
-            boolean rowTaken = (id != null)
-                    ? repository.existsBySchoolClassIdAndRowNumberAndIdNot(form.schoolClassId(), form.rowNumber(), id)
-                    : repository.existsBySchoolClassIdAndRowNumber(form.schoolClassId(), form.rowNumber());
+		if (form.schoolClassId() != null) {
+			// O aluno deve ter um número da chamada da turma
+			if (form.rowNumber() == null) {
+				throw new ValidationException(MUST_HAVE_ROW_NUMBER);
+			}
 
-            if (rowTaken)
-                throw new ValidationException(ROW_NUMBER_TAKEN);
-        } else if (form.rowNumber() != null) {
-            throw new ValidationException(MUST_HAVE_CLASS);
-        }
-    }
+			// Valida se existe algum aluno com o mesmo número da chamada na turma
+			boolean rowTaken = (id != null)
+				? repository.existsBySchoolClassIdAndRowNumberAndIdNot(form.schoolClassId(), form.rowNumber(), id)
+				: repository.existsBySchoolClassIdAndRowNumber(form.schoolClassId(), form.rowNumber());
+
+			if (rowTaken) throw new ValidationException(ROW_NUMBER_TAKEN);
+		} else if (form.rowNumber() != null) {
+			throw new ValidationException(MUST_HAVE_CLASS);
+		}
+	}
 }
