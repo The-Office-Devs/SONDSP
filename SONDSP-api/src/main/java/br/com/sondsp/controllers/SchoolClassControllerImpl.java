@@ -74,7 +74,7 @@ public class SchoolClassControllerImpl implements SchoolClassController {
 	}
 
 	@GetMapping("/{id}/students-pannel")
-	public ResponseEntity<?> getStudentsPannel(Integer id, String aplicationPeriod, Integer strandId) {
-		return ResponseEntity.ok().body(service.getStudentsPannel(id, aplicationPeriod, strandId));
+	public ResponseEntity<?> getStudentsPannel(Integer id, String applicationPeriod, Integer strandId) {
+		return ResponseEntity.ok().body(service.getStudentsPannel(id, applicationPeriod, strandId));
 	}
 }

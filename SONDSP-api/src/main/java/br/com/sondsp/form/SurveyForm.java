@@ -9,5 +9,5 @@ public record SurveyForm(
 	String notes,
 	Integer activityModelId,
 	MultipartFile image,
-	String aplicationPeriod
+	String applicationPeriod
 ) {}

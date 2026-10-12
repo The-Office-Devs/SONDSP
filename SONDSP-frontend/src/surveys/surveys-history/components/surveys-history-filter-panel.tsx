@@ -27,7 +27,7 @@ interface SurveyHistoryFilterPanelProps {
 
 const defaultValues: SurveyHistoryFormInput = {
   status: "all",
-  bimester: "",
+  applicationPeriod: "",
   subjectId: 0,
   strandId: 0
 };
@@ -104,7 +104,7 @@ export function SurveysHistoryFilterPanel({
           />
 
           <SelectField
-            name="bimester"
+            name="applicationPeriod"
             label="Bimestre"
             placeholder="Selecione o bimestre"
             options={bimesterOptions}

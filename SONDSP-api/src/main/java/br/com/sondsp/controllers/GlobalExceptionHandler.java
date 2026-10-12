@@ -10,6 +10,7 @@ import jakarta.validation.ValidationException;
 import java.nio.file.AccessDeniedException;
 import javax.security.auth.login.LoginException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

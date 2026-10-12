@@ -60,7 +60,7 @@ public class Survey {
 	private Boolean status;
 
 	@Column(name = "bimestre_aplicacao")
-	private String aplicationPeriod;
+	private String applicationPeriod;
 
     @Column(name = "data")
     private LocalDateTime date;
@@ -73,7 +73,7 @@ public class Survey {
 		this.notes = form.notes();
 		this.isDigital = form.isDigital();
 		this.status = false;
-		this.aplicationPeriod = form.aplicationPeriod();
+		this.applicationPeriod = form.applicationPeriod();
         this.date = LocalDateTime.now();
 	}
 }

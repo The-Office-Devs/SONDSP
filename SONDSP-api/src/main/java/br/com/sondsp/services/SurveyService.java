@@ -142,9 +142,9 @@ public class SurveyService {
 
             boolean hasSearch = filter.search() != null && !filter.search().isBlank();
             boolean hasStrand = filter.strandId() != null && filter.strandId() > 0;
-            boolean hasBimester = filter.bimester() != null && !filter.bimester().isBlank();
+            boolean hasApplicationPeriod = filter.applicationPeriod() != null && !filter.applicationPeriod().isBlank();
 
-            Join<Survey, Activity> activityJoin = (hasSearch || hasStrand || hasBimester)
+            Join<Survey, Activity> activityJoin = (hasSearch || hasStrand)
                     ? root.join("activity", JoinType.INNER)
                     : null;
 
@@ -158,7 +158,7 @@ public class SurveyService {
                 orPredicates.add(cb.like(cb.lower(activityJoin.get("name")), searchPattern));
                 orPredicates.add(cb.like(cb.lower(strandJoin.get("subject")), searchPattern));
                 orPredicates.add(cb.like(cb.lower(strandJoin.get("name")), searchPattern));
-                orPredicates.add(cb.like(cb.lower(activityJoin.get("period")), searchPattern));
+                orPredicates.add(cb.like(cb.lower(root.get("applicationPeriod")), searchPattern));
 
                 Boolean status = null;
                 if ("finalizada".startsWith(search)) {
@@ -176,8 +176,8 @@ public class SurveyService {
             if (hasStrand)
                 predicates.add(cb.equal(activityJoin.get("strand").get("id"), filter.strandId()));
 
-            if (hasBimester)
-                predicates.add(cb.equal(activityJoin.get("period"), filter.bimester()));
+            if (hasApplicationPeriod)
+                predicates.add(cb.equal(root.get("applicationPeriod"), filter.applicationPeriod()));
 
             if (filter.status() != null)
                 predicates.add(cb.equal(root.get("status"), filter.status()));

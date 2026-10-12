@@ -44,7 +44,7 @@ public interface SchoolClassRepository
             JOIN usuario us ON us.id = so.id_aplicador
             JOIN atividade atv ON atv.id = so.id_atividade
             WHERE atv.id_eixo = :strandId 
-              AND so.bimestre_aplicacao = :aplicationPeriod
+              AND so.bimestre_aplicacao = :applicationPeriod
         )
         SELECT 
             CAST(al.id AS integer) AS studentid,
@@ -65,7 +65,7 @@ public interface SchoolClassRepository
 	)
 	List<Tuple> getStudentsSumary(
 		@Param("schoolClassId") Integer schoolClassId,
-		@Param("aplicationPeriod") String aplicationPeriod,
+		@Param("applicationPeriod") String applicationPeriod,
 		@Param("strandId") Integer strandId
 	);
 }

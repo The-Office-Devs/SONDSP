@@ -20,7 +20,7 @@ const columns: ColumnDef<SurveyListItem>[] = [
   { id: "activity", key: "activityName", header: "Modelo de Atividade", width: "20%", accessor: (row) => row.activity?.name },
   { id: "activity", key: "subject", header: "Matéria", width: "10%", accessor: (row) => row.activity?.strand?.subject },
   { id: "activity", key: "strandName", header: "Eixo", width: "15%", accessor: (row) => row.activity?.strand?.name },
-  { id: "activity", key: "bimester", header: "Ano - Bimestre", width: "15%", accessor: (row) => `${row.activity?.gradeLevel} - ${row.activity?.bimester}` },
+  { id: "activity", key: "bimester", header: "Ano - Bimestre", width: "15%", accessor: (row) => `${row.activity?.gradeLevel} - ${row.applicationPeriod}` },
   { id: "status", header: "Status", width: "10%", accessor: (row) => row.status ? "Finalizada" : "Em Aberto" }
 ];
 
@@ -43,7 +43,7 @@ export function SurveysHistoryDesktop() {
       ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {}),
       ...(appliedFilters?.status != null ? { status: appliedFilters.status } : {}),
       ...(appliedFilters?.strandId ? { strandId: appliedFilters.strandId } : {}),
-      ...(appliedFilters?.bimester ? { bimester: appliedFilters.bimester } : {})
+      ...(appliedFilters?.applicationPeriod ? { applicationPeriod: appliedFilters.applicationPeriod } : {})
     }
   );
   const useSurveyImg = !!viewFile && viewFile.status === true;

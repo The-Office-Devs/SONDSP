@@ -132,7 +132,7 @@ public interface SchoolClassController {
 
 	public ResponseEntity<?> getStudentsPannel(
 		@PathVariable Integer id,
-		@RequestParam String aplicationPeriod,
+		@RequestParam String applicationPeriod,
 		@RequestParam Integer strandId
 	);
 }

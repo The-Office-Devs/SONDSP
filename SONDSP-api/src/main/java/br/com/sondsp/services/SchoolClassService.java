@@ -70,8 +70,8 @@ public class SchoolClassService {
 		return repository.findAll(spec, pageable);
 	}
 
-	public List<StudentsPannelDTO> getStudentsPannel(Integer schoolClassId, String aplicationPeriod, Integer strandId) {
-		List<Tuple> tuples = repository.getStudentsSumary(schoolClassId, aplicationPeriod, strandId);
+	public List<StudentsPannelDTO> getStudentsPannel(Integer schoolClassId, String applicationPeriod, Integer strandId) {
+		List<Tuple> tuples = repository.getStudentsSumary(schoolClassId, applicationPeriod, strandId);
 
 		return tuples
 			.stream()
