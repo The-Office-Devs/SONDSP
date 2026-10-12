@@ -29,6 +29,7 @@ export function ClassStudentsCard({
 }: Readonly<ClassStudentsCardProps>) {
   const total = students.length;
 
+  // TODO: Checar se a rota do Link esta correta
   return (
     <section
       aria-label={title}
