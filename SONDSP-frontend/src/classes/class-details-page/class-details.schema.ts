@@ -11,7 +11,7 @@ export const classDetailsSchema = z.object({
     .int()
     .optional()
     .transform((v) => (v && v > 0 ? v : undefined)),
-  bimester: z
+  applicationPeriod: z
     .string()
     .optional()
     .transform((v) => v || undefined)

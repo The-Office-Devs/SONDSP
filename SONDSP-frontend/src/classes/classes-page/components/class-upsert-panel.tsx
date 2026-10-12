@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { classSchema, type ClassFormData, type ClassFormInput } from "../class.schema";
-import { useClass, useCreateClass, useUpdateClass } from "../use-classes";
+import { useClass, useCreateClass, useUpdateClass } from "../../use-classes";
 import { useSchools } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { getTitle } from "@/lib/card-utils";

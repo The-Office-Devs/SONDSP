@@ -79,12 +79,7 @@ public class SchoolClassService {
 				new StudentsPannelDTO(
 					tuple.get("studentid", Integer.class),
 					tuple.get("studentname", String.class),
-					tuple.get("rownumber", Integer.class),
-					tuple.get("surveyid", Integer.class),
-					tuple.get("applierid", Integer.class),
-					tuple.get("appliername", String.class),
-					tuple.get("result", String.class),
-					tuple.get("data", java.time.LocalDateTime.class)
+					tuple.get("result", String.class)
 				)
 			)
 			.toList();

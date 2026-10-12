@@ -23,7 +23,7 @@ interface ClassDetailsFilterPanelProps {
 const defaultValues: ClassDetailsFormInput = {
   subjectId: 0,
   strandId: 0,
-  bimester: ""
+  applicationPeriod: ""
 };
 
 export function ClassDetailsFilterPanel({
@@ -44,6 +44,7 @@ export function ClassDetailsFilterPanel({
   });
 
   const subject = useWatch({ control: form.control, name: "subjectId" });
+  const strand = useWatch({ control: form.control, name: "strandId" });
   
   const subjectLabel = subjectOptions.find(
     (opt) => opt.value === String(subject)
@@ -57,7 +58,7 @@ export function ClassDetailsFilterPanel({
     onClear();
   };
 
-  const isSubmitDisabled = !form.formState.isValid || isSearching;
+  const isSubmitDisabled = !form.formState.isValid || !strand || isSearching;
   return (
     <FormProvider {...form}>
       <Card 
@@ -85,7 +86,7 @@ export function ClassDetailsFilterPanel({
         />
 
         <SelectField
-          name="bimester"
+          name="applicationPeriod"
           label="Bimestre"
           placeholder="Selecione o bimestre"
           options={bimesterOptions}

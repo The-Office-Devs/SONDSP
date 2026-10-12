@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useClasses, useInactivateClass } from "../use-classes";
+import { useClasses, useInactivateClass } from "../../use-classes";
 import { useLinkUserToSchoolClass } from "@/users/users-page/use-users";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";

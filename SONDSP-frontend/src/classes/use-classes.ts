@@ -13,10 +13,11 @@ import {
   inactivateClassService, 
   getClassService, 
   listClassesService, 
-  updateClassService 
-} from "../classes.service";
-import type { ClassFilter, UseClassesOptions } from "../classes.types";
-import type { ClassFormData } from "./class.schema";
+  updateClassService, 
+  getClassStudentsService
+} from "./classes.service";
+import type { ClassFilter, ClassStudentsFilter, UseClassesOptions } from "./classes.types";
+import type { ClassFormData } from "./classes-page/class.schema";
 import type { PaginationParams } from "@/api/types";
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
@@ -104,5 +105,17 @@ export function useInactivateClass() {
 
     onError: (error: AxiosError<{ error: string }>) =>
       handleApiError(error || 'Erro ao alterar status da turma.')
+  });
+}
+
+export function useClassStudentsCard(
+  id: number,
+  filter: ClassStudentsFilter | null
+) {
+  return useQuery({
+    queryKey: ["class", id, "students-panel", filter],
+    queryFn: () => getClassStudentsService(id, filter as ClassStudentsFilter),
+    enabled: !!id && !!filter?.strandId,
+    placeholderData: keepPreviousData
   });
 }

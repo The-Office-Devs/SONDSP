@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useClasses } from "@/classes/classes-page/use-classes";
+import { useClasses } from "@/classes/use-classes";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
 

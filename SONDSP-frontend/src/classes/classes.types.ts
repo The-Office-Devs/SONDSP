@@ -1,3 +1,4 @@
+import type { SurveyResultCode } from "@/lib/survey-utils";
 import type { School } from "@/schools/schools.types";
 
 export interface ClassListItem {
@@ -23,6 +24,11 @@ export interface ClassFilter {
   schoolYear?: string;
 }
 
+export interface ClassStudentsFilter {
+  strandId?: number;
+  applicationPeriod?: string;
+};
+
 export interface UseClassesOptions {
   enabled?: boolean;
 }
@@ -36,3 +42,9 @@ export interface CreateClassRequest {
 }
 
 export type UpdateClassRequest = CreateClassRequest;
+
+export interface ClassStudents {
+  studentId: number;
+  studentName: string;
+  result: SurveyResultCode | null;
+};

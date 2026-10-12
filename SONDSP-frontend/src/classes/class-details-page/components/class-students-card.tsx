@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import type { ClassStudents } from "@/classes/classes.types";
 
 import { resultOptions } from "@/lib/options-utils";
 import { RESULT_DOT_CLASS, type SurveyResultCode } from "@/lib/survey-utils";
@@ -8,16 +11,10 @@ const LEGEND: SurveyResultCode[] = ["PS", "SV", "CV", "SA", "ALF"];
 
 const NO_RESULT_DOT_CLASS = "bg-slate-300";
 
-// trocar esse tipo quando o back tiver pronto
-export interface ClassStudentResult {
-  id: number;
-  name: string;
-  result: SurveyResultCode | null;
-}
-
 interface ClassStudentsCardProps {
-  students: ClassStudentResult[]; // talvez alterar isso
+  students: ClassStudents[];
   title?: string;
+  isFetching?: boolean;
 }
 
 function getResultLabel(code: SurveyResultCode | null) {
@@ -27,16 +24,26 @@ function getResultLabel(code: SurveyResultCode | null) {
 
 export function ClassStudentsCard({
   students,
-  title = "Turma"
+  title = "Turma",
+  isFetching = false
 }: Readonly<ClassStudentsCardProps>) {
   const total = students.length;
-  // estudantes ja devem vir em ordem alfabetica
   // mudar a rota que o link manda
   return (
     <section
       aria-label={title}
-      className="w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100 lg:w-1/2"
+      aria-busy={isFetching}
+      className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100 lg:w-1/2"
     >
+      {isFetching && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
+          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-md">
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            <span>Carregando dados...</span>
+          </div>
+        </div>
+      )}
+
       <header className="flex items-center justify-between bg-primary px-4 py-4 text-white">
         <h2 className="text-sm font-semibold">{title}</h2>
         <span className="text-sm font-medium">
@@ -55,10 +62,10 @@ export function ClassStudentsCard({
               const resultLabel = getResultLabel(student.result);
 
               return (
-                <li key={student.id}>
+                <li key={student.studentId}>
                   <Link
-                    to={`historico/aluno/${student.id}`}
-                    title={`${student.name} (${resultLabel})`}
+                    to={`app-alunos/aluno/${student.studentId}`}
+                    title={`${student.studentName} (${resultLabel})`}
                     className="group flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm hover:border-slate-300 hover:bg-slate-100"
                   >
                     <span 
@@ -70,7 +77,7 @@ export function ClassStudentsCard({
                     />
 
                      <span className="truncate underline-offset-2 group-hover:underline">
-                      {student.name}
+                      {student.studentName}
                     </span>
                   </Link>
                 </li>
