@@ -199,14 +199,14 @@ public class SchoolClassService {
 			}
 		}
 
-		List<DistributionDTO> distribuicao = calculateDistribution(latestSurveyByStudent.values());
+		List<DistributionDTO> distribution = calculateDistribution(latestSurveyByStudent.values());
 
-		List<EvolutionComparativeDTO> evolucaoComparativo = calculateEvolutionComparative(
+		List<EvolutionComparativeDTO> evolutionComparative = calculateEvolutionComparative(
 			previousSurveyByStudent.values(),
 			latestSurveyByStudent.values()
 		);
 
-		List<DomainPercentageDTO> percentualDominio = calculateDomainPercentage(
+		List<DomainPercentageDTO> domainPercentage = calculateDomainPercentage(
 			activeActivities,
 			activeStudents,
 			validSurveys,
@@ -218,9 +218,9 @@ public class SchoolClassService {
 			schoolClass.getSchool() != null ? schoolClass.getSchool().getName() : null,
 			schoolClass.getId(),
 			schoolClass.getName(),
-			percentualDominio,
-			distribuicao,
-			evolucaoComparativo
+			domainPercentage,
+			distribution,
+			evolutionComparative
 		);
 	}
 
@@ -266,9 +266,9 @@ public class SchoolClassService {
 		return orderedLevels
 			.stream()
 			.map(level -> {
-				int antes = countAntes.getOrDefault(level, 0L).intValue();
-				int depois = countDepois.getOrDefault(level, 0L).intValue();
-				return new EvolutionComparativeDTO(level, antes, depois);
+				int before = countAntes.getOrDefault(level, 0L).intValue();
+				int after = countDepois.getOrDefault(level, 0L).intValue();
+				return new EvolutionComparativeDTO(level, before, after);
 			})
 			.toList();
 	}
@@ -304,7 +304,7 @@ public class SchoolClassService {
 			List<Activity> activities = entry.getValue();
 			Set<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toSet());
 
-			int quantidadeEsperada = 0;
+			int expectedQuantity = 0;
 			int totalAvaliados = 0;
 
 			for (Student student : activeStudents) {
@@ -339,16 +339,16 @@ public class SchoolClassService {
 				if (targetSurvey != null) {
 					totalAvaliados++;
 					if (isExpectedLevel(targetSurvey.getResult())) {
-						quantidadeEsperada++;
+						expectedQuantity++;
 					}
 				}
 			}
 
 			double percentual = totalAvaliados > 0
-				? roundDouble(((double) quantidadeEsperada / totalAvaliados) * 100.0)
+				? roundDouble(((double) expectedQuantity / totalAvaliados) * 100.0)
 				: 0.0;
 
-			result.add(new DomainPercentageDTO(activityName, quantidadeEsperada, totalAvaliados, percentual));
+			result.add(new DomainPercentageDTO(activityName, expectedQuantity, totalAvaliados, percentual));
 		}
 
 		return result;

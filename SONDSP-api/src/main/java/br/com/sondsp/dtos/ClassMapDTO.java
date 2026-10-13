@@ -7,7 +7,7 @@ public record ClassMapDTO(
 	String schoolName,
 	Integer schoolClassId,
 	String schoolClassName,
-	List<DomainPercentageDTO> percentualDominio,
-	List<DistributionDTO> distribuicao,
-	List<EvolutionComparativeDTO> evolucaoComparativo
+	List<DomainPercentageDTO> domainPercentage,
+	List<DistributionDTO> distribution,
+	List<EvolutionComparativeDTO> evolutionComparative
 ) {}

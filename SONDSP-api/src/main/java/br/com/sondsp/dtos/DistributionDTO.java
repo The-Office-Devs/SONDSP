@@ -1,3 +1,3 @@
 package br.com.sondsp.dtos;
 
-public record DistributionDTO(String nivel, Integer quantidade, Double percentual) {}
+public record DistributionDTO(String level, Integer quantity, Double percentual) {}
