@@ -17,6 +17,7 @@ import { ActivitiesPage } from '@/activities/activities-page/activities-page';
 
 import { SurveysPage } from '@/surveys/surveys-page/surveys-page';
 import { SurveysHistoryPage } from '@/surveys/surveys-history/surveys-history-page';
+import { ClassMapPage } from '@/class-map/class-map-page/class-map-page';
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
           {
             element: <RoleRoute area="application" />,
             children: [
+              { path: 'app-mapa-classe', element: <ClassMapPage /> },
               { path: 'app-sondagens', element: <SurveysPage /> },
               { path: 'app-sondagens/historico/aluno/:id', element: <SurveysHistoryPage /> },
               { path: 'app-turmas', element: <SurveysPage />}

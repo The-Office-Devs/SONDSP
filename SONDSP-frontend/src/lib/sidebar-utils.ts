@@ -23,7 +23,7 @@ export const administratorItems = [
 export const applicationItems = [
   { label: 'Alunos', icon: UserRound, to: '/app-alunos' },
   { label: 'Dashboards', icon: BarChart3, to: '/dashboards' },
-  { label: 'Mapa de Classe', icon: LayoutGrid, to: '/mapa-classe' },
+  { label: 'Mapa de Classe', icon: LayoutGrid, to: '/app-mapa-classe' },
   { label: 'Sondagens', icon: BookOpenText, to: '/app-sondagens' },
   { label: 'Turmas', icon: ClipboardList, to: '/app-turmas' },
 ];

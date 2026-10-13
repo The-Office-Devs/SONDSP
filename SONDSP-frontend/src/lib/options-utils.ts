@@ -1,3 +1,5 @@
+export const ALL_VALUE = "all";
+
 export const roleOptions = [
   { value: "Administrador", label: "Administrador" },
   { value: "Administrador da Escola", label: "Administrador Escolar" },

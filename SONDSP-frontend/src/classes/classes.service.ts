@@ -7,6 +7,7 @@ import type {
   CreateClassRequest, 
   UpdateClassRequest 
 } from "./classes.types";
+import type { ClassMap, ClassMapFilter } from "@/class-map/class-map.types";
 
 export async function listClassesService(
   filter?: ClassFilter & PaginationParams
@@ -32,5 +33,10 @@ export async function updateClassService(id: number, data: UpdateClassRequest): 
 
 export async function inactivateClassService(id: number): Promise<string> {
   const response = await api.patch<string>(`/schoolClass/${id}/changeStatus`);
+  return response.data;
+}
+
+export async function getClassMapService(id: number, filter: ClassMapFilter): Promise<ClassMap> {
+  const response = await api.get<ClassMap>(`/schoolClass/${id}/classMap`, { params: filter });
   return response.data;
 }

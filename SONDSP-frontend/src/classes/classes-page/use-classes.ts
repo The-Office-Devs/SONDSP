@@ -13,11 +13,13 @@ import {
   inactivateClassService, 
   getClassService, 
   listClassesService, 
-  updateClassService 
+  updateClassService, 
+  getClassMapService
 } from "../classes.service";
 import type { ClassFilter } from "../classes.types";
 import type { ClassFormData } from "./class.schema";
 import type { PaginationParams } from "@/api/types";
+import type { ClassMapFilter } from "@/class-map/class-map.types";
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
 
@@ -100,5 +102,14 @@ export function useInactivateClass() {
 
     onError: (error: AxiosError<{ error: string }>) =>
       handleApiError(error || 'Erro ao alterar status da turma.')
+  });
+}
+
+export function useClassMap(id: number | undefined, filter: ClassMapFilter) {
+  return useQuery({
+    queryKey: ["class-map", id, filter],
+    queryFn: () => getClassMapService(id as number, filter),
+    enabled: !!id && !!filter.strandId,
+    placeholderData: keepPreviousData,
   });
 }
