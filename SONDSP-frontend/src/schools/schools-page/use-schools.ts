@@ -7,6 +7,9 @@ import {
 import { toast } from 'sonner';
 import type { AxiosError } from 'axios';
 
+import { useAuthStore } from '@/auth/auth.store';
+import { useUser } from '@/users/users-page/use-users';
+
 import { handleApiError } from '@/lib/utils';
 import { listUsersService } from '@/users/users.service';
 import {
@@ -96,4 +99,18 @@ export function useUsers(filter?: UserFilter & PaginationParams) {
     queryFn: () => listUsersService(filter),
     placeholderData: keepPreviousData,
   });
+}
+
+export function useSchoolOptions() {
+  const userId = useAuthStore((state) => state.user)?.id;
+  const { data, isLoading } = useUser(userId!);
+
+  const schools = data?.schools ?? [];
+
+  const options = schools.map((school) => ({
+    value: String(school.id),
+    label: school.name,
+  }));
+
+  return { schools, options, isLoading };
 }

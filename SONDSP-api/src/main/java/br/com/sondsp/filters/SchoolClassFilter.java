@@ -7,7 +7,9 @@ public record SchoolClassFilter(
         String gradeLevel,
         String schoolYear,
         String shift,
+        Integer numStudents,
         Boolean status,
+        Boolean hasStudents,
         String search
 ) {
 }

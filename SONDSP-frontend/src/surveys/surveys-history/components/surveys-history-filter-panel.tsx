@@ -6,17 +6,17 @@ import { Play } from "lucide-react";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { bimesterOptions, statusOptions, subjectOptions } from "@/lib/options-utils";
 import { useStrandOptions } from "@/strands/strands-page/use-strands";
+import { useStudent } from "@/students/students-page/use-students";
 import { 
-    type SurveyHistoryFormInput, 
-    type SurveyHistoryFormData,
-    surveyHistorySchema
-} from "../survey-history-schema";
+  type SurveyHistoryFormInput, 
+  type SurveyHistoryFormData,
+  surveyHistorySchema
+} from "../survey-history.schema";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { Button } from "@/components/ui/button";
 import { StartSurveyDialog } from "@/components/Dialog/StartSurveyDialog";
-import { useStudent } from "@/students/students-page/use-students";
 
 interface SurveyHistoryFilterPanelProps {
   onSearch: (data: SurveyHistoryFormData) => void;
@@ -27,7 +27,7 @@ interface SurveyHistoryFilterPanelProps {
 
 const defaultValues: SurveyHistoryFormInput = {
   status: "all",
-  bimester: "",
+  applicationPeriod: "",
   subjectId: 0,
   strandId: 0
 };
@@ -78,8 +78,7 @@ export function SurveysHistoryFilterPanel({
           isSubmitDisabled={isSubmitDisabled}
           isFilter
           onSubmit={form.handleSubmit(onSubmit)}
-          onReset={handleReset}
-          collapsible
+          onReset={handleReset}   
         >
           <SelectField
             name="status"
@@ -105,7 +104,7 @@ export function SurveysHistoryFilterPanel({
           />
 
           <SelectField
-            name="bimester"
+            name="applicationPeriod"
             label="Bimestre"
             placeholder="Selecione o bimestre"
             options={bimesterOptions}

@@ -101,7 +101,6 @@ export function UserUpsertPanel({
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleCancelEdit}
-        collapsible
       >
         <TextField
           name="email"
