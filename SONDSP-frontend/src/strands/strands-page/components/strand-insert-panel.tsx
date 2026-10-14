@@ -46,7 +46,6 @@ export function StrandInsertPanel() {
         isSubmitDisabled={isSubmitDisabled}
         isFilter={false}
         onSubmit={form.handleSubmit(onSubmit)}
-        collapsible
       >
         <TextField name="name" label="Nome" placeholder="Nome do eixo" />
 

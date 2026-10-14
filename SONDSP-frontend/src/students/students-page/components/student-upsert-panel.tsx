@@ -12,7 +12,7 @@ import {
 
 import { studentSchema, type StudentFormData, type StudentFormInput } from "../student.schema";
 import { useCreateStudent, useStudent, useUpdateStudent } from "../use-students";
-import { useClasses } from "@/classes/classes-page/use-classes";
+import { useClasses } from "@/classes/use-classes";
 import { getSubmitLabel } from "@/lib/form-utils";
 
 import {

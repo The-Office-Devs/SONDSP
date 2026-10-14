@@ -86,8 +86,15 @@ public class StudentService {
             if (filter == null)
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
-            if (filter.search() != null && !filter.search().isBlank()) {
-                Join<Student, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
+            boolean hasSearch = filter.search() != null && !filter.search().isBlank();
+            boolean hasSchoolClassId = filter.schoolClassId() != null;
+            boolean hasSchoolClassName = filter.schoolClassName() != null && !filter.schoolClassName().isBlank();
+
+            Join<Student, SchoolClass> schoolClassJoin = (hasSearch || hasSchoolClassId || hasSchoolClassName)
+                    ? root.join("schoolClass", JoinType.INNER)
+                    : null;
+
+            if (hasSearch) {
                 Join<SchoolClass, School> schoolJoin = schoolClassJoin.join("school", JoinType.INNER);
 
                 String search = filter.search().toLowerCase();
@@ -121,35 +128,30 @@ public class StudentService {
                     orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
                 predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
-            } else {
-                if (filter.name() != null && !filter.name().isBlank()) {
-                    predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
-                }
-
-                if (filter.registration() != null && !filter.registration().isBlank()) {
-                    predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(root.get("registration")), "%" + filter.registration().toLowerCase() + "%"));
-                }
-
-                if (filter.schoolClassId() != null) {
-                    Join<User, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
-                    predicates.add(criteriaBuilder.equal(schoolClassJoin.get("id"), filter.schoolClassId()));
-                }
-
-                if (filter.schoolClassName() != null && !filter.schoolClassName().isBlank()) {
-                    Join<User, SchoolClass> schoolClassJoin = root.join("schoolClass", JoinType.INNER);
-
-                    predicates.add(criteriaBuilder.like(
-                            criteriaBuilder.lower(schoolClassJoin.get("name")),
-                            "%" + filter.schoolClassName().toLowerCase() + "%"
-                    ));
-                }
-
-                if (filter.rowNumber() != null) {
-                    predicates.add(criteriaBuilder.equal(root.get("rowNumber"), filter.rowNumber()));
-                }
             }
+
+            if (filter.name() != null && !filter.name().isBlank()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder
+                        .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+            }
+
+            if (filter.registration() != null && !filter.registration().isBlank()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder
+                        .lower(root.get("registration")), "%" + filter.registration().toLowerCase() + "%"));
+            }
+
+            if (hasSchoolClassId)
+                predicates.add(criteriaBuilder.equal(schoolClassJoin.get("id"), filter.schoolClassId()));
+
+            if (hasSchoolClassName) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(schoolClassJoin.get("name")),
+                        "%" + filter.schoolClassName().toLowerCase() + "%"
+                ));
+            }
+
+            if (filter.rowNumber() != null)
+                predicates.add(criteriaBuilder.equal(root.get("rowNumber"), filter.rowNumber()));
 
             if (filter.status() != null)
                 predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
