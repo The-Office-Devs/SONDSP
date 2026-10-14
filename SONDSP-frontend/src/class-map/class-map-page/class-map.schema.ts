@@ -16,3 +16,4 @@ export const classMapSchema = z.object({
 
 export type ClassMapFormInput = z.input<typeof classMapSchema>;
 export type ClassMapFormData = z.infer<typeof classMapSchema>;
+export type ClassMapAppliedFilters = ClassMapFormData & { strandName?: string };

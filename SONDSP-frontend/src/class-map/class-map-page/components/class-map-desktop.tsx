@@ -1,13 +1,17 @@
 import { useState } from "react";
-import type { ClassMapFormData } from "../class-map.schema";
-import { ClassMapFilterPanel } from "./class-map-filter-panel";
+
 import { useClassMap } from "@/classes/classes-page/use-classes";
+import type { ClassMapAppliedFilters } from "../class-map.schema";
+
+import { ClassMapFilterPanel } from "./class-map-filter-panel";
+import { DomainPercentageCard } from "./domain-percentage-card";
+import { DistributionCard } from "./distribution-card";
+import { EvolutionComparativeCard } from "./evolution-comparative-card";
 
 export function ClassMapDesktop() {
-  const [appliedFilters, setAppliedFilters] = useState<ClassMapFormData | null>(null);
+  const [appliedFilters, setAppliedFilters] = useState<ClassMapAppliedFilters | null>(null);
 
   const { data: classMap, isLoading, isFetching } = useClassMap(appliedFilters?.schoolClassId, {
-    schoolId: appliedFilters?.schoolId,
     strandId: appliedFilters?.strandId,
     period: appliedFilters?.period || undefined,
   });
@@ -30,7 +34,25 @@ export function ClassMapDesktop() {
           </p>
         </div>
       ) : (
-        <p>aaa</p>
+        <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+          <div className="space-y-4">
+            <DomainPercentageCard
+              items={classMap?.domainPercentage ?? []}
+              isFetching={isFetching}
+            />
+            
+            <DistributionCard
+              items={classMap?.distribution ?? []}
+              strandName={appliedFilters.strandName}
+              isFetching={isFetching}
+            />
+          </div>
+
+          <EvolutionComparativeCard
+            items={classMap?.evolutionComparative ?? []}
+            isFetching={isFetching}
+          />
+        </div>
       )}
     </div>
   );

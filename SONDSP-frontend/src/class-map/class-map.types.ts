@@ -1,11 +1,6 @@
 export interface ClassMapFilter {
-  schoolId?: number;
   strandId?: number;
   period?: string;
-  // pq isso nao eh usado?
-  schoolClassId?: number;
-  subject?: string;
-  subjectName?: string;
 }
 
 export interface DistributionItem {

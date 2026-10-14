@@ -126,15 +126,6 @@ public class SchoolClassService {
 	public ClassMapDTO getClassMap(Integer id, ClassMapFilter filter) {
 		SchoolClass schoolClass = getSchoolClass(id);
 
-		if (
-			filter != null &&
-			filter.schoolId() != null &&
-			schoolClass.getSchool() != null &&
-			!Objects.equals(schoolClass.getSchool().getId(), filter.schoolId())
-		) {
-			throw new ValidationException(SCHOOL_NOT_FOUND);
-		}
-
 		if (filter == null || filter.strandId() == null) {
 			throw new ValidationException(EMPTY_STRAND);
 		}
@@ -214,9 +205,7 @@ public class SchoolClassService {
 		);
 
 		return new ClassMapDTO(
-			schoolClass.getSchool() != null ? schoolClass.getSchool().getId() : null,
 			schoolClass.getSchool() != null ? schoolClass.getSchool().getName() : null,
-			schoolClass.getId(),
 			schoolClass.getName(),
 			domainPercentage,
 			distribution,

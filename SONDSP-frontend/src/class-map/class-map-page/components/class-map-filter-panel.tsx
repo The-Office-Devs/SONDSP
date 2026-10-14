@@ -7,6 +7,7 @@ import { useStrandOptions } from "@/strands/strands-page/use-strands";
 import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 import { 
   classMapSchema, 
+  type ClassMapAppliedFilters, 
   type ClassMapFormData, 
   type ClassMapFormInput 
 } from "../class-map.schema";
@@ -16,7 +17,7 @@ import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
 
 interface ClassMapFilterPanelProps {
-  onSearch: (data: ClassMapFormData) => void;
+  onSearch: (data: ClassMapAppliedFilters) => void;
   onClear: () => void;
   isSearching: boolean;
 };
@@ -52,7 +53,12 @@ export function ClassMapFilterPanel({
   )?.label;
   const { options: strandOptions, isLoading: isLoadingStrands } = useStrandOptions(subjectLabel);
 
-  const onSubmit = (data: ClassMapFormData) => onSearch(data);
+  const onSubmit = (data: ClassMapFormData) => {
+    const strandName = strandOptions.find(
+      (opt) => opt.value === String(data.strandId)
+    )?.label;
+    onSearch({ ...data, strandName });
+  };
 
   const handleReset = () => {
     form.reset(defaultValues);
@@ -60,8 +66,6 @@ export function ClassMapFilterPanel({
   };
 
   const isSubmitDisabled = !form.formState.isValid || isSearching;
-  // nao envio a escola pro back, so utiliza na tela para achar a turma
-  // nao envio a materia pro back, so utilizo na tela para achar o eixo
   return (
     <FormProvider {...form}>
       <Card 
@@ -71,6 +75,7 @@ export function ClassMapFilterPanel({
         isFilter
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleReset}
+        collapsible
       >
         <SelectField
           name="schoolId"
