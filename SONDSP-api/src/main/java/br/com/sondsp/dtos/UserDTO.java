@@ -40,6 +40,7 @@ public record UserDTO(
 
         return schools.stream()
                 .map(UserSchool::getSchool)
+                .filter(school -> Boolean.TRUE.equals(school.getStatus()))
                 .map(school -> {
                     List<SchoolClassDTO> classesLinkedToThisSchool = schoolClasses == null ? List.of() :
                             schoolClasses.stream()

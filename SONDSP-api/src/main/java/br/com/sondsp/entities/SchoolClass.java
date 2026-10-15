@@ -2,6 +2,7 @@ package br.com.sondsp.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Getter
@@ -31,6 +32,9 @@ public class SchoolClass {
 
     @Column(name = "turno")
     private String shift;
+
+    @Formula("(select count(*) from aluno a where a.id_turma = id and a.status = true)")
+    private Integer numStudents;
 
     @Column(name = "status")
     private Boolean status;

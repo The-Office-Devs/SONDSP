@@ -4,6 +4,8 @@ import type {
   Class, 
   ClassFilter, 
   ClassListItem, 
+  ClassStudents, 
+  ClassStudentsFilter, 
   CreateClassRequest, 
   UpdateClassRequest 
 } from "./classes.types";
@@ -33,4 +35,9 @@ export async function updateClassService(id: number, data: UpdateClassRequest): 
 export async function inactivateClassService(id: number): Promise<string> {
   const response = await api.patch<string>(`/schoolClass/${id}/changeStatus`);
   return response.data;
+}
+
+export async function getClassStudentsService(id: number, filter: ClassStudentsFilter): Promise<ClassStudents[]> {
+  const response = await api.get<ClassStudents[]>(`/schoolClass/${id}/students-pannel`, { params: filter });
+  return response.data; 
 }

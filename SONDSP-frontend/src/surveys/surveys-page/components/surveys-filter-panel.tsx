@@ -1,14 +1,13 @@
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useAuthStore } from "@/auth/auth.store";
-import { useUser } from "@/users/users-page/use-users";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { surveySchema, type SurveyFormData, type SurveyFormInput } from "../survey-schema";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
+import { useSchoolOptions } from "@/schools/schools-page/use-schools";
 
 interface SurveyFilterPanelProps {
   onSearch: (data: SurveyFormData) => void;
@@ -26,10 +25,7 @@ export function SurveysFilterPanel({
   onClear, 
   isSearching 
 }: SurveyFilterPanelProps) {
-  const userId = useAuthStore((state) => state.user)?.id;
-  const { data: userData } = useUser(userId!);
-  const schools = userData?.schools ?? [];
-
+  const { schools, options: schoolOptions, isLoading: isLoadingSchools } = useSchoolOptions();
   const submitLabel = getSubmitLabel(isSearching, 'filter');
 
   const form = useForm<SurveyFormInput, unknown, SurveyFormData>({
@@ -47,20 +43,15 @@ export function SurveysFilterPanel({
     onClear();
   }
 
-  const schoolOptions = schools.map((school) => ({
-    value: String(school.id),
-    label: school.name
-  }));
-
   const classOptions =
-  schools
-    .find((school) => school.id === Number(schoolId))
-    ?.schoolClass
-    .filter((schoolClass) => schoolClass.status)
-    .map((schoolClass) => ({
-      value: String(schoolClass.id),
-      label: `${schoolClass.name} - ${schoolClass.schoolYear}`
-    })) ?? [];
+    schools
+      .find((school) => school.id === Number(schoolId))
+        ?.schoolClass
+      .filter((schoolClass) => schoolClass.status)
+      .map((schoolClass) => ({
+        value: String(schoolClass.id),
+        label: `${schoolClass.name} - ${schoolClass.schoolYear}`
+      })) ?? [];
 
   const isSubmitDisabled = !form.formState.isValid || isSearching;
   return (
@@ -72,12 +63,11 @@ export function SurveysFilterPanel({
         isFilter
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleReset}
-        collapsible
       >
         <SelectField
           name="schoolId"
           label="Escola"
-          placeholder="Selecione a escola"
+          placeholder={isLoadingSchools ? "Carregando escolas..." : "Selecione a escola"}
           options={schoolOptions}
           onValueChange={() => form.setValue("schoolClassId", 0, { shouldValidate: true })}
         />
