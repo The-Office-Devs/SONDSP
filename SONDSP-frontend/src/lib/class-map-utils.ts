@@ -8,7 +8,7 @@ interface DeltaTrend {
   color: string;
 }
 
-export const UNKNOWN_LEVEL_CLASS = "bg-slate-400";
+export const UNKNOWN_LEVEL_CLASS = "bg-slate-300";
 export const AXIS_TEXT_COLOR = "#64748B";
 export const BEFORE_COLOR = "#E58B2F";
 export const AFTER_COLOR = "#60A5FA";
