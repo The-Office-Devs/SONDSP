@@ -34,6 +34,7 @@ public class SurveyService {
     private final StudentRepository studentRepository;
     private final ActivityRepository activityRepository;
     private final SupabaseStorageService storageService;
+    private final AuthenticationService authenticationService;
 
     @Autowired
     private SpecificationFilter specificationFilter;

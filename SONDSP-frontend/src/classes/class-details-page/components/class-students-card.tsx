@@ -4,22 +4,17 @@ import { cn } from "@/lib/utils";
 
 import type { ClassStudents } from "@/classes/classes.types";
 
-import { resultOptions } from "@/lib/options-utils";
-import { RESULT_DOT_CLASS, type SurveyResultCode } from "@/lib/survey-utils";
-
-const LEGEND: SurveyResultCode[] = ["PS", "SV", "CV", "SA", "ALF"];
-
-const NO_RESULT_DOT_CLASS = "bg-slate-300";
+import { 
+  getResultLabel, 
+  LEGEND, 
+  NO_RESULT_DOT_CLASS, 
+  RESULT_DOT_CLASS 
+} from "@/lib/survey-utils";
 
 interface ClassStudentsCardProps {
   students: ClassStudents[];
   title?: string;
   isFetching?: boolean;
-}
-
-function getResultLabel(code: SurveyResultCode | null) {
-  if (!code) return "Sem sondagem";
-  return resultOptions.find((option) => option.value === code)?.label ?? code;
 }
 
 export function ClassStudentsCard({
@@ -88,19 +83,19 @@ export function ClassStudentsCard({
         )}
 
         <div className="mt-4 border-t border-neutral-300 pt-2">
-          <p className="text-xs text-slate-700"> Legenda </p>
+          <p className="text-sm text-slate-700"> Legenda </p>
           <ul className="mt-2 flex flex-wrap gap-x-4">
             {LEGEND.map((code) => (
               <li
                 key={code}
                 title={getResultLabel(code)}
-                className="flex items-center gap-2 text-xs text-slate-700"
+                className="flex items-center gap-2 text-sm text-slate-700"
               >
                 <span aria-hidden="true" className={cn("size-2 rounded-full", RESULT_DOT_CLASS[code])} />
                 {code}
               </li>
             ))}
-            <li className="flex items-center gap-2 text-xs text-slate-700">
+            <li className="flex items-center gap-2 text-sm text-slate-700">
               <span aria-hidden="true" className={cn("size-2 rounded-full", NO_RESULT_DOT_CLASS)} />
               {getResultLabel(null)}
             </li>

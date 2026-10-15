@@ -26,6 +26,7 @@ import type {
 } from '../schools.types';
 import type { UserFilter } from '@/users/users.types';
 import type { PaginationParams } from '@/api/types';
+import { ALL_VALUE } from '@/lib/options-utils';
 
 
 const SCHOOLS_QUERY_KEY = ['schools'] as const;
@@ -101,16 +102,44 @@ export function useUsers(filter?: UserFilter & PaginationParams) {
   });
 }
 
-export function useSchoolOptions() {
+export function useUserSchoolOptions(schoolId?: number) {
   const userId = useAuthStore((state) => state.user)?.id;
-  const { data, isLoading } = useUser(userId!);
+  const { data: userData, isLoading } = useUser(userId!);
+  const schools = userData?.schools ?? [];
 
-  const schools = data?.schools ?? [];
-
-  const options = schools.map((school) => ({
+  const schoolOptions = schools.map((school) => ({
     value: String(school.id),
-    label: school.name,
+    label: school.name
   }));
 
-  return { schools, options, isLoading };
+  const classOptions =
+    schools
+      .find((school) => school.id === schoolId)
+      ?.schoolClass
+      .filter((schoolClass) => schoolClass.status)
+      .map((schoolClass) => ({
+        value: String(schoolClass.id),
+        label: `${schoolClass.name} - ${schoolClass.schoolYear}`
+      })) ?? [];
+
+  const years = new Set(
+    schools
+      .flatMap((school) => school.schoolClass ?? [])
+      .map((schoolClass) => schoolClass.schoolYear)
+      .filter(Boolean)
+  );
+
+  const schoolYearOptions = [
+      { value: ALL_VALUE, label: "Todos" },
+      ...[...years]
+        .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
+        .map((year) => ({ value: year, label: year }))
+    ];
+
+  return { 
+    schoolOptions, 
+    classOptions, 
+    schoolYearOptions, 
+    isLoading 
+  };
 }
