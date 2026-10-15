@@ -10,12 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -76,5 +71,10 @@ public class SchoolClassControllerImpl implements SchoolClassController {
 	@GetMapping("/{id}/students-pannel")
 	public ResponseEntity<?> getStudentsPannel(Integer id, String applicationPeriod, Integer strandId) {
 		return ResponseEntity.ok().body(service.getStudentsPannel(id, applicationPeriod, strandId));
+	}
+
+	@GetMapping("/{id}/trajectory")
+	public ResponseEntity<?> getStudentsTrajectory(Integer id, Integer strandId) {
+		return ResponseEntity.ok().body(service.getStudentsTrajectory(id, strandId));
 	}
 }

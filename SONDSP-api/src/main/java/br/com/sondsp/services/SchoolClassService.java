@@ -1,31 +1,25 @@
 package br.com.sondsp.services;
 
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_ALREADY_EXISTS;
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_CANNOT_ACTIVATE;
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_CANNOT_INACTIVATE;
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_NOT_FOUND;
-
-import br.com.sondsp.dtos.StudentsPannelDTO;
-import br.com.sondsp.entities.School;
-import br.com.sondsp.entities.SchoolClass;
-import br.com.sondsp.entities.Student;
+import br.com.sondsp.dtos.*;
+import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import br.com.sondsp.repositories.SchoolClassRepository;
 import br.com.sondsp.repositories.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Tuple;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import jakarta.validation.ValidationException;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -71,6 +65,8 @@ public class SchoolClassService {
 	}
 
 	public List<StudentsPannelDTO> getStudentsPannel(Integer schoolClassId, String applicationPeriod, Integer strandId) {
+		getSchoolClass(schoolClassId);
+
 		List<Tuple> tuples = repository.getStudentsSumary(schoolClassId, applicationPeriod, strandId);
 
 		return tuples
@@ -82,6 +78,28 @@ public class SchoolClassService {
 					tuple.get("result", String.class)
 				)
 			)
+			.toList();
+	}
+
+	public List<StudentsTrajectoryDTO> getStudentsTrajectory(Integer schoolClassId, Integer strandId) {
+		getSchoolClass(schoolClassId);
+
+		List<Tuple> tuples = repository.getStudentsTrajectory(schoolClassId, strandId);
+
+		return tuples
+			.stream()
+			.map(tuple ->
+				new StudentsTrajectoryDTO(
+					new StudentSimplestDTO(
+							tuple.get("studentId", Integer.class),
+							tuple.get("studentName", String.class)),
+					new TrajectoryResultDTO(
+							tuple.get("initial", String.class),
+							tuple.get("fstPeriod", String.class),
+							tuple.get("sndPeriod", String.class),
+							tuple.get("trdPeriod", String.class),
+							tuple.get("frtPeriod", String.class))
+				))
 			.toList();
 	}
 
