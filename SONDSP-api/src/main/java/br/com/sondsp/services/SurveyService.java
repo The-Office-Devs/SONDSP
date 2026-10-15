@@ -126,8 +126,7 @@ public class SurveyService {
             return null;
         }
 
-        // Gera uma URL assinada válida por 1 hora (3600 segundos)
-        return storageService.generateSignedUrl(survey.getSurveyImagePath(), IMAGE_URL_EXPIRATION_TIME);
+        return storageService.generateSignedUrl(survey.getSurveyImagePath(), formatSurveyFileName(survey));
     }
 
     private Specification<Survey> belongsToStudent(Integer studentId) {
