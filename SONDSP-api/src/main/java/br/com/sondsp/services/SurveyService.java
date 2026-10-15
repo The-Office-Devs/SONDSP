@@ -3,14 +3,10 @@ package br.com.sondsp.services;
 import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.SurveyFilter;
 import br.com.sondsp.form.SurveyForm;
-import br.com.sondsp.repositories.ActivityRepository;
-import br.com.sondsp.repositories.StudentRepository;
-import br.com.sondsp.repositories.SurveyRepository;
+import br.com.sondsp.repositories.*;
 import br.com.sondsp.util.SpecificationFilter;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import jakarta.xml.bind.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
+import static br.com.sondsp.util.FileNameUtils.formatSurveyFileName;
 import static br.com.sondsp.util.SystemMessages.*;
-import br.com.sondsp.util.FileNameUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -46,12 +41,7 @@ public class SurveyService {
         Survey survey = new Survey(form, administrator, student, activity);
 
         if (form.image() != null && !form.image().isEmpty()) {
-            String fileName = FileNameUtils.formatSurveyFileName(
-                    student.getName(),
-                    survey.getDate(),
-                    form.image().getOriginalFilename()
-            );
-            String savedImagePath = storageService.uploadImage(form.image(), fileName);
+            String savedImagePath = storageService.uploadImage(form.image());
             survey.setSurveyImagePath(savedImagePath);
         }
 
@@ -65,13 +55,7 @@ public class SurveyService {
         survey.setStatus(true);
 
         if (form.image() != null && !form.image().isEmpty()) {
-            String studentName = survey.getStudent() != null ? survey.getStudent().getName() : "aluno";
-            String fileName = FileNameUtils.formatSurveyFileName(
-                    studentName,
-                    survey.getDate(),
-                    form.image().getOriginalFilename()
-            );
-            String savedImagePath = storageService.uploadImage(form.image(), fileName);
+            String savedImagePath = storageService.uploadImage(form.image());
             survey.setSurveyImagePath(savedImagePath);
         }
 
@@ -133,8 +117,7 @@ public class SurveyService {
             return null;
         }
 
-        // Gera uma URL assinada válida por 1 hora (3600 segundos)
-        return storageService.generateSignedUrl(survey.getSurveyImagePath(), IMAGE_URL_EXPIRATION_TIME);
+        return storageService.generateSignedUrl(survey.getSurveyImagePath(), formatSurveyFileName(survey));
     }
 
     private Specification<Survey> belongsToStudent(Integer studentId) {

@@ -1,5 +1,7 @@
 package br.com.sondsp.util;
 
+import br.com.sondsp.entities.Survey;
+
 import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,16 +12,14 @@ public final class FileNameUtils {
 
 	private FileNameUtils() {}
 
-	public static String formatActivityFileName(String activityName, String originalFilename) {
-		String extension = extractExtension(originalFilename);
-		String sanitizedName = sanitizeName(activityName);
-		return sanitizedName + extension;
+	public static String formatActivityFileName(String activityName) {
+		return sanitizeName(activityName);
 	}
 
-	public static String formatSurveyFileName(String studentName, LocalDateTime date, String originalFilename) {
-		String extension = extractExtension(originalFilename);
-		String sanitizedStudentName = sanitizeName(studentName);
-		LocalDateTime effectiveDate = (date != null) ? date : LocalDateTime.now();
+	public static String formatSurveyFileName(Survey survey) {
+		String extension = extractExtension(survey.getSurveyImagePath());
+		String sanitizedStudentName = sanitizeName(survey.getStudent().getName());
+		LocalDateTime effectiveDate = (survey.getDate() != null) ? survey.getDate() : LocalDateTime.now();
 		String formattedDate = effectiveDate.format(DATE_FORMATTER);
 
 		return "sondagem_" + sanitizedStudentName + "_" + formattedDate + extension;
