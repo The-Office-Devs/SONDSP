@@ -64,8 +64,6 @@ public final class SystemMessages {
 	public static final String INVALID_REGISTRATION_FORMAT = "O formato do registro funcional está incorreto.";
 	public static final String MUST_HAVE_CLASS = "O aluno deve estar em uma turma para ter número da chamada.";
 	public static final String MUST_HAVE_ROW_NUMBER = "O aluno deve possuir um número de chamada na turma.";
-	public static final String ERROR_SAVING_IMAGE = "Não foi possível salvar o arquivo de imagem.";
-	public static final String ERROR_RETRIEVING_IMAGE = "Não foi possível recuperar o arquivo de imagem.";
 	public static final String SURVEY_CANNOT_DELETE = "A sondagem não foi encontrada.";
 	public static final String DIFFERENT_AUTHOR = "Somente o criador da mensagem pode edita-lá.";
 	public static final String HAS_OPEN_SURVEY_SAME_ACVTY =

@@ -11,8 +11,6 @@ import java.util.Optional;
 @Repository
 public interface AccountActivationCodeRepository extends JpaRepository<AccountActivationCode, Long> {
 
-    Optional<AccountActivationCode> findByCodeHash(String codeHash);
-
     Optional<AccountActivationCode> findFirstByUserIdAndCodeHashOrderByCreatedAtDesc(Integer userId, String codeHash);
 
     List<AccountActivationCode> findAllByUserIdAndUsedAtIsNullAndExpiresAtGreaterThan(Integer userId, LocalDateTime now);
