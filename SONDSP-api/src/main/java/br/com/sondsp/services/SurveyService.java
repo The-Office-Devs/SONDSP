@@ -87,8 +87,8 @@ public class SurveyService {
         return pedagogicalLevelService.getResultOptionsForActivity(activity);
     }
 
-    public List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO> getResultOptions(String strandName, String gradeLevel) {
-        return pedagogicalLevelService.getResultOptions(strandName, gradeLevel, null);
+    public List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO> getResultOptions(String strandCode, String gradeLevel) {
+        return pedagogicalLevelService.getResultOptions(strandCode, gradeLevel);
     }
   
     public void deleteSurvey(Integer id) throws ValidationException {

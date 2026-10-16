@@ -98,9 +98,9 @@ public class SurveyControllerImpl implements SurveyController {
 	@Override
 	@GetMapping("/result-options")
 	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getResultOptions(
-			@RequestParam(required = false) String strandName,
+			@RequestParam(required = false) String strandCode,
 			@RequestParam(required = false) String gradeLevel
 	) {
-		return ResponseEntity.ok(surveyService.getResultOptions(strandName, gradeLevel));
+		return ResponseEntity.ok(surveyService.getResultOptions(strandCode, gradeLevel));
 	}
 }

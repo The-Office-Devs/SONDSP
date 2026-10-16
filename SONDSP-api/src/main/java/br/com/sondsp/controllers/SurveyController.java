@@ -159,7 +159,7 @@ public interface SurveyController {
 	ResponseEntity<java.util.List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(@PathVariable Integer activityId);
 
 	@Operation(
-		description = "Retorna os níveis oficiais de avaliação permitidos filtrando por nome do eixo e ano escolar.",
+		description = "Retorna os níveis oficiais de avaliação permitidos filtrando por código do eixo e ano escolar.",
 		responses = {
 			@ApiResponse(
 				responseCode = "200",
@@ -172,7 +172,7 @@ public interface SurveyController {
 		}
 	)
 	ResponseEntity<java.util.List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getResultOptions(
-		@RequestParam(required = false) String strandName,
+		@RequestParam(required = false) String strandCode,
 		@RequestParam(required = false) String gradeLevel
 	);
 }
