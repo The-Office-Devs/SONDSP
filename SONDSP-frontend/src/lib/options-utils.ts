@@ -1,3 +1,6 @@
+export const ALL_VALUE = "all";
+const ALL_OPTION = { value: ALL_VALUE, label: "Todos" };
+
 export const roleOptions = [
   { value: "Administrador", label: "Administrador" },
   { value: "Administrador da Escola", label: "Administrador Escolar" },
@@ -27,22 +30,111 @@ export const gradeLevelOptions = [1, 2, 3].map((n) => {
   return { value: label, label };
 });
 
+export const gradeLevelOptionsWithAll = [ALL_OPTION, ...gradeLevelOptions];
+
 export const shiftOptions = [
   { value: "Manhã", label: "Manhã" },
   { value: "Tarde", label: "Tarde" },
   { value: "Integral", label: "Integral" }
 ];
 
+export const shiftOptionsWithAll = [ALL_OPTION, ...shiftOptions];
+
 export const statusOptions = [
-  { value: "all", label: "Todos" },
+  ALL_OPTION,
   { value: "false", label: "Aberto" },
   { value: "true", label: "Finalizado" }
 ];
 
 export const resultOptions = [
-  { value: "PS", label: "Pré-Silábico" },
-  { value: "SV", label: "Silábico Sem Valor" },
-  { value: "CV", label: "Silábico Com Valor" },
-  { value: "SA", label: "Semi Alfabético" },
-  { value: "ALF", label: "Alfabético" }
+  { value: "PS", label: "Pré-Silábica (PS)" },
+  { value: "SSVC", label: "Silábica Sem Valor Sonoro (SSVC)" },
+  { value: "SCVC", label: "Silábica Com Valor Sonoro (SCVC)" },
+  { value: "SA", label: "Silábico-Alfabética (SA)" },
+  { value: "A", label: "Alfabética (A)" },
+  { value: "NIVEL_01", label: "Nível 01" },
+  { value: "NIVEL_02", label: "Nível 02" },
+  { value: "NIVEL_03", label: "Nível 03" },
+  { value: "NIVEL_04", label: "Nível 04" },
+  { value: "NIVEL_05", label: "Nível 05" },
+  { value: "N1", label: "Nível 01" },
+  { value: "N2", label: "Nível 02" },
+  { value: "N3", label: "Nível 03" },
+  { value: "N4", label: "Nível 04" },
+  { value: "N5", label: "Nível 05" },
+  { value: "ADEQUADA", label: "Compreensão Adequada" },
+  { value: "INADEQUADA", label: "Compreensão Inadequada" },
+  { value: "NAO_RESPONDEU", label: "Não Respondeu" },
+  { value: "AD", label: "Compreensão Adequada" },
+  { value: "IN", label: "Compreensão Inadequada" },
+  { value: "NR", label: "Não Respondeu" },
+  { value: "ACERTOU", label: "Acertou" },
+  { value: "ACERTOU_PARCIALMENTE", label: "Acertou Parcialmente" },
+  { value: "ERROU", label: "Errou" },
+  { value: "AC", label: "Acertou" },
+  { value: "AP", label: "Acertou Parcialmente" },
+  { value: "ER", label: "Errou" }
 ];
+
+export const seaResultOptions = [
+  { value: "PS", label: "Pré-Silábica (PS)" },
+  { value: "SSVC", label: "Silábica Sem Valor Sonoro (SSVC)" },
+  { value: "SCVC", label: "Silábica Com Valor Sonoro (SCVC)" },
+  { value: "SA", label: "Silábico-Alfabética (SA)" },
+  { value: "A", label: "Alfabética (A)" }
+];
+
+export const textProductionResultOptions = [
+  { value: "NIVEL_01", label: "Nível 01 — Não produziu / Fuga ao gênero" },
+  { value: "NIVEL_02", label: "Nível 02 — Fuga ao tema / Reescrita sem autoria" },
+  { value: "NIVEL_03", label: "Nível 03 — Ausência de elementos / Coerência parcial" },
+  { value: "NIVEL_04", label: "Nível 04 — Produção adequada / Autoria criativa" },
+  { value: "PS", label: "Pré-Silábica (PS - Diagnóstico SEA)" },
+  { value: "SSVC", label: "Silábica Sem Valor (SSVC - Diagnóstico SEA)" },
+  { value: "SCVC", label: "Silábica Com Valor (SCVC - Diagnóstico SEA)" },
+  { value: "SA", label: "Silábico-Alfabética (SA - Diagnóstico SEA)" }
+];
+
+export const mathNumberWritingResultOptions = [
+  { value: "NIVEL_01", label: "Nível 01 — Não utiliza algarismos (letras, garatujas)" },
+  { value: "NIVEL_02", label: "Nível 02 — Reconhece algarismos sem correspondência plena" },
+  { value: "NIVEL_03", label: "Nível 03 — Apoio na oralidade e justaposição aditiva (704 p/ 74)" },
+  { value: "NIVEL_04", label: "Nível 04 — Domínio parcial do valor posicional (nós/zeros intercalados)" },
+  { value: "NIVEL_05", label: "Nível 05 — Domínio consolidado do SND" }
+];
+
+export const readingResultOptions = [
+  { value: "ADEQUADA", label: "Compreensão Adequada" },
+  { value: "INADEQUADA", label: "Compreensão Inadequada" },
+  { value: "NAO_RESPONDEU", label: "Não Respondeu" }
+];
+
+export const mathProblemResultOptions = [
+  { value: "ACERTOU", label: "Acertou" },
+  { value: "ACERTOU_PARCIALMENTE", label: "Acertou Parcialmente" },
+  { value: "ERROU", label: "Errou" }
+];
+
+export function getPedagogicalResultOptions(
+  strandCode?: string,
+  gradeLevel?: string
+) {
+  const code = (strandCode ?? "").trim().toUpperCase();
+  const grade = (gradeLevel ?? "").trim().toLowerCase();
+
+  switch (code) {
+    case "LEITURA":
+      return readingResultOptions;
+    case "SITUACOES_PROBLEMA":
+      return mathProblemResultOptions;
+    case "ESCRITA_NUMEROS":
+      return mathNumberWritingResultOptions;
+    case "ESCRITA":
+      if (grade.includes("2") || grade.includes("3")) {
+        return textProductionResultOptions;
+      }
+      return seaResultOptions;
+    default:
+      return [];
+  }
+}

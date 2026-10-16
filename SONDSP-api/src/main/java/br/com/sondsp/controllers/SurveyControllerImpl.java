@@ -1,8 +1,12 @@
 package br.com.sondsp.controllers;
 
+import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
+
 import br.com.sondsp.dtos.ImageDTO;
 import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.SurveyDTO;
+
+import br.com.sondsp.dtos.*;
 import br.com.sondsp.entities.Survey;
 import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.SurveyFilter;
@@ -11,100 +15,92 @@ import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.SurveyService;
 import br.com.sondsp.util.SystemMessages;
 import jakarta.xml.bind.ValidationException;
+import java.io.IOException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.SortDefault;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.Optional;
-
-import static br.com.sondsp.util.SystemMessages.ERROR_RETRIEVING_IMAGE;
-import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
-
 @RestController
 @RequestMapping("/survey")
-public class SurveyControllerImpl {
-    @Autowired
-    private SurveyService surveyService;
+public class SurveyControllerImpl implements SurveyController {
 
-    @Autowired
-    private AuthenticationService authenticationService;
+	@Autowired
+	private SurveyService surveyService;
 
-    @PostMapping
-    public ResponseEntity<?> createSurvey(@RequestBody SurveyForm form) throws IOException {
-        Optional<User> creator = authenticationService.getCurrentUser();
-        if (creator.isPresent()) {
-            return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form, creator.get())));
+	@Autowired
+	private AuthenticationService authenticationService;
 
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, SystemMessages.USER_NOT_FOUND);
-        }
-    }
+	@PostMapping
+	public ResponseEntity<?> createSurvey(SurveyForm form) throws ValidationException, IOException {
+		return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form)));
+	}
 
-    @GetMapping()
-    public ResponseEntity<?> getSurveys(@ModelAttribute SurveyFilter filter) {
-        return ResponseEntity.ok().body(surveyService.listSurveys(filter).stream().map(SurveyDTO::new));
-    }
+	@GetMapping
+	public ResponseEntity<?> getSurveys(SurveyFilter filter) {
+		return ResponseEntity.ok().body(surveyService.listSurveys(filter).stream().map(SurveyDTO::new));
+	}
 
-    @GetMapping("/student-surveys/{id}")
-    public ResponseEntity<PageResponse<SurveyDTO>> getStudentSurveys(
-            @PathVariable Integer id,
-            @ModelAttribute SurveyFilter filter,
-            @SortDefault.SortDefaults({
-                    @SortDefault(sort = "status", direction = Sort.Direction.ASC),
-                    @SortDefault(sort = "activity.strand.subject", direction = Sort.Direction.ASC),
-                    @SortDefault(sort = "activity.name", direction = Sort.Direction.ASC, caseSensitive = false)
-            }) Pageable pageable) {
+	@GetMapping("/student-surveys/{id}")
+	public ResponseEntity<PageResponse<SurveyDTO>> getStudentSurveys(
+		Integer id,
+		SurveyFilter filter,
+		Pageable pageable
+	) {
+		User applicator = authenticationService
+			.getCurrentUser()
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, SystemMessages.USER_NOT_FOUND));
 
-        User applicator = authenticationService.getCurrentUser()
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED, SystemMessages.USER_NOT_FOUND));
+		Page<Survey> surveyPage = surveyService.getStudentSurveys(id, applicator, filter, pageable);
 
-        Page<Survey> surveyPage = surveyService.getStudentSurveys(id, applicator, filter, pageable);
+		List<SurveyDTO> contentDTO = surveyPage.getContent().stream().map(SurveyDTO::new).toList();
 
-        List<SurveyDTO> contentDTO = surveyPage.getContent().stream()
-                .map(SurveyDTO::new)
-                .toList();
+		PageResponse<SurveyDTO> response = new PageResponse<>(
+			contentDTO,
+			surveyPage.getNumber(),
+			surveyPage.getSize(),
+			surveyPage.getTotalElements(),
+			surveyPage.getTotalPages(),
+			surveyPage.hasNext(),
+			surveyPage.hasPrevious()
+		);
 
-        PageResponse<SurveyDTO> response = new PageResponse<>(
-                contentDTO,
-                surveyPage.getNumber(),
-                surveyPage.getSize(),
-                surveyPage.getTotalElements(),
-                surveyPage.getTotalPages(),
-                surveyPage.hasNext(),
-                surveyPage.hasPrevious()
-        );
+		return ResponseEntity.ok().body(response);
+	}
 
-        return ResponseEntity.ok().body(response);
-    }
+	@PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
+	public ResponseEntity<?> updateSurvey(Integer id, SurveyForm form) throws IOException {
+		return ResponseEntity.ok().body(new SurveyDTO(surveyService.updateSurvey(id, form)));
+	}
 
-    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
-    public ResponseEntity<?> updateSurvey(@PathVariable Integer id, @ModelAttribute SurveyForm form) throws IOException {
-        return ResponseEntity.ok().body(new SurveyDTO(surveyService.updateSurvey(id, form)));
-    }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteSurvey(Integer id) throws ValidationException {
+		surveyService.deleteSurvey(id);
+		return ResponseEntity.ok(SURVEY_DELETED);
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteSurvey(@PathVariable Integer id) throws ValidationException {
-        surveyService.deleteSurvey(id);
-        return ResponseEntity.ok(SURVEY_DELETED);
-    }
+	@GetMapping("get-survey-image/{id}")
+	public ResponseEntity<?> getSurveyImage(Integer id) {
+		String imageUrl = surveyService.getSurveyImageSignedUrl(id);
+		return ResponseEntity.ok().body(new ImageDTO(imageUrl));
+	}
 
-    @GetMapping("get-survey-image/{id}")
-    public ResponseEntity<?> getSurveyImage(@PathVariable Integer id) {
-        String imageUrl = surveyService.getSurveyImageSignedUrl(id);
-        return ResponseEntity.ok().body(new ImageDTO(imageUrl));
-    }
+	@Override
+	@GetMapping("/activity/{activityId}/result-options")
+	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(@PathVariable Integer activityId) {
+		return ResponseEntity.ok(surveyService.getResultOptionsForActivity(activityId));
+	}
+
+	@Override
+	@GetMapping("/result-options")
+	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getResultOptions(
+			@RequestParam(required = false) String strandCode,
+			@RequestParam(required = false) String gradeLevel
+	) {
+		return ResponseEntity.ok(surveyService.getResultOptions(strandCode, gradeLevel));
+	}
 }

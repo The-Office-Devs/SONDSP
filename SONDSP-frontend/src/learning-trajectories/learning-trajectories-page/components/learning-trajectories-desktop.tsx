@@ -1,0 +1,45 @@
+import { useState } from "react"
+
+import type { LearningTrajectoriesFormData } from "../learning-trajectories.schema";
+
+import { LearningTrajectoriesCard } from "./learning-trajectories-card";
+import { LearningTractoriesFilterPanel } from "./learning-trajectories-filter-panel";
+import { useLearningTrajectory } from "@/classes/use-classes";
+import { useStrand } from "@/strands/strands-page/use-strands";
+
+export function LearningTrajectoriesDesktop() {
+  const [appliedFilters, setAppliedFilters] = useState<LearningTrajectoriesFormData | null>(null);
+
+  const { data: trajectories = [], isLoading, isFetching } = useLearningTrajectory(appliedFilters?.schoolClassId, {
+    strandId: appliedFilters?.strandId,
+  });
+
+  const { data: currentStrand } = useStrand(appliedFilters?.strandId ?? null);
+
+  const handleClear = () => setAppliedFilters(null);
+
+  const hasRequiredFilter = !!appliedFilters?.schoolClassId && !!appliedFilters?.strandId;
+  return (
+    <div className="space-y-4 p-4 lg:p-6">
+      <LearningTractoriesFilterPanel
+        onSearch={setAppliedFilters}
+        onClear={handleClear}
+        isSearching={isLoading}
+      />
+
+      {!hasRequiredFilter ? (
+        <div className="flex flex-col items-center p-4 text-center">
+          <p className="max-w-md text-sm text-slate-500">
+            Por favor, selecione uma turma e um eixo no filtro acima para carregar os dados das trajetórias de aprendizagem
+          </p>
+        </div>
+        ) : (
+          <LearningTrajectoriesCard 
+            trajectories={trajectories} 
+            strandCode={currentStrand?.code}
+            isFetching={isFetching}
+          />
+        )}
+    </div>
+  );
+}

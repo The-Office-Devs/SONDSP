@@ -11,6 +11,7 @@ public record SchoolClassDTO(
         String gradeLevel,
         String schoolYear,
         String shift,
+        Integer numStudents,
         Boolean status
 ) {
     public SchoolClassDTO(SchoolClass schoolClass) {
@@ -25,6 +26,7 @@ public record SchoolClassDTO(
                 schoolClass.getGradeLevel(),
                 schoolClass.getSchoolYear(),
                 schoolClass.getShift(),
+                schoolClass.getNumStudents(),
                 schoolClass.getStatus()
         );
     }

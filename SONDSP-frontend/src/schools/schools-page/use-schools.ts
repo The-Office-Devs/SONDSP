@@ -7,6 +7,9 @@ import {
 import { toast } from 'sonner';
 import type { AxiosError } from 'axios';
 
+import { useAuthStore } from '@/auth/auth.store';
+import { useUser } from '@/users/users-page/use-users';
+
 import { handleApiError } from '@/lib/utils';
 import { listUsersService } from '@/users/users.service';
 import {
@@ -23,6 +26,7 @@ import type {
 } from '../schools.types';
 import type { UserFilter } from '@/users/users.types';
 import type { PaginationParams } from '@/api/types';
+import { ALL_VALUE } from '@/lib/options-utils';
 
 
 const SCHOOLS_QUERY_KEY = ['schools'] as const;
@@ -96,4 +100,47 @@ export function useUsers(filter?: UserFilter & PaginationParams) {
     queryFn: () => listUsersService(filter),
     placeholderData: keepPreviousData,
   });
+}
+
+export function useUserSchoolOptions(schoolId?: number) {
+  const userId = useAuthStore((state) => state.user)?.id;
+  const { data: userData, isLoading } = useUser(userId!);
+  const schools = userData?.schools ?? [];
+
+  const schoolOptions = schools.map((school) => ({
+    value: String(school.id),
+    label: school.name
+  }));
+
+  const classOptions =
+    schools
+      .find((school) => school.id === schoolId)
+      ?.schoolClass
+      .filter((schoolClass) => schoolClass.status)
+      .map((schoolClass) => ({
+        value: String(schoolClass.id),
+        label: `${schoolClass.name} - ${schoolClass.schoolYear}`
+      })) ?? [];
+
+  const years = new Set(
+    schools
+      .flatMap((school) => school.schoolClass ?? [])
+      .map((schoolClass) => schoolClass.schoolYear)
+      .filter(Boolean)
+  );
+
+  const schoolYearOptions = [
+    { value: ALL_VALUE, label: "Todos" },
+    ...[...years]
+      .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
+      .map((year) => ({ value: year, label: year }))
+  ];
+
+  return {
+    schools,
+    schoolOptions,
+    classOptions,
+    schoolYearOptions,
+    isLoading
+  };
 }

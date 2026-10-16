@@ -32,7 +32,7 @@ export function Card({
   isEditMode = false,
   onSubmit,
   onReset,
-  collapsible = false,
+  collapsible = true,
   children 
 }: Readonly<CardProps>) {
   const [open, setOpen] = useState(true);
@@ -42,13 +42,14 @@ export function Card({
   const inlineAtMd = fieldCount % 2 !== 0;
   const inlineAtXl = fieldCount % 3 !== 0;
 
-  const actionsClass = cn("flex gap-2 justify-end",
-    inlineAtMd
-      ? "md:mt-[2rem] md:self-start"
-      : "md:col-start-2 md:mt-0 md:self-auto",
-    inlineAtXl
-      ? "xl:col-auto xl:mt-[2rem] xl:self-start"
-      : "xl:col-start-3 xl:mt-0 xl:self-auto"
+  const actionsClass = cn(
+    "flex gap-2 justify-end md:col-start-2 xl:col-start-3",
+    inlineAtMd 
+      ? "md:mt-[2rem] md:self-start" 
+      : "md:mt-0 md:self-auto",
+    inlineAtXl 
+      ? "xl:mt-[2rem] xl:self-start" 
+      : "xl:mt-0 xl:self-auto"
   );
   const ResetIcon = isFilter ? FilterX : X;
   const SubmitIcon = isFilter ? Search : Check;

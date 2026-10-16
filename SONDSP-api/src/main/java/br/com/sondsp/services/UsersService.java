@@ -1,15 +1,17 @@
 package br.com.sondsp.services;
 
+import static br.com.sondsp.util.SystemMessages.*;
+
 import br.com.sondsp.entities.*;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.UserFilter;
 import br.com.sondsp.form.*;
 import br.com.sondsp.repositories.PermissionsRepository;
-import br.com.sondsp.repositories.RolesRepository;
 import br.com.sondsp.repositories.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.*;
 import jakarta.validation.ValidationException;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,251 +19,272 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-
-import static br.com.sondsp.util.SystemMessages.*;
-
 @Service
 @AllArgsConstructor
 public class UsersService {
-    private UsersRepository repository;
-    private final RolesService rolesService;
-    private final PermissionsRepository permissionsRepository;
 
-    private SchoolClassService schoolClassService;
-    private SchoolService schoolService;
-    private AccountActivationService accountActivationService;
+	private UsersRepository repository;
+	private final RolesService rolesService;
+	private final PermissionsRepository permissionsRepository;
 
-    public User registerUser(UserForm form) {
-        User verifyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
+	private SchoolClassService schoolClassService;
+	private SchoolService schoolService;
+	private AccountActivationService accountActivationService;
 
-        if (verifyUser != null) {
-            if (Objects.equals(verifyUser.getEmail(), form.email()))
-                throw new UserAlreadyExistsException(EMAIL_ALREADY_EXISTS);
+	public User registerUser(UserForm form) {
+		User verifyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
 
-            if (Objects.equals(verifyUser.getRegistration(), form.registration()))
-                throw new UserAlreadyExistsException(REGISTRATION_ALREADY_EXISTS);
-        }
+		if (verifyUser != null) {
+			if (Objects.equals(verifyUser.getEmail(), form.email())) throw new UserAlreadyExistsException(
+				EMAIL_ALREADY_EXISTS
+			);
 
-        User savedUser = save(User.builder()
-                .name(form.name())
-                .registration(form.registration())
-                .role(rolesService.getRoleByName(form.role()))
-                .status(false)
-                .email(form.email())
-                .password(null)
-                .permissions(permissionsRepository.findAllByPermissionIn(form.permissions()))
-                .build());
+			if (Objects.equals(verifyUser.getRegistration(), form.registration())) throw new UserAlreadyExistsException(
+				REGISTRATION_ALREADY_EXISTS
+			);
+		}
 
-        try {
-            accountActivationService.generateAndSendCode(savedUser, null);
-        } catch (Exception ignored) {
-        }
+		User savedUser = save(
+			User
+				.builder()
+				.name(form.name())
+				.registration(form.registration())
+				.role(rolesService.getRoleByName(form.role()))
+				.status(false)
+				.email(form.email())
+				.password(null)
+				.permissions(permissionsRepository.findAllByPermissionIn(form.permissions()))
+				.build()
+		);
 
-        return savedUser;
-    }
+		try {
+			accountActivationService.generateAndSendCode(savedUser, null);
+		} catch (Exception ignored) {}
 
-    public User getUser(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
-    }
+		return savedUser;
+	}
 
-    public User getByEmail(String email) {
-        User user = repository.findByEmail(email);
+	public User getUser(Integer id) {
+		return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
+	}
 
-        if (user == null)
-            throw new EntityNotFoundException(EMAIL_NOT_FOUND);
+	public User getByEmail(String email) {
+		User user = repository.findByEmail(email);
 
-        return user;
-    }
+		if (user == null) throw new EntityNotFoundException(EMAIL_NOT_FOUND);
 
-    public Page<User> getUsers(UserFilter filter, Pageable pageable) {
-        Specification<User> spec = buildFilter(filter);
-        return repository.findAll(spec, pageable);
-    }
+		return user;
+	}
 
-    public User save(User user) {
-        return repository.save(user);
-    }
+	public Page<User> getUsers(UserFilter filter, Pageable pageable) {
+		Specification<User> spec = buildFilter(filter);
+		return repository.findAll(spec, pageable);
+	}
 
-    public User updateUser(Integer id, UserForm form) {
-        User user = getUser(id);
+	public User save(User user) {
+		return repository.save(user);
+	}
 
-        validadeUser(form, user);
+	public User updateUser(Integer id, UserForm form) {
+		User user = getUser(id);
 
-        user.setName(form.name());
-        user.setRegistration(form.registration());
-        user.setRole(rolesService.getRoleByName(form.role()));
-        user.setEmail(form.email());
-        user.setPermissions(permissionsRepository.findAllByPermissionIn(form.permissions()));
+		validadeUser(form, user);
 
-        return save(user);
-    }
+		user.setName(form.name());
+		user.setRegistration(form.registration());
+		user.setRole(rolesService.getRoleByName(form.role()));
+		user.setEmail(form.email());
+		user.setPermissions(permissionsRepository.findAllByPermissionIn(form.permissions()));
 
-    public Boolean linkToSchoolClass(Integer id, LinkSchoolClassForm form) {
-        // Busca o usuário e a turma
-        User user = getUser(id);
-        SchoolClass schoolClass = schoolClassService.getSchoolClass(form.schoolClassId());
+		return save(user);
+	}
 
-        // Se encontrar a turma, remove ela
-        if (user.getSchoolClasses()
-                .removeIf(usc -> usc.getSchoolClass().getId().equals(form.schoolClassId()))) {
-            save(user);
-            return false;
-        }
+	public Boolean linkToSchoolClass(Integer id, LinkSchoolClassForm form) {
+		// Busca o usuário e a turma
+		User user = getUser(id);
+		SchoolClass schoolClass = schoolClassService.getSchoolClass(form.schoolClassId());
 
-        // Se não tiver removido, adiciona a turma e retorna true
-        UserSchoolClass newSchoolClass = UserSchoolClass.builder().user(user).schoolClass(schoolClass).atuacao(form.function()).build();
-        user.getSchoolClasses().add(newSchoolClass);
-        save(user);
-        return true;
-    }
+		// Se encontrar a turma, remove ela
+		if (user.getSchoolClasses().removeIf(usc -> usc.getSchoolClass().getId().equals(form.schoolClassId()))) {
+			save(user);
+			return false;
+		}
 
-    public Boolean linkToSchool(Integer id, LinkSchoolForm form) {
-        // Busca o usuário e a escola
-        User user = getUser(id);
-        School school = schoolService.getSchool(form.schoolId());
+		// Se não tiver removido, adiciona a turma e retorna true
+		UserSchoolClass newSchoolClass = UserSchoolClass
+			.builder()
+			.user(user)
+			.schoolClass(schoolClass)
+			.atuacao(form.function())
+			.build();
+		user.getSchoolClasses().add(newSchoolClass);
+		save(user);
+		return true;
+	}
 
-        // Se o usuário possui vínculo com a escola
-        if (user.getSchools().stream().anyMatch(usc -> usc.getSchool().getId().equals(school.getId()))) {
-            // Remove o vínculo do usuario com todas as turmas da escola
-            user.getSchoolClasses().removeIf(sc -> sc.getSchoolClass().getSchool().getId().equals(school.getId()));
+	public Boolean linkToSchool(Integer id, LinkSchoolForm form) {
+		// Busca o usuário e a escola
+		User user = getUser(id);
+		School school = schoolService.getSchool(form.schoolId());
 
-            // Remove o vínculo com a escola
-            user.getSchools().removeIf(usc -> usc.getSchool().getId().equals(school.getId()));
+		// Se o usuário possui vínculo com a escola
+		if (user.getSchools().stream().anyMatch(usc -> usc.getSchool().getId().equals(school.getId()))) {
+			// Remove o vínculo do usuario com todas as turmas da escola
+			user.getSchoolClasses().removeIf(sc -> sc.getSchoolClass().getSchool().getId().equals(school.getId()));
 
-            save(user);
-            return false;
-        }
+			// Remove o vínculo com a escola
+			user.getSchools().removeIf(usc -> usc.getSchool().getId().equals(school.getId()));
 
-        // Se não possui vínculo com a escola, deve criá-lo
-        if (form.function() == null || form.function().isBlank()) {
-            // Caso esteja criando um vínculo, deve ser passada a função do usuário na escola
-            throw new ValidationException(EMPTY_FUNCTION);
-        }
+			save(user);
+			return false;
+		}
 
-        UserSchool newSchool = UserSchool.builder().user(user).school(school).atuacao(form.function()).build();
-        user.getSchools().add(newSchool);
+		// Se não possui vínculo com a escola, deve criá-lo
+		if (form.function() == null || form.function().isBlank()) {
+			// Caso esteja criando um vínculo, deve ser passada a função do usuário na
+			// escola
+			throw new ValidationException(EMPTY_FUNCTION);
+		}
 
-        save(user);
-        return true;
-    }
+		UserSchool newSchool = UserSchool.builder().user(user).school(school).atuacao(form.function()).build();
+		user.getSchools().add(newSchool);
 
-    public Boolean changeStatus(Integer id) {
-        User user = getUser(id);
+		save(user);
+		return true;
+	}
 
-        if (user.getPassword() == null)
-            throw new ValidationException(FIRST_ACCESS_NOT_DONE);
+	public Boolean changeStatus(Integer id) {
+		User user = getUser(id);
 
-        user.setStatus(!user.getStatus());
+		if (user.getPassword() == null) throw new ValidationException(FIRST_ACCESS_NOT_DONE);
 
-        return save(user).getStatus();
-    }
+		user.setStatus(!user.getStatus());
 
-    public User changePassword(ChangePasswordForm form){
-        User user = getByEmail(form.email());
+		return save(user).getStatus();
+	}
 
-        if (user.getStatus()){
-            user.setPassword(encodePassword(form.password()));
+	public User changePassword(ChangePasswordForm form) {
+		User user = getByEmail(form.email());
 
-            return save(user);
-        } else {
-            throw new ValidationException(INACTIVATED_USER);
-        }
-    }
+		if (user.getStatus()) {
+			user.setPassword(encodePassword(form.password()));
 
-    public User findByEmailAndRegistration(String email, String registration) {
-        return repository.findByEmailAndRegistration(email, registration);
-    }
+			return save(user);
+		} else {
+			throw new ValidationException(INACTIVATED_USER);
+		}
+	}
 
-    private Specification<User> buildFilter(UserFilter filter) {
-        return (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+	public User findByEmailAndRegistration(String email, String registration) {
+		return repository.findByEmailAndRegistration(email, registration);
+	}
 
-            if (filter == null)
-                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+	private Specification<User> buildFilter(UserFilter filter) {
+		return (root, query, criteriaBuilder) -> {
+			List<Predicate> predicates = new ArrayList<>();
 
-            if (filter.search() != null && !filter.search().isBlank()) {
-                Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
+			if (filter == null) return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
-                String search = filter.search().toLowerCase();
-                String searchPattern = "%" + search + "%";
+			if (filter.search() != null && !filter.search().isBlank()) {
+				Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
 
-                List<Predicate> orPredicates = new ArrayList<>();
-                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
-                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), searchPattern));
-                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern));
-                orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(roleJoin.get("name")), searchPattern));
+				String search = filter.search().toLowerCase();
+				String searchPattern = "%" + search + "%";
 
-                Boolean status = null;
-                if ("ativo".startsWith(search)) {
-                    status = true;
-                } else if ("inativo".startsWith(search)) {
-                    status = false;
-                }
+				List<Predicate> orPredicates = new ArrayList<>();
+				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
+				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), searchPattern));
+				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("registration")), searchPattern));
+				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(roleJoin.get("name")), searchPattern));
 
-                if (status != null)
-                    orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
+				Boolean status = null;
+				if ("ativo".startsWith(search)) {
+					status = true;
+				} else if ("inativo".startsWith(search)) {
+					status = false;
+				}
 
-                predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
-            } else {
-                if (filter.name() != null && !filter.name().isBlank())
-                    predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(root.get("name")), "%" + filter.name().toLowerCase() + "%"));
+				if (status != null) orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
-                if (filter.registration() != null && !filter.registration().isBlank())
-                    predicates.add(criteriaBuilder.equal(criteriaBuilder
-                            .lower(root.get("registration")), filter.registration().toLowerCase()));
+				predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
+			} else {
+				if (filter.name() != null && !filter.name().isBlank()) predicates.add(
+					criteriaBuilder.like(
+						criteriaBuilder.lower(root.get("name")),
+						"%" + filter.name().toLowerCase() + "%"
+					)
+				);
 
-                if (filter.roleName() != null && !filter.roleName().isBlank()) {
-                    Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
+				if (filter.registration() != null && !filter.registration().isBlank()) predicates.add(
+					criteriaBuilder.equal(
+						criteriaBuilder.lower(root.get("registration")),
+						filter.registration().toLowerCase()
+					)
+				);
 
-                    predicates.add(criteriaBuilder.like(
-                            criteriaBuilder.lower(roleJoin.get("name")),
-                            "%" + filter.roleName().toLowerCase() + "%"
-                    ));
-                }
+				if (filter.roleName() != null && !filter.roleName().isBlank()) {
+					Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
 
-                if (filter.email() != null && !filter.email().isBlank())
-                    predicates.add(criteriaBuilder.like(criteriaBuilder
-                            .lower(root.get("email")), "%" + filter.email().toLowerCase() + "%"));
-            }
+					predicates.add(
+						criteriaBuilder.like(
+							criteriaBuilder.lower(roleJoin.get("name")),
+							"%" + filter.roleName().toLowerCase() + "%"
+						)
+					);
+				}
 
-            if (filter.linkedToSchoolId() != null) {
-                Subquery<Integer> sub = query.subquery(Integer.class);
-                Root<UserSchool> usRoot = sub.from(UserSchool.class);
-                sub.select(usRoot.get("user").get("id"))
-                        .where(criteriaBuilder.equal(usRoot.get("school").get("id"), filter.linkedToSchoolId()));
-                predicates.add(root.get("id").in(sub));
-            }
+				if (filter.email() != null && !filter.email().isBlank()) predicates.add(
+					criteriaBuilder.like(
+						criteriaBuilder.lower(root.get("email")),
+						"%" + filter.email().toLowerCase() + "%"
+					)
+				);
+			}
 
-            if (filter.status() != null)
-                predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
+			if (filter.linkedToSchoolId() != null) {
+				Subquery<Integer> sub = query.subquery(Integer.class);
+				Root<UserSchool> usRoot = sub.from(UserSchool.class);
+				sub
+					.select(usRoot.get("user").get("id"))
+					.where(criteriaBuilder.equal(usRoot.get("school").get("id"), filter.linkedToSchoolId()));
+				predicates.add(root.get("id").in(sub));
+			}
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-    }
+			if (filter.status() != null) predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
 
-    public boolean isLinked(User user, Integer schoolId, Integer schoolClassId) {
-        if (schoolClassId != null)
-            return user.getSchoolClasses() != null && user.getSchoolClasses().stream()
-                    .anyMatch(usc -> usc.getSchoolClass() != null && schoolClassId.equals(usc.getSchoolClass().getId()));
+			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+		};
+	}
 
-        if (schoolId != null)
-            return user.getSchools() != null && user.getSchools().stream()
-                    .anyMatch(us -> us.getSchool() != null && schoolId.equals(us.getSchool().getId()));
+	public boolean isLinked(User user, Integer schoolId, Integer schoolClassId) {
+		if (schoolClassId != null) return (
+			user.getSchoolClasses() != null &&
+			user
+				.getSchoolClasses()
+				.stream()
+				.anyMatch(usc -> usc.getSchoolClass() != null && schoolClassId.equals(usc.getSchoolClass().getId()))
+		);
 
-        return false;
-    }
+		if (schoolId != null) return (
+			user.getSchools() != null &&
+			user.getSchools().stream().anyMatch(us -> us.getSchool() != null && schoolId.equals(us.getSchool().getId()))
+		);
 
-    private void validadeUser(UserForm userForm, User user) {
-        if (!Objects.equals(user.getEmail(), userForm.email()) && repository.existsByEmail(userForm.email()))
-            throw new ValidationException(EMAIL_ALREADY_EXISTS);
+		return false;
+	}
 
-        if (!Objects.equals(user.getRegistration(), userForm.registration()) && repository.existsByRegistration(userForm.registration()))
-            throw new ValidationException(REGISTRATION_ALREADY_EXISTS);
-    }
+	private void validadeUser(UserForm userForm, User user) {
+		if (
+			!Objects.equals(user.getEmail(), userForm.email()) && repository.existsByEmail(userForm.email())
+		) throw new ValidationException(EMAIL_ALREADY_EXISTS);
 
-    public String encodePassword(String password){
-        return new BCryptPasswordEncoder().encode(password);
-    }
+		if (
+			!Objects.equals(user.getRegistration(), userForm.registration()) &&
+			repository.existsByRegistration(userForm.registration())
+		) throw new ValidationException(REGISTRATION_ALREADY_EXISTS);
+	}
+
+	public String encodePassword(String password) {
+		return new BCryptPasswordEncoder().encode(password);
+	}
 }

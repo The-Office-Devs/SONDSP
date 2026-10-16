@@ -38,6 +38,7 @@ export function useStrandsBySubject(subjectLabel?: string) {
     queryKey: ['strands', subjectLabel],
     queryFn: () => getStrandsBySubjectService(subjectLabel!),
     enabled: !!subjectLabel,
+    staleTime: 5 * 60 * 1000
   });
 }
 

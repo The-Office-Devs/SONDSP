@@ -17,6 +17,11 @@ import { ActivitiesPage } from '@/activities/activities-page/activities-page';
 
 import { SurveysPage } from '@/surveys/surveys-page/surveys-page';
 import { SurveysHistoryPage } from '@/surveys/surveys-history/surveys-history-page';
+import { ClassesFilterPage } from '@/classes/classes-filter-page/classes-filter-page';
+import { ClassDetailsPage } from '@/classes/class-details-page/class-details-page';
+import { StudentPortfolioPage } from '@/students/student-portfolio/student-portfolio-page';
+import { ClassMapPage } from '@/class-map/class-map-page/class-map-page';
+import { LearningTrajectoriesPage } from '@/learning-trajectories/learning-trajectories-page/learning-trajectories-page';
 
 export const router = createBrowserRouter([
   {
@@ -63,9 +68,14 @@ export const router = createBrowserRouter([
           {
             element: <RoleRoute area="application" />,
             children: [
+              { path: 'app-mapa-classe', element: <ClassMapPage /> },
               { path: 'app-sondagens', element: <SurveysPage /> },
               { path: 'app-sondagens/historico/aluno/:id', element: <SurveysHistoryPage /> },
-              { path: 'app-turmas', element: <SurveysPage />}
+              { path: 'app-trajetorias-aprendizagem', element: <LearningTrajectoriesPage /> },
+              { path: 'app-turmas', element: <ClassesFilterPage />},
+              { path: 'app-turmas/turma/:id', element: <ClassDetailsPage />},
+              { path: 'app-portfolio', element: <Navigate to="/app-turmas" replace /> },
+              { path: 'app-portfolio/aluno/:id', element: <StudentPortfolioPage /> },
             ],
           },
         ]
