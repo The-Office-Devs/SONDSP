@@ -32,15 +32,6 @@ import java.util.stream.Collectors;
 
 import static br.com.sondsp.util.SystemMessages.*;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-
-import static br.com.sondsp.util.SystemMessages.*;
-
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -91,6 +82,8 @@ public class SchoolClassService {
 	}
 
 	public List<StudentsPannelDTO> getStudentsPannel(Integer schoolClassId, String applicationPeriod, Integer strandId) {
+		getSchoolClass(schoolClassId);
+
 		List<Tuple> tuples = repository.getStudentsSumary(schoolClassId, applicationPeriod, strandId);
 
 		return tuples
@@ -102,6 +95,28 @@ public class SchoolClassService {
 					tuple.get("result", String.class)
 				)
 			)
+			.toList();
+	}
+
+	public List<StudentsTrajectoryDTO> getStudentsTrajectory(Integer schoolClassId, Integer strandId) {
+		getSchoolClass(schoolClassId);
+
+		List<Tuple> tuples = repository.getStudentsTrajectory(schoolClassId, strandId);
+
+		return tuples
+			.stream()
+			.map(tuple ->
+				new StudentsTrajectoryDTO(
+					new StudentSimplestDTO(
+							tuple.get("studentId", Integer.class),
+							tuple.get("studentName", String.class)),
+					new TrajectoryResultDTO(
+							tuple.get("initial", String.class),
+							tuple.get("fstPeriod", String.class),
+							tuple.get("sndPeriod", String.class),
+							tuple.get("trdPeriod", String.class),
+							tuple.get("frtPeriod", String.class))
+				))
 			.toList();
 	}
 

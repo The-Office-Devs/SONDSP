@@ -13,10 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -130,11 +127,34 @@ public interface SchoolClassController {
 	)
 	ResponseEntity<?> changeStatus(@PathVariable Integer id);
 
-	public ResponseEntity<?> getStudentsPannel(
+	@Operation(
+		description = "Ativa/desativa a turma com base no id.",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Turma ativada/desativada com sucesso.",
+							content = @Content(
+									mediaType = "application/json",
+									schema = @Schema(implementation = SchoolClassDTO.class)
+							)
+					),
+					@ApiResponse(
+							responseCode = "404",
+							description = "Turma não encontrada.",
+							content = @Content(
+									mediaType = "application/json",
+									schema = @Schema(implementation = StandardErrorDTO.class)
+							)
+					)
+			}
+	)
+	ResponseEntity<?> getStudentsPannel(
 		@PathVariable Integer id,
 		@RequestParam(required = false) String applicationPeriod,
 		@RequestParam Integer strandId
 	);
+
+	ResponseEntity<?> getStudentsTrajectory(@PathVariable Integer id, @RequestParam Integer strandId);
 
 	@Operation(
 		description = "Retorna os dados processados do mapa de classe da turma separados por percentual de domínio, distribuição e evolução comparativa.",

@@ -16,12 +16,14 @@ import {
   updateClassService,
   getClassStudentsService,
   getClassMapService,
+  getLearningTrajectoryService,
   exportSchoolClassSurveysService
 } from "./classes.service";
 import type { ClassFilter, ClassStudentsFilter, UseClassesOptions } from "./classes.types";
 import type { ClassMapFilter } from "@/class-map/class-map.types";
 import type { ClassFormData } from "./classes-page/class.schema";
 import type { PaginationParams } from "@/api/types";
+import type { LearningTrajectoryFilter } from "@/learning-trajectories/learning-trajectories.types";
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
 
@@ -129,6 +131,18 @@ export function useClassMap(id: number | undefined, filter: ClassMapFilter) {
     queryFn: () => getClassMapService(id as number, filter),
     enabled: !!id && !!filter.strandId,
     placeholderData: keepPreviousData,
+  });
+}
+
+export function useLearningTrajectory(
+  id: number | undefined,
+  filter: LearningTrajectoryFilter
+) {
+  return useQuery({
+    queryKey: ["class", id, "trajectory", filter],
+    queryFn: () => getLearningTrajectoryService(id as number, filter),
+    enabled: !!id && !!filter?.strandId,
+    placeholderData: keepPreviousData
   });
 }
 

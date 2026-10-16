@@ -85,6 +85,11 @@ public class SchoolClassControllerImpl implements SchoolClassController {
         return ResponseEntity.ok().body(service.getStudentsPannel(id, applicationPeriod, strandId));
     }
 
+	@GetMapping("/{id}/trajectory")
+	public ResponseEntity<?> getStudentsTrajectory(Integer id, Integer strandId) {
+		return ResponseEntity.ok().body(service.getStudentsTrajectory(id, strandId));
+	}
+
     @GetMapping("/{id}/classMap")
     public ResponseEntity<ClassMapDTO> getClassMap(Integer id, ClassMapFilter filter) {
         return ResponseEntity.ok().body(service.getClassMap(id, filter));

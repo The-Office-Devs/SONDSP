@@ -26,6 +26,7 @@ import type {
 } from '../schools.types';
 import type { UserFilter } from '@/users/users.types';
 import type { PaginationParams } from '@/api/types';
+import { ALL_VALUE } from '@/lib/options-utils';
 
 
 const SCHOOLS_QUERY_KEY = ['schools'] as const;
@@ -121,5 +122,25 @@ export function useUserSchoolOptions(schoolId?: number) {
         label: `${schoolClass.name} - ${schoolClass.schoolYear}`
       })) ?? [];
 
-  return { schools, schoolOptions, classOptions, isLoading };
+  const years = new Set(
+    schools
+      .flatMap((school) => school.schoolClass ?? [])
+      .map((schoolClass) => schoolClass.schoolYear)
+      .filter(Boolean)
+  );
+
+  const schoolYearOptions = [
+    { value: ALL_VALUE, label: "Todos" },
+    ...[...years]
+      .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
+      .map((year) => ({ value: year, label: year }))
+  ];
+
+  return {
+    schools,
+    schoolOptions,
+    classOptions,
+    schoolYearOptions,
+    isLoading
+  };
 }
