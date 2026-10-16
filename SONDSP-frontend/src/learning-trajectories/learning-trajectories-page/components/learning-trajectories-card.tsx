@@ -6,9 +6,10 @@ import {
   getCurrentLevel,
   getResultLabel, 
   isKnownLevel, 
-  LEGEND, 
-  NO_RESULT_DOT_CLASS, 
-  RESULT_DOT_CLASS 
+  getBadgeLevelCode,
+  getSurveyLevelStyle,
+  NO_RESULT_DOT_CLASS,
+  getActiveLegend
 } from "@/lib/survey-utils";
 import type { LearningTrajectory, LearningTrajectoryResults, TrajectoryLevel } from "@/learning-trajectories/learning-trajectories.types";
 
@@ -30,6 +31,7 @@ const COLUMNS: ReadonlyArray<{
 
 interface LearningTrajectoriesCardProps {
   trajectories: LearningTrajectory[];
+  strandCode?: string;
   isFetching?: boolean;
 }
 
@@ -41,24 +43,37 @@ function LevelDot({ level }: Readonly<{ level: TrajectoryLevel }>) {
   }
 
   const resultLabel = getResultLabel(level);
+  const levelStyle = getSurveyLevelStyle(level);
+  const badgeCode = getBadgeLevelCode(level);
+
   return (
     <span
       title={resultLabel}
       className={cn(
-        "mx-auto flex size-8 items-center justify-center rounded-full text-[10px] font-semibold text-white",
-        RESULT_DOT_CLASS[level]
+        "mx-auto flex size-8 items-center justify-center rounded-full text-xs font-bold shrink-0",
+        levelStyle.bg,
+        levelStyle.text
       )}
     >
-      {level}
+      {badgeCode}
     </span>
   );
 }
 
 export function LearningTrajectoriesCard({
   trajectories,
+  strandCode,
   isFetching = false
 }: Readonly<LearningTrajectoriesCardProps>) {
-  // TODO: Checar se a rota do Link esta correta
+  const allResults = trajectories.flatMap((t) => [
+    t.results.initial,
+    t.results.fstPeriod,
+    t.results.sndPeriod,
+    t.results.trdPeriod,
+    t.results.frtPeriod
+  ]);
+  const legendItems = getActiveLegend(allResults, strandCode);
+
   return (
     <section
       aria-label={TITLE}
@@ -108,9 +123,9 @@ export function LearningTrajectoriesCard({
                   <tr key={student.id}>
                     <th scope="row" className="pl-2 text-left font-normal">
                       <Link
-                        to={`/app-alunos/aluno/${student.id}`}
-                        title={student.nome}
-                        className="underline-offset-2 hover:underline"
+                        to={`/app-portfolio/aluno/${student.id}`}
+                        title={`Portfólio de ${student.nome}`}
+                        className="font-medium text-slate-800 underline-offset-2 hover:underline"
                       >
                         {student.nome}
                       </Link>
@@ -127,22 +142,22 @@ export function LearningTrajectoriesCard({
           </div>
         )}
 
-        <div className="mt-2 border-t border-neutral-300 pt-2">
-          <p className="text-sm text-slate-700"> Legenda </p>
-          <ul className="mt-2 flex flex-wrap gap-x-4">
-            {LEGEND.map((code) => (
+        <div className="mt-4 border-t border-neutral-300 pt-2">
+          <p className="text-xs font-semibold text-slate-700">Legenda</p>
+          <ul className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            {legendItems.map((item) => (
               <li
-                key={code}
-                title={getResultLabel(code)}
-                className="flex items-center gap-2 text-sm text-slate-700"
+                key={item.code}
+                title={item.label}
+                className="flex items-center gap-1.5 text-xs text-slate-700"
               >
-                <span aria-hidden="true" className={cn("size-2 rounded-full", RESULT_DOT_CLASS[code])} />
-                {code}
+                <span aria-hidden="true" className={cn("size-2 rounded-full", item.dotClass)} />
+                <span>{item.label}</span>
               </li>
             ))}
-            <li className="flex items-center gap-2 text-sm text-slate-700">
+            <li className="flex items-center gap-1.5 text-xs text-slate-700">
               <span aria-hidden="true" className={cn("size-2 rounded-full", NO_RESULT_DOT_CLASS)} />
-              {getResultLabel(null)}
+              <span>{getResultLabel(null)}</span>
             </li>
           </ul>
         </div>

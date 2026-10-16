@@ -3,70 +3,23 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import type { ClassStudents } from "@/classes/classes.types";
-import { getResultLabel, getSurveyDotClass, NO_RESULT_DOT_CLASS } from "@/lib/survey-utils";
-
-interface LegendItem {
-  code: string;
-  label: string;
-  dotClass: string;
-}
-
-const SEA_LEGEND_ITEMS: LegendItem[] = [
-  { code: "PS", label: "Pré-Silábica (PS)", dotClass: "bg-red-600" },
-  { code: "SSVC", label: "Silábica Sem Valor Sonoro (SSVC)", dotClass: "bg-yellow-400" },
-  { code: "SCVC", label: "Silábica Com Valor Sonoro (SCVC)", dotClass: "bg-orange-500" },
-  { code: "SA", label: "Silábico-Alfabética (SA)", dotClass: "bg-blue-600" },
-  { code: "A", label: "Alfabética (A)", dotClass: "bg-emerald-600" },
-];
-
-const NUMERIC_LEGEND_ITEMS: LegendItem[] = [
-  { code: "N1", label: "Nível 1 (N1)", dotClass: "bg-red-500" },
-  { code: "N2", label: "Nível 2 (N2)", dotClass: "bg-amber-500" },
-  { code: "N3", label: "Nível 3 (N3)", dotClass: "bg-sky-600" },
-  { code: "N4", label: "Nível 4 (N4)", dotClass: "bg-emerald-600" },
-  { code: "N5", label: "Nível 5 (N5)", dotClass: "bg-purple-600" },
-];
-
-const READING_LEGEND_ITEMS: LegendItem[] = [
-  { code: "AD", label: "Compreensão Adequada (AD)", dotClass: "bg-emerald-600" },
-  { code: "IN", label: "Compreensão Inadequada (IN)", dotClass: "bg-amber-500" },
-  { code: "NR", label: "Não Respondeu (NR)", dotClass: "bg-slate-400" },
-];
-
-function getActiveLegend(students: ClassStudents[]): LegendItem[] {
-  const hasNumeric = students.some(
-    (s) => s.result && (s.result.toUpperCase().startsWith("NIVEL_") || s.result.toUpperCase().startsWith("N"))
-  );
-  if (hasNumeric) return NUMERIC_LEGEND_ITEMS;
-
-  const hasReading = students.some(
-    (s) =>
-      s.result &&
-      (s.result.toUpperCase() === "ADEQUADA" ||
-        s.result.toUpperCase() === "INADEQUADA" ||
-        s.result.toUpperCase() === "AD" ||
-        s.result.toUpperCase() === "IN" ||
-        s.result.toUpperCase() === "NR")
-  );
-  if (hasReading) return READING_LEGEND_ITEMS;
-
-  // Padrão oficial SME-SP: Sistema de Escrita Alfabética (SEA)
-  return SEA_LEGEND_ITEMS;
-}
+import { getResultLabel, getSurveyDotClass, NO_RESULT_DOT_CLASS, getActiveLegend } from "@/lib/survey-utils";
 
 interface ClassStudentsCardProps {
   students: ClassStudents[];
   title?: string;
+  strandCode?: string;
   isFetching?: boolean;
 }
 
 export function ClassStudentsCard({
   students,
   title = "Turma",
+  strandCode,
   isFetching = false
 }: Readonly<ClassStudentsCardProps>) {
   const total = students.length;
-  const legendItems = getActiveLegend(students);
+  const legendItems = getActiveLegend(students.map((s) => s.result), strandCode);
 
   return (
     <section
@@ -135,7 +88,7 @@ export function ClassStudentsCard({
                 className="flex items-center gap-1.5 text-xs text-slate-700"
               >
                 <span aria-hidden="true" className={cn("size-2 rounded-full", item.dotClass)} />
-                <span>{item.code}</span>
+                <span>{item.label}</span>
               </li>
             ))}
             <li className="flex items-center gap-1.5 text-xs text-slate-700">
