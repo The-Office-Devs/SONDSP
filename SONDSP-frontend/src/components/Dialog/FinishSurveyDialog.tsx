@@ -1,12 +1,13 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
 
 import { ACCEPTED_FILE_TYPES, FILE_ACCEPT } from "@/lib/file-utils";
-import { resultOptions } from "@/lib/options-utils";
+import { getPedagogicalResultOptions } from "@/lib/options-utils";
 import type { SurveyListItem } from "@/surveys/surveys.types";
 import { useFinishSurvey } from "@/surveys/use-surveys";
+import { getSurveyResultOptionsService } from "@/surveys/surveys.service";
 
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { FileField } from "../HookForm/fields/FileField";
@@ -46,6 +47,14 @@ export function FinishSurveyDialog({
 }: Readonly<FinishSurveyDialogProps>) {
   const { mutate: finishSurvey, isPending } = useFinishSurvey();
 
+  const [options, setOptions] = useState<{ value: string; label: string }[]>(() =>
+    getPedagogicalResultOptions(
+      data?.activity?.strand?.name,
+      data?.activity?.gradeLevel,
+      data?.activity?.name
+    )
+  );
+
   const form = useForm<FinishSurveyFormData>({
     resolver: zodResolver(finishSurveySchema),
     mode: "onChange",
@@ -53,8 +62,33 @@ export function FinishSurveyDialog({
   });
 
   useEffect(() => {
-    if (open) form.reset(defaultValues);
-  }, [open, form])
+    if (open) {
+      form.reset(defaultValues);
+
+      if (data?.activity) {
+        // Inicializa com matriz pedagógica local
+        const initialOptions = getPedagogicalResultOptions(
+          data.activity.strand?.name,
+          data.activity.gradeLevel,
+          data.activity.name
+        );
+        setOptions(initialOptions);
+
+        // Consulta a API como fonte da verdade oficial
+        if (data.activity.id) {
+          getSurveyResultOptionsService(data.activity.id)
+            .then((apiOptions) => {
+              if (apiOptions && apiOptions.length > 0) {
+                setOptions(apiOptions);
+              }
+            })
+            .catch(() => {
+              // Mantém fallback pedagógico local em caso de erro
+            });
+        }
+      }
+    }
+  }, [open, data?.activity, form]);
 
   const onSubmit = (formData: FinishSurveyFormData) => {
     if (!data) return;
@@ -62,7 +96,7 @@ export function FinishSurveyDialog({
     finishSurvey(
       { surveyId: data.id, data: formData },
       { onSuccess: () => onOpenChange(false) }
-    )
+    );
   };
 
   const isSubmitDisabled = isPending || !form.formState.isValid;
@@ -71,6 +105,11 @@ export function FinishSurveyDialog({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{data?.activity.name}</DialogTitle>
+          {data?.activity && (
+            <p className="text-xs text-slate-500">
+              Eixo: {data.activity.strand?.name} • Ano: {data.activity.gradeLevel}
+            </p>
+          )}
         </DialogHeader>
 
         <FormProvider {...form}>
@@ -86,7 +125,7 @@ export function FinishSurveyDialog({
               name="result" 
               label="Resultado"
               placeholder="Selecione o nível"
-              options={resultOptions}
+              options={options}
             />
 
             <TextAreaField 

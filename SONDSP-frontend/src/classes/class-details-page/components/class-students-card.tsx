@@ -5,11 +5,56 @@ import { cn } from "@/lib/utils";
 import type { ClassStudents } from "@/classes/classes.types";
 
 import { resultOptions } from "@/lib/options-utils";
-import { RESULT_DOT_CLASS, type SurveyResultCode } from "@/lib/survey-utils";
+import { getSurveyDotClass, NO_RESULT_DOT_CLASS } from "@/lib/survey-utils";
 
-const LEGEND: SurveyResultCode[] = ["PS", "SV", "CV", "SA", "ALF"];
+interface LegendItem {
+  code: string;
+  label: string;
+  dotClass: string;
+}
 
-const NO_RESULT_DOT_CLASS = "bg-slate-300";
+const SEA_LEGEND_ITEMS: LegendItem[] = [
+  { code: "PS", label: "Pré-Silábica (PS)", dotClass: "bg-red-600" },
+  { code: "SSVC", label: "Silábica Sem Valor Sonoro (SSVC)", dotClass: "bg-yellow-400" },
+  { code: "SCVC", label: "Silábica Com Valor Sonoro (SCVC)", dotClass: "bg-orange-500" },
+  { code: "SA", label: "Silábico-Alfabética (SA)", dotClass: "bg-blue-600" },
+  { code: "A", label: "Alfabética (A)", dotClass: "bg-emerald-600" },
+];
+
+const NUMERIC_LEGEND_ITEMS: LegendItem[] = [
+  { code: "N1", label: "Nível 1 (N1)", dotClass: "bg-red-500" },
+  { code: "N2", label: "Nível 2 (N2)", dotClass: "bg-amber-500" },
+  { code: "N3", label: "Nível 3 (N3)", dotClass: "bg-sky-600" },
+  { code: "N4", label: "Nível 4 (N4)", dotClass: "bg-emerald-600" },
+  { code: "N5", label: "Nível 5 (N5)", dotClass: "bg-purple-600" },
+];
+
+const READING_LEGEND_ITEMS: LegendItem[] = [
+  { code: "AD", label: "Compreensão Adequada (AD)", dotClass: "bg-emerald-600" },
+  { code: "IN", label: "Compreensão Inadequada (IN)", dotClass: "bg-amber-500" },
+  { code: "NR", label: "Não Respondeu (NR)", dotClass: "bg-slate-400" },
+];
+
+function getActiveLegend(students: ClassStudents[]): LegendItem[] {
+  const hasNumeric = students.some(
+    (s) => s.result && (s.result.toUpperCase().startsWith("NIVEL_") || s.result.toUpperCase().startsWith("N"))
+  );
+  if (hasNumeric) return NUMERIC_LEGEND_ITEMS;
+
+  const hasReading = students.some(
+    (s) =>
+      s.result &&
+      (s.result.toUpperCase() === "ADEQUADA" ||
+        s.result.toUpperCase() === "INADEQUADA" ||
+        s.result.toUpperCase() === "AD" ||
+        s.result.toUpperCase() === "IN" ||
+        s.result.toUpperCase() === "NR")
+  );
+  if (hasReading) return READING_LEGEND_ITEMS;
+
+  // Padrão oficial SME-SP: Sistema de Escrita Alfabética (SEA)
+  return SEA_LEGEND_ITEMS;
+}
 
 interface ClassStudentsCardProps {
   students: ClassStudents[];
@@ -17,7 +62,7 @@ interface ClassStudentsCardProps {
   isFetching?: boolean;
 }
 
-function getResultLabel(code: SurveyResultCode | null) {
+function getResultLabel(code: string | null) {
   if (!code) return "Sem sondagem";
   return resultOptions.find((option) => option.value === code)?.label ?? code;
 }
@@ -28,8 +73,8 @@ export function ClassStudentsCard({
   isFetching = false
 }: Readonly<ClassStudentsCardProps>) {
   const total = students.length;
+  const legendItems = getActiveLegend(students);
 
-  // TODO: Checar se a rota do Link esta correta
   return (
     <section
       aria-label={title}
@@ -65,15 +110,15 @@ export function ClassStudentsCard({
               return (
                 <li key={student.studentId}>
                   <Link
-                    to={`app-alunos/aluno/${student.studentId}`}
+                    to={`/app-portfolio/aluno/${student.studentId}`}
                     title={`${student.studentName} (${resultLabel})`}
                     className="group flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm hover:border-slate-300 hover:bg-slate-50"
                   >
                     <span 
                       aria-hidden="true"
                       className={cn(
-                        "size-2.5 rounded-full",
-                        student.result ? RESULT_DOT_CLASS[student.result] : NO_RESULT_DOT_CLASS
+                        "size-2.5 rounded-full shrink-0",
+                        getSurveyDotClass(student.result)
                       )}
                     />
 
@@ -88,21 +133,21 @@ export function ClassStudentsCard({
         )}
 
         <div className="mt-4 border-t border-neutral-300 pt-2">
-          <p className="text-xs text-slate-700"> Legenda </p>
-          <ul className="mt-2 flex flex-wrap gap-x-4">
-            {LEGEND.map((code) => (
+          <p className="text-xs font-semibold text-slate-700">Legenda</p>
+          <ul className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            {legendItems.map((item) => (
               <li
-                key={code}
-                title={getResultLabel(code)}
-                className="flex items-center gap-2 text-xs text-slate-700"
+                key={item.code}
+                title={item.label}
+                className="flex items-center gap-1.5 text-xs text-slate-700"
               >
-                <span aria-hidden="true" className={cn("size-2 rounded-full", RESULT_DOT_CLASS[code])} />
-                {code}
+                <span aria-hidden="true" className={cn("size-2 rounded-full", item.dotClass)} />
+                <span>{item.code}</span>
               </li>
             ))}
-            <li className="flex items-center gap-2 text-xs text-slate-700">
+            <li className="flex items-center gap-1.5 text-xs text-slate-700">
               <span aria-hidden="true" className={cn("size-2 rounded-full", NO_RESULT_DOT_CLASS)} />
-              {getResultLabel(null)}
+              <span>{getResultLabel(null)}</span>
             </li>
           </ul>
         </div>
