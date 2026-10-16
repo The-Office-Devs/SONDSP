@@ -121,5 +121,5 @@ export function useUserSchoolOptions(schoolId?: number) {
         label: `${schoolClass.name} - ${schoolClass.schoolYear}`
       })) ?? [];
 
-  return { schoolOptions, classOptions, isLoading };
+  return { schools, schoolOptions, classOptions, isLoading };
 }

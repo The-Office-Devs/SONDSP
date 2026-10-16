@@ -7,11 +7,11 @@ import {
   classFilterSchema 
 } from "../class-filter.schema";
 import { ALL_VALUE, gradeLevelOptionsWithAll, shiftOptionsWithAll } from "@/lib/options-utils";
-import { useSchoolOptions } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
+import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 
 interface ClassesFilterPanelProps {
   onSearch: (data: ClassFilterFormData) => void;
@@ -31,7 +31,7 @@ export function ClassesFilterPanel({
   onClear,
   isSearching
 }: Readonly<ClassesFilterPanelProps>) {
-  const { schools, options: schoolOptions, isLoading: isLoadingSchools } = useSchoolOptions();
+  const { schools, schoolOptions, isLoading: isLoadingSchools } = useUserSchoolOptions();
 
   const submitLabel = getSubmitLabel(isSearching, 'filter');
   
