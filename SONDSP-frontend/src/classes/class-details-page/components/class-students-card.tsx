@@ -3,28 +3,24 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import type { ClassStudents } from "@/classes/classes.types";
-
-import { 
-  getResultLabel, 
-  LEGEND, 
-  NO_RESULT_DOT_CLASS, 
-  RESULT_DOT_CLASS 
-} from "@/lib/survey-utils";
+import { getResultLabel, getSurveyDotClass, NO_RESULT_DOT_CLASS, getActiveLegend } from "@/lib/survey-utils";
 
 interface ClassStudentsCardProps {
   students: ClassStudents[];
   title?: string;
+  strandCode?: string;
   isFetching?: boolean;
 }
 
 export function ClassStudentsCard({
   students,
   title = "Turma",
+  strandCode,
   isFetching = false
 }: Readonly<ClassStudentsCardProps>) {
   const total = students.length;
+  const legendItems = getActiveLegend(students.map((s) => s.result), strandCode);
 
-  // TODO: Checar se a rota do Link esta correta
   return (
     <section
       aria-label={title}
@@ -60,15 +56,15 @@ export function ClassStudentsCard({
               return (
                 <li key={student.studentId}>
                   <Link
-                    to={`app-alunos/aluno/${student.studentId}`}
+                    to={`/app-portfolio/aluno/${student.studentId}`}
                     title={`${student.studentName} (${resultLabel})`}
                     className="group flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm hover:border-slate-300 hover:bg-slate-50"
                   >
-                    <span 
+                    <span
                       aria-hidden="true"
                       className={cn(
-                        "size-2.5 rounded-full",
-                        student.result ? RESULT_DOT_CLASS[student.result] : NO_RESULT_DOT_CLASS
+                        "size-2.5 rounded-full shrink-0",
+                        getSurveyDotClass(student.result)
                       )}
                     />
 
@@ -83,21 +79,21 @@ export function ClassStudentsCard({
         )}
 
         <div className="mt-4 border-t border-neutral-300 pt-2">
-          <p className="text-sm text-slate-700"> Legenda </p>
-          <ul className="mt-2 flex flex-wrap gap-x-4">
-            {LEGEND.map((code) => (
+          <p className="text-xs font-semibold text-slate-700">Legenda</p>
+          <ul className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            {legendItems.map((item) => (
               <li
-                key={code}
-                title={getResultLabel(code)}
-                className="flex items-center gap-2 text-sm text-slate-700"
+                key={item.code}
+                title={item.label}
+                className="flex items-center gap-1.5 text-xs text-slate-700"
               >
-                <span aria-hidden="true" className={cn("size-2 rounded-full", RESULT_DOT_CLASS[code])} />
-                {code}
+                <span aria-hidden="true" className={cn("size-2 rounded-full", item.dotClass)} />
+                <span>{item.label}</span>
               </li>
             ))}
-            <li className="flex items-center gap-2 text-sm text-slate-700">
+            <li className="flex items-center gap-1.5 text-xs text-slate-700">
               <span aria-hidden="true" className={cn("size-2 rounded-full", NO_RESULT_DOT_CLASS)} />
-              {getResultLabel(null)}
+              <span>{getResultLabel(null)}</span>
             </li>
           </ul>
         </div>
@@ -105,4 +101,3 @@ export function ClassStudentsCard({
     </section>
   );
 }
-

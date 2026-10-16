@@ -36,11 +36,13 @@ export function barWidth(percentage: number) {
 }
 
 export function getLevelLabel(level: string) {
-  return resultOptions.find((option) => option.value === level)?.label ?? "";
+  const normalized = level ? level.trim().toUpperCase() : "";
+  return resultOptions.find((option) => option.value.toUpperCase() === normalized)?.label ?? "";
 }
 
 export function getLevelClass(level: string) {
-  return RESULT_DOT_CLASS[level as SurveyResultCode] ?? UNKNOWN_LEVEL_CLASS;
+  const normalized = level ? level.trim().toUpperCase() : "";
+  return RESULT_DOT_CLASS[normalized as SurveyResultCode] ?? UNKNOWN_LEVEL_CLASS;
 }
 
 export function getDeltaTrend(delta: number): DeltaTrend {

@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public enum SurveyHypothesis {
     PS("PS", "ESCRITA PRÉ-SILÁBICA", 0xFF, 0x00, 0x00),
-    SSCV("SSCV", "ESCRITA SILÁBICA SEM VALOR SONORO CONVENCIONAL", 0xFF, 0xFF, 0x00),
+    SSVC("SSVC", "ESCRITA SILÁBICA SEM VALOR SONORO CONVENCIONAL", 0xFF, 0xFF, 0x00),
     SCVC("SCVC", "ESCRITA SILÁBICA COM VALOR SONORO CONVENCIONAL", 0xFF, 0x99, 0x00),
     SA("SA", "ESCRITA SILÁBICO-ALFABÉTICA", 0x4A, 0x86, 0xE8),
     A("A", "ESCRITA ALFABÉTICA", 0x6A, 0xA8, 0x4F);
@@ -41,11 +41,7 @@ public enum SurveyHypothesis {
             if (normalize(h.code).equals(key) || normalize(h.description).equals(key)) return Optional.of(h);
         }
 
-        return switch (key) {
-            case "SSV" -> Optional.of(SSCV);
-            case "SCV" -> Optional.of(SCVC);
-            default -> Optional.empty();
-        };
+        return Optional.empty();
     }
 
     private static String normalize(String value) {

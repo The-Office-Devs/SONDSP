@@ -88,4 +88,19 @@ public class SurveyControllerImpl implements SurveyController {
 		String imageUrl = surveyService.getSurveyImageSignedUrl(id);
 		return ResponseEntity.ok().body(new ImageDTO(imageUrl));
 	}
+
+	@Override
+	@GetMapping("/activity/{activityId}/result-options")
+	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(@PathVariable Integer activityId) {
+		return ResponseEntity.ok(surveyService.getResultOptionsForActivity(activityId));
+	}
+
+	@Override
+	@GetMapping("/result-options")
+	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getResultOptions(
+			@RequestParam(required = false) String strandCode,
+			@RequestParam(required = false) String gradeLevel
+	) {
+		return ResponseEntity.ok(surveyService.getResultOptions(strandCode, gradeLevel));
+	}
 }

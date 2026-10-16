@@ -12,6 +12,10 @@ import org.springframework.stereotype.Repository;
 public interface SurveyRepository extends JpaRepository<Survey, Integer>, JpaSpecificationExecutor<Survey> {
 	Boolean existsByStudentIdAndActivityIdAndStatus(Integer studentId, Integer activityId, Boolean status);
 
+	List<Survey> findAllByStudentIdAndStatusTrueOrderByDateAsc(Integer studentId);
+
+	List<Survey> findAllByStudentIdAndActivityStrandIdAndStatusTrueOrderByDateAsc(Integer studentId, Integer strandId);
+
 	@Query(
 		"SELECT s FROM Survey s " +
 		"JOIN FETCH s.activity a " +

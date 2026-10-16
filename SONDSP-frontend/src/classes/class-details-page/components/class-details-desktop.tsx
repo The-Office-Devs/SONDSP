@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useClass, useClassStudentsCard } from "@/classes/use-classes";
+import { useStrand } from "@/strands/strands-page/use-strands";
 import type { ClassDetailsFormData } from "../class-details.schema";
 
 import { ClassStudentsCard } from "./class-students-card";
@@ -18,6 +19,7 @@ export function ClassDetailsDesktop() {
   const [appliedFilters, setAppliedFilters] = useState<ClassDetailsFormData | null>(null);
 
   const { data: students = [], isLoading, isFetching } = useClassStudentsCard(classId, appliedFilters);
+  const { data: currentStrand } = useStrand(appliedFilters?.strandId ?? null);
 
   const handleClear = () => setAppliedFilters(null);
   
@@ -41,6 +43,7 @@ export function ClassDetailsDesktop() {
           <ClassStudentsCard 
             title={schoolClassName} 
             students={students} 
+            strandCode={currentStrand?.code}
             isFetching={isFetching}
           />
 

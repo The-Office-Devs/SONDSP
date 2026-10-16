@@ -56,6 +56,10 @@ public class Survey {
 	@JoinColumn(name = "id_atividade", referencedColumnName = "id")
 	private Activity activity;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_turma", referencedColumnName = "id")
+	private SchoolClass schoolClass;
+
 	@Column(name = "status")
 	private Boolean status;
 
@@ -69,11 +73,19 @@ public class Survey {
 		this.administrator = administrator;
 		this.student = student;
 		this.activity = activity;
+		this.schoolClass = student != null ? student.getSchoolClass() : null;
 		this.result = form.result();
 		this.notes = form.notes();
 		this.isDigital = form.isDigital();
 		this.status = false;
 		this.applicationPeriod = form.applicationPeriod();
         this.date = LocalDateTime.now();
+	}
+
+	public Survey(SurveyForm form, User administrator, Student student, Activity activity, SchoolClass schoolClass) {
+		this(form, administrator, student, activity);
+		if (schoolClass != null) {
+			this.schoolClass = schoolClass;
+		}
 	}
 }

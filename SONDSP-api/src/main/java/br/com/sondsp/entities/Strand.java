@@ -22,6 +22,9 @@ public class Strand {
     @Column(name = "materia")
     private String subject;
 
+    @Column(name = "codigo", length = 50)
+    private String code;
+
     @Column(name = "ativo")
     private Boolean status;
 }

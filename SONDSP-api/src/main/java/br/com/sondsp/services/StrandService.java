@@ -45,7 +45,7 @@ public class StrandService {
 		return strandRepository.findAll(spec, pageable);
 	}
 
-	private Strand getStrand(Integer id) {
+	public Strand getStrand(Integer id) {
 		return this.strandRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(STRAND_NOT_FOUND));
 	}
 

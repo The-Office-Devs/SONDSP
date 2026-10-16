@@ -44,4 +44,16 @@ public interface StrandController {
             )
     })
     ResponseEntity<?> getAllStrand();
+
+    @Operation(description = "Busca um eixo pelo ID.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Retorna o eixo encontrado.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = StrandDTO.class)
+                    )
+            )
+    })
+    ResponseEntity<StrandDTO> getStrand(Integer id);
 }

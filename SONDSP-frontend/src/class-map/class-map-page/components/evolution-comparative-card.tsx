@@ -28,6 +28,7 @@ import {
 
 interface EvolutionComparativeCardProps {
   items: EvolutionComparativeItem[];
+  strandName?: string;
   isFetching?: boolean;
 }
 
@@ -127,6 +128,7 @@ function createLevelTick(deltaByLevel: Map<string, number> | null) {
 
 export function EvolutionComparativeCard({
   items,
+  strandName,
   isFetching = false
 }: Readonly<EvolutionComparativeCardProps>) {
   const totals = {
@@ -192,7 +194,7 @@ export function EvolutionComparativeCard({
                     interval={0}
                     padding={{ left: 16, right: 16 }}
                     label={{
-                      value: "Níveis de Alfabetização",
+                      value: strandName ? `Níveis de ${strandName}` : "Níveis da Sondagem",
                       position: "insideBottom",
                       offset: -28,
                       fill: AXIS_TEXT_COLOR,

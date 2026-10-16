@@ -50,6 +50,7 @@ export function ClassMapDesktop() {
 
           <EvolutionComparativeCard
             items={classMap?.evolutionComparative ?? []}
+            strandName={appliedFilters.strandName}
             isFetching={isFetching}
           />
         </div>
