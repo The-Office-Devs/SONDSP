@@ -67,9 +67,12 @@ public class GlobalExceptionHandler {
 			.body(new StandardErrorDTO("Erro ao atualizar dados no banco"));
 	}
 
-	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<StandardErrorDTO> unauthorizedException(AccessDeniedException e) {
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardErrorDTO(e.getMessage()));
+	@ExceptionHandler({
+		AccessDeniedException.class,
+		org.springframework.security.access.AccessDeniedException.class
+	})
+	public ResponseEntity<StandardErrorDTO> accessDeniedException(Exception e) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StandardErrorDTO(e.getMessage()));
 	}
 
 	// Fallback para exceções não esperadas
