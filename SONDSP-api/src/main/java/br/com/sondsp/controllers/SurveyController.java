@@ -142,4 +142,37 @@ public interface SurveyController {
 		}
 	)
 	ResponseEntity<?> getSurveyImage(@PathVariable Integer id);
+
+	@Operation(
+		description = "Retorna os níveis oficiais de avaliação permitidos para uma atividade com base em seu eixo e ano escolar segundo a SME-SP.",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Opções de níveis retornadas com sucesso",
+				content = @Content(
+					mediaType = "application/json",
+					array = @ArraySchema(schema = @Schema(implementation = br.com.sondsp.dtos.survey.SurveyResultOptionDTO.class))
+				)
+			)
+		}
+	)
+	ResponseEntity<java.util.List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(@PathVariable Integer activityId);
+
+	@Operation(
+		description = "Retorna os níveis oficiais de avaliação permitidos filtrando por nome do eixo e ano escolar.",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Opções de níveis retornadas com sucesso",
+				content = @Content(
+					mediaType = "application/json",
+					array = @ArraySchema(schema = @Schema(implementation = br.com.sondsp.dtos.survey.SurveyResultOptionDTO.class))
+				)
+			)
+		}
+	)
+	ResponseEntity<java.util.List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getResultOptions(
+		@RequestParam(required = false) String strandName,
+		@RequestParam(required = false) String gradeLevel
+	);
 }

@@ -34,6 +34,8 @@ public class SurveyService {
     private final StudentRepository studentRepository;
     private final ActivityRepository activityRepository;
     private final SupabaseStorageService storageService;
+    private final AuthenticationService authenticationService;
+    private final SurveyPedagogicalLevelService pedagogicalLevelService;
 
     @Autowired
     private SpecificationFilter specificationFilter;
@@ -62,7 +64,12 @@ public class SurveyService {
 
     public Survey updateSurvey(Integer id, SurveyForm form) throws IOException {
         Survey survey = findSurveyById(id);
-        survey.setResult(form.result());
+
+        if (form.result() != null && !form.result().isBlank()) {
+            pedagogicalLevelService.validateResult(survey.getActivity(), form.result());
+            survey.setResult(form.result().trim().toUpperCase());
+        }
+
         survey.setNotes(form.notes());
         survey.setStatus(true);
 
@@ -72,6 +79,15 @@ public class SurveyService {
         }
 
         return surveyRepository.save(survey);
+    }
+
+    public List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO> getResultOptionsForActivity(Integer activityId) {
+        Activity activity = findActivityById(activityId);
+        return pedagogicalLevelService.getResultOptionsForActivity(activity);
+    }
+
+    public List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO> getResultOptions(String strandName, String gradeLevel) {
+        return pedagogicalLevelService.getResultOptions(strandName, gradeLevel, null);
     }
   
     public void deleteSurvey(Integer id) throws ValidationException {
