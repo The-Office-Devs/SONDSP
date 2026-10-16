@@ -14,7 +14,8 @@ import {
   getClassService, 
   listClassesService, 
   updateClassService, 
-  getClassStudentsService
+  getClassStudentsService,
+  exportSchoolClassSurveysService
 } from "./classes.service";
 import type { ClassFilter, ClassStudentsFilter, UseClassesOptions } from "./classes.types";
 import type { ClassFormData } from "./classes-page/class.schema";
@@ -117,5 +118,25 @@ export function useClassStudentsCard(
     queryFn: () => getClassStudentsService(id, filter as ClassStudentsFilter),
     enabled: !!id && !!filter?.strandId,
     placeholderData: keepPreviousData
+  });
+}
+
+export function useExportSchoolClassSurveys() {
+  return useMutation({
+    mutationFn: (schoolClassId: number) => exportSchoolClassSurveysService(schoolClassId),
+    onSuccess: (blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'sondagens.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Relatório gerado com sucesso.');
+    },
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao gerar relatório da turma.'),
   });
 }

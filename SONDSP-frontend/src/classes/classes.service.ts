@@ -41,3 +41,11 @@ export async function getClassStudentsService(id: number, filter: ClassStudentsF
   const response = await api.get<ClassStudents[]>(`/schoolClass/${id}/students-pannel`, { params: filter });
   return response.data; 
 }
+
+export async function exportSchoolClassSurveysService(schoolClassId: number): Promise<Blob> {
+  const response = await api.get<Blob>(`/schoolClass/report/school-class-surveys/${schoolClassId}`, {
+    params: { strandId: 2 },
+    responseType: 'blob',
+  });
+  return response.data;
+}

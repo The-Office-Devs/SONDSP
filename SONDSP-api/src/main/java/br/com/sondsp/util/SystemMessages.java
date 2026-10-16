@@ -64,6 +64,7 @@ public final class SystemMessages {
     public static final String ERROR_RETRIEVING_IMAGE = "Não foi possível recuperar o arquivo de imagem.";
     public static final String SURVEY_CANNOT_DELETE = "A sondagem não foi encontrada.";
     public static final String DIFFERENT_AUTHOR = "Somente o criador da mensagem pode edita-lá.";
+    public static final String NULL_SURVEYS_IN_CLASS = "Nenhuma sondagem registrada para esta turma.";
 
     // Empty properties
     public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";
