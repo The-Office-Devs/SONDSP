@@ -53,3 +53,28 @@ export async function getSurveyImageService(id: number): Promise<string> {
   const response = await api.get<{ imageUrl: string }>(`/survey/get-survey-image/${id}`);
   return response.data.imageUrl;
 }
+
+export interface SurveyResultOption {
+  value: string;
+  label: string;
+  category?: string;
+}
+
+export async function getSurveyResultOptionsService(
+  activityId?: number,
+  strandName?: string,
+  gradeLevel?: string
+): Promise<SurveyResultOption[]> {
+  if (activityId) {
+    const response = await api.get<SurveyResultOption[]>(
+      `/survey/activity/${activityId}/result-options`
+    );
+    return response.data;
+  }
+
+  const response = await api.get<SurveyResultOption[]>(
+    `/survey/result-options`,
+    { params: { strandName, gradeLevel } }
+  );
+  return response.data;
+}
