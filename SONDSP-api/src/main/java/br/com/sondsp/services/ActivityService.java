@@ -6,9 +6,7 @@ import br.com.sondsp.form.ActivityForm;
 import br.com.sondsp.repositories.ActivityRepository;
 import br.com.sondsp.repositories.StrandRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,8 +18,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
-import static br.com.sondsp.util.SystemMessages.*;
+import static br.com.sondsp.util.FileNameUtils.formatActivityFileName;
+import static br.com.sondsp.util.SystemMessages.ACTIVITY_NOT_FOUND;
+import static br.com.sondsp.util.SystemMessages.STRAND_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +57,7 @@ public class ActivityService {
             return null;
         }
 
-        return storageService.generateSignedUrl(activity.getStrandImagePath(), IMAGE_URL_EXPIRATION_TIME);
+        return storageService.generateSignedUrl(activity.getStrandImagePath(), formatActivityFileName(activity.getName()));
     }
 
     private Strand getStrand(Integer id) {
