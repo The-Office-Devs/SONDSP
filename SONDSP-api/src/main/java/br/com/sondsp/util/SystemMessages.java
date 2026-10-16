@@ -71,6 +71,7 @@ public final class SystemMessages {
   public static final String DIFFERENT_AUTHOR = "Somente o criador da mensagem pode edita-lá.";
 	public static final String HAS_OPEN_SURVEY_SAME_ACVTY =
 		"O aluno já possui uma sondagem em aberto para essa atividade.";
+    public static final String NULL_SURVEYS_IN_CLASS = "Nenhuma sondagem registrada para esta turma.";
 
 	// Empty properties
 	public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";
