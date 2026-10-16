@@ -7,11 +7,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 public interface SchoolClassController {
 	@Operation(
@@ -151,4 +154,27 @@ public interface SchoolClassController {
 	);
 
 	ResponseEntity<?> getStudentsTrajectory(@PathVariable Integer id, @RequestParam Integer strandId);
+
+	@Operation(
+			description = "Exporta o relatório das sondagens vinculadas a turma.",
+			responses = {
+					@ApiResponse(
+							responseCode = "200",
+							description = "Relatório exportado com sucesso.",
+							content = @Content(
+									mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+									schema = @Schema(type = "string", format = "binary")
+							)
+					),
+					@ApiResponse(
+							responseCode = "404",
+							description = "Turma não encontrada.",
+							content = @Content(
+									mediaType = "application/json",
+									schema = @Schema(implementation = StandardErrorDTO.class)
+							)
+					)
+			}
+	)
+	ResponseEntity<ByteArrayResource> exportSchoolClassSurveys(@PathVariable Integer schoolClassId) throws IOException;
 }

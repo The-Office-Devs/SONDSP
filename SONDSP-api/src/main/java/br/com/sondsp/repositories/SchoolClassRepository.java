@@ -1,6 +1,8 @@
 package br.com.sondsp.repositories;
 
+import br.com.sondsp.dtos.SurveyResultDTO;
 import br.com.sondsp.entities.SchoolClass;
+import br.com.sondsp.repositories.projections.SchoolClassSurveysProjection;
 import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -93,4 +95,39 @@ public interface SchoolClassRepository
 		nativeQuery = true
 	)
 	List<Tuple> getStudentsTrajectory(@Param("schoolClassId") Integer schoolClassId, @Param("strandId") Integer strandId);
+
+	@Query(value = """
+	SELECT
+		tu.ano_escolar	as gradeLevel,
+		es.nome			as schoolName,
+		null			as teacher,
+		tu.nome			as schoolClass,
+		tu.ano_letivo	as schoolYear
+	FROM turma tu
+	INNER JOIN escola es
+		ON es.id = tu.id_escola
+	WHERE tu.id = :schoolClassId
+	""", nativeQuery = true)
+	List<SchoolClassSurveysProjection> findSheetContentWithFilters(@Param("schoolClassId") Integer schoolClassId);
+
+	@Query("""
+        SELECT new br.com.sondsp.dtos.SurveyResultDTO(
+            s.student.id,
+            st.id,
+            st.name,
+            s.applicationPeriod,
+            s.result,
+            s.date,
+            s.id
+        )
+        FROM Survey s
+        JOIN s.student stu
+        JOIN stu.schoolClass sc
+        JOIN s.activity a
+        JOIN a.strand st
+        WHERE sc.id = :schoolClassId
+          AND s.status = true
+          AND stu.status = true
+    """)
+	List<SurveyResultDTO> findSurveyResultsBySchoolClass(@Param("schoolClassId") Integer schoolClassId);
 }
