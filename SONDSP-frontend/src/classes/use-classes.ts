@@ -13,12 +13,14 @@ import {
   inactivateClassService, 
   getClassService, 
   listClassesService, 
-  updateClassService, 
+  updateClassService,
   getClassStudentsService,
+  getClassMapService,
   getLearningTrajectoryService,
   exportSchoolClassSurveysService
 } from "./classes.service";
 import type { ClassFilter, ClassStudentsFilter, UseClassesOptions } from "./classes.types";
+import type { ClassMapFilter } from "@/class-map/class-map.types";
 import type { ClassFormData } from "./classes-page/class.schema";
 import type { PaginationParams } from "@/api/types";
 import type { LearningTrajectoryFilter } from "@/learning-trajectories/learning-trajectories.types";
@@ -120,6 +122,15 @@ export function useClassStudentsCard(
     queryFn: () => getClassStudentsService(id, filter as ClassStudentsFilter),
     enabled: !!id && !!filter?.strandId,
     placeholderData: keepPreviousData
+  });
+}
+
+export function useClassMap(id: number | undefined, filter: ClassMapFilter) {
+  return useQuery({
+    queryKey: ["class-map", id, filter],
+    queryFn: () => getClassMapService(id as number, filter),
+    enabled: !!id && !!filter.strandId,
+    placeholderData: keepPreviousData,
   });
 }
 

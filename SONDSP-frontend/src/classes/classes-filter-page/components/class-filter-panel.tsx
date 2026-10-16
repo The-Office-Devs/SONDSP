@@ -7,11 +7,11 @@ import {
   classFilterSchema 
 } from "../class-filter.schema";
 import { gradeLevelOptionsWithAll, shiftOptionsWithAll } from "@/lib/options-utils";
-import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
+import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 
 interface ClassesFilterPanelProps {
   onSearch: (data: ClassFilterFormData) => void;

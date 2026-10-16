@@ -2,6 +2,10 @@ package br.com.sondsp.controllers;
 
 import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
 
+import br.com.sondsp.dtos.ImageDTO;
+import br.com.sondsp.dtos.PageResponse;
+import br.com.sondsp.dtos.SurveyDTO;
+
 import br.com.sondsp.dtos.*;
 import br.com.sondsp.entities.Survey;
 import br.com.sondsp.entities.User;

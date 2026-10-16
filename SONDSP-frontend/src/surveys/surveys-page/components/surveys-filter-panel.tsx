@@ -1,9 +1,9 @@
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { surveySchema, type SurveyFormData, type SurveyFormInput } from "../survey-schema";
-import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
@@ -53,6 +53,7 @@ export function SurveysFilterPanel({
         isFilter
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleReset}
+        collapsible
       >
         <SelectField
           name="schoolId"

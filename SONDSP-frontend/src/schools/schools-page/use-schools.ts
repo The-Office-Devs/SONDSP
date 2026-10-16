@@ -130,16 +130,17 @@ export function useUserSchoolOptions(schoolId?: number) {
   );
 
   const schoolYearOptions = [
-      { value: ALL_VALUE, label: "Todos" },
-      ...[...years]
-        .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
-        .map((year) => ({ value: year, label: year }))
-    ];
+    { value: ALL_VALUE, label: "Todos" },
+    ...[...years]
+      .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
+      .map((year) => ({ value: year, label: year }))
+  ];
 
-  return { 
-    schoolOptions, 
-    classOptions, 
-    schoolYearOptions, 
-    isLoading 
+  return {
+    schools,
+    schoolOptions,
+    classOptions,
+    schoolYearOptions,
+    isLoading
   };
 }

@@ -1,6 +1,7 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.*;
+import br.com.sondsp.filters.ClassMapFilter;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import io.swagger.v3.oas.annotations.Operation;
@@ -154,6 +155,26 @@ public interface SchoolClassController {
 	);
 
 	ResponseEntity<?> getStudentsTrajectory(@PathVariable Integer id, @RequestParam Integer strandId);
+
+	@Operation(
+		description = "Retorna os dados processados do mapa de classe da turma separados por percentual de domínio, distribuição e evolução comparativa.",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Mapa de classe retornado com sucesso.",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClassMapDTO.class))
+			),
+			@ApiResponse(
+				responseCode = "404",
+				description = "Turma ou eixo não encontrado.",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(implementation = StandardErrorDTO.class)
+				)
+			)
+		}
+	)
+	ResponseEntity<ClassMapDTO> getClassMap(@PathVariable Integer id, @ModelAttribute ClassMapFilter filter);
 
 	@Operation(
 			description = "Exporta o relatório das sondagens vinculadas a turma.",

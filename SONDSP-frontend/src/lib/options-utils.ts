@@ -35,7 +35,7 @@ export const gradeLevelOptionsWithAll = [ALL_OPTION, ...gradeLevelOptions];
 export const shiftOptions = [
   { value: "Manhã", label: "Manhã" },
   { value: "Tarde", label: "Tarde" },
-  { value: "Integral", label: "Integral" },
+  { value: "Integral", label: "Integral" }
 ];
 
 export const shiftOptionsWithAll = [ALL_OPTION, ...shiftOptions];
