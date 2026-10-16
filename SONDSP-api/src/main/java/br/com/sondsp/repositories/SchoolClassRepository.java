@@ -4,11 +4,10 @@ import br.com.sondsp.dtos.SurveyResultDTO;
 import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.repositories.projections.SchoolClassSurveysProjection;
 import jakarta.persistence.Tuple;
-import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface SchoolClassRepository
 	extends JpaRepository<SchoolClass, Integer>, JpaSpecificationExecutor<SchoolClass> {
@@ -62,6 +61,40 @@ public interface SchoolClassRepository
 		@Param("applicationPeriod") String applicationPeriod,
 		@Param("strandId") Integer strandId
 	);
+
+	@Query(
+		value = """
+			WITH ultima_sondagem AS (
+			   SELECT
+				   s.id_aluno,
+				   s.bimestre_aplicacao,
+				   s.resultado,
+				   ROW_NUMBER() OVER (
+					   PARTITION BY s.id_aluno, s.bimestre_aplicacao
+					   ORDER BY s.data DESC, s.id DESC
+				   ) AS rn
+			   FROM sondagem s
+			   JOIN atividade a ON s.id_atividade = a.id
+			   WHERE s.status = true
+			   AND a.id_eixo = :strandId
+		   )
+		   SELECT
+			   al.id AS studentId,
+			   al.nome AS studentName,
+			   MAX(CASE WHEN us.bimestre_aplicacao = 'Inicial' THEN us.resultado END) AS initial,
+			   MAX(CASE WHEN us.bimestre_aplicacao = '1° Bimestre' THEN us.resultado END) AS fstPeriod,
+			   MAX(CASE WHEN us.bimestre_aplicacao = '2° Bimestre' THEN us.resultado END) AS sndPeriod,
+			   MAX(CASE WHEN us.bimestre_aplicacao = '3° Bimestre' THEN us.resultado END) AS trdPeriod,
+			   MAX(CASE WHEN us.bimestre_aplicacao = '4° Bimestre' THEN us.resultado END) AS frtPeriod
+		   FROM aluno al
+		   LEFT JOIN ultima_sondagem us ON al.id = us.id_aluno AND us.rn = 1
+		   WHERE al.id_turma = :schoolClassId
+		   GROUP BY al.id, al.nome
+		   ORDER BY al.nome;
+		""",
+		nativeQuery = true
+	)
+	List<Tuple> getStudentsTrajectory(@Param("schoolClassId") Integer schoolClassId, @Param("strandId") Integer strandId);
 
 	@Query(value = """
 	SELECT

@@ -1,14 +1,10 @@
 package br.com.sondsp.controllers;
 
-import br.com.sondsp.dtos.PageResponse;
-import br.com.sondsp.dtos.SchoolClassDTO;
-import br.com.sondsp.dtos.StandardErrorDTO;
+import br.com.sondsp.dtos.*;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
@@ -16,10 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -133,11 +126,34 @@ public interface SchoolClassController {
 	)
 	ResponseEntity<?> changeStatus(@PathVariable Integer id);
 
-	public ResponseEntity<?> getStudentsPannel(
+	@Operation(
+		description = "Ativa/desativa a turma com base no id.",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Turma ativada/desativada com sucesso.",
+							content = @Content(
+									mediaType = "application/json",
+									schema = @Schema(implementation = SchoolClassDTO.class)
+							)
+					),
+					@ApiResponse(
+							responseCode = "404",
+							description = "Turma não encontrada.",
+							content = @Content(
+									mediaType = "application/json",
+									schema = @Schema(implementation = StandardErrorDTO.class)
+							)
+					)
+			}
+	)
+	ResponseEntity<?> getStudentsPannel(
 		@PathVariable Integer id,
 		@RequestParam(required = false) String applicationPeriod,
 		@RequestParam Integer strandId
 	);
+
+	ResponseEntity<?> getStudentsTrajectory(@PathVariable Integer id, @RequestParam Integer strandId);
 
 	@Operation(
 			description = "Exporta o relatório das sondagens vinculadas a turma.",

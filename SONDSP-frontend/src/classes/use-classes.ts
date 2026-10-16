@@ -15,11 +15,13 @@ import {
   listClassesService, 
   updateClassService, 
   getClassStudentsService,
+  getLearningTrajectoryService,
   exportSchoolClassSurveysService
 } from "./classes.service";
 import type { ClassFilter, ClassStudentsFilter, UseClassesOptions } from "./classes.types";
 import type { ClassFormData } from "./classes-page/class.schema";
 import type { PaginationParams } from "@/api/types";
+import type { LearningTrajectoryFilter } from "@/learning-trajectories/learning-trajectories.types";
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
 
@@ -121,6 +123,18 @@ export function useClassStudentsCard(
   });
 }
 
+export function useLearningTrajectory(
+  id: number | undefined,
+  filter: LearningTrajectoryFilter
+) {
+  return useQuery({
+    queryKey: ["class", id, "trajectory", filter],
+    queryFn: () => getLearningTrajectoryService(id as number, filter),
+    enabled: !!id && !!filter?.strandId,
+    placeholderData: keepPreviousData
+  });
+}
+
 export function useExportSchoolClassSurveys() {
   return useMutation({
     mutationFn: (schoolClassId: number) => exportSchoolClassSurveysService(schoolClassId),
@@ -133,7 +147,7 @@ export function useExportSchoolClassSurveys() {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      
+
       toast.success('Relatório gerado com sucesso.');
     },
     onError: (error: AxiosError<{ error: string }>) =>

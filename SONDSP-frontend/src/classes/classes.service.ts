@@ -9,6 +9,7 @@ import type {
   CreateClassRequest, 
   UpdateClassRequest 
 } from "./classes.types";
+import type { LearningTrajectory, LearningTrajectoryFilter } from "@/learning-trajectories/learning-trajectories.types";
 
 export async function listClassesService(
   filter?: ClassFilter & PaginationParams
@@ -40,6 +41,11 @@ export async function inactivateClassService(id: number): Promise<string> {
 export async function getClassStudentsService(id: number, filter: ClassStudentsFilter): Promise<ClassStudents[]> {
   const response = await api.get<ClassStudents[]>(`/schoolClass/${id}/students-pannel`, { params: filter });
   return response.data; 
+}
+
+export async function getLearningTrajectoryService(id: number, filter: LearningTrajectoryFilter) {
+  const response = await api.get<LearningTrajectory[]>(`/schoolClass/${id}/trajectory`, { params: filter });
+  return response.data;
 }
 
 export async function exportSchoolClassSurveysService(schoolClassId: number): Promise<Blob> {

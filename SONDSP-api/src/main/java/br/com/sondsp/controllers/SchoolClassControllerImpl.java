@@ -88,6 +88,11 @@ public class SchoolClassControllerImpl implements SchoolClassController {
 		return ResponseEntity.ok().body(service.getStudentsPannel(id, applicationPeriod, strandId));
 	}
 
+	@GetMapping("/{id}/trajectory")
+	public ResponseEntity<?> getStudentsTrajectory(Integer id, Integer strandId) {
+		return ResponseEntity.ok().body(service.getStudentsTrajectory(id, strandId));
+	}
+
 	@GetMapping("/report/school-class-surveys/{schoolClassId}")
 	public ResponseEntity<ByteArrayResource> exportSchoolClassSurveys(
 			@PathVariable Integer schoolClassId) throws IOException {

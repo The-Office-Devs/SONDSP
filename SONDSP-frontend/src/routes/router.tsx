@@ -19,6 +19,7 @@ import { SurveysPage } from '@/surveys/surveys-page/surveys-page';
 import { SurveysHistoryPage } from '@/surveys/surveys-history/surveys-history-page';
 import { ClassesFilterPage } from '@/classes/classes-filter-page/classes-filter-page';
 import { ClassDetailsPage } from '@/classes/class-details-page/class-details-page';
+import { LearningTrajectoriesPage } from '@/learning-trajectories/learning-trajectories-page/learning-trajectories-page';
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +68,7 @@ export const router = createBrowserRouter([
             children: [
               { path: 'app-sondagens', element: <SurveysPage /> },
               { path: 'app-sondagens/historico/aluno/:id', element: <SurveysHistoryPage /> },
+              { path: 'app-trajetorias-aprendizagem', element: <LearningTrajectoriesPage /> },
               { path: 'app-turmas', element: <ClassesFilterPage />},
               { path: 'app-turmas/turma/:id', element: <ClassDetailsPage />}
             ],

@@ -24,7 +24,7 @@ export const applicationItems = [
   { label: 'Alunos', icon: UserRound, to: '/app-alunos' },
   { label: 'Mapa de Classe', icon: LayoutGrid, to: '/app-mapa-classe' },
   { label: 'Sondagens', icon: BookOpenText, to: '/app-sondagens' },
-  { label: 'Trajetória', icon: Puzzle, to: '/app-trajetoria' },
+  { label: 'Trajetórias', icon: Puzzle, to: '/app-trajetorias-aprendizagem' },
   { label: 'Turmas', icon: ClipboardList, to: '/app-turmas' },
 ];
 

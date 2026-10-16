@@ -1,5 +1,6 @@
 package br.com.sondsp.services;
 
+import static br.com.sondsp.util.FileNameUtils.formatSurveyFileName;
 import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
 import static br.com.sondsp.util.SystemMessages.*;
 
@@ -34,6 +35,7 @@ public class SurveyService {
     private final StudentRepository studentRepository;
     private final ActivityRepository activityRepository;
     private final SupabaseStorageService storageService;
+    private final AuthenticationService authenticationService;
 
     @Autowired
     private SpecificationFilter specificationFilter;
