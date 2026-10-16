@@ -62,7 +62,7 @@ export function ClassesFilterDesktop() {
 
   const goToTurma = (classId: number) => navigator(`turma/${classId}`);
 
-  const generateReport = (classId: number) => {
+  const generateReport = (_classId: number) => {
     // TODO: Implementar a logica para gerar o relatorio da turma!!!
     // esperar o endpoint ficar pronto
     return;
