@@ -55,9 +55,9 @@ export function useFinishSurvey() {
     mutationFn: ({ surveyId, data }: { surveyId: number; data: FinishSurveyFormData }) =>
       finishSurveyService({ surveyId, ...data }),
   
-    onSuccess: (message) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SURVEYS_QUERY_KEY });
-      toast.success(message || 'Sondagem cadastrada com sucesso.');
+      toast.success('Sondagem cadastrada com sucesso.');
     },
   
     onError: (error: AxiosError<{ error: string }>) =>

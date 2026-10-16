@@ -4,7 +4,7 @@ export const surveyHistorySchema = z.object({
   status: z
     .enum(["all", "true", "false"])
     .transform((v) => (v === "all" ? undefined : v === "true")),
-  bimester: z
+  applicationPeriod: z
     .string()
     .optional()
     .transform((v) => v || undefined),

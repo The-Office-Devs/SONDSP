@@ -13,21 +13,29 @@ import {
   inactivateClassService, 
   getClassService, 
   listClassesService, 
-  updateClassService, 
+  updateClassService,
+  getClassStudentsService,
+  updateClassService,
   getClassMapService
-} from "../classes.service";
+} from "./classes.service";
+import type { ClassFilter, ClassStudentsFilter, UseClassesOptions } from "./classes.types";
+import type { ClassMapFilter } from "@/class-map/class-map.types";
+import type { ClassFormData } from "./classes-page/class.schema";
 import type { ClassFilter } from "../classes.types";
 import type { ClassFormData } from "./class.schema";
 import type { PaginationParams } from "@/api/types";
-import type { ClassMapFilter } from "@/class-map/class-map.types";
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
 
-export function useClasses(filter?: ClassFilter & PaginationParams) {
+export function useClasses(
+  filter?: ClassFilter & PaginationParams,
+  options?: UseClassesOptions
+) {
   return useQuery({
     queryKey: [...CLASSES_QUERY_KEY, filter],
     queryFn: () => listClassesService(filter),
     placeholderData: keepPreviousData,
+    ...options
   });
 }
 
@@ -102,6 +110,18 @@ export function useInactivateClass() {
 
     onError: (error: AxiosError<{ error: string }>) =>
       handleApiError(error || 'Erro ao alterar status da turma.')
+  });
+}
+
+export function useClassStudentsCard(
+  id: number,
+  filter: ClassStudentsFilter | null
+) {
+  return useQuery({
+    queryKey: ["class", id, "students-panel", filter],
+    queryFn: () => getClassStudentsService(id, filter as ClassStudentsFilter),
+    enabled: !!id && !!filter?.strandId,
+    placeholderData: keepPreviousData
   });
 }
 

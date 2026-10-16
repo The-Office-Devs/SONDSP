@@ -7,10 +7,17 @@ import br.com.sondsp.form.SchoolClassForm;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface SchoolClassController {
 	@Operation(
@@ -26,7 +33,7 @@ public interface SchoolClassController {
 			)
 		}
 	)
-	ResponseEntity<?> createSchoolClass(SchoolClassForm form);
+	ResponseEntity<?> createSchoolClass(@Valid @RequestBody SchoolClassForm form);
 
 	@Operation(
 		description = "Busca a turma com base no id passado.",
@@ -49,7 +56,7 @@ public interface SchoolClassController {
 			)
 		}
 	)
-	ResponseEntity<?> getSchoolClassById(Integer id);
+	ResponseEntity<?> getSchoolClassById(@PathVariable Integer id);
 
 	@Operation(
 		description = "Retorna todas as turmas com base em um filtro. Caso o filtro não seja passado, retorna todas as turmas.",
@@ -64,7 +71,17 @@ public interface SchoolClassController {
 			)
 		}
 	)
-	ResponseEntity<PageResponse<SchoolClassDTO>> getSchoolsClassesByFilter(SchoolClassFilter filter, Pageable pageable);
+	public ResponseEntity<PageResponse<SchoolClassDTO>> getSchoolsClassesByFilter(
+		@ModelAttribute SchoolClassFilter filter,
+		@SortDefault.SortDefaults(
+			{
+				@SortDefault(sort = "status", direction = Sort.Direction.DESC),
+				@SortDefault(sort = "schoolYear", direction = Sort.Direction.DESC),
+				@SortDefault(sort = "gradeLevel", direction = Sort.Direction.DESC),
+				@SortDefault(sort = "name", direction = Sort.Direction.ASC, caseSensitive = false)
+			}
+		) Pageable pageable
+	);
 
 	@Operation(
 		description = "Atualiza a turma com base no id.",
@@ -87,7 +104,7 @@ public interface SchoolClassController {
 			)
 		}
 	)
-	ResponseEntity<?> updateSchoolClass(Integer id, SchoolClassForm form);
+	ResponseEntity<?> updateSchoolClass(@PathVariable Integer id, @RequestBody SchoolClassForm form);
 
 	@Operation(
 		description = "Ativa/desativa a turma com base no id.",
@@ -110,25 +127,11 @@ public interface SchoolClassController {
 			)
 		}
 	)
-	ResponseEntity<?> changeStatus(Integer id);
+	ResponseEntity<?> changeStatus(@PathVariable Integer id);
 
-	@Operation(
-		description = "Retorna os dados processados do mapa de classe da turma separados por percentual de domínio, distribuição e evolução comparativa.",
-		responses = {
-			@ApiResponse(
-				responseCode = "200",
-				description = "Mapa de classe retornado com sucesso.",
-				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClassMapDTO.class))
-			),
-			@ApiResponse(
-				responseCode = "404",
-				description = "Turma ou eixo não encontrado.",
-				content = @Content(
-					mediaType = "application/json",
-					schema = @Schema(implementation = StandardErrorDTO.class)
-				)
-			)
-		}
-	)
-	ResponseEntity<ClassMapDTO> getClassMap(@PathVariable Integer id, @ModelAttribute ClassMapFilter filter);
+	public ResponseEntity<?> getStudentsPannel(
+		@PathVariable Integer id,
+		@RequestParam(required = false) String applicationPeriod,
+		@RequestParam Integer strandId
+	);
 }

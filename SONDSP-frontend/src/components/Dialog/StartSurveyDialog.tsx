@@ -7,17 +7,22 @@ import { Download } from "lucide-react";
 import { useActivities, useActivityImage } from "@/activities/activities-page/use-activities";
 import { useStartSurvey } from "@/surveys/use-surveys";
 import { downloadUrl } from "@/lib/file-utils";
+import { bimesterOptions } from "@/lib/options-utils";
 
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "../ui/dialog";
 import { ComboboxField } from "../HookForm/fields/ComboBoxField";
-import { ReadOnlyField } from "../ReadOnlyField/ReadOnlyField";
+import { ReadOnlyField } from "../ReadOnlyFields/ReadOnlyField";
 import { Button } from "../ui/button";
+import { SelectField } from "../HookForm/fields/SelectField";
 
 const startSurveySchema = z.object({
   activityModelId: z.coerce
     .number()
     .int()
-    .positive("Selecione um modelo de atividade")
+    .positive("Selecione um modelo de atividade"),
+  applicationPeriod: z
+    .string()
+    .min(1, "Selecione um bimestre"),
 });
 
 type StartSurveyFormInput = z.input<typeof startSurveySchema>;
@@ -66,7 +71,11 @@ export function StartSurveyDialog({
 
   const onSubmit = (data: StartSurveyFormData) => {
     startSurvey(
-      { studentId: studentId!, activityModelId: data.activityModelId },
+      { 
+        studentId: studentId!, 
+        activityModelId: data.activityModelId,
+        applicationPeriod: data.applicationPeriod
+      },
       { onSuccess: () => onOpenChange(false) }
     )
   };
@@ -91,8 +100,14 @@ export function StartSurveyDialog({
               emptyMessage="Nenhum modelo de atividade encontrado"
             />
 
+            <SelectField
+              name="applicationPeriod"
+              label="Bimestre"
+              placeholder="Selecione o bimestre"
+              options={bimesterOptions}
+            />
+
             <ReadOnlyField label="Ano Escolar" value={selectedModel?.gradeLevel} />
-            <ReadOnlyField label="Bimestre" value={selectedModel?.bimester} />
             <ReadOnlyField label="Eixo" value={selectedModel?.strand.name} />
 
             <Button 

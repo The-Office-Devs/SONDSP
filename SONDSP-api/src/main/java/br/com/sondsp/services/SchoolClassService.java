@@ -8,6 +8,15 @@ import br.com.sondsp.dtos.DomainPercentageDTO;
 import br.com.sondsp.dtos.EvolutionComparativeDTO;
 import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.ClassMapFilter;
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_ALREADY_EXISTS;
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_CANNOT_ACTIVATE;
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_CANNOT_INACTIVATE;
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_NOT_FOUND;
+
+import br.com.sondsp.dtos.StudentsPannelDTO;
+import br.com.sondsp.entities.School;
+import br.com.sondsp.entities.SchoolClass;
+import br.com.sondsp.entities.Student;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import br.com.sondsp.repositories.ActivityRepository;
@@ -17,12 +26,18 @@ import br.com.sondsp.repositories.StudentRepository;
 import br.com.sondsp.repositories.SurveyRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.*;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.ValidationException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -77,6 +92,21 @@ public class SchoolClassService {
 		return repository.findAll(spec, pageable);
 	}
 
+	public List<StudentsPannelDTO> getStudentsPannel(Integer schoolClassId, String applicationPeriod, Integer strandId) {
+		List<Tuple> tuples = repository.getStudentsSumary(schoolClassId, applicationPeriod, strandId);
+
+		return tuples
+			.stream()
+			.map(tuple ->
+				new StudentsPannelDTO(
+					tuple.get("studentid", Integer.class),
+					tuple.get("studentname", String.class),
+					tuple.get("result", String.class)
+				)
+			)
+			.toList();
+	}
+
 	public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
 		if (
 			repository.existsBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShiftAndIdNot(
@@ -89,19 +119,19 @@ public class SchoolClassService {
 			)
 		) throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
 
-		SchoolClass schoolClass = getSchoolClass(id);
+        SchoolClass schoolClass = getSchoolClass(id);
 
-		schoolClass.setName(form.name());
-		schoolClass.setGradeLevel(form.gradeLevel());
-		schoolClass.setSchoolYear(form.schoolYear());
-		schoolClass.setShift(form.shift());
+        schoolClass.setName(form.name());
+        schoolClass.setGradeLevel(form.gradeLevel());
+        schoolClass.setSchoolYear(form.schoolYear());
+        schoolClass.setShift(form.shift());
 
-		if (!java.util.Objects.equals(schoolClass.getSchool().getId(), form.schoolId())) {
-			schoolClass.setSchool(schoolService.getSchool(form.schoolId()));
-		}
+        if (!java.util.Objects.equals(schoolClass.getSchool().getId(), form.schoolId())) {
+            schoolClass.setSchool(schoolService.getSchool(form.schoolId()));
+        }
 
-		return repository.save(schoolClass);
-	}
+        return repository.save(schoolClass);
+    }
 
 	public Boolean changeStatus(Integer id) {
 		SchoolClass schoolClass = getSchoolClass(id);
@@ -392,6 +422,9 @@ public class SchoolClassService {
 				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("gradeLevel")), searchPattern));
 				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern));
 				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("shift")), searchPattern));
+				if (search.matches("\\d{1,9}")) orPredicates.add(
+					criteriaBuilder.equal(root.get("numStudents"), Integer.valueOf(search))
+				);
 
 				Boolean status = null;
 				if ("ativo".startsWith(search)) {
@@ -403,49 +436,57 @@ public class SchoolClassService {
 				if (status != null) orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
 				predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
-			} else {
-				if (filter.schoolId() != null) {
-					Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
+			}
 
-					predicates.add(criteriaBuilder.equal(schoolJoin.get("id"), filter.schoolId()));
-				}
+			if (filter.schoolId() != null) {
+				Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 
-				if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
-					Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
+				predicates.add(criteriaBuilder.equal(schoolJoin.get("id"), filter.schoolId()));
+			}
 
-					predicates.add(
-						criteriaBuilder.like(
-							criteriaBuilder.lower(schoolJoin.get("name")),
-							"%" + filter.schoolName().toLowerCase() + "%"
-						)
-					);
-				}
+			if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
+				Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
 
-				if (filter.name() != null && !filter.name().isBlank()) {
-					predicates.add(
-						criteriaBuilder.like(
-							criteriaBuilder.lower(root.get("name")),
-							"%" + filter.name().toLowerCase() + "%"
-						)
-					);
-				}
+				predicates.add(
+					criteriaBuilder.like(
+						criteriaBuilder.lower(schoolJoin.get("name")),
+						"%" + filter.schoolName().toLowerCase() + "%"
+					)
+				);
+			}
 
-				if (filter.gradeLevel() != null && !filter.gradeLevel().isBlank()) {
-					predicates.add(criteriaBuilder.equal(root.get("gradeLevel"), filter.gradeLevel()));
-				}
+			if (filter.name() != null && !filter.name().isBlank()) {
+				predicates.add(
+					criteriaBuilder.like(
+						criteriaBuilder.lower(root.get("name")),
+						"%" + filter.name().toLowerCase() + "%"
+					)
+				);
+			}
 
-				if (filter.schoolYear() != null && !filter.schoolYear().isBlank()) {
-					predicates.add(criteriaBuilder.equal(root.get("schoolYear"), filter.schoolYear()));
-				}
+			if (filter.gradeLevel() != null && !filter.gradeLevel().isBlank()) {
+				predicates.add(criteriaBuilder.equal(root.get("gradeLevel"), filter.gradeLevel()));
+			}
 
-				if (filter.shift() != null && !filter.shift().isBlank()) {
-					predicates.add(criteriaBuilder.equal(root.get("shift"), filter.shift()));
-				}
+			if (filter.schoolYear() != null && !filter.schoolYear().isBlank()) {
+				predicates.add(criteriaBuilder.equal(root.get("schoolYear"), filter.schoolYear()));
+			}
+
+			if (filter.shift() != null && !filter.shift().isBlank()) {
+				predicates.add(criteriaBuilder.equal(root.get("shift"), filter.shift()));
+			}
+
+			if (filter.numStudents() != null) {
+				predicates.add(criteriaBuilder.equal(root.get("numStudents"), filter.numStudents()));
 			}
 
 			if (filter.status() != null) predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
 
-			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-		};
-	}
+			if (Boolean.TRUE.equals(filter.hasStudents())) predicates.add(
+				criteriaBuilder.greaterThan(root.get("numStudents"), 0)
+			);
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
 }

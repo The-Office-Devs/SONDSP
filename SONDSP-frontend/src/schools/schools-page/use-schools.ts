@@ -7,9 +7,10 @@ import {
 import { toast } from 'sonner';
 import type { AxiosError } from 'axios';
 
-import { handleApiError } from '@/lib/utils';
 import { useAuthStore } from '@/auth/auth.store';
 import { useUser } from '@/users/users-page/use-users';
+
+import { handleApiError } from '@/lib/utils';
 import { listUsersService } from '@/users/users.service';
 import {
   listSchoolsService,

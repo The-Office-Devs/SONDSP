@@ -53,9 +53,9 @@ spring:
           starttls:
             enable: true
 supabase:
-  url: ${SUPABASE_URL}
-  key: ${SUPABASE_KEY}
-  bucket: ${SUPABASE_BUCKET}
+  url: "${SUPABASE_URL}"
+  key: "${SUPABASE_KEY}"
+  bucket: "${SUPABASE_BUCKET}"
 server:
   port: "${PORT:8081}"
 jwt:

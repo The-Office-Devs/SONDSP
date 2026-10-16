@@ -94,7 +94,6 @@ export function SchoolUpsertPanel({
         isSubmitDisabled={isSubmitDisabled}
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleCancelEdit}
-        collapsible
       >
         <TextField name="codigoInep" label="Código INEP" placeholder="Código INEP" onlyNumbers maxLength={8} />
         <TextField name="name" label="Nome" placeholder="Nome da escola" />

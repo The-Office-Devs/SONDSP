@@ -5,6 +5,7 @@ export interface SurveyListItem {
   administratorName: string;
   administratorId: number;
   studentName: string;
+  applicationPeriod: string;
   activity: ActivityListItem;
   result?: string;
   notes?: string;
@@ -19,13 +20,14 @@ export interface SurveyFilter {
   search?: string;
   activityname?: string;
   strandName?: string;
-  bimester?: string;
+  applicationPeriod?: string;
   status?: boolean;
 }
 
 export interface StartSurveyRequest {
   studentId: number;
   activityModelId: number;
+  applicationPeriod: string;
 };
 
 export interface FinishSurveyRequest {

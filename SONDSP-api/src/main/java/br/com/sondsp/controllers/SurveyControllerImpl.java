@@ -5,6 +5,8 @@ import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
 import br.com.sondsp.dtos.ImageDTO;
 import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.SurveyDTO;
+
+import br.com.sondsp.dtos.*;
 import br.com.sondsp.entities.Survey;
 import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.SurveyFilter;
@@ -15,12 +17,9 @@ import br.com.sondsp.util.SystemMessages;
 import jakarta.xml.bind.ValidationException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/survey")
-public class SurveyControllerImpl {
+public class SurveyControllerImpl implements SurveyController {
 
 	@Autowired
 	private SurveyService surveyService;
@@ -37,31 +36,20 @@ public class SurveyControllerImpl {
 	private AuthenticationService authenticationService;
 
 	@PostMapping
-	public ResponseEntity<?> createSurvey(@RequestBody SurveyForm form) throws IOException {
-		Optional<User> creator = authenticationService.getCurrentUser();
-		if (creator.isPresent()) {
-			return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form, creator.get())));
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, SystemMessages.USER_NOT_FOUND);
-		}
+	public ResponseEntity<?> createSurvey(SurveyForm form) throws ValidationException, IOException {
+		return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form)));
 	}
 
 	@GetMapping
-	public ResponseEntity<?> getSurveys(@ModelAttribute SurveyFilter filter) {
+	public ResponseEntity<?> getSurveys(SurveyFilter filter) {
 		return ResponseEntity.ok().body(surveyService.listSurveys(filter).stream().map(SurveyDTO::new));
 	}
 
 	@GetMapping("/student-surveys/{id}")
 	public ResponseEntity<PageResponse<SurveyDTO>> getStudentSurveys(
-		@PathVariable Integer id,
-		@ModelAttribute SurveyFilter filter,
-		@SortDefault.SortDefaults(
-			{
-				@SortDefault(sort = "status", direction = Sort.Direction.ASC),
-				@SortDefault(sort = "activity.strand.subject", direction = Sort.Direction.ASC),
-				@SortDefault(sort = "activity.name", direction = Sort.Direction.ASC, caseSensitive = false)
-			}
-		) Pageable pageable
+		Integer id,
+		SurveyFilter filter,
+		Pageable pageable
 	) {
 		User applicator = authenticationService
 			.getCurrentUser()
@@ -85,19 +73,18 @@ public class SurveyControllerImpl {
 	}
 
 	@PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
-	public ResponseEntity<?> updateSurvey(@PathVariable Integer id, @ModelAttribute SurveyForm form)
-		throws IOException {
+	public ResponseEntity<?> updateSurvey(Integer id, SurveyForm form) throws IOException {
 		return ResponseEntity.ok().body(new SurveyDTO(surveyService.updateSurvey(id, form)));
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteSurvey(@PathVariable Integer id) throws ValidationException {
+	public ResponseEntity<?> deleteSurvey(Integer id) throws ValidationException {
 		surveyService.deleteSurvey(id);
 		return ResponseEntity.ok(SURVEY_DELETED);
 	}
 
 	@GetMapping("get-survey-image/{id}")
-	public ResponseEntity<?> getSurveyImage(@PathVariable Integer id) {
+	public ResponseEntity<?> getSurveyImage(Integer id) {
 		String imageUrl = surveyService.getSurveyImageSignedUrl(id);
 		return ResponseEntity.ok().body(new ImageDTO(imageUrl));
 	}

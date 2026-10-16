@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SurveyRepository extends JpaRepository<Survey, Integer>, JpaSpecificationExecutor<Survey> {
+	Boolean existsByStudentIdAndActivityIdAndStatus(Integer studentId, Integer activityId, Boolean status);
+
 	@Query(
 		"SELECT s FROM Survey s " +
 		"JOIN FETCH s.activity a " +

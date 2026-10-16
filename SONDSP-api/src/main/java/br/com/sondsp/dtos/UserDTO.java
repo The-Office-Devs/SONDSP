@@ -42,17 +42,16 @@ public record UserDTO(
 		return schools
 			.stream()
 			.map(UserSchool::getSchool)
+            .filter(school -> Boolean.TRUE.equals(school.getStatus()))
 			.map(school -> {
-				List<SchoolClassDTO> classesLinkedToThisSchool = schoolClasses == null
-					? List.of()
-					: schoolClasses
-						.stream()
-						.map(UserSchoolClass::getSchoolClass)
-						.filter(schoolClass ->
-							schoolClass.getSchool() != null && schoolClass.getSchool().getId().equals(school.getId())
-						)
-						.map(schoolClass -> new SchoolClassDTO(schoolClass, false))
-						.toList();
+				List<SchoolClassDTO> classesLinkedToThisSchool = schoolClasses == null ? List.of() :
+                        schoolClasses.stream()
+						    .map(UserSchoolClass::getSchoolClass)
+						    .filter(schoolClass ->
+							    schoolClass.getSchool() != null &&
+                                        schoolClass.getSchool().getId().equals(school.getId()))
+						    .map(schoolClass -> new SchoolClassDTO(schoolClass, false))
+						    .toList();
 
 				return new SchoolClassesDTO(school, classesLinkedToThisSchool);
 			})
