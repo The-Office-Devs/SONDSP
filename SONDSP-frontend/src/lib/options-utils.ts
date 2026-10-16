@@ -57,12 +57,23 @@ export const resultOptions = [
   { value: "NIVEL_03", label: "Nível 03" },
   { value: "NIVEL_04", label: "Nível 04" },
   { value: "NIVEL_05", label: "Nível 05" },
+  { value: "N1", label: "Nível 01" },
+  { value: "N2", label: "Nível 02" },
+  { value: "N3", label: "Nível 03" },
+  { value: "N4", label: "Nível 04" },
+  { value: "N5", label: "Nível 05" },
   { value: "ADEQUADA", label: "Compreensão Adequada" },
   { value: "INADEQUADA", label: "Compreensão Inadequada" },
   { value: "NAO_RESPONDEU", label: "Não Respondeu" },
+  { value: "AD", label: "Compreensão Adequada" },
+  { value: "IN", label: "Compreensão Inadequada" },
+  { value: "NR", label: "Não Respondeu" },
   { value: "ACERTOU", label: "Acertou" },
   { value: "ACERTOU_PARCIALMENTE", label: "Acertou Parcialmente" },
-  { value: "ERROU", label: "Errou" }
+  { value: "ERROU", label: "Errou" },
+  { value: "AC", label: "Acertou" },
+  { value: "AP", label: "Acertou Parcialmente" },
+  { value: "ER", label: "Errou" }
 ];
 
 export const seaResultOptions = [
@@ -105,34 +116,25 @@ export const mathProblemResultOptions = [
 ];
 
 export function getPedagogicalResultOptions(
-  strandName?: string,
-  gradeLevel?: string,
-  activityName?: string
+  strandCode?: string,
+  gradeLevel?: string
 ) {
-  const strand = (strandName ?? "").toLowerCase();
-  const grade = (gradeLevel ?? "").toLowerCase();
-  const activity = (activityName ?? "").toLowerCase();
+  const code = (strandCode ?? "").trim().toUpperCase();
+  const grade = (gradeLevel ?? "").trim().toLowerCase();
 
-  if (strand.includes("leitura") || activity.includes("leitura")) {
-    return readingResultOptions;
-  }
-
-  if (strand.includes("matem") || activity.includes("matem")) {
-    if (activity.includes("problema") || activity.includes("campo") || activity.includes("situac")) {
+  switch (code) {
+    case "LEITURA":
+      return readingResultOptions;
+    case "SITUACOES_PROBLEMA":
       return mathProblemResultOptions;
-    }
-    return mathNumberWritingResultOptions;
+    case "ESCRITA_NUMEROS":
+      return mathNumberWritingResultOptions;
+    case "ESCRITA":
+      if (grade.includes("2") || grade.includes("3")) {
+        return textProductionResultOptions;
+      }
+      return seaResultOptions;
+    default:
+      return [];
   }
-
-  if (
-    grade.includes("2") ||
-    grade.includes("3") ||
-    activity.includes("convite") ||
-    activity.includes("conto") ||
-    activity.includes("producao")
-  ) {
-    return textProductionResultOptions;
-  }
-
-  return seaResultOptions;
 }

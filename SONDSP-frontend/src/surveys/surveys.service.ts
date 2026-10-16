@@ -62,7 +62,7 @@ export interface SurveyResultOption {
 
 export async function getSurveyResultOptionsService(
   activityId?: number,
-  strandName?: string,
+  strandCode?: string,
   gradeLevel?: string
 ): Promise<SurveyResultOption[]> {
   if (activityId) {
@@ -74,7 +74,7 @@ export async function getSurveyResultOptionsService(
 
   const response = await api.get<SurveyResultOption[]>(
     `/survey/result-options`,
-    { params: { strandName, gradeLevel } }
+    { params: { strandCode, gradeLevel } }
   );
   return response.data;
 }
