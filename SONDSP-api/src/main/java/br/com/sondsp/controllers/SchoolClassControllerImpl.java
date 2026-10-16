@@ -5,24 +5,26 @@ import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.filters.ClassMapFilter;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
+import br.com.sondsp.services.ExportService;
 import br.com.sondsp.services.SchoolClassService;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
-import org.springframework.data.web.SortDefault;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_ACTIVATED;
 import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_DEACTIVATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/schoolClass")
@@ -30,6 +32,9 @@ public class SchoolClassControllerImpl implements SchoolClassController {
 
     @Autowired
     private SchoolClassService service;
+
+    @Autowired
+    private ExportService exportService;
 
     @PostMapping
     public ResponseEntity<?> createSchoolClass(SchoolClassForm form) {
@@ -83,5 +88,26 @@ public class SchoolClassControllerImpl implements SchoolClassController {
     @GetMapping("/{id}/classMap")
     public ResponseEntity<ClassMapDTO> getClassMap(Integer id, ClassMapFilter filter) {
         return ResponseEntity.ok().body(service.getClassMap(id, filter));
+    }
+
+    @GetMapping("/report/school-class-surveys/{schoolClassId}")
+    public ResponseEntity<ByteArrayResource> exportSchoolClassSurveys(
+            @PathVariable Integer schoolClassId) throws IOException {
+
+        SchoolClassSurveysReportDTO data = service.getSchoolClassSurveys(schoolClassId);
+
+        byte[] content;
+        try (Workbook report = exportService.getSchoolClassSurveysReport(data);
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            report.write(out);
+            content = out.toByteArray();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDisposition(ContentDisposition.attachment().filename("sondagens.xlsx").build());
+        headers.setContentLength(content.length);
+        headers.setAccessControlExposeHeaders(List.of(HttpHeaders.CONTENT_DISPOSITION));
+        return new ResponseEntity<>(new ByteArrayResource(content), headers, OK);
     }
 }

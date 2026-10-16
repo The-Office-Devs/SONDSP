@@ -47,3 +47,11 @@ export async function getClassMapService(id: number, filter: ClassMapFilter): Pr
   const response = await api.get<ClassMap>(`/schoolClass/${id}/classMap`, { params: filter });
   return response.data;
 }
+
+export async function exportSchoolClassSurveysService(schoolClassId: number): Promise<Blob> {
+  const response = await api.get<Blob>(`/schoolClass/report/school-class-surveys/${schoolClassId}`, {
+    params: { strandId: 2 },
+    responseType: 'blob',
+  });
+  return response.data;
+}

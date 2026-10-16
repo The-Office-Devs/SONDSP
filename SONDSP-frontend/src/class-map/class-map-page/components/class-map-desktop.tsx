@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useClassMap } from "@/classes/classes-page/use-classes";
+import { useClassMap } from "@/classes/use-classes";
 import type { ClassMapAppliedFilters } from "../class-map.schema";
 
 import { ClassMapFilterPanel } from "./class-map-filter-panel";

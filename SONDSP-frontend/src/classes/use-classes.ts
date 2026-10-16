@@ -15,14 +15,12 @@ import {
   listClassesService, 
   updateClassService,
   getClassStudentsService,
-  updateClassService,
-  getClassMapService
+  getClassMapService,
+  exportSchoolClassSurveysService
 } from "./classes.service";
 import type { ClassFilter, ClassStudentsFilter, UseClassesOptions } from "./classes.types";
 import type { ClassMapFilter } from "@/class-map/class-map.types";
 import type { ClassFormData } from "./classes-page/class.schema";
-import type { ClassFilter } from "../classes.types";
-import type { ClassFormData } from "./class.schema";
 import type { PaginationParams } from "@/api/types";
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
@@ -131,5 +129,25 @@ export function useClassMap(id: number | undefined, filter: ClassMapFilter) {
     queryFn: () => getClassMapService(id as number, filter),
     enabled: !!id && !!filter.strandId,
     placeholderData: keepPreviousData,
+  });
+}
+
+export function useExportSchoolClassSurveys() {
+  return useMutation({
+    mutationFn: (schoolClassId: number) => exportSchoolClassSurveysService(schoolClassId),
+    onSuccess: (blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'sondagens.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Relatório gerado com sucesso.');
+    },
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao gerar relatório da turma.'),
   });
 }

@@ -11,6 +11,7 @@ import type { ClassFilterFormData } from "../class-filter.schema";
 import { ClassesFilterPanel } from "./class-filter-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
+import { useExportSchoolClassSurveys } from "./../../use-classes";
 
 const columns: ColumnDef<ClassListItem>[] = [
   { id: "name", header: "Turma", width: "15%" },
@@ -23,7 +24,7 @@ export function ClassesFilterDesktop() {
   const navigator = useNavigate();
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
   const [appliedFilters, setAppliedFilters] = useState<ClassFilterFormData | null>(null);
-
+  const { mutate: exportReport } = useExportSchoolClassSurveys();
   const { data: classesPage, isFetching, isLoading } = useClasses(
     {
       page,
@@ -50,7 +51,7 @@ export function ClassesFilterDesktop() {
       type: "download", 
       label: "Gerar Relatório",
       className: "w-44", 
-      onClick: (classItem) => generateReport(classItem.id) 
+      onClick: (classItem) => generateReport(classItem.id), 
     },
   ];
 
@@ -63,9 +64,7 @@ export function ClassesFilterDesktop() {
   const goToTurma = (classId: number) => navigator(`turma/${classId}`);
 
   const generateReport = (classId: number) => {
-    // TODO: Implementar a logica para gerar o relatorio da turma!!!
-    // esperar o endpoint ficar pronto
-    return;
+    exportReport(classId);
   };
 
   return (
