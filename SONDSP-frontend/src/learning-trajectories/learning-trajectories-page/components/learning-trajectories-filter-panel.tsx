@@ -25,8 +25,7 @@ const defaultValues: LearningTrajectoriesFormInput = {
   schoolId: 0,
   schoolClassId: 0,
   subjectId: 0,
-  strandId: 0,
-  schoolYear: ""
+  strandId: 0
 };
 
 export function LearningTractoriesFilterPanel({
@@ -45,12 +44,7 @@ export function LearningTractoriesFilterPanel({
   const schoolId = useWatch({ control: form.control, name: "schoolId" });
   const subject = useWatch({ control: form.control, name: "subjectId" });
 
-  const { 
-    schoolOptions, 
-    classOptions, 
-    schoolYearOptions,
-    isLoading: isLoadingSchools 
-  } = useUserSchoolOptions(Number(schoolId));
+  const { schoolOptions, classOptions, isLoading: isLoadingSchools } = useUserSchoolOptions(Number(schoolId));
 
   const subjectLabel = subjectOptions.find(
     (opt) => opt.value === String(subject)
@@ -107,13 +101,6 @@ export function LearningTractoriesFilterPanel({
           placeholder={isLoadingStrands ? "Carregando eixos..." : "Selecione o eixo"}
           options={strandOptions}
           disabled={!subject || isLoadingStrands}
-        />
-
-        <SelectField
-          name="schoolYear"
-          label="Ano Letivo"
-          placeholder="Selecione o ano letivo"
-          options={schoolYearOptions}
         />
       </Card>
     </FormProvider>

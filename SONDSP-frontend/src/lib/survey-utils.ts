@@ -1,4 +1,4 @@
-import type { TrajectoryLevel } from "@/learning-trajectories/learning-trajectories.types";
+import type { LearningTrajectoryResults, TrajectoryLevel } from "@/learning-trajectories/learning-trajectories.types";
 import { resultOptions } from "./options-utils";
 
 export const LEGEND: SurveyResultCode[] = ["PS", "SV", "CV", "SA", "ALF"];
@@ -21,4 +21,9 @@ export function getResultLabel(code: SurveyResultCode | null) {
 
 export function isKnownLevel(level: TrajectoryLevel): level is SurveyResultCode {
   return !!level && level in RESULT_DOT_CLASS;
+}
+
+export function getCurrentLevel(results: LearningTrajectoryResults): TrajectoryLevel {
+  const periods = [results.initial, results.fstPeriod, results.sndPeriod, results.trdPeriod, results.frtPeriod];
+  return [...periods].reverse().find(isKnownLevel) ?? null;
 }

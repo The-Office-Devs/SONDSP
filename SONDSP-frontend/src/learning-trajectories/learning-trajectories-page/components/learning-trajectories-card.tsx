@@ -3,32 +3,33 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { 
+  getCurrentLevel,
   getResultLabel, 
   isKnownLevel, 
   LEGEND, 
   NO_RESULT_DOT_CLASS, 
   RESULT_DOT_CLASS 
 } from "@/lib/survey-utils";
-import type { 
-  LearningTrajectoryStudent, 
-  TrajectoryLevel 
-} from "@/learning-trajectories/learning-trajectories.types";
+import type { LearningTrajectory, LearningTrajectoryResults, TrajectoryLevel } from "@/learning-trajectories/learning-trajectories.types";
 
 const TITLE = "Trajetórias de Aprendizagem";
 
-type TrajectoryColumnKey = Exclude<keyof LearningTrajectoryStudent, "studentId" | "studentName">;
-
-const COLUMNS: ReadonlyArray<{ key: TrajectoryColumnKey; label: string; description: string }> = [
-  { key: "initial", label: "Inicial", description: "Sondagem inicial" },
-  { key: "firstBimester", label: "1º Bim", description: "1º Bimestre" },
-  { key: "secondBimester", label: "2º Bim", description: "2º Bimestre" },
-  { key: "thirdBimester", label: "3º Bim", description: "3º Bimestre" },
-  { key: "fourthBimester", label: "4º Bim", description: "4º Bimestre" },
-  { key: "currentLevel", label: "Atual", description: "Nível atual" }
+const COLUMNS: ReadonlyArray<{
+  id: string;
+  label: string;
+  description: string;
+  getLevel: (results: LearningTrajectoryResults) => TrajectoryLevel;
+}> = [
+  { id: "initial", label: "Inicial", description: "Sondagem inicial", getLevel: (results) => results.initial },
+  { id: "fstPeriod", label: "1º Bim", description: "1º Bimestre", getLevel: (results) => results.fstPeriod },
+  { id: "sndPeriod", label: "2º Bim", description: "2º Bimestre", getLevel: (results) => results.sndPeriod },
+  { id: "trdPeriod", label: "3º Bim", description: "3º Bimestre", getLevel: (results) => results.trdPeriod },
+  { id: "frtPeriod", label: "4º Bim", description: "4º Bimestre", getLevel: (results) => results.frtPeriod },
+  { id: "current", label: "Atual", description: "Nível atual", getLevel: getCurrentLevel }
 ];
 
 interface LearningTrajectoriesCardProps {
-  students: LearningTrajectoryStudent[];
+  trajectories: LearningTrajectory[];
   isFetching?: boolean;
 }
 
@@ -54,7 +55,7 @@ function LevelDot({ level }: Readonly<{ level: TrajectoryLevel }>) {
 }
 
 export function LearningTrajectoriesCard({
-  students,
+  trajectories,
   isFetching = false
 }: Readonly<LearningTrajectoriesCardProps>) {
   // TODO: Checar se a rota do Link esta correta
@@ -78,7 +79,7 @@ export function LearningTrajectoriesCard({
       </header>
 
       <div className="p-4">
-        {students.length === 0 ? (
+        {trajectories.length === 0 ? (
           <p className="py-6 text-center text-sm text-slate-500">
             Nenhum aluno encontrado com os filtros selecionados.
           </p>
@@ -92,7 +93,7 @@ export function LearningTrajectoriesCard({
                   </th>
                   {COLUMNS.map((column) => (
                     <th
-                      key={column.key}
+                      key={column.id}
                       scope="col"
                       className="sticky top-0 z-[1] w-[12%] border-b border-neutral-300 bg-neutral-100 py-2 text-center text-xs text-slate-500"
                     >
@@ -103,20 +104,20 @@ export function LearningTrajectoriesCard({
               </thead>
 
               <tbody>
-                {students.map((student) => (
-                  <tr key={student.studentId}>
+                {trajectories.map(({ student, results }) => (
+                  <tr key={student.id}>
                     <th scope="row" className="pl-2 text-left font-normal">
                       <Link
-                        to={`/app-alunos/aluno/${student.studentId}`}
-                        title={student.studentName}
+                        to={`/app-alunos/aluno/${student.id}`}
+                        title={student.nome}
                         className="underline-offset-2 hover:underline"
                       >
-                        {student.studentName}
+                        {student.nome}
                       </Link>
                     </th>
                     {COLUMNS.map((column) => (
-                      <td key={column.key} className="py-3 text-center">
-                        <LevelDot level={student[column.key]} />
+                      <td key={column.id} className="py-3 text-center">
+                        <LevelDot level={column.getLevel(results)} />
                       </td>
                     ))}
                   </tr>

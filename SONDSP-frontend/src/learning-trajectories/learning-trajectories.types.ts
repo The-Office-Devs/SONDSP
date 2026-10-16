@@ -2,14 +2,19 @@ import type { SurveyResultCode } from "@/lib/survey-utils";
 
 export type TrajectoryLevel = SurveyResultCode | null;
 
-// TODO: Alterar de acordo com o back
-export interface LearningTrajectoryStudent {
-  studentId: number;
-  studentName: string;
+export interface LearningTrajectoryResults {
   initial: TrajectoryLevel;
-  firstBimester: TrajectoryLevel;
-  secondBimester: TrajectoryLevel;
-  thirdBimester: TrajectoryLevel;
-  fourthBimester: TrajectoryLevel;
-  currentLevel: TrajectoryLevel;
+  fstPeriod: TrajectoryLevel;
+  sndPeriod: TrajectoryLevel;
+  trdPeriod: TrajectoryLevel;
+  frtPeriod: TrajectoryLevel;
+}
+
+export interface LearningTrajectoryFilter {
+  strandId: number | undefined;
+}
+
+export interface LearningTrajectory {
+  student: { id: number; nome: string; };
+  results: LearningTrajectoryResults;
 }
