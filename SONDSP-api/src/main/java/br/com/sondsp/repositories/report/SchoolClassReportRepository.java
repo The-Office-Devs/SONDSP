@@ -275,7 +275,7 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
     /** Texto de instrução do modelo, com as siglas em negrito. */
     private static XSSFRichTextString instructionText(Styles s) {
         String[] parts = {
-                "Anote  ", "PS", ", ", "SSV", ", ", "SCV", ", ", "SA", " ou ", "A",
+                "Anote  ", "PS", ", ", "SSVC", ", ", "SCVC", ", ", "SA", " ou ", "A",
                 " , ou utilize as cores da legenda, para indicar a hipótese que melhor representa a escrita "
                         + "apresentada pelo estudante, conforme documento orientador de sondagem.",
         };

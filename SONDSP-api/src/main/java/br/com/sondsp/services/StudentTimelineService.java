@@ -4,6 +4,7 @@ import br.com.sondsp.dtos.portfolio.TimelineEvolutionDTO;
 import br.com.sondsp.dtos.portfolio.TimelineItemDTO;
 import br.com.sondsp.entities.Survey;
 import br.com.sondsp.entities.enums.ApplicationPeriod;
+import br.com.sondsp.entities.enums.EvaluationType;
 import br.com.sondsp.entities.enums.EvolutionComparison;
 import br.com.sondsp.repositories.StudentRepository;
 import br.com.sondsp.repositories.SurveyRepository;
@@ -27,6 +28,7 @@ public class StudentTimelineService {
     private final SurveyRepository surveyRepository;
     private final StudentRepository studentRepository;
     private final SupabaseStorageService storageService;
+    private final SurveyPedagogicalLevelService pedagogicalLevelService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -95,8 +97,8 @@ public class StudentTimelineService {
                     ? survey.getActivity().getStrand().getName()
                     : "Sondagem";
 
-            String strandKey = determineStrandKey(strandName);
-            String evaluationType = determineEvaluationType(strandKey, survey);
+            String strandKey = determineStrandKey(survey);
+            String evaluationType = determineEvaluationType(survey);
             String formattedDate = survey.getDate() != null ? survey.getDate().format(DATE_FORMATTER) : "";
             String schoolYear = (survey.getSchoolClass() != null && survey.getSchoolClass().getSchoolYear() != null)
                     ? survey.getSchoolClass().getSchoolYear()
@@ -128,7 +130,7 @@ public class StudentTimelineService {
                     survey.getDate(),
                     activityTitle,
                     currentCode,
-                    determineLevelLabel(currentCode, strandKey),
+                    pedagogicalLevelService.getLevelLabel(currentCode),
                     evolution,
                     survey.getNotes(),
                     hasEvidence,
@@ -144,57 +146,26 @@ public class StudentTimelineService {
         return timelineItems;
     }
 
-    private String determineStrandKey(String strandName) {
-        if (strandName == null) return "escrita";
-        String lower = strandName.toLowerCase();
-        if (lower.contains("leitura")) return "leitura";
-        if (lower.contains("matem")) return "matematica";
+    private String determineStrandKey(Survey survey) {
+        if (survey.getActivity() != null && survey.getActivity().getStrand() != null) {
+            String code = survey.getActivity().getStrand().getCode();
+            if (code != null) {
+                return switch (code.toUpperCase(Locale.ROOT)) {
+                    case "LEITURA" -> "leitura";
+                    case "ESCRITA_NUMEROS", "SITUACOES_PROBLEMA" -> "matematica";
+                    case "ESCRITA" -> "escrita";
+                    default -> "escrita";
+                };
+            }
+        }
         return "escrita";
     }
 
-    private String determineEvaluationType(String strandKey, Survey survey) {
-        String result = survey.getResult() != null ? survey.getResult().toUpperCase() : "";
-        String activityName = (survey.getActivity() != null) ? survey.getActivity().getName().toLowerCase() : "";
-
-        if ("leitura".equals(strandKey)) {
-            return "LEITURA";
+    private String determineEvaluationType(Survey survey) {
+        if (survey.getActivity() != null) {
+            return pedagogicalLevelService.getEvaluationTypeForActivity(survey.getActivity()).name();
         }
-
-        if ("matematica".equals(strandKey)) {
-            if (result.contains("/") || activityName.contains("problema") || activityName.contains("campo")) {
-                return "SITUACOES_PROBLEMA";
-            }
-            return "ESCRITA_NUMEROS";
-        }
-
-        // Eixo Escrita
-        if (result.startsWith("NIVEL") || activityName.contains("convite") || activityName.contains("conto") || activityName.contains("texto")) {
-            return "PRODUCAO_TEXTO";
-        }
-        return "ESCRITA_SEA";
-    }
-
-    private String determineLevelLabel(String code, String strandKey) {
-        if (code == null || code.isBlank()) return "Sem avaliação";
-        return switch (code.toUpperCase()) {
-            case "PS" -> "PS — Pré-Silábica";
-            case "SSVC" -> "SSVC — Silábico sem valor sonoro convencional";
-            case "SCVC" -> "SCVC — Silábico com valor convencional";
-            case "SA" -> "SA — Silábico-Alfabética";
-            case "A" -> "A — Alfabética";
-            case "NIVEL_01" -> "Nível 01";
-            case "NIVEL_02" -> "Nível 02";
-            case "NIVEL_03" -> "Nível 03";
-            case "NIVEL_04" -> "Nível 04";
-            case "NIVEL_05" -> "Nível 05";
-            case "ADEQUADA" -> "Adequada — Práticas de Leitura";
-            case "INADEQUADA" -> "Inadequada — Práticas de Leitura";
-            case "NAO_RESPONDEU" -> "Não respondeu";
-            case "ACERTOU" -> "Acertou plenamente";
-            case "ACERTOU_PARCIALMENTE" -> "Acertou parcialmente";
-            case "ERROU" -> "Errou ou não resolveu";
-            default -> code;
-        };
+        return EvaluationType.ESCRITA_SEA.name();
     }
 
     private ApplicationPeriod parseApplicationPeriod(String period) {

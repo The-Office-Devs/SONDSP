@@ -1,6 +1,7 @@
 package br.com.sondsp.services;
 
 import br.com.sondsp.dtos.*;
+import br.com.sondsp.dtos.survey.SurveyResultOptionDTO;
 import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.ClassMapFilter;
 import br.com.sondsp.filters.SchoolClassFilter;
@@ -37,14 +38,13 @@ import static br.com.sondsp.util.SystemMessages.*;
 @AllArgsConstructor
 public class SchoolClassService {
 
-	private static final List<String> DEFAULT_LEVELS = List.of("PS", "SV", "CV", "SA", "ALF");
-
 	private SchoolClassRepository repository;
 	private SchoolService schoolService;
 	private StudentRepository studentRepository;
 	private StrandRepository strandRepository;
 	private ActivityRepository activityRepository;
 	private SurveyRepository surveyRepository;
+	private SurveyPedagogicalLevelService pedagogicalLevelService;
 
 	public SchoolClass createSchoolClass(SchoolClassForm form) {
 		if (
@@ -192,6 +192,25 @@ public class SchoolClassService {
 			.filter(s -> s.getResult() != null && !s.getResult().trim().isEmpty())
 			.toList();
 
+		Set<Integer> classSurveyActivityIds = validSurveys
+			.stream()
+			.filter(s -> s.getActivity() != null)
+			.map(s -> s.getActivity().getId())
+			.collect(Collectors.toSet());
+
+		if (schoolClass.getGradeLevel() != null && !schoolClass.getGradeLevel().isBlank()) {
+			String classGrade = schoolClass.getGradeLevel().replaceAll("[º°oO]", "").trim().toLowerCase(Locale.ROOT);
+			activeActivities = activeActivities
+				.stream()
+				.filter(a -> {
+					if (classSurveyActivityIds.contains(a.getId())) return true;
+					if (a.getGradeLevel() == null || a.getGradeLevel().isBlank()) return false;
+					String actGrade = a.getGradeLevel().replaceAll("[º°oO]", "").trim().toLowerCase(Locale.ROOT);
+					return classGrade.equals(actGrade) || classGrade.contains(actGrade) || actGrade.contains(classGrade);
+				})
+				.toList();
+		}
+
 		Map<Integer, List<Survey>> surveysByStudent = validSurveys
 			.stream()
 			.collect(Collectors.groupingBy(s -> s.getStudent().getId()));
@@ -233,11 +252,17 @@ public class SchoolClassService {
 			}
 		}
 
-		List<DistributionDTO> distribution = calculateDistribution(latestSurveyByStudent.values());
+		List<DistributionDTO> distribution = calculateDistribution(
+			latestSurveyByStudent.values(),
+			strand,
+			schoolClass.getGradeLevel()
+		);
 
 		List<EvolutionComparativeDTO> evolutionComparative = calculateEvolutionComparative(
 			previousSurveyByStudent.values(),
-			latestSurveyByStudent.values()
+			latestSurveyByStudent.values(),
+			strand,
+			schoolClass.getGradeLevel()
 		);
 
 		List<DomainPercentageDTO> domainPercentage = calculateDomainPercentage(
@@ -256,14 +281,18 @@ public class SchoolClassService {
 		);
 	}
 
-	private List<DistributionDTO> calculateDistribution(Collection<Survey> latestSurveys) {
+	private List<DistributionDTO> calculateDistribution(
+			Collection<Survey> latestSurveys,
+			Strand strand,
+			String gradeLevel
+	) {
 		Map<String, Long> countByLevel = latestSurveys
 			.stream()
 			.map(s -> s.getResult().trim())
 			.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
 		long totalEvaluated = latestSurveys.size();
-		List<String> orderedLevels = getOrderedLevels(countByLevel.keySet());
+		List<String> orderedLevels = getOrderedLevels(strand, gradeLevel, countByLevel.keySet());
 
 		return orderedLevels
 			.stream()
@@ -276,8 +305,10 @@ public class SchoolClassService {
 	}
 
 	private List<EvolutionComparativeDTO> calculateEvolutionComparative(
-		Collection<Survey> previousSurveys,
-		Collection<Survey> latestSurveys
+			Collection<Survey> previousSurveys,
+			Collection<Survey> latestSurveys,
+			Strand strand,
+			String gradeLevel
 	) {
 		Map<String, Long> countAntes = previousSurveys
 			.stream()
@@ -293,7 +324,7 @@ public class SchoolClassService {
 		allLevels.addAll(countAntes.keySet());
 		allLevels.addAll(countDepois.keySet());
 
-		List<String> orderedLevels = getOrderedLevels(allLevels);
+		List<String> orderedLevels = getOrderedLevels(strand, gradeLevel, allLevels);
 
 		return orderedLevels
 			.stream()
@@ -370,7 +401,7 @@ public class SchoolClassService {
 
 				if (targetSurvey != null) {
 					totalAvaliados++;
-					if (isExpectedLevel(targetSurvey.getResult())) {
+					if (isExpectedLevel(targetSurvey.getActivity(), targetSurvey.getResult())) {
 						expectedQuantity++;
 					}
 				}
@@ -397,19 +428,26 @@ public class SchoolClassService {
 		return s1.getId() != null && s2.getId() != null && s1.getId() < s2.getId();
 	}
 
-	private boolean isExpectedLevel(String result) {
-		if (result == null) return false;
-		String trimmed = result.trim().toUpperCase();
-		return trimmed.equals("ALF") || trimmed.equals("ALFABÉTICO") || trimmed.equals("ALFABETICO");
+	private boolean isExpectedLevel(Activity activity, String result) {
+		return pedagogicalLevelService.isExpectedLevel(activity, result);
 	}
 
-	private List<String> getOrderedLevels(Set<String> presentLevels) {
-		List<String> result = new ArrayList<>(DEFAULT_LEVELS);
+	private List<String> getOrderedLevels(Strand strand, String gradeLevel, Set<String> presentLevels) {
+		List<SurveyResultOptionDTO> options = pedagogicalLevelService.getResultOptions(strand, gradeLevel);
+
+		List<String> result = new ArrayList<>();
+		for (SurveyResultOptionDTO opt : options) {
+			if (!result.contains(opt.value())) {
+				result.add(opt.value());
+			}
+		}
+
 		for (String level : presentLevels) {
 			if (!result.contains(level)) {
 				result.add(level);
 			}
 		}
+
 		return result;
 	}
 
