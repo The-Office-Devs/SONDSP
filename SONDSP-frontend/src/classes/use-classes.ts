@@ -13,12 +13,17 @@ import {
   inactivateClassService, 
   getClassService, 
   listClassesService, 
-  updateClassService, 
-  getClassStudentsService
+  updateClassService,
+  getClassStudentsService,
+  getClassMapService,
+  getLearningTrajectoryService,
+  exportSchoolClassSurveysService
 } from "./classes.service";
 import type { ClassFilter, ClassStudentsFilter, UseClassesOptions } from "./classes.types";
+import type { ClassMapFilter } from "@/class-map/class-map.types";
 import type { ClassFormData } from "./classes-page/class.schema";
 import type { PaginationParams } from "@/api/types";
+import type { LearningTrajectoryFilter } from "@/learning-trajectories/learning-trajectories.types";
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
 
@@ -117,5 +122,46 @@ export function useClassStudentsCard(
     queryFn: () => getClassStudentsService(id, filter as ClassStudentsFilter),
     enabled: !!id && !!filter?.strandId,
     placeholderData: keepPreviousData
+  });
+}
+
+export function useClassMap(id: number | undefined, filter: ClassMapFilter) {
+  return useQuery({
+    queryKey: ["class-map", id, filter],
+    queryFn: () => getClassMapService(id as number, filter),
+    enabled: !!id && !!filter.strandId,
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useLearningTrajectory(
+  id: number | undefined,
+  filter: LearningTrajectoryFilter
+) {
+  return useQuery({
+    queryKey: ["class", id, "trajectory", filter],
+    queryFn: () => getLearningTrajectoryService(id as number, filter),
+    enabled: !!id && !!filter?.strandId,
+    placeholderData: keepPreviousData
+  });
+}
+
+export function useExportSchoolClassSurveys() {
+  return useMutation({
+    mutationFn: (schoolClassId: number) => exportSchoolClassSurveysService(schoolClassId),
+    onSuccess: (blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'sondagens.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Relatório gerado com sucesso.');
+    },
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao gerar relatório da turma.'),
   });
 }

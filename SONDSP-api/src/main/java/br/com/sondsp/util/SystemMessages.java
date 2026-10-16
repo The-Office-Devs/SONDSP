@@ -1,10 +1,9 @@
 package br.com.sondsp.util;
 
 public final class SystemMessages {
-
-	// System errors
-	public static final String UNEXPECTED_ERROR = "Ocorreu um erro inesperado: ";
-	public static final String UNABLE_TO_SAVE_IMAGE = "Ocorreu um erro ao salvar a imagem";
+    // System errors
+    public static final String UNEXPECTED_ERROR = "Ocorreu um erro inesperado: ";
+    public static final String UNABLE_TO_SAVE_IMAGE = "Ocorreu um erro ao salvar a imagem.";
 
 	// Status toggling
 	public static final String USER_ACTIVATED = "Usuário ativado com sucesso.";
@@ -35,7 +34,7 @@ public final class SystemMessages {
 	public static final String ACTIVITY_NOT_FOUND = "A atividade não foi encontrada.";
 	public static final String SURVEY_NOT_FOUND = "A sondagem não foi encontrada.";
 	public static final String ROLE_NOT_FOUND = "A função não foi encontrada.";
-  public static final String ANNOTATION_NOT_FOUND = "A anotação não foi encontrada.";
+    public static final String ANNOTATION_NOT_FOUND = "A anotação não foi encontrada.";
 
 	// Auth
 	public static final String EMAIL_ALREADY_EXISTS = "O email já está sendo utilizado.";
@@ -68,9 +67,10 @@ public final class SystemMessages {
 	public static final String ERROR_SAVING_IMAGE = "Não foi possível salvar o arquivo de imagem.";
 	public static final String ERROR_RETRIEVING_IMAGE = "Não foi possível recuperar o arquivo de imagem.";
 	public static final String SURVEY_CANNOT_DELETE = "A sondagem não foi encontrada.";
-  public static final String DIFFERENT_AUTHOR = "Somente o criador da mensagem pode edita-lá.";
+	public static final String DIFFERENT_AUTHOR = "Somente o criador da mensagem pode edita-lá.";
 	public static final String HAS_OPEN_SURVEY_SAME_ACVTY =
-		"O aluno já possui uma sondagem em aberto para essa atividade.";
+			"O aluno já possui uma sondagem em aberto para essa atividade.";
+	public static final String NULL_SURVEYS_IN_CLASS = "Nenhuma sondagem registrada para esta turma.";
 
 	// Empty properties
 	public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";
@@ -88,10 +88,11 @@ public final class SystemMessages {
 	public static final String EMPTY_SCHOOL_CLASS = "Uma turma deve ser informada.";
 	public static final String EMPTY_GRADE_LEVEL = "Um ano escolar deve ser informado.";
 	public static final String EMPTY_SHIFT = "Um turno deve ser informado.";
-  public static final String EMPTY_TEXT = "Deve ser informado o texto.";
-  
-  // Delete
-  public static final String DELETED_ANNOTATION = "A anotação foi removida com sucesso.";
+	public static final String EMPTY_STRAND = "Um eixo deve ser informado.";
+    public static final String EMPTY_TEXT = "Deve ser informado o texto.";
+
+	// Delete
+	public static final String DELETED_ANNOTATION = "A anotação foi removida com sucesso.";
 
 	// Private constructor makes class not instantiable
 	private SystemMessages() {}

@@ -4,11 +4,13 @@ import type {
   Class, 
   ClassFilter, 
   ClassListItem, 
-  ClassStudents, 
-  ClassStudentsFilter, 
-  CreateClassRequest, 
+  ClassStudents,
+  ClassStudentsFilter,
+  CreateClassRequest,
   UpdateClassRequest 
 } from "./classes.types";
+import type { ClassMap, ClassMapFilter } from "@/class-map/class-map.types";
+import type { LearningTrajectory, LearningTrajectoryFilter } from "@/learning-trajectories/learning-trajectories.types";
 
 export async function listClassesService(
   filter?: ClassFilter & PaginationParams
@@ -39,5 +41,23 @@ export async function inactivateClassService(id: number): Promise<string> {
 
 export async function getClassStudentsService(id: number, filter: ClassStudentsFilter): Promise<ClassStudents[]> {
   const response = await api.get<ClassStudents[]>(`/schoolClass/${id}/students-pannel`, { params: filter });
-  return response.data; 
+  return response.data;
+}
+
+export async function getClassMapService(id: number, filter: ClassMapFilter): Promise<ClassMap> {
+  const response = await api.get<ClassMap>(`/schoolClass/${id}/classMap`, { params: filter });
+  return response.data;
+}
+
+export async function getLearningTrajectoryService(id: number, filter: LearningTrajectoryFilter) {
+  const response = await api.get<LearningTrajectory[]>(`/schoolClass/${id}/trajectory`, { params: filter });
+  return response.data;
+}
+
+export async function exportSchoolClassSurveysService(schoolClassId: number): Promise<Blob> {
+  const response = await api.get<Blob>(`/schoolClass/report/school-class-surveys/${schoolClassId}`, {
+    params: { strandId: 2 },
+    responseType: 'blob',
+  });
+  return response.data;
 }

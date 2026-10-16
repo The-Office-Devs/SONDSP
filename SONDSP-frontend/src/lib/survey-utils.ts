@@ -1,12 +1,17 @@
+import type { LearningTrajectoryResults, TrajectoryLevel } from "@/learning-trajectories/learning-trajectories.types";
+import { resultOptions } from "./options-utils";
+
+/**
+ * Legenda padrão oficial da SME-SP para hipóteses do Sistema de Escrita Alfabética (SEA).
+ */
+export const LEGEND: SurveyResultCode[] = ["PS", "SSVC", "SCVC", "SA", "A"];
+
 export type SurveyResultCode =
   | "PS"
   | "SSVC"
   | "SCVC"
   | "SA"
   | "A"
-  | "SV"
-  | "CV"
-  | "ALF"
   | "NIVEL_01"
   | "NIVEL_02"
   | "NIVEL_03"
@@ -22,12 +27,13 @@ export type SurveyResultCode =
   | "NAO_RESPONDEU"
   | "AD"
   | "IN"
-  | "INAD"
   | "NR"
   | "ACERTOU"
   | "ACERTOU_PARCIALMENTE"
   | "ERROU"
   | string;
+
+export const NO_RESULT_DOT_CLASS = "bg-slate-300";
 
 export const RESULT_DOT_CLASS: Record<string, string> = {
   // Hipóteses do Sistema de Escrita Alfabética - SEA (Diretrizes SME-SP)
@@ -36,11 +42,6 @@ export const RESULT_DOT_CLASS: Record<string, string> = {
   SCVC: "bg-orange-500",
   SA: "bg-blue-600",
   A: "bg-emerald-600",
-
-  // Aliases Legados para Retrocompatibilidade
-  SV: "bg-yellow-400",
-  CV: "bg-orange-500",
-  ALF: "bg-emerald-600",
 
   // Níveis Numéricos (Ditado SND) e Produção Textual (Saeb 743)
   NIVEL_01: "bg-red-500",
@@ -58,7 +59,6 @@ export const RESULT_DOT_CLASS: Record<string, string> = {
   ADEQUADA: "bg-emerald-600",
   AD: "bg-emerald-600",
   INADEQUADA: "bg-amber-500",
-  INAD: "bg-amber-500",
   IN: "bg-amber-500",
   NAO_RESPONDEU: "bg-slate-400",
   NR: "bg-slate-400",
@@ -71,8 +71,6 @@ export const RESULT_DOT_CLASS: Record<string, string> = {
   ERROU: "bg-red-600",
   ER: "bg-red-600"
 };
-
-export const NO_RESULT_DOT_CLASS = "bg-slate-300";
 
 export interface SurveyLevelStyle {
   bg: string;
@@ -90,11 +88,6 @@ export const LEVEL_STYLE_MAP: Record<string, SurveyLevelStyle> = {
   SCVC: { bg: "bg-orange-500", text: "text-white" },
   SA: { bg: "bg-blue-600", text: "text-white" },
   A: { bg: "bg-emerald-600", text: "text-white" },
-
-  // Aliases / Nomenclaturas Legadas do SEA
-  SV: { bg: "bg-yellow-400", text: "text-slate-900" },
-  CV: { bg: "bg-orange-500", text: "text-white" },
-  ALF: { bg: "bg-emerald-600", text: "text-white" },
 
   // Níveis Numéricos (Ditado SND - SME-SP) e Produção de Texto (Saeb 743 - Níveis 01 a 04)
   NIVEL_01: { bg: "bg-red-500", text: "text-white" },
@@ -183,10 +176,10 @@ export function getBadgeLevelCode(code?: string | null): string {
 
   // Hipóteses do SEA (1º Ano)
   if (normalized === "PRE_SILABICA") return "PS";
-  if (normalized === "SILABICA_SEM_VALOR" || normalized === "SV") return "SSVC";
-  if (normalized === "SILABICA_COM_VALOR" || normalized === "CV") return "SCVC";
+  if (normalized === "SILABICA_SEM_VALOR") return "SSVC";
+  if (normalized === "SILABICA_COM_VALOR") return "SCVC";
   if (normalized === "SILABICO_ALFABETICA") return "SA";
-  if (normalized === "ALFABETICA" || normalized === "ALF") return "A";
+  if (normalized === "ALFABETICA") return "A";
 
   // Se já for código curto (PS, SSVC, SCVC, SA, A, N1..N5, 4/4, etc.)
   if (normalized.length <= 4) return normalized;
@@ -231,4 +224,18 @@ export function getEnrollmentStatusBadge(status?: string | null): EnrollmentBadg
         className: "bg-slate-100 text-slate-600 font-medium"
       };
   }
+}
+
+export function getResultLabel(code?: string | null) {
+  if (!code) return "Sem sondagem";
+  return resultOptions.find((option) => option.value === code)?.label ?? code;
+}
+
+export function isKnownLevel(level: TrajectoryLevel): level is SurveyResultCode {
+  return !!level && level in RESULT_DOT_CLASS;
+}
+
+export function getCurrentLevel(results: LearningTrajectoryResults): TrajectoryLevel {
+  const periods = [results.initial, results.fstPeriod, results.sndPeriod, results.trdPeriod, results.frtPeriod];
+  return [...periods].reverse().find(isKnownLevel) ?? null;
 }

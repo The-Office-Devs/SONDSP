@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
+import static br.com.sondsp.util.FileNameUtils.formatSurveyFileName;
 import static br.com.sondsp.util.SystemMessages.STUDENT_NOT_FOUND;
 
 @Slf4j
@@ -108,7 +108,7 @@ public class StudentTimelineService {
             String evidenceUrl = null;
             if (hasEvidence) {
                 try {
-                    evidenceUrl = storageService.generateSignedUrl(survey.getSurveyImagePath(), IMAGE_URL_EXPIRATION_TIME);
+                    evidenceUrl = storageService.generateSignedUrl(survey.getSurveyImagePath(), formatSurveyFileName(survey));
                 } catch (Exception e) {
                     log.warn("Não foi possível gerar URL assinada do Supabase para a imagem [{}]: {}", survey.getSurveyImagePath(), e.getMessage());
                 }

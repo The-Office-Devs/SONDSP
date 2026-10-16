@@ -1,13 +1,13 @@
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { surveySchema, type SurveyFormData, type SurveyFormInput } from "../survey-schema";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
-import { useSchoolOptions } from "@/schools/schools-page/use-schools";
 
 interface SurveyFilterPanelProps {
   onSearch: (data: SurveyFormData) => void;
@@ -25,7 +25,6 @@ export function SurveysFilterPanel({
   onClear, 
   isSearching 
 }: SurveyFilterPanelProps) {
-  const { schools, options: schoolOptions, isLoading: isLoadingSchools } = useSchoolOptions();
   const submitLabel = getSubmitLabel(isSearching, 'filter');
 
   const form = useForm<SurveyFormInput, unknown, SurveyFormData>({
@@ -35,6 +34,7 @@ export function SurveysFilterPanel({
   });
 
   const schoolId = useWatch({ control: form.control, name: "schoolId" });
+  const { schoolOptions, classOptions, isLoading: isLoadingSchools } = useUserSchoolOptions(Number(schoolId));
 
   const onSubmit = (data: SurveyFormData) => onSearch(data);
 
@@ -42,16 +42,6 @@ export function SurveysFilterPanel({
     form.reset(defaultValues);
     onClear();
   }
-
-  const classOptions =
-    schools
-      .find((school) => school.id === Number(schoolId))
-        ?.schoolClass
-      .filter((schoolClass) => schoolClass.status)
-      .map((schoolClass) => ({
-        value: String(schoolClass.id),
-        label: `${schoolClass.name} - ${schoolClass.schoolYear}`
-      })) ?? [];
 
   const isSubmitDisabled = !form.formState.isValid || isSearching;
   return (
@@ -63,6 +53,7 @@ export function SurveysFilterPanel({
         isFilter
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleReset}
+        collapsible
       >
         <SelectField
           name="schoolId"

@@ -6,12 +6,12 @@ import {
   type ClassFilterFormInput, 
   classFilterSchema 
 } from "../class-filter.schema";
-import { ALL_VALUE, gradeLevelOptionsWithAll, shiftOptionsWithAll } from "@/lib/options-utils";
-import { useSchoolOptions } from "@/schools/schools-page/use-schools";
+import { gradeLevelOptionsWithAll, shiftOptionsWithAll } from "@/lib/options-utils";
 import { getSubmitLabel } from "@/lib/form-utils";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
+import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 
 interface ClassesFilterPanelProps {
   onSearch: (data: ClassFilterFormData) => void;
@@ -31,7 +31,7 @@ export function ClassesFilterPanel({
   onClear,
   isSearching
 }: Readonly<ClassesFilterPanelProps>) {
-  const { schools, options: schoolOptions, isLoading: isLoadingSchools } = useSchoolOptions();
+  const { schoolOptions, schoolYearOptions, isLoading: isLoadingSchools } = useUserSchoolOptions();
 
   const submitLabel = getSubmitLabel(isSearching, 'filter');
   
@@ -47,20 +47,6 @@ export function ClassesFilterPanel({
     form.reset(defaultValues);
     onClear();
   };
-
-  const years = new Set(
-    schools
-      .flatMap((school) => school.schoolClass ?? [])
-      .map((schoolClass) => schoolClass.schoolYear)
-      .filter(Boolean)
-  );
-
-  const schoolYearOptions = [
-    { value: ALL_VALUE, label: "Todos" },
-    ...[...years]
-      .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
-      .map((year) => ({ value: year, label: year }))
-  ];
 
   const isSubmitDisabled = !form.formState.isValid || isSearching;
   return (

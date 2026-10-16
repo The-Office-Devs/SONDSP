@@ -3,9 +3,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import type { ClassStudents } from "@/classes/classes.types";
-
-import { resultOptions } from "@/lib/options-utils";
-import { getSurveyDotClass, NO_RESULT_DOT_CLASS } from "@/lib/survey-utils";
+import { getResultLabel, getSurveyDotClass, NO_RESULT_DOT_CLASS } from "@/lib/survey-utils";
 
 interface LegendItem {
   code: string;
@@ -62,11 +60,6 @@ interface ClassStudentsCardProps {
   isFetching?: boolean;
 }
 
-function getResultLabel(code: string | null) {
-  if (!code) return "Sem sondagem";
-  return resultOptions.find((option) => option.value === code)?.label ?? code;
-}
-
 export function ClassStudentsCard({
   students,
   title = "Turma",
@@ -114,7 +107,7 @@ export function ClassStudentsCard({
                     title={`${student.studentName} (${resultLabel})`}
                     className="group flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm hover:border-slate-300 hover:bg-slate-50"
                   >
-                    <span 
+                    <span
                       aria-hidden="true"
                       className={cn(
                         "size-2.5 rounded-full shrink-0",
@@ -155,4 +148,3 @@ export function ClassStudentsCard({
     </section>
   );
 }
-

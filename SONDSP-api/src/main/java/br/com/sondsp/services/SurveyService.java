@@ -1,5 +1,6 @@
 package br.com.sondsp.services;
 
+import static br.com.sondsp.util.FileNameUtils.formatSurveyFileName;
 import static br.com.sondsp.util.SystemConstants.IMAGE_URL_EXPIRATION_TIME;
 import static br.com.sondsp.util.SystemMessages.*;
 
@@ -142,8 +143,7 @@ public class SurveyService {
             return null;
         }
 
-        // Gera uma URL assinada válida por 1 hora (3600 segundos)
-        return storageService.generateSignedUrl(survey.getSurveyImagePath(), IMAGE_URL_EXPIRATION_TIME);
+        return storageService.generateSignedUrl(survey.getSurveyImagePath(), formatSurveyFileName(survey));
     }
 
     private Specification<Survey> belongsToStudent(Integer studentId) {
