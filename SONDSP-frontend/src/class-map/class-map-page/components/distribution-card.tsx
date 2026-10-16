@@ -76,7 +76,7 @@ export function DistributionCard({
                     </div>
 
                     <span className="text-sm tabular-nums text-slate-800">
-                      {item.quantity} ({formatRoundedPercent(item.quantity)})
+                      {item.quantity} ({formatRoundedPercent(item.percentual)})
                     </span>
                   </div>
 

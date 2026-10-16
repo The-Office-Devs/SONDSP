@@ -49,9 +49,8 @@ export function FinishSurveyDialog({
 
   const [options, setOptions] = useState<{ value: string; label: string }[]>(() =>
     getPedagogicalResultOptions(
-      data?.activity?.strand?.name,
-      data?.activity?.gradeLevel,
-      data?.activity?.name
+      data?.activity?.strand?.code,
+      data?.activity?.gradeLevel
     )
   );
 
@@ -68,9 +67,8 @@ export function FinishSurveyDialog({
       if (data?.activity) {
         // Inicializa com matriz pedagógica local
         const initialOptions = getPedagogicalResultOptions(
-          data.activity.strand?.name,
-          data.activity.gradeLevel,
-          data.activity.name
+          data.activity.strand?.code,
+          data.activity.gradeLevel
         );
         setOptions(initialOptions);
 
