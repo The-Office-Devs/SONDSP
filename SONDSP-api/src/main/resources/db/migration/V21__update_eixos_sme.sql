@@ -1,0 +1,3 @@
+ALTER TABLE eixo ADD COLUMN IF NOT EXISTS codigo VARCHAR(50);
+
+CREATE INDEX IF NOT EXISTS idx_eixo_codigo ON eixo(codigo);
