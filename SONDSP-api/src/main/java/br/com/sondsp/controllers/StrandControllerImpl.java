@@ -38,6 +38,11 @@ public class StrandControllerImpl {
 		return ResponseEntity.ok(STRAND_DEACTIVATED);
 	}
 
+	@GetMapping("/{id}")
+	public ResponseEntity<StrandDTO> getStrand(@PathVariable Integer id) {
+		return ResponseEntity.ok(new StrandDTO(strandService.getStrand(id)));
+	}
+
 	@GetMapping("strands-by-subject")
 	public ResponseEntity<List<StrandDTO>> findBySubject(@RequestParam String subject) {
 		return ResponseEntity.ok().body(strandService.getAllStrandsBySubject(subject));
