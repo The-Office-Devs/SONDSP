@@ -5,7 +5,7 @@ import type { LearningTrajectoriesFormData } from "../learning-trajectories.sche
 import { LearningTrajectoriesCard } from "./learning-trajectories-card";
 import { LearningTractoriesFilterPanel } from "./learning-trajectories-filter-panel";
 import { useLearningTrajectory } from "@/classes/use-classes";
-import { useStrand } from "@/strands/strands-page/use-strands";
+import { useStrand } from "@/strands/use-strands";
 
 export function LearningTrajectoriesDesktop() {
   const [appliedFilters, setAppliedFilters] = useState<LearningTrajectoriesFormData | null>(null);

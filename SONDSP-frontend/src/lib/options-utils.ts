@@ -126,6 +126,11 @@ export function getPedagogicalResultOptions(
     case "LEITURA":
       return readingResultOptions;
     case "SITUACOES_PROBLEMA":
+    case "NUMEROS_PROBLEMAS":
+    case "ALGEBRA":
+    case "GEOMETRIA":
+    case "GRANDEZAS_MEDIDAS":
+    case "PROBABILIDADE_ESTATISTICA":
       return mathProblemResultOptions;
     case "ESCRITA_NUMEROS":
       return mathNumberWritingResultOptions;

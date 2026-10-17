@@ -5,7 +5,7 @@ import { CirclePlus } from "lucide-react";
 
 import { getSubmitLabel } from "@/lib/form-utils";
 import { bimesterOptions, statusOptions, subjectOptions } from "@/lib/options-utils";
-import { useStrandOptions } from "@/strands/strands-page/use-strands";
+import { useStrandOptions } from "@/strands/use-strands";
 import { useStudent } from "@/students/students-page/use-students";
 import { 
   type SurveyHistoryFormInput, 
