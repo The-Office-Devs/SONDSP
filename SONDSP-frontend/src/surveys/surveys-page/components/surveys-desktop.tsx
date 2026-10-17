@@ -24,7 +24,7 @@ export function SurveysDesktop() {
   const [appliedFilters, setAppliedFilters] = useState<SurveyFormData | null>(null);
   const [applyStudentId, setApplyStudentId] = useState<number | null>(null);
 
-  const { data: studentsPage, isFetching, isLoading } = useStudents(
+  const { data: studentsPage, isFetching } = useStudents(
     {
       page,
       size,
@@ -53,7 +53,7 @@ export function SurveysDesktop() {
       <SurveysFilterPanel 
         onSearch={setAppliedFilters}
         onClear={handleClear} 
-        isSearching={isLoading} 
+        isSearching={isFetching} 
       />
       
       {!appliedFilters ? (

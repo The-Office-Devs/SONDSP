@@ -11,7 +11,7 @@ import { EvolutionComparativeCard } from "./evolution-comparative-card";
 export function ClassMapDesktop() {
   const [appliedFilters, setAppliedFilters] = useState<ClassMapAppliedFilters | null>(null);
 
-  const { data: classMap, isLoading, isFetching } = useClassMap(appliedFilters?.schoolClassId, {
+  const { data: classMap, isFetching } = useClassMap(appliedFilters?.schoolClassId, {
     strandId: appliedFilters?.strandId,
     period: appliedFilters?.period || undefined,
   });
@@ -24,7 +24,7 @@ export function ClassMapDesktop() {
       <ClassMapFilterPanel
         onSearch={setAppliedFilters}
         onClear={handleClear}
-        isSearching={isLoading}
+        isSearching={isFetching}
       />
 
       {!hasRequiredFilters ? (

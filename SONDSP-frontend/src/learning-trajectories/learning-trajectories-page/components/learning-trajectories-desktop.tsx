@@ -10,7 +10,7 @@ import { useStrand } from "@/strands/strands-page/use-strands";
 export function LearningTrajectoriesDesktop() {
   const [appliedFilters, setAppliedFilters] = useState<LearningTrajectoriesFormData | null>(null);
 
-  const { data: trajectories = [], isLoading, isFetching } = useLearningTrajectory(appliedFilters?.schoolClassId, {
+  const { data: trajectories = [], isFetching } = useLearningTrajectory(appliedFilters?.schoolClassId, {
     strandId: appliedFilters?.strandId,
   });
 
@@ -24,7 +24,7 @@ export function LearningTrajectoriesDesktop() {
       <LearningTractoriesFilterPanel
         onSearch={setAppliedFilters}
         onClear={handleClear}
-        isSearching={isLoading}
+        isSearching={isFetching}
       />
 
       {!hasRequiredFilter ? (

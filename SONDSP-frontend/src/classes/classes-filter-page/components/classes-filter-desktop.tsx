@@ -25,7 +25,7 @@ export function ClassesFilterDesktop() {
   const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
   const [appliedFilters, setAppliedFilters] = useState<ClassFilterFormData | null>(null);
   const { mutate: exportReport } = useExportSchoolClassSurveys();
-  const { data: classesPage, isFetching, isLoading } = useClasses(
+  const { data: classesPage, isFetching } = useClasses(
     {
       page,
       size,
@@ -72,7 +72,7 @@ export function ClassesFilterDesktop() {
       <ClassesFilterPanel
         onSearch={setAppliedFilters}
         onClear={handleClear}
-        isSearching={isLoading}
+        isSearching={isFetching}
       />
 
       {!appliedFilters ? (
