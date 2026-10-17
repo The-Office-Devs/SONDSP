@@ -1,26 +1,21 @@
 import { Hash, CreditCard, BookOpen } from "lucide-react";
 import type { StudentPortfolioDTO } from "../student-portfolio.types";
 import { getEnrollmentStatusBadge } from "@/lib/survey-utils";
+import { ContentCard } from "@/components/Card/ContentCard";
 
 interface StudentProfileCardProps {
   student: StudentPortfolioDTO;
+  isFetching?: boolean;
 }
 
-export function StudentProfileCard({ student }: Readonly<StudentProfileCardProps>) {
+export function StudentProfileCard({ student, isFetching }: Readonly<StudentProfileCardProps>) {
   return (
-    <section 
-      aria-label="Perfil do Estudante"
-      className="overflow-hidden rounded-xl border border-neutral-300 bg-white shadow-xs"
-    >
-      <header className="bg-primary px-6 py-4 text-white">
-        <h2 className="text-base font-bold tracking-wide">Perfil do Estudante</h2>
-      </header>
-
-      <div className="p-6">
+    <ContentCard title="Perfil do Estudante" isFetching={isFetching}>
+      <div className="p-2">
         {/* Cabeçalho do Aluno */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-4">
-            <div 
+            <div
               aria-label={`Iniciais de ${student.name}`}
               className="flex size-14 shrink-0 items-center justify-center rounded-full border-2 border-slate-800 bg-slate-100 text-xl font-bold text-slate-800"
             >
@@ -28,16 +23,12 @@ export function StudentProfileCard({ student }: Readonly<StudentProfileCardProps
             </div>
 
             <div className="min-w-0">
-              <h3 className="truncate text-lg font-bold text-slate-900">
-                {student.name}
-              </h3>
+              <h3 className="truncate text-lg font-bold text-slate-900">{student.name}</h3>
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <span className="rounded bg-[#e0ecf8] px-2 py-0.5 text-xs font-semibold text-[#1e40af]">
                   {student.currentClass}
                 </span>
-                <span className="text-xs text-slate-500">
-                  Matrícula: {student.registration}
-                </span>
+                <span className="text-xs text-slate-500">Matrícula: {student.registration}</span>
               </div>
             </div>
           </div>
@@ -48,7 +39,6 @@ export function StudentProfileCard({ student }: Readonly<StudentProfileCardProps
           </span>
         </div>
 
-        {/* Divisor */}
         <hr className="my-4.5 border-neutral-200" />
 
         {/* Dados Cadastrais */}
@@ -56,9 +46,7 @@ export function StudentProfileCard({ student }: Readonly<StudentProfileCardProps
           <div>
             <div className="flex items-center gap-1.5 text-[#0284c7]">
               <Hash className="size-4" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Nº Chamada
-              </span>
+              <span className="text-[11px] font-semibold uppercase text-slate-700">Nº Chamada</span>
             </div>
             <p className="mt-1 text-sm font-bold text-slate-800">
               {student.rowNumber ? `Nº ${student.rowNumber}` : "Não informado"}
@@ -68,17 +56,12 @@ export function StudentProfileCard({ student }: Readonly<StudentProfileCardProps
           <div>
             <div className="flex items-center gap-1.5 text-[#0284c7]">
               <CreditCard className="size-4" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Matrícula
-              </span>
+              <span className="text-[11px] font-semibold uppercase text-slate-700">Matrícula</span>
             </div>
-            <p className="mt-1 font-mono text-sm font-bold text-slate-800">
-              {student.registration}
-            </p>
+            <p className="mt-1 font-mono text-sm font-bold text-slate-800">{student.registration}</p>
           </div>
         </div>
 
-        {/* Divisor */}
         <hr className="my-4.5 border-neutral-200" />
 
         {/* Histórico Escolar */}
@@ -92,14 +75,13 @@ export function StudentProfileCard({ student }: Readonly<StudentProfileCardProps
             {student.enrollmentHistory.map((item, index) => {
               const badge = getEnrollmentStatusBadge(item.status);
               return (
-                <li 
+                <li
                   key={`${item.year}-${item.schoolClass}-${index}`}
                   className="flex items-center justify-between text-xs sm:text-sm"
                 >
                   <span className="text-slate-700">
                     <strong className="font-bold text-slate-900">{item.year}</strong> • {item.schoolClass}
                   </span>
-
                   <span className={`rounded px-2.5 py-0.5 text-xs ${badge.className}`}>
                     {item.statusLabel || badge.label}
                   </span>
@@ -109,6 +91,6 @@ export function StudentProfileCard({ student }: Readonly<StudentProfileCardProps
           </ul>
         </div>
       </div>
-    </section>
+    </ContentCard>
   );
 }

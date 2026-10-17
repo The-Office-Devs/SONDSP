@@ -40,7 +40,7 @@ export function ContentCard({
 
       <header className="flex items-center justify-between bg-primary px-4 py-4 text-white">
         <h2 className="text-base font-semibold"> {title} </h2>
-        {headerRight && <span className="text-base font-medium"> {headerRight} </span>}
+        {headerRight && <span className="text-sm font-medium"> {headerRight} </span>}
       </header>
 
       {toolbar}
