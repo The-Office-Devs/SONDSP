@@ -73,12 +73,6 @@ export function StudentAnnotationsCard({ studentId, studentName }: Readonly<Stud
     updateTags({ annotationId: annotation.id, tags });
   };
 
-  const handleDelete = () => {
-    if (dialog.annotation) {
-      deleteAnnotation(dialog.annotation.id, { onSuccess: closeDialog });
-    } 
-  };
-
   {/* Anotações */}
   const notes: NoteView[] = (annotationsPage?.content ?? [])
     .filter((annotation) => filter === "ALL" || annotation.tags.includes(filter))
@@ -96,6 +90,7 @@ export function StudentAnnotationsCard({ studentId, studentName }: Readonly<Stud
         : undefined,
       text: annotation.text,
       onClick: () => openDialog(annotation),
+      onDelete: (options) => deleteAnnotation(annotation.id, options),
       footer: <TagToggles annotation={annotation} onToggle={handleToggleTag} />
     }));
 
@@ -115,6 +110,7 @@ export function StudentAnnotationsCard({ studentId, studentName }: Readonly<Stud
         isLoading={isLoading}
         isFetching={isFetching}
         scrollable={false}
+        isDeleting={isDeleting}
       />
 
       <NoteDialog
@@ -125,9 +121,7 @@ export function StudentAnnotationsCard({ studentId, studentName }: Readonly<Stud
         subtitle={`Estudante: ${studentName}`}
         tagOptions={TAG_OPTIONS}
         onSave={handleSave}
-        onDelete={handleDelete}
         isSaving={isCreating || isUpdating}
-        isDeleting={isDeleting}
       />
     </>
   );

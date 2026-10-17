@@ -30,14 +30,10 @@ interface NoteDialogProps<T extends string> {
   canEdit?: boolean;
   tagOptions?: NoteFilter<T>[];
   onSave: (text: string, tags: T[]) => void;
-  onDelete?: () => void;
   isSaving?: boolean;
-  isDeleting?: boolean;
 }
 
-interface NoteFormData {
-  text: string;
-}
+interface NoteFormData { text: string }
 
 const MAX_LENGTH = 256;
 
@@ -65,9 +61,7 @@ export function NoteDialog<T extends string>({
   canEdit = true,
   tagOptions = [],
   onSave,
-  onDelete,
-  isSaving = false,
-  isDeleting = false
+  isSaving = false
 }: Readonly<NoteDialogProps<T>>) {
   const form = useForm<NoteFormData>({
     resolver: zodResolver(buildNoteSchema()),
@@ -80,14 +74,13 @@ export function NoteDialog<T extends string>({
   const text = useWatch({ control: form.control, name: "text" }) ?? "";
 
   const isEditMode = note !== null;
-  const isPending = isSaving || isDeleting;
 
   const hasChanges =
     !note ||
     text.trim() !== note.text ||
     !hasSameTags(selectedTags, note.tags ?? []);
 
-  const canSave = form.formState.isValid && hasChanges && !isPending;
+  const canSave = form.formState.isValid && hasChanges && !isSaving;
 
   const handleToggleTag = (tag: T) =>
     setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
@@ -151,7 +144,7 @@ export function NoteDialog<T extends string>({
                           type="button"
                           aria-pressed={isSelected}
                           onClick={() => handleToggleTag(tag.id)}
-                          disabled={isPending}
+                          disabled={isSaving}
                           className={cn(
                             "cursor-pointer rounded-full px-3 py-1 text-xs font-semibold transition",
                             isSelected ? cn(tag.activeClassName, "shadow-xs") : tag.inactiveClassName
@@ -179,25 +172,13 @@ export function NoteDialog<T extends string>({
             <DialogFooter className="mt-2 flex flex-row items-center justify-end gap-3 pt-2">
               {canEdit ? (
                 <>
-                  {isEditMode && onDelete && (
-                    <Button
-                      type="button"
-                      size="lg"
-                      onClick={onDelete}
-                      disabled={isPending}
-                      className="mr-auto w-auto min-w-26 border-transparent bg-destructive text-white hover:bg-destructive/90"
-                    >
-                      {isDeleting ? "Excluindo..." : "Excluir"}
-                    </Button>
-                  )}
-
                   <Button
                     type="button"
                     variant="outline"
                     size="lg"
                     onClick={handleClose}
-                    disabled={isPending}
-                    className="w-auto min-w-26 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700"
+                    disabled={isSaving}
+                    className="w-auto min-w-32 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700"
                   >
                     Cancelar
                   </Button>
@@ -206,7 +187,7 @@ export function NoteDialog<T extends string>({
                     type="submit"
                     size="lg"
                     disabled={!canSave}
-                    className="w-auto min-w-26 border-transparent bg-emerald-600 text-white hover:bg-emerald-700"
+                    className="w-auto min-w-32 border-transparent bg-emerald-600 text-white hover:bg-emerald-700"
                   >
                     {isSaving ? "Salvando..." : "Salvar"}
                   </Button>
