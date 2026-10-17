@@ -72,7 +72,7 @@ export function StudentTimelineCard({
           i === arr.length - 1
             ? {
                 ...crumb,
-                to: `/app-portfolio/aluno/${studentId}`,
+                to: `/app-alunos/portfolio/aluno/${studentId}`,
                 state: portfolioNavState,
               }
             : crumb,

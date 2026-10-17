@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import type { StudentListItem } from "@/students/students.types";
 import { type SurveyFormData } from "../survey-schema";
 import { useStudents } from "@/students/students-page/use-students";
-import { useTableState } from "@/hooks/use-table-state";
-import { useNavigate } from "react-router-dom";
 import { buildPaginationProps } from "@/api/types";
+import { useTableState } from "@/hooks/use-table-state";
 
 import { SurveysFilterPanel } from "./surveys-filter-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
@@ -59,7 +59,7 @@ export function SurveysDesktop() {
       {!appliedFilters ? (
         <div className="flex flex-col items-center p-4 text-center">
           <p className="max-w-md text-sm text-slate-500">
-            Por favor, selecione uma turma no filtro acima para carregar a lista de alunos e iniciar as sondagens
+            Por favor, selecione uma turma no filtro acima para carregar a lista de alunos e criar as sondagens
           </p>
         </div>
       ) : (

@@ -57,7 +57,7 @@ export function ClassStudentsCard({
           return (
             <li key={student.studentId}>
               <Link
-                to={`/app-portfolio/aluno/${student.studentId}`}
+                to={`/app-alunos/portfolio/aluno/${student.studentId}`}
                 state={{
                   from: "class",
                   schoolClassId: classId,

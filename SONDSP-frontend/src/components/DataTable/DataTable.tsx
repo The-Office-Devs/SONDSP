@@ -7,6 +7,7 @@ import {
   ClipboardList,
   Download,
   Eye,
+  IdCardLanyard,
   Link2, 
   Link2Off, 
   List,
@@ -41,6 +42,7 @@ type RowActionType =
   | 'openClass'
   | 'create'
   | 'view'
+  | 'viewPortfolio'
 
 export type RowAction<T> = {
   type: RowActionType;
@@ -249,7 +251,8 @@ const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppe
   normal: () => ({ title: "", icon: AlarmSmoke }),
   openClass: () => ({ title: "Abrir Turma", icon: ClipboardList }),
   create: () => ({ title: "Criar", icon: CirclePlus }),
-  view: () => ({ title: "Visualizar", icon: Eye, variant: "outline" })
+  view: () => ({ title: "Visualizar", icon: Eye, variant: "outline" }),
+  viewPortfolio: () => ({ title: "Ver Portfólio", icon: IdCardLanyard })
 }
 
 type ActionButtonProps = Readonly<{
