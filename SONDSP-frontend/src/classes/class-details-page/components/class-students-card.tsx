@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
-import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import type { ClassStudents } from "@/classes/classes.types";
 import { getResultLabel, getSurveyDotClass, NO_RESULT_DOT_CLASS, getActiveLegend } from "@/lib/survey-utils";
+import { ContentCard } from "@/components/Card/ContentCard";
 
 interface ClassStudentsCardProps {
   students: ClassStudents[];
+  classId: number
   title?: string;
   strandCode?: string;
   isFetching?: boolean;
@@ -14,6 +15,7 @@ interface ClassStudentsCardProps {
 
 export function ClassStudentsCard({
   students,
+  classId,
   title = "Turma",
   strandCode,
   isFetching = false
@@ -21,83 +23,61 @@ export function ClassStudentsCard({
   const total = students.length;
   const legendItems = getActiveLegend(students.map((s) => s.result), strandCode);
 
+  const legend = (
+    <>
+      <p className="text-sm font-semibold text-slate-700">Legenda</p>
+      <ul className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+        {legendItems.map((item) => (
+          <li key={item.code} title={item.label} className="flex items-center gap-1.5 text-sm text-slate-700">
+            <span aria-hidden="true" className={cn("size-3 rounded-full", item.dotClass)} />
+            <span>{item.label}</span>
+          </li>
+        ))}
+        <li className="flex items-center gap-1.5 text-sm text-slate-700">
+          <span aria-hidden="true" className={cn("size-3 rounded-full", NO_RESULT_DOT_CLASS)} />
+          <span>{getResultLabel(null)}</span>
+        </li>
+      </ul>
+    </>
+  );
+
   return (
-    <section
-      aria-label={title}
-      aria-busy={isFetching}
-      className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100"
+    <ContentCard
+      title={title}
+      headerRight={`Total: ${total} ${total === 1 ? "aluno" : "alunos"}`}
+      total={total}
+      emptyMessage="Nenhum aluno vinculado a esta turma."
+      isFetching={isFetching}
+      legend={legend}
     >
-      {isFetching && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
-          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-md">
-            <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            <span>Carregando dados...</span>
-          </div>
-        </div>
-      )}
+      <ul className="grid max-h-[30rem] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2 xl:grid-cols-3">
+        {students.map((student) => {
+          const resultLabel = getResultLabel(student.result);
 
-      <header className="flex items-center justify-between bg-primary px-4 py-4 text-white">
-        <h2 className="text-sm font-semibold">{title}</h2>
-        <span className="text-sm font-medium">
-          Total: {total} {total === 1 ? "aluno" : "alunos"}
-        </span>
-      </header>
-
-      <div className="p-4">
-        {total === 0 ? (
-          <p className="py-6 text-center text-sm text-slate-500">
-            Nenhum aluno vinculado a esta turma.
-          </p>
-        ) : (
-          <ul className="grid max-h-[30rem] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2 xl:grid-cols-3">
-            {students.map((student) => {
-              const resultLabel = getResultLabel(student.result);
-
-              return (
-                <li key={student.studentId}>
-                  <Link
-                    to={`/app-portfolio/aluno/${student.studentId}`}
-                    title={`${student.studentName} (${resultLabel})`}
-                    className="group flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm hover:border-slate-300 hover:bg-slate-50"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        "size-2.5 rounded-full shrink-0",
-                        getSurveyDotClass(student.result)
-                      )}
-                    />
-
-                    <span className="truncate underline-offset-2 group-hover:underline">
-                      {student.studentName}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-
-        <div className="mt-4 border-t border-neutral-300 pt-2">
-          <p className="text-xs font-semibold text-slate-700">Legenda</p>
-          <ul className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
-            {legendItems.map((item) => (
-              <li
-                key={item.code}
-                title={item.label}
-                className="flex items-center gap-1.5 text-xs text-slate-700"
+          return (
+            <li key={student.studentId}>
+              <Link
+                to={`/app-alunos/portfolio/aluno/${student.studentId}`}
+                state={{
+                  from: "class",
+                  schoolClassId: classId,
+                  schoolClassName: title,
+                }}
+                title={`${student.studentName} (${resultLabel})`}
+                className="group flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm hover:border-slate-300 hover:bg-slate-50"
               >
-                <span aria-hidden="true" className={cn("size-2 rounded-full", item.dotClass)} />
-                <span>{item.label}</span>
-              </li>
-            ))}
-            <li className="flex items-center gap-1.5 text-xs text-slate-700">
-              <span aria-hidden="true" className={cn("size-2 rounded-full", NO_RESULT_DOT_CLASS)} />
-              <span>{getResultLabel(null)}</span>
+                <span
+                  aria-hidden="true"
+                  className={cn("size-3 shrink-0 rounded-full", getSurveyDotClass(student.result))}
+                />
+                <span className="truncate underline-offset-2 group-hover:underline">
+                  {student.studentName}
+                </span>
+              </Link>
             </li>
-          </ul>
-        </div>
-      </div>
-    </section>
+          );
+        })}
+      </ul>
+    </ContentCard>
   );
 }

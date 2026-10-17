@@ -5,7 +5,7 @@ import { z } from "zod"; // Ajustado para z normal (conforme o padrão da lib)
 import { Download } from "lucide-react";
 
 import { useActivities, useActivityImage } from "@/activities/activities-page/use-activities";
-import { useStartSurvey } from "@/surveys/use-surveys";
+import { useCreateSurvey } from "@/surveys/use-surveys";
 import { downloadUrl } from "@/lib/file-utils";
 import { bimesterOptions } from "@/lib/options-utils";
 
@@ -15,7 +15,7 @@ import { ReadOnlyField } from "../ReadOnlyFields/ReadOnlyField";
 import { Button } from "../ui/button";
 import { SelectField } from "../HookForm/fields/SelectField";
 
-const startSurveySchema = z.object({
+const createSurveySchema = z.object({
   activityModelId: z.coerce
     .number()
     .int()
@@ -25,28 +25,28 @@ const startSurveySchema = z.object({
     .min(1, "Selecione um bimestre"),
 });
 
-type StartSurveyFormInput = z.input<typeof startSurveySchema>;
-type StartSurveyFormData = z.output<typeof startSurveySchema>;
+type CreateSurveyFormInput = z.input<typeof createSurveySchema>;
+type CreateSurveyFormData = z.output<typeof createSurveySchema>;
 
-interface StartSurveyDialogProps {
+interface CreateSurveyDialogProps {
   studentId: number | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export function StartSurveyDialog({
+export function CreateSurveyDialog({
   studentId,
   open,
   onOpenChange
-}: Readonly<StartSurveyDialogProps>) {
-  const { mutate: startSurvey, isPending } = useStartSurvey();
+}: Readonly<CreateSurveyDialogProps>) {
+  const { mutate: createSurvey, isPending } = useCreateSurvey();
   const { data: activityModelsPage } = useActivities(
     { size: 100, status: true }, 
     { enabled: open }
   );
 
-  const form = useForm<StartSurveyFormInput, unknown, StartSurveyFormData>({
-    resolver: zodResolver(startSurveySchema),
+  const form = useForm<CreateSurveyFormInput, unknown, CreateSurveyFormData>({
+    resolver: zodResolver(createSurveySchema),
     mode: "onChange",
     defaultValues: { activityModelId: 0 }
   });
@@ -69,8 +69,8 @@ export function StartSurveyDialog({
     downloadUrl(imageUrl, selectedModel.name);
   };
 
-  const onSubmit = (data: StartSurveyFormData) => {
-    startSurvey(
+  const onSubmit = (data: CreateSurveyFormData) => {
+    createSurvey(
       { 
         studentId: studentId!, 
         activityModelId: data.activityModelId,
@@ -126,7 +126,7 @@ export function StartSurveyDialog({
                 type="submit"
                 disabled={!hasSelectedActivity || isPending}
               >
-                {isPending ? "Iniciando..." : "Iniciar Sondagem"}
+                {isPending ? "Criando..." : "Criar Sondagem"}
               </Button>
             </DialogFooter>
           </form>

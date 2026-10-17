@@ -71,6 +71,7 @@ export function ClassesFilterPanel({
           label="Turno"
           placeholder="Selecione o turno"
           options={shiftOptionsWithAll}
+          clearable
         />
 
         <SelectField
@@ -78,6 +79,7 @@ export function ClassesFilterPanel({
           label="Ano Escolar"
           placeholder="Selecione o ano escolar"
           options={gradeLevelOptionsWithAll}
+          clearable
         />
 
         <SelectField
@@ -85,6 +87,7 @@ export function ClassesFilterPanel({
           label="Ano Letivo"
           placeholder="Selecione o ano letivo"
           options={schoolYearOptions}
+          clearable
         />
       </Card>
     </FormProvider>

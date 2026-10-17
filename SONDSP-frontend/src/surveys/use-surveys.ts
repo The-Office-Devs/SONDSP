@@ -9,31 +9,31 @@ import type { AxiosError } from "axios";
 
 import { handleApiError } from "@/lib/utils";
 import { 
+  createSurveyService,
   deleteSurveyService,
   finishSurveyService, 
   getStudentSurveysService, 
-  getSurveyImageService, 
-  startSurveyService 
+  getSurveyImageService
 } from "./surveys.service";
-import type { StartSurveyRequest, SurveyFilter } from "./surveys.types";
+import type { CreateSurveyRequest, SurveyFilter } from "./surveys.types";
 import type { FinishSurveyFormData } from "@/components/Dialog/FinishSurveyDialog";
 import type { PaginationParams } from "@/api/types";
 
 const SURVEYS_QUERY_KEY = ['surveys'] as const;
 
-export function useStartSurvey() {
+export function useCreateSurvey() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: StartSurveyRequest) => startSurveyService(data),
+    mutationFn: (data: CreateSurveyRequest) => createSurveyService(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SURVEYS_QUERY_KEY });
-      toast.success('Sondagem iniciada com sucesso.');
+      toast.success('Sondagem criada com sucesso.');
     },
 
     onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error || 'Erro ao iniciar sondagem.')
+      handleApiError(error || 'Erro ao criar sondagem.')
   });
 }
 

@@ -20,6 +20,7 @@ export interface TextFieldProps<T extends FieldValues> extends BaseFieldProps<T>
 export interface SelectFieldProps<T extends FieldValues> extends BaseFieldProps<T> {
   options: { value: string; label: string }[]
   onValueChange?: (value: string) => void;
+  clearable?: boolean;
 }
 
 export interface MultiSelectFieldProps<T extends FieldValues> extends BaseFieldProps<T> {

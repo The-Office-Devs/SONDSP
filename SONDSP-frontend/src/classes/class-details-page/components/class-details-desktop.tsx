@@ -18,7 +18,7 @@ export function ClassDetailsDesktop() {
 
   const [appliedFilters, setAppliedFilters] = useState<ClassDetailsFormData | null>(null);
 
-  const { data: students = [], isLoading, isFetching } = useClassStudentsCard(classId, appliedFilters);
+  const { data: students = [], isFetching } = useClassStudentsCard(classId, appliedFilters);
   const { data: currentStrand } = useStrand(appliedFilters?.strandId ?? null);
 
   const handleClear = () => setAppliedFilters(null);
@@ -28,7 +28,7 @@ export function ClassDetailsDesktop() {
       <ClassDetailsFilterPanel
         onSearch={setAppliedFilters}
         onClear={handleClear}
-        isSearching={isLoading}
+        isSearching={isFetching}
         schoolClassName={schoolClassName!}
       />
 
@@ -42,12 +42,13 @@ export function ClassDetailsDesktop() {
         <div className="grid items-start gap-4 lg:grid-cols-2">
           <ClassStudentsCard 
             title={schoolClassName} 
-            students={students} 
+            classId={classId} 
+            students={students}
             strandCode={currentStrand?.code}
             isFetching={isFetching}
           />
 
-          <ClassNotesCard classId={classId} />
+          <ClassNotesCard classId={classId} isFetching={isFetching} />
         </div>
       )}
     </div>

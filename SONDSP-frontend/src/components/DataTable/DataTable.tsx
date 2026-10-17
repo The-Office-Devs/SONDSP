@@ -3,16 +3,17 @@ import {
   AlarmSmoke, 
   BookOpenCheck, 
   Check,
+  CirclePlus,
   ClipboardList,
   Download,
   Eye,
+  IdCardLanyard,
   Link2, 
   Link2Off, 
   List,
   Loader2, 
   NotebookPen, 
   PencilLine, 
-  Play, 
   X, 
   type LucideIcon
 } from "lucide-react";
@@ -39,8 +40,9 @@ type RowActionType =
   | 'list'
   | 'normal'
   | 'openClass'
-  | 'start'
+  | 'create'
   | 'view'
+  | 'viewPortfolio'
 
 export type RowAction<T> = {
   type: RowActionType;
@@ -248,8 +250,9 @@ const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppe
 
   normal: () => ({ title: "", icon: AlarmSmoke }),
   openClass: () => ({ title: "Abrir Turma", icon: ClipboardList }),
-  start: () => ({ title: "Iniciar", icon: Play }),
-  view: () => ({ title: "Visualizar", icon: Eye, variant: "outline" })
+  create: () => ({ title: "Criar", icon: CirclePlus }),
+  view: () => ({ title: "Visualizar", icon: Eye, variant: "outline" }),
+  viewPortfolio: () => ({ title: "Ver Portfólio", icon: IdCardLanyard })
 }
 
 type ActionButtonProps = Readonly<{

@@ -2,23 +2,13 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type {
-  AnnotationTag,
-  TimelineSurveyItem,
-} from "../student-portfolio.types";
+import type { TimelineSurveyItem } from "../student-portfolio.types";
 
-import {
-  useStudentPortfolio,
-  useStudentTimeline,
-  useStudentAnnotations,
-  useCreateStudentAnnotation,
-  useUpdateStudentAnnotationTags,
-} from "../use-student-portfolio";
+import { useStudentPortfolio, useStudentTimeline } from "../use-student-portfolio";
 
 import { StudentProfileCard } from "./student-profile-card";
 import { StudentAnnotationsCard } from "./student-annotations-card";
 import { StudentTimelineCard } from "./student-timeline-card";
-import { NewAnnotationDialog } from "./new-annotation-dialog";
 import { ViewEvidenceDialog } from "./view-evidence-dialog";
 
 export function StudentPortfolioMobile() {
@@ -30,43 +20,16 @@ export function StudentPortfolioMobile() {
   const {
     data: portfolio,
     isLoading: isPortfolioLoading,
+    isFetching: isPortfolioFetching,
     isError: isPortfolioError,
   } = useStudentPortfolio(studentId);
 
   const {
     data: timeline = [],
+    isFetching: isStudentTimelineFetching
   } = useStudentTimeline(studentId);
 
-  const {
-    data: annotationsPage,
-  } = useStudentAnnotations(studentId);
-
-  // Mutações
-  const { mutate: createAnnotation } = useCreateStudentAnnotation(studentId ?? 0);
-  const { mutate: updateTags } = useUpdateStudentAnnotationTags(studentId ?? 0);
-
-  // Estados dos modais
-  const [isNewAnnotationOpen, setIsNewAnnotationOpen] = useState(false);
   const [evidenceSurvey, setEvidenceSurvey] = useState<TimelineSurveyItem | null>(null);
-
-  const annotations = annotationsPage?.content ?? [];
-
-  // Alternância de categoria diretamente pelos toggles no card
-  const handleToggleTag = (annotationId: number, tag: AnnotationTag) => {
-    const target = annotations.find((ann) => ann.id === annotationId);
-    if (!target) return;
-    const hasTag = target.tags.includes(tag);
-    const updatedTags = hasTag
-      ? target.tags.filter((t) => t !== tag)
-      : [...target.tags, tag];
-
-    updateTags({ annotationId, tags: updatedTags });
-  };
-
-  // Criação de nova anotação
-  const handleSaveNewAnnotation = (text: string, tags: AnnotationTag[]) => {
-    createAnnotation({ text, tags });
-  };
 
   if (isPortfolioLoading) {
     return (
@@ -109,7 +72,10 @@ export function StudentPortfolioMobile() {
   return (
     <div className="w-full space-y-5 px-3.5 py-4">
       {/* Perfil Cadastral */}
-      <StudentProfileCard student={portfolio} />
+      <StudentProfileCard 
+        student={portfolio} 
+        isFetching={isPortfolioFetching}
+      />
 
       {/* Linha do Tempo de Sondagens */}
       <div className="min-w-0">
@@ -117,22 +83,14 @@ export function StudentPortfolioMobile() {
           studentId={portfolio.id}
           timeline={timeline}
           onViewEvidence={(survey) => setEvidenceSurvey(survey)}
+          isFetching={isStudentTimelineFetching}
         />
       </div>
 
       {/* Anotações Pedagógicas e de Conselho */}
-      <StudentAnnotationsCard
-        annotations={annotations}
-        onNewAnnotation={() => setIsNewAnnotationOpen(true)}
-        onToggleTag={handleToggleTag}
-      />
-
-      {/* Modal Nova Anotação */}
-      <NewAnnotationDialog
-        open={isNewAnnotationOpen}
-        studentName={portfolio.name}
-        onOpenChange={setIsNewAnnotationOpen}
-        onSave={handleSaveNewAnnotation}
+      <StudentAnnotationsCard 
+        studentId={portfolio.id} 
+        studentName={portfolio.name} 
       />
 
       {/* Modal Visualizar Evidência */}

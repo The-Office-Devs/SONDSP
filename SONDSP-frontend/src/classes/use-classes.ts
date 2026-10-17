@@ -149,7 +149,13 @@ export function useLearningTrajectory(
 export function useExportSchoolClassSurveys() {
   return useMutation({
     mutationFn: (schoolClassId: number) => exportSchoolClassSurveysService(schoolClassId),
-    onSuccess: (blob) => {
+
+    onMutate: () => {
+      const toastId = toast.loading('Gerando relatório...');
+      return { toastId };
+    },
+
+    onSuccess: (blob, _schoolClassId, context) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -159,9 +165,12 @@ export function useExportSchoolClassSurveys() {
       link.remove();
       window.URL.revokeObjectURL(url);
 
-      toast.success('Relatório gerado com sucesso.');
+      toast.success('Relatório gerado com sucesso.', { id: context?.toastId });
     },
-    onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error || 'Erro ao gerar relatório da turma.'),
+
+    onError: (error: AxiosError<{ error: string }>, _schoolClassId, context) => {
+      toast.dismiss(context?.toastId);
+      handleApiError(error || 'Erro ao gerar relatório da turma.');
+    }
   });
 }

@@ -35,7 +35,7 @@ export function SurveysHistoryDesktop() {
   const [surveyToDelete, setSurveyToDelete] = useState<SurveyListItem | null>(null);
   const [viewFile, setViewFile] = useState<SurveyListItem | null>(null);
 
-  const { data: surveysPage, isFetching, isLoading } = useStudentSurveys(
+  const { data: surveysPage, isFetching } = useStudentSurveys(
     studentId,
     {
       page,
@@ -81,7 +81,7 @@ export function SurveysHistoryDesktop() {
       <SurveysHistoryFilterPanel
         onSearch={setAppliedFilters}
         onClear={handleClear}
-        isSearching={isLoading}
+        isSearching={isFetching}
         studentId={studentId}
       />
 
