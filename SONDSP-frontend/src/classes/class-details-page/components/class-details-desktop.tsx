@@ -47,7 +47,7 @@ export function ClassDetailsDesktop() {
             isFetching={isFetching}
           />
 
-          <ClassNotesCard classId={classId} />
+          <ClassNotesCard classId={classId} isFetching={isFetching} />
         </div>
       )}
     </div>

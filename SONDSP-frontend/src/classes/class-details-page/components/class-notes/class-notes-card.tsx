@@ -7,11 +7,13 @@ import type { AuthorRole, ClassNote, ClassNotesFilter } from "./class-notes.type
 import { useClassNotes } from "./use-class-notes";
 import { useAuthStore } from "@/auth/auth.store";
 
+import { ContentCard } from "@/components/Card/ContentCard";
 import { Button } from "@/components/ui/button";
 import { ClassNoteDialog } from "./class-note-dialog";
 
 interface ClassNotesCardProps {
   classId: number;
+  isFetching?: boolean;
 }
 
 interface DialogState {
@@ -34,7 +36,7 @@ function getEmptyMessage(filter: NotesFilter) {
   return `Nenhuma anotação do ${AUTHOR_ROLE_LABEL[filter]}.`;
 }
 
-export function ClassNotesCard({ classId }: Readonly<ClassNotesCardProps>) {
+export function ClassNotesCard({ classId, isFetching }: Readonly<ClassNotesCardProps>) {
   const currentUser = useAuthStore((state) => state.user);
   const currentUserId = Number(currentUser?.id);
 
@@ -58,77 +60,78 @@ export function ClassNotesCard({ classId }: Readonly<ClassNotesCardProps>) {
     setFilter((prev) => (prev === value ? "all" : value));
 
   return (
-    <section
-      aria-label="Anotações"
-      className="w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100"
-    >
-      <header className="flex items-center justify-between bg-primary px-4 py-3 text-white">
-        <h2 className="text-sm font-semibold">Anotações</h2>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={() => openDialog(null)}
-          className="w-auto font-semibold text-primary"
-        >
-          <Plus className="size-4" />
-          Nova Anotação
-        </Button>
-      </header>
-
-      <div 
-        role="group"
-        aria-label="Filtrar anotações"
-        className="flex flex-wrap gap-2 border-b border-neutral-300 px-2 py-3"
-      >
-        <FilterChip
-          label="Todas"
-          active={filter === "all"}
-          activeClassName="bg-primary text-white"
-          inactiveClassName="bg-white text-primary ring-1 ring-inset ring-primary/20"
-          onClick={() => changeFilter("all")}
-        />
-
-        <FilterChip
-          label="Minhas anotações"
-          active={filter === "mine"}
-          activeClassName="bg-secondary text-white"
-          inactiveClassName="bg-slate-200 text-secondary"
-          onClick={() => changeFilter("mine")}
-        />
-
-        {AUTHOR_ROLES.map((role) => (
-          <FilterChip
-            key={role}
-            label={AUTHOR_ROLE_LABEL[role]}
-            active={filter === role}
-            activeClassName={AUTHOR_ROLE_STYLE[role].solid}
-            inactiveClassName={AUTHOR_ROLE_STYLE[role].soft}
-            onClick={() => changeFilter(role)}
-          />
-        ))}
-      </div>
-
-      <div className="max-h-[32rem] overflow-y-auto p-4">
-        <NotesList
-          notes={notes}
-          isLoading={isLoading}
-          emptyMessage={getEmptyMessage(filter)}
-          onSelect={openDialog}
-        />
-
-        {hasNextPage && (
+    <>
+      <ContentCard
+        title="Anotações"
+        headerRight={
           <Button
             type="button"
+            size="sm"
             variant="outline"
-            onClick={() => fetchNextPage()}
-            disabled={isFetchingNextPage}
-            className="mt-3 w-full"
+            onClick={() => openDialog(null)}
+            className="w-auto font-semibold text-primary"
           >
-            {isFetchingNextPage ? "Carregando..." : "Ver mais"}
+            <Plus className="size-4" />
+            Nova Anotação
           </Button>
-        )}
-      </div>
+        }
+        toolbar={
+          <div
+            role="group"
+            aria-label="Filtrar anotações"
+            className="flex flex-wrap gap-2 border-b border-neutral-300 px-2 py-3"
+          >
+            <FilterChip
+              label="Todas"
+              active={filter === "all"}
+              activeClassName="bg-primary text-white"
+              inactiveClassName="bg-white text-primary ring-1 ring-inset ring-primary/20"
+              onClick={() => changeFilter("all")}
+            />
+
+            <FilterChip
+              label="Minhas anotações"
+              active={filter === "mine"}
+              activeClassName="bg-secondary text-white"
+              inactiveClassName="bg-slate-200 text-secondary"
+              onClick={() => changeFilter("mine")}
+            />
+
+            {AUTHOR_ROLES.map((role) => (
+              <FilterChip
+                key={role}
+                label={AUTHOR_ROLE_LABEL[role]}
+                active={filter === role}
+                activeClassName={AUTHOR_ROLE_STYLE[role].solid}
+                inactiveClassName={AUTHOR_ROLE_STYLE[role].soft}
+                onClick={() => changeFilter(role)}
+              />
+            ))}
+          </div>
+        }
+        isFetching={isFetching}
+      >
+        <div className="max-h-[32rem] overflow-y-auto">
+          <NotesList
+            notes={notes}
+            isLoading={isLoading}
+            emptyMessage={getEmptyMessage(filter)}
+            onSelect={openDialog}
+          />
+
+          {hasNextPage && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+              className="mt-3 w-full"
+            >
+              {isFetchingNextPage ? "Carregando..." : "Ver mais"}
+            </Button>
+          )}
+        </div>
+      </ContentCard>
 
       <ClassNoteDialog
         key={dialog.key}
@@ -138,7 +141,7 @@ export function ClassNotesCard({ classId }: Readonly<ClassNotesCardProps>) {
         note={dialog.note}
         currentUserId={currentUserId}
       />
-    </section>
+    </>
   );
 }
 
@@ -181,11 +184,11 @@ interface NotesListProps {
 
 function NotesList({ notes, isLoading, emptyMessage, onSelect }: Readonly<NotesListProps>) {
   if (isLoading) {
-    return <p className="py-6 text-center text-sm text-slate-500">Carregando anotações...</p>;
+    return <p className="py-6 text-center text-sm text-slate-500"> Carregando anotações... </p>;
   }
 
   if (notes.length === 0) {
-    return <p className="py-6 text-center text-sm text-slate-500">{emptyMessage}</p>;
+    return <p className="py-6 text-center text-sm text-slate-500"> {emptyMessage} </p>;
   }
 
   return (

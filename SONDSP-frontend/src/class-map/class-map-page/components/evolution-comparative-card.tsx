@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, Loader2 } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import {
   Area,
   CartesianGrid,
@@ -25,6 +25,7 @@ import {
   SERIES,
   SLATE_200_COLOR
 } from "@/lib/class-map-utils";
+import { ContentCard } from "@/components/Card/ContentCard";
 
 interface EvolutionComparativeCardProps {
   items: EvolutionComparativeItem[];
@@ -142,157 +143,137 @@ export function EvolutionComparativeCard({
     : null;
 
   return (
-    <section
-      aria-label={TITLE}
-      aria-busy={isFetching}
-      className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100"
+    <ContentCard
+      title={TITLE}
+      total={totals.after}
+      emptyMessage="Nenhum aluno avaliado com os filtros selecionados."
+      isFetching={isFetching}
     >
-      {isFetching && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
-          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-md">
-            <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            <span>Carregando dados...</span>
-          </div>
-        </div>
-      )}
-
-      <header className="bg-primary px-4 py-3 text-white">
-        <h2 className="text-sm font-semibold">{TITLE}</h2>
-      </header>
-
-      <div className="p-4">
-        {totals.after === 0 ? (
-          <p className="py-6 text-center text-sm text-slate-500">
-            Nenhum aluno avaliado com os filtros selecionados.
+      <div className="rounded-md border border-neutral-300 bg-white px-3 pb-3 pt-4">
+        {!hasBefore && (
+          <p className="mb-2 text-xs text-slate-500">
+            Nenhum aluno tem uma sondagem anterior com os filtros selecionados, então ainda não há
+            “Antes” para comparar.
           </p>
-        ) : (
-          <div className="rounded-md border border-neutral-300 bg-white px-3 pb-3 pt-4">
-            {!hasBefore && (
-              <p className="mb-2 text-xs text-slate-500">
-                Nenhum aluno tem uma sondagem anterior com os filtros selecionados, então ainda não há
-                "Antes" para comparar.
-              </p>
-            )}
+        )}
 
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={items} margin={{ top: 12, right: 12, bottom: 36, left: 8 }}>
-                  <defs>
-                    <linearGradient id={AFTER_FILL_ID} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={AFTER_COLOR} stopOpacity={0.20} />
-                      <stop offset="100%" stopColor={AFTER_COLOR} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={items} margin={{ top: 12, right: 12, bottom: 36, left: 8 }}>
+              <defs>
+                <linearGradient id={AFTER_FILL_ID} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={AFTER_COLOR} stopOpacity={0.2} />
+                  <stop offset="100%" stopColor={AFTER_COLOR} stopOpacity={0} />
+                </linearGradient>
+              </defs>
 
-                  <CartesianGrid stroke={SLATE_200_COLOR} vertical={false} />
+              <CartesianGrid stroke={SLATE_200_COLOR} vertical={false} />
 
-                  <XAxis
-                    dataKey="level"
-                    tickLine={false}
-                    axisLine={{ stroke: "SLATE_200_COLOR" }}
-                    tick={createLevelTick(deltaByLevel)}
-                    interval={0}
-                    padding={{ left: 16, right: 16 }}
-                    label={{
-                      value: strandName ? `Níveis de ${strandName}` : "Níveis da Sondagem",
-                      position: "insideBottom",
-                      offset: -28,
-                      fill: AXIS_TEXT_COLOR,
-                      fontSize: 14
-                    }}
-                  />
-                  <YAxis
-                    allowDecimals={false}
-                    domain={[0, "dataMax + 1"]}
-                    tickLine={false}
-                    axisLine={false}
-                    width={50}
-                    tick={{ fill: AXIS_TEXT_COLOR, fontSize: 12 }}
-                    label={{
-                      value: "Quantidade de Alunos",
-                      angle: -90,
-                      position: "insideLeft",
-                      offset: 4,
-                      fill: AXIS_TEXT_COLOR,
-                      fontSize: 14,
-                      style: { textAnchor: "middle" }
-                    }}
-                  />
+              <XAxis
+                dataKey="level"
+                tickLine={false}
+                axisLine={{ stroke: SLATE_200_COLOR }}
+                tick={createLevelTick(deltaByLevel)}
+                interval={0}
+                padding={{ left: 16, right: 16 }}
+                label={{
+                  value: strandName ? `Níveis de ${strandName}` : "Níveis da Sondagem",
+                  position: "insideBottom",
+                  offset: -28,
+                  fill: AXIS_TEXT_COLOR,
+                  fontSize: 14
+                }}
+              />
+              <YAxis
+                allowDecimals={false}
+                domain={[0, "dataMax + 1"]}
+                tickLine={false}
+                axisLine={false}
+                width={50}
+                tick={{ fill: AXIS_TEXT_COLOR, fontSize: 12 }}
+                label={{
+                  value: "Quantidade de Alunos",
+                  angle: -90,
+                  position: "insideLeft",
+                  offset: 4,
+                  fill: AXIS_TEXT_COLOR,
+                  fontSize: 14,
+                  style: { textAnchor: "middle" }
+                }}
+              />
 
-                  <Tooltip content={renderTooltip} cursor={{ stroke: "#cbd5e1", strokeWidth: 1 }} />
+              <Tooltip content={renderTooltip} cursor={{ stroke: "#cbd5e1", strokeWidth: 1 }} />
 
-                  {hasBefore &&
-                    items
-                      .filter((item) => item.before !== item.after)
-                      .map((item) => (
-                        <ReferenceLine
-                          key={`change-${item.level}`}
-                          segment={[
-                            { x: item.level, y: item.before },
-                            { x: item.level, y: item.after }
-                          ]}
-                          stroke={SLATE_200_COLOR}
-                          strokeWidth={8}
-                          strokeLinecap="round"
-                        />
-                      ))}
-
-                  <Area
-                    type="linear"
-                    dataKey="after"
-                    stroke="none"
-                    fill={`url(#${AFTER_FILL_ID})`}
-                    isAnimationActive={false}
-                    activeDot={false}
-                    tooltipType="none"
-                  />
-
-                  {SERIES.filter((series) => series.key === "after" || hasBefore).map((series) => (
-                    <Line
-                      key={series.key}
-                      type="linear"
-                      dataKey={series.key}
-                      name={series.label}
-                      stroke={series.color}
-                      strokeWidth={4}
+              {hasBefore &&
+                items
+                  .filter((item) => item.before !== item.after)
+                  .map((item) => (
+                    <ReferenceLine
+                      key={`change-${item.level}`}
+                      segment={[
+                        { x: item.level, y: item.before },
+                        { x: item.level, y: item.after }
+                      ]}
+                      stroke={SLATE_200_COLOR}
+                      strokeWidth={8}
                       strokeLinecap="round"
-                      strokeLinejoin="round"
-                      dot={{ r: 8, fill: series.color, stroke: "#ffffff", strokeWidth: 2 }}
-                      activeDot={{ r: 10, fill: series.color, stroke: "#ffffff", strokeWidth: 2 }}
-                      isAnimationActive={true}
                     />
                   ))}
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
 
-            <ul className="mt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm text-slate-700">
-              {SERIES.map((series) => (
-                <li key={series.key} className="flex items-center gap-2">
-                  <span aria-hidden="true" className="relative flex h-2 w-5 items-center">
-                    <span className="h-0.5 w-full rounded-full" style={{ backgroundColor: series.color }} />
-                    <span
-                      className="absolute left-1/2 size-2 -translate-x-1/2 rounded-full"
-                      style={{ backgroundColor: series.color }}
-                    />
-                  </span>
-                  {series.label}
-                  <span className="text-slate-500">({formatStudents(totals[series.key])})</span>
-                </li>
+              <Area
+                type="linear"
+                dataKey="after"
+                stroke="none"
+                fill={`url(#${AFTER_FILL_ID})`}
+                isAnimationActive={false}
+                activeDot={false}
+                tooltipType="none"
+              />
+
+              {SERIES.filter((series) => series.key === "after" || hasBefore).map((series) => (
+                <Line
+                  key={series.key}
+                  type="linear"
+                  dataKey={series.key}
+                  name={series.label}
+                  stroke={series.color}
+                  strokeWidth={4}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  dot={{ r: 8, fill: series.color, stroke: "#ffffff", strokeWidth: 2 }}
+                  activeDot={{ r: 10, fill: series.color, stroke: "#ffffff", strokeWidth: 2 }}
+                  isAnimationActive={true}
+                />
               ))}
-              {hasBefore && (
-                <li className="flex items-center gap-1 text-xs text-slate-500">
-                  <span aria-hidden="true" className="flex">
-                    <ArrowUp className="size-3.5" color={DELTA_UP_COLOR} strokeWidth={4} />
-                    <ArrowDown className="size-3.5" color={DELTA_DOWN_COLOR} strokeWidth={4} />
-                  </span>
-                  sob os níveis: diferença de alunos (Depois − Antes)
-                </li>
-              )}
-            </ul>
-          </div>
-        )}
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+
+        <ul className="mt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm text-slate-700">
+          {SERIES.map((series) => (
+            <li key={series.key} className="flex items-center gap-2">
+              <span aria-hidden="true" className="relative flex h-2 w-5 items-center">
+                <span className="h-0.5 w-full rounded-full" style={{ backgroundColor: series.color }} />
+                <span
+                  className="absolute left-1/2 size-2 -translate-x-1/2 rounded-full"
+                  style={{ backgroundColor: series.color }}
+                />
+              </span>
+              {series.label}
+              <span className="text-slate-500">({formatStudents(totals[series.key])})</span>
+            </li>
+          ))}
+          {hasBefore && (
+            <li className="flex items-center gap-1 text-xs text-slate-500">
+              <span aria-hidden="true" className="flex">
+                <ArrowUp className="size-3.5" color={DELTA_UP_COLOR} strokeWidth={4} />
+                <ArrowDown className="size-3.5" color={DELTA_DOWN_COLOR} strokeWidth={4} />
+              </span>
+              sob os níveis: diferença de alunos (Depois − Antes)
+            </li>
+          )}
+        </ul>
       </div>
-    </section>
+    </ContentCard>
   );
 }
