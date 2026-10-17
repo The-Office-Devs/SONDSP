@@ -2,14 +2,14 @@ import { api } from "@/api/axios";
 import type { PageResponse, PaginationParams } from "@/api/types";
 
 import type { 
-  FinishSurveyRequest,
-  StartSurveyRequest, 
+  CreateSurveyRequest,
+  FinishSurveyRequest, 
   Survey, 
   SurveyFilter, 
   SurveyListItem
 } from "./surveys.types";
 
-export async function startSurveyService(data: StartSurveyRequest): Promise<Survey> {
+export async function createSurveyService(data: CreateSurveyRequest): Promise<Survey> {
   const response = await api.post<Survey>('/survey', data);
   return response.data; 
 };

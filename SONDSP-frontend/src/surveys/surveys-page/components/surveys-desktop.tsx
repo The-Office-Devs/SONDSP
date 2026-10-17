@@ -10,7 +10,7 @@ import { buildPaginationProps } from "@/api/types";
 import { SurveysFilterPanel } from "./surveys-filter-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
-import { StartSurveyDialog } from "@/components/Dialog/StartSurveyDialog";
+import { CreateSurveyDialog } from "@/components/Dialog/CreateSurveyDialog";
 
 const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "10%" },
@@ -36,7 +36,7 @@ export function SurveysDesktop() {
   );
 
   const actions: RowAction<StudentListItem>[] = [
-    { type: "start", label: "Iniciar", onClick: (studentItem) => setApplyStudentId(studentItem.id) },
+    { type: "create", label: "Criar", onClick: (studentItem) => setApplyStudentId(studentItem.id) },
     { type: "list", label: "Listar", onClick: (studentItem) => goToListar(studentItem.id) },
   ];
 
@@ -76,7 +76,7 @@ export function SurveysDesktop() {
             pagination={studentsPage ? buildPaginationProps(studentsPage, setPage) : undefined}
           />
 
-          <StartSurveyDialog
+          <CreateSurveyDialog
             studentId={applyStudentId}
             open={applyStudentId !== null}
             onOpenChange={(open) => { if (!open) setApplyStudentId(null); }}

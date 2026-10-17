@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Play } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 
 import { getSubmitLabel } from "@/lib/form-utils";
 import { bimesterOptions, statusOptions, subjectOptions } from "@/lib/options-utils";
@@ -16,7 +16,7 @@ import {
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { Button } from "@/components/ui/button";
-import { StartSurveyDialog } from "@/components/Dialog/StartSurveyDialog";
+import { CreateSurveyDialog } from "@/components/Dialog/CreateSurveyDialog";
 
 interface SurveyHistoryFilterPanelProps {
   onSearch: (data: SurveyHistoryFormData) => void;
@@ -111,13 +111,13 @@ export function SurveysHistoryFilterPanel({
           />
 
           <Button type="button" onClick={() => setIsDialogOpen(true)} className="self-end">
-            <Play className="size-4" />
-            Iniciar Sondagem
+            <CirclePlus className="size-4" />
+            Criar Sondagem
           </Button>
         </Card>
       </FormProvider>
 
-      <StartSurveyDialog
+      <CreateSurveyDialog
         studentId={studentId}
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
