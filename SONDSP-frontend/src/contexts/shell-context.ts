@@ -7,8 +7,10 @@ export type FooterAction = {
   disabled?: boolean;
 };
 
+export type Breadcrumb = { label: string; to?: string; state?: unknown };
+
 export type FooterConfig = {
-  title: string;
+  title: string | Breadcrumb[];
   leftAction?: FooterAction;
   rightAction?: FooterAction;
   useMobileDefaultFooter?: boolean;

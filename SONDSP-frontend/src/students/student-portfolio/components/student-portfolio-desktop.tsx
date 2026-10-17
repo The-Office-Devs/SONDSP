@@ -2,26 +2,24 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type {
-  AnnotationTag,
-  TimelineSurveyItem,
-} from "../student-portfolio.types";
+import type { TimelineSurveyItem } from "../student-portfolio.types";
+import type { PortfolioNavState } from "../student-portfolio-page";
 
 import {
   useStudentPortfolio,
   useStudentTimeline,
-  useStudentAnnotations,
-  useCreateStudentAnnotation,
-  useUpdateStudentAnnotationTags,
 } from "../use-student-portfolio";
 
 import { StudentProfileCard } from "./student-profile-card";
 import { StudentAnnotationsCard } from "./student-annotations-card";
 import { StudentTimelineCard } from "./student-timeline-card";
-import { NewAnnotationDialog } from "./new-annotation-dialog";
 import { ViewEvidenceDialog } from "./view-evidence-dialog";
 
-export function StudentPortfolioDesktop() {
+interface StudentPortfolioDesktopProps {
+  portfolioNavState?: PortfolioNavState;
+}
+
+export function StudentPortfolioDesktop({ portfolioNavState }: StudentPortfolioDesktopProps) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const studentId = id ? Number(id) : null;
@@ -30,43 +28,16 @@ export function StudentPortfolioDesktop() {
   const {
     data: portfolio,
     isLoading: isPortfolioLoading,
+    isFetching: isPortfolioFetching,
     isError: isPortfolioError,
   } = useStudentPortfolio(studentId);
 
   const {
     data: timeline = [],
+    isFetching: isStudentTimelineFetching
   } = useStudentTimeline(studentId);
 
-  const {
-    data: annotationsPage,
-  } = useStudentAnnotations(studentId);
-
-  // Mutações
-  const { mutate: createAnnotation } = useCreateStudentAnnotation(studentId ?? 0);
-  const { mutate: updateTags } = useUpdateStudentAnnotationTags(studentId ?? 0);
-
-  // Estados dos modais
-  const [isNewAnnotationOpen, setIsNewAnnotationOpen] = useState(false);
   const [evidenceSurvey, setEvidenceSurvey] = useState<TimelineSurveyItem | null>(null);
-
-  const annotations = annotationsPage?.content ?? [];
-
-  // Alternância de categoria diretamente pelos toggles no card
-  const handleToggleTag = (annotationId: number, tag: AnnotationTag) => {
-    const target = annotations.find((ann) => ann.id === annotationId);
-    if (!target) return;
-    const hasTag = target.tags.includes(tag);
-    const updatedTags = hasTag
-      ? target.tags.filter((t) => t !== tag)
-      : [...target.tags, tag];
-
-    updateTags({ annotationId, tags: updatedTags });
-  };
-
-  // Criação de nova anotação
-  const handleSaveNewAnnotation = (text: string, tags: AnnotationTag[]) => {
-    createAnnotation({ text, tags });
-  };
 
   if (isPortfolioLoading) {
     return (
@@ -106,17 +77,19 @@ export function StudentPortfolioDesktop() {
   }
 
   return (
-    <div className="w-full px-6 lg:px-8 xl:px-10 py-6 max-w-[1680px] mx-auto">
+    <div className="p-4 lg:p-6">
       {/* Grid Principal de 2 Colunas */}
-      <div className="grid grid-cols-1 lg:grid-cols-[460px_1fr] xl:grid-cols-[480px_1fr] gap-6 lg:gap-8 items-start">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-8">
         {/* Coluna Esquerda: Perfil e Anotações (~40% de proporção visual) */}
         <div className="space-y-6">
-          <StudentProfileCard student={portfolio} />
+          <StudentProfileCard 
+            student={portfolio} 
+            isFetching={isPortfolioFetching} 
+          />
 
-          <StudentAnnotationsCard
-            annotations={annotations}
-            onNewAnnotation={() => setIsNewAnnotationOpen(true)}
-            onToggleTag={handleToggleTag}
+          <StudentAnnotationsCard 
+            studentId={portfolio.id} 
+            studentName={portfolio.name} 
           />
         </div>
 
@@ -124,19 +97,13 @@ export function StudentPortfolioDesktop() {
         <div className="min-w-0">
           <StudentTimelineCard
             studentId={portfolio.id}
+            portfolioNavState={portfolioNavState}
             timeline={timeline}
             onViewEvidence={(survey) => setEvidenceSurvey(survey)}
+            isFetching={isStudentTimelineFetching}
           />
         </div>
       </div>
-
-      {/* Modal Nova Anotação */}
-      <NewAnnotationDialog
-        open={isNewAnnotationOpen}
-        studentName={portfolio.name}
-        onOpenChange={setIsNewAnnotationOpen}
-        onSave={handleSaveNewAnnotation}
-      />
 
       {/* Modal Visualizar Evidência */}
       <ViewEvidenceDialog

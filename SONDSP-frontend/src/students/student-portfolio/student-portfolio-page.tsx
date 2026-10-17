@@ -1,12 +1,19 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 
+import type { Breadcrumb } from "@/contexts/shell-context";
 import { useIsDesktop } from "@/hooks/use-media-query";
 import { useFooter } from "@/hooks/use-footer";
 
 import { useStudentPortfolio } from "./use-student-portfolio";
 import { StudentPortfolioDesktop } from "./components/student-portfolio-desktop";
 import { StudentPortfolioMobile } from "./components/student-portfolio-mobile";
+
+export type PortfolioNavState = {
+  from?: "class" | "trajectories";
+  schoolClassId?: number;
+  schoolClassName?: string;
+};
 
 export function StudentPortfolioPage() {
   const { id } = useParams<{ id: string }>();
@@ -15,10 +22,29 @@ export function StudentPortfolioPage() {
 
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navState = (location.state ?? {}) as PortfolioNavState;
 
-  const footerTitle = portfolio
-    ? `Início > ${portfolio.schoolYear} > ${portfolio.school} > ${portfolio.currentClass} > Mapa de Classe > Portfólio de ${portfolio.name}`
-    : "Início > Mapa de Classe > Portfólio do Estudante";
+  const footerTitle: Breadcrumb[] =
+    navState.from === "class"
+      ? [
+          { label: "Início", to: "/" },
+          { label: "Turmas", to: "/app-turmas" },
+          {
+            label: `Turma ${navState.schoolClassName ?? ""}`,
+            to: navState.schoolClassId ? `/app-turmas/turma/${navState.schoolClassId}` : undefined,
+          },
+          { label: `Portfólio de ${portfolio?.name ?? "Estudante"}` },
+        ]
+      : navState.from === "trajectories"
+        ? [
+            { label: "Trajetórias de Aprendizagem", to: "/app-trajetorias-aprendizagem" },
+            { label: `Portfólio de ${portfolio?.name ?? "Estudante"}`},
+          ]
+        : [
+            { label: "Alunos", to: "/app-alunos" },
+            { label: `Portfólio de ${portfolio?.name ?? "Estudante"}` },
+          ];
 
   useFooter({
     title: footerTitle,
@@ -29,5 +55,9 @@ export function StudentPortfolioPage() {
     },
   });
 
-  return isDesktop ? <StudentPortfolioDesktop /> : <StudentPortfolioMobile />;
+  return isDesktop ? (
+    <StudentPortfolioDesktop portfolioNavState={navState} />
+  ) : (
+    <StudentPortfolioMobile />
+  );
 }

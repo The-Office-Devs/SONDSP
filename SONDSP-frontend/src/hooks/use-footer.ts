@@ -11,6 +11,11 @@ export function useFooter(config: FooterConfig, deps: DependencyList = []) {
     ref.current = config;
   });
 
+  const titleKey =
+    typeof config.title === "string"
+      ? config.title
+      : config.title.map((c) => `${c.label}:${c.to ?? ""}`).join("|");
+
   useEffect(() => {
     const { title, leftAction, rightAction, useMobileDefaultFooter } = ref.current;
 
@@ -28,7 +33,7 @@ export function useFooter(config: FooterConfig, deps: DependencyList = []) {
     });
     return () => setFooter(DEFAULT_FOOTER);
   }, [
-    config.title,
+    titleKey,
     config.leftAction?.label,
     config.leftAction?.disabled,
     config.rightAction?.label,

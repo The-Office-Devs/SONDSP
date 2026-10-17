@@ -38,7 +38,7 @@ export function ViewFileDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-fit max-w-[90vw]">
-        <DialogHeader>
+        <DialogHeader className="pt-2 pr-2">
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
 

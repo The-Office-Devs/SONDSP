@@ -24,7 +24,7 @@ export interface SurveyFilter {
   status?: boolean;
 }
 
-export interface StartSurveyRequest {
+export interface CreateSurveyRequest {
   studentId: number;
   activityModelId: number;
   applicationPeriod: string;

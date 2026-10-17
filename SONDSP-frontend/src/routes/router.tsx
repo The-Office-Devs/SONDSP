@@ -22,6 +22,7 @@ import { ClassDetailsPage } from '@/classes/class-details-page/class-details-pag
 import { StudentPortfolioPage } from '@/students/student-portfolio/student-portfolio-page';
 import { ClassMapPage } from '@/class-map/class-map-page/class-map-page';
 import { LearningTrajectoriesPage } from '@/learning-trajectories/learning-trajectories-page/learning-trajectories-page';
+import { StudentsFilterPage } from '@/students/students-filter-page/students-filter-page';
 
 export const router = createBrowserRouter([
   {
@@ -68,14 +69,14 @@ export const router = createBrowserRouter([
           {
             element: <RoleRoute area="application" />,
             children: [
+              { path: 'app-alunos/', element: <StudentsFilterPage /> },
+              { path: 'app-alunos/portfolio/aluno/:id', element: <StudentPortfolioPage /> },
               { path: 'app-mapa-classe', element: <ClassMapPage /> },
               { path: 'app-sondagens', element: <SurveysPage /> },
               { path: 'app-sondagens/historico/aluno/:id', element: <SurveysHistoryPage /> },
               { path: 'app-trajetorias-aprendizagem', element: <LearningTrajectoriesPage /> },
               { path: 'app-turmas', element: <ClassesFilterPage />},
               { path: 'app-turmas/turma/:id', element: <ClassDetailsPage />},
-              { path: 'app-portfolio', element: <Navigate to="/app-turmas" replace /> },
-              { path: 'app-portfolio/aluno/:id', element: <StudentPortfolioPage /> },
             ],
           },
         ]

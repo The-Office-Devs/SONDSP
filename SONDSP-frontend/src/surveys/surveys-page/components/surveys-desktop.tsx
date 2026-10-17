@@ -1,16 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import type { StudentListItem } from "@/students/students.types";
 import { type SurveyFormData } from "../survey-schema";
 import { useStudents } from "@/students/students-page/use-students";
-import { useTableState } from "@/hooks/use-table-state";
-import { useNavigate } from "react-router-dom";
 import { buildPaginationProps } from "@/api/types";
+import { useTableState } from "@/hooks/use-table-state";
 
 import { SurveysFilterPanel } from "./surveys-filter-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
-import { StartSurveyDialog } from "@/components/Dialog/StartSurveyDialog";
+import { CreateSurveyDialog } from "@/components/Dialog/CreateSurveyDialog";
 
 const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "10%" },
@@ -24,7 +24,7 @@ export function SurveysDesktop() {
   const [appliedFilters, setAppliedFilters] = useState<SurveyFormData | null>(null);
   const [applyStudentId, setApplyStudentId] = useState<number | null>(null);
 
-  const { data: studentsPage, isFetching, isLoading } = useStudents(
+  const { data: studentsPage, isFetching } = useStudents(
     {
       page,
       size,
@@ -36,7 +36,7 @@ export function SurveysDesktop() {
   );
 
   const actions: RowAction<StudentListItem>[] = [
-    { type: "start", label: "Iniciar", onClick: (studentItem) => setApplyStudentId(studentItem.id) },
+    { type: "create", label: "Criar", onClick: (studentItem) => setApplyStudentId(studentItem.id) },
     { type: "list", label: "Listar", onClick: (studentItem) => goToListar(studentItem.id) },
   ];
 
@@ -53,13 +53,13 @@ export function SurveysDesktop() {
       <SurveysFilterPanel 
         onSearch={setAppliedFilters}
         onClear={handleClear} 
-        isSearching={isLoading} 
+        isSearching={isFetching} 
       />
       
       {!appliedFilters ? (
         <div className="flex flex-col items-center p-4 text-center">
           <p className="max-w-md text-sm text-slate-500">
-            Por favor, selecione uma turma no filtro acima para carregar a lista de alunos e iniciar as sondagens
+            Por favor, selecione uma turma no filtro acima para carregar a lista de alunos e criar as sondagens
           </p>
         </div>
       ) : (
@@ -76,7 +76,7 @@ export function SurveysDesktop() {
             pagination={studentsPage ? buildPaginationProps(studentsPage, setPage) : undefined}
           />
 
-          <StartSurveyDialog
+          <CreateSurveyDialog
             studentId={applyStudentId}
             open={applyStudentId !== null}
             onOpenChange={(open) => { if (!open) setApplyStudentId(null); }}
