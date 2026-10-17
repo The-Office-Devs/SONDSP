@@ -123,6 +123,7 @@ export function StudentAnnotationsCard({ studentId, studentName }: Readonly<Stud
         onOpenChange={handleOpenChange}
         note={dialog.annotation}
         subtitle={`Estudante: ${studentName}`}
+        canEdit={!dialog.annotation || dialog.annotation.canEdit}
         tagOptions={TAG_OPTIONS}
         onSave={handleSave}
         onDelete={handleDelete}
