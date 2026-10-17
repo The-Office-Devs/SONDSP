@@ -90,6 +90,7 @@ export function ClassDetailsFilterPanel({
           label="Bimestre"
           placeholder="Selecione o bimestre"
           options={bimesterOptions}
+          clearable
         />
       </Card>
     </FormProvider>

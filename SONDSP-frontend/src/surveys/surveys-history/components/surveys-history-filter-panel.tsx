@@ -108,6 +108,7 @@ export function SurveysHistoryFilterPanel({
             label="Bimestre"
             placeholder="Selecione o bimestre"
             options={bimesterOptions}
+            clearable
           />
 
           <Button type="button" onClick={() => setIsDialogOpen(true)} className="self-end">
