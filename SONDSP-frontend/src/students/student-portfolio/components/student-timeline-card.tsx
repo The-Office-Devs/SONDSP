@@ -10,12 +10,15 @@ import {
   Filter
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { PortfolioNavState } from "../student-portfolio-page";
 import type { TimelineSurveyItem } from "../student-portfolio.types";
 import { getSurveyLevelStyle, getBadgeLevelCode } from "@/lib/survey-utils";
+import { useShell } from "@/hooks/use-shell";
 import { ContentCard } from "@/components/Card/ContentCard";
 
 interface StudentTimelineCardProps {
   studentId?: number;
+  portfolioNavState?: PortfolioNavState;
   timeline: TimelineSurveyItem[];
   onViewEvidence: (survey: TimelineSurveyItem) => void;
   isFetching?: boolean;
@@ -44,11 +47,13 @@ function getStrandIcon(strandKey: string) {
 
 export function StudentTimelineCard({
   studentId,
+  portfolioNavState,
   timeline,
   onViewEvidence,
   isFetching
 }: Readonly<StudentTimelineCardProps>) {
   const navigate = useNavigate();
+  const { footer } = useShell();
   const [selectedStrand, setSelectedStrand] = useState<StrandFilterType>("TODOS");
 
   const filteredTimeline = timeline.filter((item) => {
@@ -59,6 +64,25 @@ export function StudentTimelineCard({
   const changeStrand = (value: StrandFilterType) =>
     setSelectedStrand((prev) => (prev === value ? "TODOS" : value));
 
+  const openHistory = () => {
+    if (!studentId) return;
+
+    const currentTrail = Array.isArray(footer.title)
+      ? footer.title.map((crumb, i, arr) =>
+          i === arr.length - 1
+            ? {
+                ...crumb,
+                to: `/app-portfolio/aluno/${studentId}`,
+                state: portfolioNavState,
+              }
+            : crumb,
+        )
+      : [];
+
+    navigate(`/app-sondagens/historico/aluno/${studentId}`, {
+      state: { trail: currentTrail },
+    });
+  };
 
   return (
     <ContentCard
@@ -67,7 +91,7 @@ export function StudentTimelineCard({
         studentId ? (
           <button
             type="button"
-            onClick={() => navigate(`/app-sondagens/historico/aluno/${studentId}`)}
+            onClick={openHistory}
             className="flex items-center gap-1.5 text-sm font-semibold text-white/90 hover:text-white hover:underline transition cursor-pointer"
             title="Acessar histórico completo de avaliações do aluno"
           >

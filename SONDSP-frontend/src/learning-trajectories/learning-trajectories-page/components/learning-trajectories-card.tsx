@@ -130,6 +130,7 @@ export function LearningTrajectoriesCard({
                 <th scope="row" className="pl-2 text-left font-normal">
                   <Link
                     to={`/app-portfolio/aluno/${student.id}`}
+                    state={{ from: "trajectories" }}
                     title={`Portfólio de ${student.nome}`}
                     className="font-medium text-slate-800 underline-offset-2 hover:underline"
                   >

@@ -1,8 +1,10 @@
 import { useShell } from "@/hooks/use-shell";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../../button";
 
 export function DesktopShellFooter() {
   const { footer } = useShell();
+  const navigate = useNavigate();
 
   return (
     <footer className="min-w-0 border-t border-white/10 bg-[#0a4b93] px-4 py-6 text-sm font-medium text-white lg:px-6">
@@ -22,9 +24,30 @@ export function DesktopShellFooter() {
         </div>
 
         <div className="min-w-0 overflow-hidden text-center">
-          <span className="block truncate">{footer.title}</span>
+          {typeof footer.title === "string" ? (
+            <span className="block truncate">{footer.title}</span>
+          ) : (
+            <span className="block truncate">
+              {footer.title.map((crumb, i) => (
+                <span key={`${crumb.label}-${i}`}>
+                  {i > 0 && <span className="mx-1 text-white/50">{">"}</span>}
+                  {crumb.to ? (
+                    <button
+                      type="button"
+                      onClick={() => navigate(crumb.to!, { state: crumb.state })}
+                      className="cursor-pointer hover:underline"
+                    >
+                      {crumb.label}
+                    </button>
+                  ) : (
+                    <span>{crumb.label}</span>
+                  )}
+                </span>
+              ))}
+            </span>
+          )}
         </div>
-
+        
         <div className="flex h-5 min-w-0 items-center justify-end">
           {footer.rightAction && (
             <Button

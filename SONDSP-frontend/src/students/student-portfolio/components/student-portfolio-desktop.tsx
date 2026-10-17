@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { TimelineSurveyItem } from "../student-portfolio.types";
+import type { PortfolioNavState } from "../student-portfolio-page";
 
 import {
   useStudentPortfolio,
@@ -14,7 +15,11 @@ import { StudentAnnotationsCard } from "./student-annotations-card";
 import { StudentTimelineCard } from "./student-timeline-card";
 import { ViewEvidenceDialog } from "./view-evidence-dialog";
 
-export function StudentPortfolioDesktop() {
+interface StudentPortfolioDesktopProps {
+  portfolioNavState?: PortfolioNavState;
+}
+
+export function StudentPortfolioDesktop({ portfolioNavState }: StudentPortfolioDesktopProps) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const studentId = id ? Number(id) : null;
@@ -92,6 +97,7 @@ export function StudentPortfolioDesktop() {
         <div className="min-w-0">
           <StudentTimelineCard
             studentId={portfolio.id}
+            portfolioNavState={portfolioNavState}
             timeline={timeline}
             onViewEvidence={(survey) => setEvidenceSurvey(survey)}
             isFetching={isStudentTimelineFetching}

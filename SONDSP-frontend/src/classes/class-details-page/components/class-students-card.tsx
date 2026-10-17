@@ -7,6 +7,7 @@ import { ContentCard } from "@/components/Card/ContentCard";
 
 interface ClassStudentsCardProps {
   students: ClassStudents[];
+  classId: number
   title?: string;
   strandCode?: string;
   isFetching?: boolean;
@@ -14,6 +15,7 @@ interface ClassStudentsCardProps {
 
 export function ClassStudentsCard({
   students,
+  classId,
   title = "Turma",
   strandCode,
   isFetching = false
@@ -56,6 +58,11 @@ export function ClassStudentsCard({
             <li key={student.studentId}>
               <Link
                 to={`/app-portfolio/aluno/${student.studentId}`}
+                state={{
+                  from: "class",
+                  schoolClassId: classId,
+                  schoolClassName: title,
+                }}
                 title={`${student.studentName} (${resultLabel})`}
                 className="group flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm hover:border-slate-300 hover:bg-slate-50"
               >
