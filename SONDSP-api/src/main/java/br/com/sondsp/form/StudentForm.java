@@ -3,6 +3,8 @@ package br.com.sondsp.form;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
+import java.time.LocalDate;
+
 import static br.com.sondsp.util.SystemMessages.*;
 
 public record StudentForm(
@@ -12,6 +14,8 @@ public record StudentForm(
         @NotBlank(message = EMPTY_REGISTRATION)
         String registration,
         Integer schoolClassId,
+        @NotBlank(message = "A data de nascimento é obrigatória")
+        String birthDate,
         Integer rowNumber
 ) {
 }

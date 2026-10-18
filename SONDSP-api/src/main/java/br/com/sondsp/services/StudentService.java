@@ -6,14 +6,21 @@ import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.repositories.StudentRepository;
+import br.com.sondsp.util.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.ValidationException;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,17 +38,21 @@ public class StudentService {
 	public Student createStudent(StudentForm form) {
 		validadeStudent(form, null);
 
+		SchoolClass schoolClass = form.schoolClassId() != null
+				? schoolClassService.getSchoolClass(form.schoolClassId())
+				: null;
+
 		return repository.save(
-			Student
-				.builder()
-				.name(form.name())
-				.registration(form.registration())
-				.schoolClass(
-					form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null
-				)
-				.rowNumber(form.rowNumber())
-				.status(true)
-				.build()
+				Student
+						.builder()
+						.name(form.name())
+						.registration(form.registration())
+						.birthDate(this.parseBirthDate(form.birthDate()))
+						.schoolClass(schoolClass)
+						.classEntryDate(schoolClass != null ? LocalDate.now(ZoneId.of("America/Sao_Paulo")) : null)
+						.rowNumber(form.rowNumber())
+						.status(true)
+						.build()
 		);
 	}
 
@@ -63,12 +74,22 @@ public class StudentService {
 
 		validadeStudent(form, id);
 
-		student.setSchoolClass(
-			form.schoolClassId() != null ? schoolClassService.getSchoolClass(form.schoolClassId()) : null
-		);
+		Integer currentClassId = student.getSchoolClass() != null ? student.getSchoolClass().getId() : null;
+
+		if (!Objects.equals(currentClassId, form.schoolClassId())) {
+			if (form.schoolClassId() != null) {
+				student.setSchoolClass(schoolClassService.getSchoolClass(form.schoolClassId()));
+				student.setClassEntryDate(LocalDate.now(ZoneId.of("America/Sao_Paulo")));
+			} else {
+				student.setSchoolClass(null);
+				student.setClassEntryDate(null);
+			}
+		}
+
 		student.setRowNumber(form.rowNumber());
 		student.setName(form.name());
 		student.setRegistration(form.registration());
+		student.setBirthDate(parseBirthDate(form.birthDate()));
 
 		return repository.save(student);
 	}
@@ -199,5 +220,20 @@ public class StudentService {
 		} else if (form.rowNumber() != null) {
 			throw new ValidationException(MUST_HAVE_CLASS);
 		}
+	}
+
+	private LocalDate parseBirthDate(String value) {
+		LocalDate date;
+		try {
+			date = DateUtils.parse(value);
+		} catch (DateTimeParseException e) {
+			throw new ValidationException(STUDENT_BIRTH_DATE_INVALID);
+		}
+
+		if (date != null && date.isAfter(LocalDate.now(ZoneId.of("America/Sao_Paulo")))) {
+			throw new ValidationException(STUDENT_BIRTH_DATE_FUTURE);
+		}
+
+		return date;
 	}
 }

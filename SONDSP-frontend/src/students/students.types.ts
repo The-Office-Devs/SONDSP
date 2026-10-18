@@ -7,6 +7,8 @@ export interface StudentListItem {
   schoolClass?: Class | null;
   schoolName?: Class | null;
   rowNumber?: number | null;
+  birthDate?: string | null;
+  classEntryDate?: string | null;
   status: boolean;
 }
 
@@ -27,6 +29,7 @@ export interface CreateStudentRequest {
   registration: string;
   schoolClassId: number;
   rowNumber: number;
+  birthDate: string;
   status: boolean;
 }
 

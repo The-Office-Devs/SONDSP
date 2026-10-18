@@ -51,6 +51,7 @@ export function useCreateStudent() {
         schoolClassId: data.schoolClassId,
         rowNumber: data.rowNumber,
         registration: data.registration,
+        birthDate: data.birthDate,
         status: data.status
       }),
 
@@ -76,6 +77,7 @@ export function useUpdateStudent() {
           schoolClassId: data.schoolClassId,
           rowNumber: data.rowNumber,
           registration: data.registration,
+          birthDate: data.birthDate,
           status: data.status
         }
       ),

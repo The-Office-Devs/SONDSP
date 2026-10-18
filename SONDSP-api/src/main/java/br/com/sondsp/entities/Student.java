@@ -3,6 +3,8 @@ package br.com.sondsp.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Setter
@@ -28,6 +30,12 @@ public class Student {
 
     @Column(name = "num_chamada")
     private Integer rowNumber;
+
+    @Column(name = "data_nascimento")
+    private LocalDate birthDate;
+
+    @Column(name = "data_inclusao_turma")
+    private LocalDate classEntryDate;
 
     @Column(name = "status")
     private Boolean status;
