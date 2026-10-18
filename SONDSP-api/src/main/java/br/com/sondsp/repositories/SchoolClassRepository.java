@@ -129,6 +129,7 @@ public interface SchoolClassRepository
             s.student.id,
             st.id,
             st.name,
+			st.code,
             s.applicationPeriod,
             s.result,
             s.date,

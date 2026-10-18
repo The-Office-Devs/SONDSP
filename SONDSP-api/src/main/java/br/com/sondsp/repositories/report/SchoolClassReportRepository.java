@@ -1,14 +1,14 @@
 package br.com.sondsp.repositories.report;
 
 import br.com.sondsp.dtos.SchoolClassSurveysReportDTO;
+import br.com.sondsp.dtos.SchoolClassSurveysReportDTO.LegendEntry;
 import br.com.sondsp.dtos.SchoolClassSurveysReportDTO.StrandSheet;
 import br.com.sondsp.dtos.SchoolClassSurveysReportDTO.StudentRow;
 import br.com.sondsp.repositories.projections.SchoolClassSurveysProjection;
-import br.com.sondsp.util.SurveyHypothesis;
 import br.com.sondsp.util.SurveyPeriod;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.EnumMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -77,6 +77,9 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
             StrandSheet strandSheet
     ) {
         List<StudentRow> students = strandSheet.students();
+        List<LegendEntry> legend = strandSheet.legend();
+        Map<String, LegendEntry> legendByValue = legendIndex(legend);
+        boolean writing = "ESCRITA".equalsIgnoreCase(nvl(strandSheet.strandCode()).trim());
 
         String surveyType = nvl(strandSheet.strandName()).trim().toUpperCase(PT_BR); // nome do eixo, ex.: "ESCRITA"
         String gradeYear = nvl(header.getGradeLevel()).replaceAll("\\D", ""); // "1º ano" -> "1"
@@ -93,7 +96,7 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
 
         row = newRow(sheet, 1, 21f);
         fill(row, 0, LAST_COL, s.title);
-        row.getCell(0).setCellValue("HIPÓTESES DE " + surveyType);
+        row.getCell(0).setCellValue((writing ? "HIPÓTESES DE " : "RESULTADOS DE ") + surveyType);
         merge(sheet, 1, 1, 0, LAST_COL);
 
         // ---- Linhas 3 a 5: escola, professor, turma / ano letivo (+ logo à direita) ------------
@@ -122,9 +125,11 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
         merge(sheet, 5, 5, 0, LAST_COL);
 
         // ---- Linha 7: instrução --------------------------------------------------------------------
-        row = newRow(sheet, 6, 43.5f);
+        XSSFRichTextString instruction = instructionText(s, legend, writing);
+        float instructionHeight = Math.max(43.5f, (float) Math.ceil(instruction.length() / 85.0) * 19f);
+        row = newRow(sheet, 6, instructionHeight);
         fill(row, 0, LAST_COL, s.instruction);
-        row.getCell(0).setCellValue(instructionText(s));
+        row.getCell(0).setCellValue(instruction);
         merge(sheet, 6, 6, 0, LAST_COL);
 
         // ---- Linha 8: cabeçalho da tabela ----------------------------------------------------------
@@ -161,55 +166,64 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
                 String result = student == null ? null : valueAt(student.results(), c - FIRST_RESULT_COL);
                 if (result == null || result.isBlank()) continue;
 
-                SurveyHypothesis hypothesis = SurveyHypothesis.fromResult(result).orElse(null);
-                if (hypothesis != null) {
-                    cell.setCellValue(hypothesis.getCode());
-                    cell.setCellStyle(s.result.get(hypothesis)); // cor da legenda
+                LegendEntry entry = legendByValue.get(result.trim().toUpperCase(Locale.ROOT));
+                if (entry != null) {
+                    cell.setCellValue(entry.code());
+                    cell.setCellStyle(s.resultStyle(entry.rgb()));
                 } else {
-                    cell.setCellValue(result.trim()); // valor desconhecido: mostra como veio, sem cor
+                    cell.setCellValue(result.trim());
                 }
             }
         }
 
-        // ---- Legenda ------------------------------------------------------------------------------------
-        final int legendRow = lastStudentRow + 2; // uma linha em branco entre a tabela e a legenda
-        final int legendEnd = legendRow + SurveyHypothesis.values().length;
+        // ---- Legenda (varia conforme o eixo) -------------------------------------------------------
+        int lastRow = lastStudentRow;
 
-        for (int r = legendRow; r <= legendEnd; r++) newRow(sheet, r, 15.75f);
+        if (!legend.isEmpty()) {
+            final int legendRow = lastStudentRow + 2; // uma linha em branco entre a tabela e a legenda
+            final int legendEnd = legendRow + legend.size();
+            lastRow = legendEnd;
 
-        Row legendTitle = sheet.getRow(legendRow);
-        fill(legendTitle, 0, 1, s.legendTitle);
-        legendTitle.getCell(0).setCellValue("LEGENDA:");
-        merge(sheet, legendRow, legendRow, 0, 1);
+            for (int r = legendRow; r <= legendEnd; r++) newRow(sheet, r, 15.75f);
 
-        for (int r = legendRow; r <= legendEnd; r++) fill(sheet.getRow(r), 2, LAST_COL, s.legendNote);
-        sheet.getRow(legendRow).getCell(2).setCellValue(
-                "Atenção: Verificar no Documento Orientador de Sondagens a definição de cada hipótese"
-        );
-        merge(sheet, legendRow, legendEnd, 2, LAST_COL);
+            Row legendTitle = sheet.getRow(legendRow);
+            fill(legendTitle, 0, 1, s.legendTitle);
+            legendTitle.getCell(0).setCellValue("LEGENDA:");
+            merge(sheet, legendRow, legendRow, 0, 1);
 
-        int r = legendRow + 1;
-        for (SurveyHypothesis h : SurveyHypothesis.values()) {
-            Row legendLine = sheet.getRow(r++);
-            Cell code = legendLine.createCell(0);
-            code.setCellValue(h.getCode());
-            code.setCellStyle(s.legend.get(h));
-            Cell description = legendLine.createCell(1);
-            description.setCellValue(h.getDescription());
-            description.setCellStyle(s.legend.get(h));
+            for (int r = legendRow; r <= legendEnd; r++) fill(sheet.getRow(r), 2, LAST_COL, s.legendNote);
+            sheet.getRow(legendRow).getCell(2).setCellValue(
+                    "Atenção: Verificar no Documento Orientador de Sondagens a definição de cada " + (writing ? "hipótese" : "resultado")
+            );
+            merge(sheet, legendRow, legendEnd, 2, LAST_COL);
+
+            int r = legendRow + 1;
+            for (LegendEntry entry : legend) {
+                Row legendLine = sheet.getRow(r++);
+                legendLine.setHeightInPoints(legendLineHeight(entry.description()));
+
+                CellStyle legendStyle = s.legendStyle(entry.rgb());
+                Cell code = legendLine.createCell(0);
+                code.setCellValue(entry.code());
+                code.setCellStyle(legendStyle);
+                Cell description = legendLine.createCell(1);
+                description.setCellValue(nvl(entry.description()));
+                description.setCellStyle(legendStyle);
+            }
+
+            s.outline(sheet, legendRow, legendRow, 0, 1);
+            s.outline(sheet, legendRow, legendEnd, 2, LAST_COL);
+            s.outline(sheet, legendRow + 1, legendEnd, 0, 1);
         }
 
         // ---- Bordas externas
-        s.outline(sheet, 0, legendEnd, 0, LAST_COL);
+        s.outline(sheet, 0, lastRow, 0, LAST_COL);
         s.outline(sheet, 0, 1, 0, LAST_COL);
         s.outline(sheet, 2, 4, 0, LAST_COL);
         s.outline(sheet, 2, 4, 5, 6);
         s.outline(sheet, 6, 6, 0, LAST_COL);
         s.outline(sheet, headerRow, headerRow, 0, LAST_COL);
         s.outline(sheet, firstStudentRow, lastStudentRow, 0, LAST_COL);
-        s.outline(sheet, legendRow, legendRow, 0, 1);
-        s.outline(sheet, legendRow, legendEnd, 2, LAST_COL);
-        s.outline(sheet, legendRow + 1, legendEnd, 0, 1);
 
         // ---- Larguras, logo e impressão ------------------------------------------
         sheet.setColumnWidth(0, width(7.29));
@@ -224,7 +238,7 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
         print.setLandscape(false);
         print.setFitWidth((short) 1);
         print.setFitHeight((short) 0); // 1 página de largura, quantas precisar de altura
-        wb.setPrintArea(wb.getSheetIndex(sheet), 0, LAST_COL, 0, legendEnd);
+        wb.setPrintArea(wb.getSheetIndex(sheet), 0, LAST_COL, 0, lastRow);
     }
 
     // =====================================================================================================
@@ -272,23 +286,58 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
         return rich;
     }
 
-    /** Texto de instrução do modelo, com as siglas em negrito. */
-    private static XSSFRichTextString instructionText(Styles s) {
-        String[] parts = {
-                "Anote  ", "PS", ", ", "SSVC", ", ", "SCVC", ", ", "SA", " ou ", "A",
-                " , ou utilize as cores da legenda, para indicar a hipótese que melhor representa a escrita "
-                        + "apresentada pelo estudante, conforme documento orientador de sondagem.",
-        };
-        boolean[] bold = { false, true, false, true, false, true, false, true, false, true, false };
+    /** Valor gravado no banco (maiúsculo) -> entrada da legenda do eixo. */
+    private static Map<String, LegendEntry> legendIndex(List<LegendEntry> legend) {
+        Map<String, LegendEntry> index = new HashMap<>();
+        for (LegendEntry entry : legend) index.put(nvl(entry.value()).trim().toUpperCase(Locale.ROOT), entry);
+        return index;
+    }
+
+    /** Altura da linha da legenda: cresce quando a descrição não cabe em uma linha da coluna B. */
+    private static float legendLineHeight(String description) {
+        int lines = Math.max(1, (int) Math.ceil(nvl(description).length() / 52.0));
+        return lines == 1 ? 15.75f : lines * 15f + 1.5f;
+    }
+
+    /**
+     * Texto de instrução com as siglas da legenda do eixo em negrito. Para o eixo ESCRITA mantém a redação do
+     * modelo; para os demais, uma redação neutra.
+     */
+    private static XSSFRichTextString instructionText(Styles s, List<LegendEntry> legend, boolean writing) {
+        String subject = writing
+                ? "a hipótese que melhor representa a escrita apresentada pelo estudante"
+                : "o resultado que melhor representa o desempenho apresentado pelo estudante";
+        String ending = "conforme documento orientador de sondagem.";
+
+        List<String> parts = new ArrayList<>();
+        List<Boolean> bold = new ArrayList<>();
+
+        if (legend.isEmpty()) {
+            parts.add("Anote " + subject + ", " + ending);
+            bold.add(false);
+        } else {
+            parts.add("Anote  ");
+            bold.add(false);
+            for (int i = 0; i < legend.size(); i++) {
+                if (i > 0) {
+                    parts.add(i == legend.size() - 1 ? " ou " : ", ");
+                    bold.add(false);
+                }
+                parts.add(legend.get(i).code());
+                bold.add(true);
+            }
+            parts.add(", ou utilize as cores da legenda, para indicar " + subject + ", " + ending);
+            bold.add(false);
+        }
 
         StringBuilder text = new StringBuilder();
         for (String part : parts) text.append(part);
 
         XSSFRichTextString rich = new XSSFRichTextString(text.toString());
         int start = 0;
-        for (int i = 0; i < parts.length; i++) {
-            int end = start + parts[i].length();
-            rich.applyFont(start, end, bold[i] ? s.bold14 : s.normal14);
+        for (int i = 0; i < parts.size(); i++) {
+            int end = start + parts.get(i).length();
+            rich.applyFont(start, end, bold.get(i) ? s.bold14 : s.normal14);
             start = end;
         }
         return rich;
@@ -370,10 +419,11 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
         final CellStyle rowResult;
         final CellStyle legendTitle;
         final CellStyle legendNote;
-        final Map<SurveyHypothesis, CellStyle> result = new EnumMap<>(SurveyHypothesis.class);
-        final Map<SurveyHypothesis, CellStyle> legend = new EnumMap<>(SurveyHypothesis.class);
+        final XSSFFont boldArial;
 
         private final XSSFWorkbook wb;
+        private final Map<Integer, CellStyle> resultStyles = new HashMap<>();
+        private final Map<Integer, CellStyle> legendStyles = new HashMap<>();
         private final Map<String, XSSFCellStyle> outlineCache = new HashMap<>();
 
         Styles(XSSFWorkbook wb) {
@@ -383,7 +433,7 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
             normal14 = font(wb, "Calibri", 14, false);
             bold14 = font(wb, "Calibri", 14, true);
             XSSFFont bold8 = font(wb, "Calibri", 8, true);
-            XSSFFont boldArial = font(wb, "Arial", 11, true);
+            boldArial = font(wb, "Arial", 11, true);
             XSSFFont title14 = font(wb, "Calibri", 14, true);
 
             BorderStyle thin = BorderStyle.THIN;
@@ -403,14 +453,26 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
             rowResult = style(wb, bold11, center, middle, false, thin, null);
             legendTitle = style(wb, boldArial, center, middle, false, thin, null);
             legendNote = style(wb, normal11, center, middle, true, thin, GRAY_NOTE);
-
-            for (SurveyHypothesis h : SurveyHypothesis.values()) {
-                result.put(h, style(wb, bold11, center, middle, false, thin, h.getRgb()));
-                legend.put(h, style(wb, boldArial, center, middle, true, thin, h.getRgb()));
-            }
         }
 
-        /** Borda média ao redor de um intervalo (inclusive de células mescladas). */
+        CellStyle resultStyle(int rgb) {
+            return resultStyles.computeIfAbsent(
+                    rgb,
+                    k -> style(wb, bold11, HorizontalAlignment.CENTER, VerticalAlignment.CENTER, false, BorderStyle.THIN, toBytes(k))
+            );
+        }
+
+        CellStyle legendStyle(int rgb) {
+            return legendStyles.computeIfAbsent(
+                    rgb,
+                    k -> style(wb, boldArial, HorizontalAlignment.CENTER, VerticalAlignment.CENTER, true, BorderStyle.THIN, toBytes(k))
+            );
+        }
+
+        private static byte[] toBytes(int rgb) {
+            return new byte[] { (byte) (rgb >> 16), (byte) (rgb >> 8), (byte) rgb };
+        }
+
         void outline(XSSFSheet sheet, int firstRow, int lastRow, int firstCol, int lastCol) {
             for (int r = firstRow; r <= lastRow; r++) {
                 Row row = sheet.getRow(r) != null ? sheet.getRow(r) : sheet.createRow(r);
