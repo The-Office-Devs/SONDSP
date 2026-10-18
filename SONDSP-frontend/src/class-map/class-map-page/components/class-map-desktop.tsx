@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 
 import { useClassMap } from "@/classes/use-classes";
 import type { ClassMapAppliedFilters } from "../class-map.schema";
@@ -8,8 +8,13 @@ import { DomainPercentageCard } from "./domain-percentage-card";
 import { DistributionCard } from "./distribution-card";
 import { EvolutionComparativeCard } from "./evolution-comparative-card";
 
+const CLASS_MAP_FILTER_KEY = "class-map-filter";
+
 export function ClassMapDesktop() {
-  const [appliedFilters, setAppliedFilters] = useState<ClassMapAppliedFilters | null>(null);
+  const [appliedFilters, setAppliedFilters] = useSessionState<ClassMapAppliedFilters | null>(
+    CLASS_MAP_FILTER_KEY,
+    null
+  );
 
   const { data: classMap, isFetching } = useClassMap(appliedFilters?.schoolClassId, {
     strandId: appliedFilters?.strandId,
@@ -22,6 +27,7 @@ export function ClassMapDesktop() {
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <ClassMapFilterPanel
+        initialValues={appliedFilters}
         onSearch={setAppliedFilters}
         onClear={handleClear}
         isSearching={isFetching}

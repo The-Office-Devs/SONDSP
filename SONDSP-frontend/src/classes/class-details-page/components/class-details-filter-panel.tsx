@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -14,6 +15,7 @@ import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 
 interface ClassDetailsFilterPanelProps {
+  initialValues?: ClassDetailsFormData | null;
   onSearch: (data: ClassDetailsFormData) => void;
   onClear: () => void;
   isSearching: boolean;
@@ -27,6 +29,7 @@ const defaultValues: ClassDetailsFormInput = {
 };
 
 export function ClassDetailsFilterPanel({
+  initialValues,
   onSearch,
   onClear,
   isSearching,
@@ -37,10 +40,16 @@ export function ClassDetailsFilterPanel({
     : "Turma";
   const submitLabel = getSubmitLabel(isSearching, 'filter');
 
+  const [initialFormValues] = useState(() =>
+    initialValues ? { ...defaultValues, ...initialValues } : undefined
+  );
+
   const form = useForm<ClassDetailsFormInput, unknown, ClassDetailsFormData>({
     resolver: zodResolver(classDetailsSchema),
     mode: "onChange",
-    defaultValues
+    defaultValues,
+    values: initialFormValues,
+    resetOptions: { keepDefaultValues: true }
   });
 
   const subject = useWatch({ control: form.control, name: "subjectId" });

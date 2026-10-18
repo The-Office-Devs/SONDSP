@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import type { SurveyListItem } from "@/surveys/surveys.types";
-import type { SurveyHistoryFormData } from "../survey-history.schema";
+import type { SurveyHistoryFormData, SurveyHistoryFormInput } from "../survey-history.schema";
 import { useDeleteSurvey, useStudentSurveys, useSurveyImage } from "@/surveys/use-surveys";
 import { useActivityImage } from "@/activities/activities-page/use-activities";
 import { useTableState } from "@/hooks/use-table-state";
+import { useSessionState } from "@/hooks/use-session-state";
 import { buildPaginationProps } from "@/api/types";
 
 import { SurveysHistoryFilterPanel } from "./surveys-history-filter-panel";
@@ -15,6 +16,11 @@ import { FinishSurveyDialog } from "@/components/Dialog/FinishSurveyDialog";
 import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 import { ViewFileDialog } from "@/components/Dialog/ViewFileDialog";
 import { ReadOnlyField } from "@/components/ReadOnlyFields/ReadOnlyField";
+
+interface SavedSurveyHistoryFilter {
+  data: SurveyHistoryFormData;
+  values: SurveyHistoryFormInput;
+}
 
 const columns: ColumnDef<SurveyListItem>[] = [
   { id: "activity", key: "activityName", header: "Modelo de Atividade", width: "20%", accessor: (row) => row.activity?.name },
@@ -27,9 +33,14 @@ const columns: ColumnDef<SurveyListItem>[] = [
 export function SurveysHistoryDesktop() {
   const { id } = useParams();
   const studentId = Number(id);
+  const filterKey = `survey-history-filter:${studentId}`;
 
-  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
-  const [appliedFilters, setAppliedFilters] = useState<SurveyHistoryFormData | null>(null);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5, filterKey);
+  const [savedFilter, setSavedFilter] = useSessionState<SavedSurveyHistoryFilter | null>(
+    `${filterKey}:applied`,
+    null
+  );
+  const appliedFilters = savedFilter?.data ?? null;
 
   const [selectedSurvey, setSelectedSurvey] = useState<SurveyListItem | null>(null);
   const [surveyToDelete, setSurveyToDelete] = useState<SurveyListItem | null>(null);
@@ -67,8 +78,13 @@ export function SurveysHistoryDesktop() {
     },
   ];
 
+  const handleSearch = (data: SurveyHistoryFormData, values: SurveyHistoryFormInput) => {
+    setSavedFilter({ data, values });
+    setPage(0);
+  };
+
   const handleClear = () => {
-    setAppliedFilters(null);
+    setSavedFilter(null);
     setFilter("");
     setPage(0);
   };
@@ -79,7 +95,8 @@ export function SurveysHistoryDesktop() {
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <SurveysHistoryFilterPanel
-        onSearch={setAppliedFilters}
+        initialValues={savedFilter?.values}
+        onSearch={handleSearch}
         onClear={handleClear}
         isSearching={isFetching}
         studentId={studentId}
