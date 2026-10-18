@@ -6,6 +6,7 @@ public record SurveyResultDTO(
         Integer studentId,
         Integer strandId,
         String strandName,
+        String strandCode,
         String applicationPeriod,
         String result,
         LocalDateTime date,

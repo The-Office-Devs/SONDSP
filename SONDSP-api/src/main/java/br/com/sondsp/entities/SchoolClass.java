@@ -17,6 +17,9 @@ public class SchoolClass {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "codigo_interno", unique = true, length = 20)
+    private String codigoInterno;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_escola", referencedColumnName = "id", updatable = false)
     private School school;

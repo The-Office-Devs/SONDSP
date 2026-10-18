@@ -1,6 +1,7 @@
 package br.com.sondsp.util;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 
@@ -16,5 +17,9 @@ public final class DateUtils {
 
     public static String format(LocalDate date) {
         return date != null ? date.format(BR_FORMAT) : null;
+    }
+
+    public static LocalDate today() {
+        return LocalDate.now(ZoneId.of("America/Sao_Paulo"));
     }
 }

@@ -7,6 +7,7 @@ import br.com.sondsp.dtos.StudentDTO;
 import br.com.sondsp.entities.Student;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
+import br.com.sondsp.services.StudentImportService;
 import br.com.sondsp.services.StudentService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -15,8 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/student")
@@ -24,6 +27,9 @@ public class StudentControllerImpl implements StudentController {
 
 	@Autowired
 	private StudentService service;
+
+	@Autowired
+	private StudentImportService importService;
 
 	@PostMapping
 	public ResponseEntity<?> createStudent(@RequestBody @Valid StudentForm form) {
@@ -78,5 +84,9 @@ public class StudentControllerImpl implements StudentController {
 		if (service.changeStatus(id)) return ResponseEntity.ok(STUDENT_ACTIVATED);
 
 		return ResponseEntity.ok(STUDENT_DEACTIVATED);
+	}
+	@PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> importStudents(@RequestParam("file") MultipartFile file) {
+		return ResponseEntity.ok().body(importService.importStudents(file));
 	}
 }

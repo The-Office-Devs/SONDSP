@@ -13,6 +13,7 @@ import br.com.sondsp.repositories.StudentRepository;
 import br.com.sondsp.repositories.SurveyRepository;
 import br.com.sondsp.repositories.projections.SchoolClassSurveysProjection;
 import br.com.sondsp.util.SurveyPeriod;
+import br.com.sondsp.util.SurveyReportLegend;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.*;
@@ -476,6 +477,7 @@ public class SchoolClassService {
 
 		Map<ResultKey, SurveyResultDTO> latest = new HashMap<>();
 		Map<Integer, String> strandNames = new HashMap<>();
+		Map<Integer, String> strandCodes = new HashMap<>();
 
 		for (SurveyResultDTO survey : repository.findSurveyResultsBySchoolClass(schoolClassId)) {
 			Optional<SurveyPeriod> period = SurveyPeriod.fromValue(survey.applicationPeriod());
@@ -489,6 +491,7 @@ public class SchoolClassService {
 			}
 
 			strandNames.putIfAbsent(survey.strandId(), Objects.toString(survey.strandName(), ""));
+			strandCodes.putIfAbsent(survey.strandId(), survey.strandCode());
 
 			ResultKey key = new ResultKey(survey.studentId(), survey.strandId(), period.get());
 			SurveyResultDTO current = latest.get(key);
@@ -520,10 +523,27 @@ public class SchoolClassService {
 				rows.add(new SchoolClassSurveysReportDTO.StudentRow(number, student.getName(), results));
 			}
 
-			sheets.add(new SchoolClassSurveysReportDTO.StrandSheet(strandId, strandNames.get(strandId), rows));
+			sheets.add(
+					new SchoolClassSurveysReportDTO.StrandSheet(
+							strandId,
+							strandNames.get(strandId),
+							strandCodes.get(strandId),
+							buildLegend(strandCodes.get(strandId), header.getGradeLevel()),
+							rows
+					)
+			);
 		}
 
 		return new SchoolClassSurveysReportDTO(header, sheets);
+	}
+
+	private List<SchoolClassSurveysReportDTO.LegendEntry> buildLegend(String strandCode, String gradeLevel) {
+		try {
+			return SurveyReportLegend.fromOptions(pedagogicalLevelService.getResultOptions(strandCode, gradeLevel));
+		} catch (IllegalArgumentException e) {
+			log.warn("Eixo '{}' sem catálogo de resultados; a aba será gerada sem legenda. {}", strandCode, e.getMessage());
+			return List.of();
+		}
 	}
 
 	private record ResultKey(Integer studentId, Integer strandId, SurveyPeriod period) {}

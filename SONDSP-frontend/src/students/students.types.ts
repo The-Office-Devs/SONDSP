@@ -34,3 +34,13 @@ export interface CreateStudentRequest {
 }
 
 export type UpdateStudentRequest = CreateStudentRequest;
+
+export interface StudentImportResult {
+  schoolName: string;
+  className: string;
+  classCreated: boolean;
+  created: number;
+  updated: number;
+  unlinked: number;
+  ignored: number;
+}

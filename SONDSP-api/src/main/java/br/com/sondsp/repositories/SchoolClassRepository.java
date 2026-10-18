@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SchoolClassRepository
 	extends JpaRepository<SchoolClass, Integer>, JpaSpecificationExecutor<SchoolClass> {
@@ -128,6 +129,7 @@ public interface SchoolClassRepository
             s.student.id,
             st.id,
             st.name,
+			st.code,
             s.applicationPeriod,
             s.result,
             s.date,
@@ -143,4 +145,10 @@ public interface SchoolClassRepository
           AND stu.status = true
     """)
 	List<SurveyResultDTO> findSurveyResultsBySchoolClass(@Param("schoolClassId") Integer schoolClassId);
+
+	Optional<SchoolClass> findByCodigoInterno(String codigoInterno);
+
+	Optional<SchoolClass> findBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShiftAndCodigoInternoIsNull(
+			Integer schoolId, String name, String gradeLevel, String schoolYear, String shift);
+
 }
