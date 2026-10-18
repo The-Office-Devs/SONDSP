@@ -22,8 +22,11 @@ import {
   type AnnotationsFilter 
 } from "@/lib/student-annotations-utils";
 
+import { buildPaginationProps } from "@/api/types";
 import { NotesCard, type NoteView } from "@/components/Card/NotesCard";
 import { NoteDialog } from "@/components/Dialog/NoteDialog";
+
+const PAGE_SIZE = 3;
 
 interface StudentAnnotationsCardProps {
   studentId: number;
@@ -38,9 +41,15 @@ interface DialogState {
 
 export function StudentAnnotationsCard({ studentId, studentName }: Readonly<StudentAnnotationsCardProps>) {
   const [filter, setFilter] = useState<AnnotationsFilter>("ALL");
+  const [page, setPage] = useState(0);
   const [dialog, setDialog] = useState<DialogState>({ open: false, annotation: null, key: 0 });
 
-  const { data: annotationsPage, isLoading, isFetching } = useStudentAnnotations(studentId);
+  const tagParam = filter === "ALL" ? undefined : filter;
+  const { data: annotationsPage, isLoading, isFetching } = useStudentAnnotations(
+    studentId,
+    tagParam,
+    { page, size: PAGE_SIZE }
+  );
   const { mutate: createAnnotation, isPending: isCreating } = useCreateStudentAnnotation(studentId);
   const { mutate: updateAnnotation, isPending: isUpdating } = useUpdateStudentAnnotation(studentId);
   const { mutate: deleteAnnotation, isPending: isDeleting } = useDeleteStudentAnnotation(studentId);
@@ -73,9 +82,13 @@ export function StudentAnnotationsCard({ studentId, studentName }: Readonly<Stud
     updateTags({ annotationId: annotation.id, tags });
   };
 
+  const handleFilterChange = (newFilter: AnnotationsFilter) => {
+    setFilter(newFilter);
+    setPage(0);
+  };
+
   {/* Anotações */}
   const notes: NoteView[] = (annotationsPage?.content ?? [])
-    .filter((annotation) => filter === "ALL" || annotation.tags.includes(filter))
     .map((annotation) => ({
       id: annotation.id,
       authorName: annotation.authorName,
@@ -90,7 +103,10 @@ export function StudentAnnotationsCard({ studentId, studentName }: Readonly<Stud
         : undefined,
       text: annotation.text,
       onClick: () => openDialog(annotation),
-      onDelete: (options) => deleteAnnotation(annotation.id, options),
+      canEdit: annotation.canEdit,
+      onDelete: annotation.canEdit
+        ? (options) => deleteAnnotation(annotation.id, options)
+        : undefined,
       footer: <TagToggles annotation={annotation} onToggle={handleToggleTag} />
     }));
 
@@ -100,7 +116,7 @@ export function StudentAnnotationsCard({ studentId, studentName }: Readonly<Stud
         notes={notes}
         filters={FILTERS}
         activeFilter={filter}
-        onFilterChange={setFilter}
+        onFilterChange={handleFilterChange}
         onNewNote={() => openDialog(null)}
         emptyMessage={
           filter === "ALL"
@@ -109,8 +125,8 @@ export function StudentAnnotationsCard({ studentId, studentName }: Readonly<Stud
         }
         isLoading={isLoading}
         isFetching={isFetching}
-        scrollable={false}
         isDeleting={isDeleting}
+        pagination={annotationsPage ? buildPaginationProps(annotationsPage, setPage) : undefined}
       />
 
       <NoteDialog

@@ -10,21 +10,27 @@ interface StudentProfileCardProps {
 
 export function StudentProfileCard({ student, isFetching }: Readonly<StudentProfileCardProps>) {
   return (
-    <ContentCard title="Perfil do Estudante" isFetching={isFetching}>
-      <div className="p-2">
+    <ContentCard 
+      title="Perfil do Estudante" 
+      isFetching={isFetching}
+      headerClassName="py-2.5 px-4"
+      contentClassName="p-3"
+      className="shrink-0"
+    >
+      <div>
         {/* Cabeçalho do Aluno */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div
               aria-label={`Iniciais de ${student.name}`}
-              className="flex size-14 shrink-0 items-center justify-center rounded-full border-2 border-slate-800 bg-slate-100 text-xl font-bold text-slate-800"
+              className="flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-slate-800 bg-slate-100 text-lg font-bold text-slate-800"
             >
               {student.initials}
             </div>
 
             <div className="min-w-0">
-              <h3 className="truncate text-lg font-bold text-slate-900">{student.name}</h3>
-              <div className="mt-1 flex flex-wrap items-center gap-2">
+              <h3 className="truncate text-base font-bold text-slate-900">{student.name}</h3>
+              <div className="mt-0.5 flex flex-wrap items-center gap-2">
                 <span className="rounded bg-[#e0ecf8] px-2 py-0.5 text-xs font-semibold text-[#1e40af]">
                   {student.currentClass}
                 </span>
@@ -39,45 +45,45 @@ export function StudentProfileCard({ student, isFetching }: Readonly<StudentProf
           </span>
         </div>
 
-        <hr className="my-4.5 border-neutral-200" />
+        <hr className="my-2 border-neutral-200" />
 
         {/* Dados Cadastrais */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <div className="flex items-center gap-1.5 text-[#0284c7]">
-              <Hash className="size-4" />
+            <div className="flex items-center gap-1 text-[#0284c7]">
+              <Hash className="size-3.5" />
               <span className="text-[11px] font-semibold uppercase text-slate-700">Nº Chamada</span>
             </div>
-            <p className="mt-1 text-sm font-bold text-slate-800">
+            <p className="mt-0.5 text-xs font-bold text-slate-800">
               {student.rowNumber ? `Nº ${student.rowNumber}` : "Não informado"}
             </p>
           </div>
 
           <div>
-            <div className="flex items-center gap-1.5 text-[#0284c7]">
-              <CreditCard className="size-4" />
+            <div className="flex items-center gap-1 text-[#0284c7]">
+              <CreditCard className="size-3.5" />
               <span className="text-[11px] font-semibold uppercase text-slate-700">Matrícula</span>
             </div>
-            <p className="mt-1 font-mono text-sm font-bold text-slate-800">{student.registration}</p>
+            <p className="mt-0.5 font-mono text-xs font-bold text-slate-800">{student.registration}</p>
           </div>
         </div>
 
-        <hr className="my-4.5 border-neutral-200" />
+        <hr className="my-2 border-neutral-200" />
 
         {/* Histórico Escolar */}
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
-            <BookOpen className="size-4 text-slate-500" />
+          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">
+            <BookOpen className="size-3.5 text-slate-500" />
             <span>HISTÓRICO</span>
           </div>
 
-          <ul className="mt-3.5 space-y-2.5">
+          <ul className="mt-2 space-y-1.5">
             {student.enrollmentHistory.map((item, index) => {
               const badge = getEnrollmentStatusBadge(item.status);
               return (
                 <li
                   key={`${item.year}-${item.schoolClass}-${index}`}
-                  className="flex items-center justify-between text-xs sm:text-sm"
+                  className="flex items-center justify-between text-xs"
                 >
                   <span className="text-slate-700">
                     <strong className="font-bold text-slate-900">{item.year}</strong> • {item.schoolClass}

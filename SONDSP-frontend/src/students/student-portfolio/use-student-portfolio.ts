@@ -17,6 +17,7 @@ import {
   updateStudentAnnotationTagsService,
   type StudentAnnotationPayload,
 } from "./student-portfolio.service";
+import type { PaginationParams } from "@/api/types";
 import type { AnnotationTag } from "./student-portfolio.types";
 
 export const PORTFOLIO_QUERY_KEYS = {
@@ -30,12 +31,14 @@ export const PORTFOLIO_QUERY_KEYS = {
       studentId,
       strandId ?? "all",
     ] as const,
-  annotations: (studentId: number, tag?: AnnotationTag) =>
+  annotations: (studentId: number, tag?: AnnotationTag, pagination?: PaginationParams) =>
     [
       ...PORTFOLIO_QUERY_KEYS.all,
       "annotations",
       studentId,
       tag ?? "all",
+      pagination?.page ?? 0,
+      pagination?.size ?? 3,
     ] as const,
 };
 
@@ -62,15 +65,16 @@ export function useStudentTimeline(studentId: number | null, strandId?: number) 
 }
 
 /**
- * Hook para obter anotações pedagógicas/conselho do estudante.
+ * Hook para obter anotações pedagógicas/conselho do estudante com paginação.
  */
 export function useStudentAnnotations(
   studentId: number | null,
-  tag?: AnnotationTag
+  tag?: AnnotationTag,
+  pagination?: PaginationParams
 ) {
   return useQuery({
-    queryKey: PORTFOLIO_QUERY_KEYS.annotations(studentId ?? 0, tag),
-    queryFn: () => getStudentAnnotationsService(studentId!, tag),
+    queryKey: PORTFOLIO_QUERY_KEYS.annotations(studentId ?? 0, tag, pagination),
+    queryFn: () => getStudentAnnotationsService(studentId!, tag, pagination),
     enabled: Boolean(studentId && studentId > 0),
   });
 }
