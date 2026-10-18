@@ -4,7 +4,7 @@ import type { LearningTrajectoriesFormData } from "../learning-trajectories.sche
 
 import { LearningTrajectoriesCard } from "./learning-trajectories-card";
 import { LearningTractoriesFilterPanel } from "./learning-trajectories-filter-panel";
-import { useLearningTrajectory } from "@/classes/use-classes";
+import { useLearningTrajectory, useClass } from "@/classes/use-classes";
 import { useStrand } from "@/strands/use-strands";
 
 const LEARNING_TRAJECTORIES_FILTER_KEY = "learning-trajectories-filter";
@@ -20,6 +20,7 @@ export function LearningTrajectoriesDesktop() {
   });
 
   const { data: currentStrand } = useStrand(appliedFilters?.strandId ?? null);
+  const { data: schoolClass } = useClass(appliedFilters?.schoolClassId ?? null);
 
   const handleClear = () => setAppliedFilters(null);
 
@@ -43,6 +44,7 @@ export function LearningTrajectoriesDesktop() {
           <LearningTrajectoriesCard 
             trajectories={trajectories} 
             strandCode={currentStrand?.code}
+            gradeLevel={schoolClass?.gradeLevel}
             isFetching={isFetching}
           />
         )}

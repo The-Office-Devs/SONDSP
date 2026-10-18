@@ -13,7 +13,12 @@ import {
 import { cn } from "@/lib/utils";
 import type { PortfolioNavState } from "../student-portfolio-page";
 import type { TimelineSurveyItem } from "../student-portfolio.types";
-import { getSurveyLevelStyle, getBadgeLevelCode } from "@/lib/survey-utils";
+import {
+  getSurveyLevelStyle,
+  getBadgeLevelCode,
+  formatSurveyLevelLabel,
+  formatEvolutionText
+} from "@/lib/survey-utils";
 import { useShell } from "@/hooks/use-shell";
 import { ContentCard } from "@/components/Card/ContentCard";
 
@@ -201,6 +206,10 @@ export function StudentTimelineCard({
               const prevEvolutionCode = getBadgeLevelCode(item.evolution?.previousCode);
               const currEvolutionCode = getBadgeLevelCode(item.evolution?.currentCode);
 
+              const prevLevelLabel = formatSurveyLevelLabel(item.evolution?.previousCode);
+              const currLevelLabel = formatSurveyLevelLabel(item.evolution?.currentCode ?? item.levelCode);
+              const evolutionText = formatEvolutionText(item.evolution);
+
               const levelStyle = getSurveyLevelStyle(item.levelCode);
               const prevLevelStyle = getSurveyLevelStyle(item.evolution?.previousCode);
               const currLevelStyle = getSurveyLevelStyle(item.evolution?.currentCode ?? item.levelCode);
@@ -296,7 +305,7 @@ export function StudentTimelineCard({
                       {item.evolution.hasEvolution ? (
                         <div className="flex items-center gap-2">
                           <span
-                            title={`Nível anterior: ${item.evolution.previousCode}`}
+                            title={prevLevelLabel ? `Nível anterior: ${prevLevelLabel}` : undefined}
                             className={`flex min-w-5 h-5 px-1 items-center justify-center rounded-full text-[10px] font-bold shadow-2xs ${prevEvolutionCode.length > 3 ? "text-[9px] tracking-tighter" : ""
                               } ${prevLevelStyle.bg} ${prevLevelStyle.text}`}
                           >
@@ -306,20 +315,20 @@ export function StudentTimelineCard({
                           <ArrowRight className="size-3 text-slate-400" />
 
                           <span
-                            title={`Nível atual: ${item.evolution.currentCode}`}
+                            title={currLevelLabel ? `Nível atual: ${currLevelLabel}` : undefined}
                             className={`flex min-w-5 h-5 px-1 items-center justify-center rounded-full text-[10px] font-bold shadow-2xs ${currEvolutionCode.length > 3 ? "text-[9px] tracking-tighter" : ""
                               } ${currLevelStyle.bg} ${currLevelStyle.text}`}
                           >
                             {currEvolutionCode}
                           </span>
 
-                          {item.evolution.text && (
-                            <span className="ml-1 text-xs font-medium text-slate-500">({item.evolution.text})</span>
+                          {evolutionText && (
+                            <span className="ml-1 text-xs font-medium text-slate-500">({evolutionText})</span>
                           )}
                         </div>
                       ) : (
                         <span className="font-normal text-slate-500">
-                          {item.evolution.text ?? "Sem registro anterior no eixo"}
+                          {evolutionText || "Sem registro anterior no eixo"}
                         </span>
                       )}
                     </div>
