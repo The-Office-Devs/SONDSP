@@ -243,6 +243,13 @@ export const SEA_LEGEND_ITEMS: LegendItem[] = [
   { code: "A", label: "Alfabética (A)", dotClass: "bg-emerald-600" }
 ];
 
+export const TEXT_PRODUCTION_LEGEND_ITEMS: LegendItem[] = [
+  { code: "N1", label: "Nível 1 (N1)", dotClass: "bg-red-500" },
+  { code: "N2", label: "Nível 2 (N2)", dotClass: "bg-amber-500" },
+  { code: "N3", label: "Nível 3 (N3)", dotClass: "bg-sky-600" },
+  { code: "N4", label: "Nível 4 (N4)", dotClass: "bg-emerald-600" }
+];
+
 export const NUMERIC_LEGEND_ITEMS: LegendItem[] = [
   { code: "N1", label: "Nível 1 (N1)", dotClass: "bg-red-500" },
   { code: "N2", label: "Nível 2 (N2)", dotClass: "bg-amber-500" },
@@ -252,8 +259,8 @@ export const NUMERIC_LEGEND_ITEMS: LegendItem[] = [
 ];
 
 export const READING_LEGEND_ITEMS: LegendItem[] = [
-  { code: "AD", label: "Compreensão Adequada (AD)", dotClass: "bg-emerald-600" },
-  { code: "IN", label: "Compreensão Inadequada (IN)", dotClass: "bg-amber-500" },
+  { code: "AD", label: "Adequada (AD)", dotClass: "bg-emerald-600" },
+  { code: "IN", label: "Inadequada (IN)", dotClass: "bg-amber-500" },
   { code: "NR", label: "Não Respondeu (NR)", dotClass: "bg-slate-400" }
 ];
 
@@ -264,54 +271,150 @@ export const MATH_PROBLEM_LEGEND_ITEMS: LegendItem[] = [
 ];
 
 /**
- * Retorna a legenda pedagógica oficial aplicável a um conjunto de resultados ou código de eixo.
- * Compartilhada entre todos os cards de listagem e visualização da turma.
+ * Retorna o rótulo descritivo e amigável oficial de qualquer código pedagógico da SME-SP.
+ * Converte códigos técnicos (ex: "NAO_RESPONDEU", "NIVEL_01", "ERROU") em texto formal e acolhedor:
+ * "Não Respondeu", "Nível 01", "Errou".
+ */
+export function formatSurveyLevelLabel(code?: string | null): string {
+  if (!code) return "";
+  const normalized = code.trim().toUpperCase();
+
+  switch (normalized) {
+    // Práticas de Leitura
+    case "NAO_RESPONDEU":
+    case "NR":
+      return "Não Respondeu";
+    case "INADEQUADA":
+    case "INAD":
+    case "IN":
+      return "Inadequada";
+    case "ADEQUADA":
+    case "AD":
+      return "Adequada";
+
+    // Níveis Numéricos (Ditado SND) e Produção de Texto (Saeb 743)
+    case "NIVEL_01":
+    case "N1":
+      return "Nível 01";
+    case "NIVEL_02":
+    case "N2":
+      return "Nível 02";
+    case "NIVEL_03":
+    case "N3":
+      return "Nível 03";
+    case "NIVEL_04":
+    case "N4":
+      return "Nível 04";
+    case "NIVEL_05":
+    case "N5":
+      return "Nível 05";
+
+    // Resolução de Situações-Problema de Matemática
+    case "ACERTOU":
+    case "AC":
+      return "Acertou";
+    case "ACERTOU_PARCIALMENTE":
+    case "AP":
+      return "Acertou Parcialmente";
+    case "ERROU":
+    case "ER":
+      return "Errou";
+
+    // Hipóteses do SEA
+    case "PS":
+      return "Pré-Silábica";
+    case "SSVC":
+      return "Silábica Sem Valor";
+    case "SCVC":
+      return "Silábica Com Valor";
+    case "SA":
+      return "Silábico-Alfabética";
+    case "A":
+      return "Alfabética";
+
+    default:
+      return code;
+  }
+}
+
+/**
+ * Formata o texto descritivo da trajetória de evolução para a linha do tempo.
+ * Garante que nunca sejam exibidos enums técnicos brutos ("NAO_RESPONDEU → INADEQUADA"),
+ * mas sim rótulos pedagógicos limpos ("Não Respondeu → Inadequada", "Nível 01 → Nível 02", "Errou mantido").
+ */
+export function formatEvolutionText(evolution?: {
+  previousCode?: string | null;
+  currentCode?: string | null;
+  text?: string | null;
+  comparison?: string | null;
+} | null): string {
+  if (!evolution) return "";
+
+  const prev = formatSurveyLevelLabel(evolution.previousCode);
+  const curr = formatSurveyLevelLabel(evolution.currentCode);
+
+  if (prev && curr && prev !== curr) {
+    return `${prev} → ${curr}`;
+  }
+
+  if (curr && (prev === curr || evolution.comparison === "MANTIDO" || evolution.text?.includes("mantido"))) {
+    return `${curr} mantido`;
+  }
+
+  if (evolution.text) {
+    return evolution.text
+      .replace(/\bNAO_RESPONDEU\b/g, "Não Respondeu")
+      .replace(/\bINADEQUADA\b/g, "Inadequada")
+      .replace(/\bADEQUADA\b/g, "Adequada")
+      .replace(/\bNIVEL_01\b/g, "Nível 01")
+      .replace(/\bNIVEL_02\b/g, "Nível 02")
+      .replace(/\bNIVEL_03\b/g, "Nível 03")
+      .replace(/\bNIVEL_04\b/g, "Nível 04")
+      .replace(/\bNIVEL_05\b/g, "Nível 05")
+      .replace(/\bACERTOU_PARCIALMENTE\b/g, "Acertou Parcialmente")
+      .replace(/\bACERTOU\b/g, "Acertou")
+      .replace(/\bERROU\b/g, "Errou");
+  }
+
+  return "";
+}
+
+/**
+ * Retorna a legenda pedagógica oficial aplicável com base no código canônico do Eixo (fixo no banco de dados)
+ * e, opcionalmente, no Ano Escolar ou conjunto de resultados da avaliação.
  */
 export function getActiveLegend(
-  results: (string | null | undefined)[],
-  strandCode?: string
+  results: (string | null | undefined)[] = [],
+  strandCode?: string,
+  gradeLevel?: string
 ): LegendItem[] {
   const strand = String(strandCode ?? "").trim().toUpperCase();
+  const normalizedGrade = String(gradeLevel ?? "").trim().toLowerCase();
 
   switch (strand) {
-    case "SITUACOES_PROBLEMA":
     case "NUMEROS_PROBLEMAS":
     case "ALGEBRA":
     case "GEOMETRIA":
     case "GRANDEZAS_MEDIDAS":
     case "PROBABILIDADE_ESTATISTICA":
       return MATH_PROBLEM_LEGEND_ITEMS;
+
     case "ESCRITA_NUMEROS":
       return NUMERIC_LEGEND_ITEMS;
+
     case "LEITURA":
       return READING_LEGEND_ITEMS;
+
     case "ESCRITA": {
-      const hasNumeric = results.some((r) => r && r.toUpperCase().startsWith("NIVEL_"));
-      return hasNumeric ? NUMERIC_LEGEND_ITEMS : SEA_LEGEND_ITEMS;
+      const isTextProduction =
+        normalizedGrade.includes("2") ||
+        normalizedGrade.includes("3") ||
+        results.some((r) => r && r.toUpperCase().startsWith("NIVEL_"));
+
+      return isTextProduction ? TEXT_PRODUCTION_LEGEND_ITEMS : SEA_LEGEND_ITEMS;
     }
+
+    default:
+      return SEA_LEGEND_ITEMS;
   }
-
-  // Se não foi fornecido código canônico de eixo explícito, discrimina com base nos códigos presentes nos resultados avaliados
-  const canonicalResults = results
-    .filter((r): r is string => Boolean(r && r.trim()))
-    .map((r) => r.trim().toUpperCase());
-
-  const hasReading = canonicalResults.some(
-    (r) => r === "AD" || r === "IN" || r === "NR" || r === "ADEQUADA" || r === "INADEQUADA" || r === "NAO_RESPONDEU"
-  );
-  if (hasReading) return READING_LEGEND_ITEMS;
-
-  const hasMathProblems = canonicalResults.some(
-    (r) => r === "AC" || r === "AP" || r === "ER" || r === "ACERTOU" || r === "ACERTOU_PARCIALMENTE" || r === "ERROU"
-  );
-  if (hasMathProblems) return MATH_PROBLEM_LEGEND_ITEMS;
-
-  const hasNumeric = canonicalResults.some(
-    (r) => r.startsWith("NIVEL_") || r === "N1" || r === "N2" || r === "N3" || r === "N4" || r === "N5"
-  );
-  if (hasNumeric) {
-    return NUMERIC_LEGEND_ITEMS;
-  }
-
-  return SEA_LEGEND_ITEMS;
 }

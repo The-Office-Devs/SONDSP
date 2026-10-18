@@ -1,4 +1,5 @@
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ContentCardProps {
   title: string;
@@ -8,6 +9,9 @@ interface ContentCardProps {
   emptyMessage?: string;
   isFetching?: boolean;
   legend?: React.ReactNode;
+  className?: string;
+  headerClassName?: string;
+  contentClassName?: string;
   children: React.ReactNode;
 }
 
@@ -19,6 +23,9 @@ export function ContentCard({
   emptyMessage,
   isFetching = false,
   legend,
+  className,
+  headerClassName,
+  contentClassName,
   children
 }: Readonly<ContentCardProps>) {
   const isEmpty = total === 0;
@@ -27,7 +34,7 @@ export function ContentCard({
     <section 
       aria-label={title}
       aria-busy={isFetching}
-      className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100"
+      className={cn("relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100", className)}
     >
       {isFetching && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
@@ -38,14 +45,14 @@ export function ContentCard({
         </div>
       )}
 
-      <header className="flex items-center justify-between bg-primary px-4 py-4 text-white">
+      <header className={cn("flex items-center justify-between bg-primary px-4 py-4 text-white", headerClassName)}>
         <h2 className="text-base font-semibold"> {title} </h2>
         {headerRight && <span className="text-sm font-medium"> {headerRight} </span>}
       </header>
 
       {toolbar}
 
-      <div className="p-4">
+      <div className={cn("p-4", contentClassName)}>
         {isEmpty ? (
           <p className="py-6 text-center text-sm text-slate-500"> {emptyMessage} </p>
         ) : (

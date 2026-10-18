@@ -56,7 +56,6 @@ export async function getLearningTrajectoryService(id: number, filter: LearningT
 
 export async function exportSchoolClassSurveysService(schoolClassId: number): Promise<Blob> {
   const response = await api.get<Blob>(`/schoolClass/report/school-class-surveys/${schoolClassId}`, {
-    params: { strandId: 2 },
     responseType: 'blob',
   });
   return response.data;

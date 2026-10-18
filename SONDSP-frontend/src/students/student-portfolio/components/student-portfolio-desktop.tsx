@@ -77,11 +77,11 @@ export function StudentPortfolioDesktop({ portfolioNavState }: StudentPortfolioD
   }
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-3 lg:p-4">
       {/* Grid Principal de 2 Colunas */}
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-8">
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-5">
         {/* Coluna Esquerda: Perfil e Anotações (~40% de proporção visual) */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <StudentProfileCard 
             student={portfolio} 
             isFetching={isPortfolioFetching} 

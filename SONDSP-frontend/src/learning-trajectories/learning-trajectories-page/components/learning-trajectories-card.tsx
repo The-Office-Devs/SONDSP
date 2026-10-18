@@ -37,6 +37,7 @@ const COLUMNS: ReadonlyArray<{
 interface LearningTrajectoriesCardProps {
   trajectories: LearningTrajectory[];
   strandCode?: string;
+  gradeLevel?: string;
   isFetching?: boolean;
 }
 
@@ -68,6 +69,7 @@ function LevelDot({ level }: Readonly<{ level: TrajectoryLevel }>) {
 export function LearningTrajectoriesCard({
   trajectories,
   strandCode,
+  gradeLevel,
   isFetching = false
 }: Readonly<LearningTrajectoriesCardProps>) {
   const allResults = trajectories.flatMap((t) => [
@@ -77,7 +79,7 @@ export function LearningTrajectoriesCard({
     t.results.trdPeriod,
     t.results.frtPeriod
   ]);
-  const legendItems = getActiveLegend(allResults, strandCode);
+  const legendItems = getActiveLegend(allResults, strandCode, gradeLevel);
 
   const legend = (
     <>

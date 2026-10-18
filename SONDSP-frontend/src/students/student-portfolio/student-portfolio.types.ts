@@ -51,11 +51,11 @@ export type ReadingItemStatus = "NAO_RESPONDEU" | "INADEQUADA" | "ADEQUADA";
 
 /** Eixos Estruturantes da Matriz Curricular de Matemática (Diretriz 3.2 SME-SP). */
 export type MathAxis =
+  | "NUMEROS_PROBLEMAS"
   | "ALGEBRA"
   | "GEOMETRIA"
   | "GRANDEZAS_MEDIDAS"
-  | "PROBABILIDADE_ESTATISTICA"
-  | "NUMEROS";
+  | "PROBABILIDADE_ESTATISTICA";
 
 /** Status de Resolução de Situações-Problema de Matemática. */
 export type MathProblemStatus = "ERROU" | "ACERTOU_PARCIALMENTE" | "ACERTOU";
