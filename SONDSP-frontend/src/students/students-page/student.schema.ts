@@ -22,6 +22,10 @@ export const studentSchema = z.object({
     .number()
     .int()
     .positive("Selecione uma turma"),
+  birthDate: z
+    .string()
+    .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Informe a data no formato dd/mm/aaaa"),
+
 });
 
 export type StudentFormInput = z.input<typeof studentSchema>;

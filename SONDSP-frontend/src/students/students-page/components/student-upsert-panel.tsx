@@ -36,6 +36,7 @@ const defaultValues: StudentFormInput = {
   schoolClassId: 0,
   rowNumber: "",
   registration: "",
+  birthDate: "",
   status: true
 };
 
@@ -92,6 +93,7 @@ export function StudentUpsertPanel({
         schoolClassId: student.schoolClass?.id ?? 0,
         rowNumber: student.rowNumber ?? "",
         registration: student.registration,
+        birthDate: student.birthDate ?? "",
         status: student.status
       });
     }
@@ -206,6 +208,12 @@ export function StudentUpsertPanel({
                   />
 
                   <TextField name="name" label="Nome Completo" placeholder="Nome completo do aluno" />
+
+                  <TextField
+                    name="birthDate"
+                    label="Data de Nascimento"
+                    max={new Date().toLocaleDateString("en-CA")}
+                  />
 
                   <SelectField
                     name="schoolId"
