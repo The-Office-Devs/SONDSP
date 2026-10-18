@@ -34,8 +34,7 @@ public class SurveyPedagogicalLevelService {
         return switch (code) {
             case "LEITURA" -> EvaluationType.LEITURA;
             case "ESCRITA_NUMEROS" -> EvaluationType.ESCRITA_NUMEROS;
-            case "SITUACOES_PROBLEMA",
-                 "NUMEROS_PROBLEMAS",
+            case "NUMEROS_PROBLEMAS",
                  "ALGEBRA",
                  "GEOMETRIA",
                  "GRANDEZAS_MEDIDAS",
@@ -43,7 +42,7 @@ public class SurveyPedagogicalLevelService {
             case "ESCRITA" -> (normalizedGrade.contains("2") || normalizedGrade.contains("3"))
                     ? EvaluationType.PRODUCAO_TEXTO
                     : EvaluationType.ESCRITA_SEA;
-            default -> throw new IllegalArgumentException("Código de eixo não reconhecido ou ausente: '" + code + "'. Os eixos oficiais da SME-SP são fixos: LEITURA, ESCRITA, ESCRITA_NUMEROS, NUMEROS_PROBLEMAS, ALGEBRA, GEOMETRIA, GRANDEZAS_MEDIDAS e PROBABILIDADE_ESTATISTICA.");
+            default -> throw new IllegalArgumentException("Código de eixo não reconhecido ou ausente: '" + code + "'. Os eixos oficiais da SME-SP são fixos: ESCRITA, LEITURA, ESCRITA_NUMEROS, NUMEROS_PROBLEMAS, ALGEBRA, GEOMETRIA, GRANDEZAS_MEDIDAS e PROBABILIDADE_ESTATISTICA.");
         };
     }
 
@@ -88,7 +87,11 @@ public class SurveyPedagogicalLevelService {
             case LEITURA -> getReadingOptions();
             case ESCRITA_NUMEROS -> getMathNumberWritingOptions();
             case SITUACOES_PROBLEMA -> getMathProblemOptions();
-            case PRODUCAO_TEXTO -> getTextProductionOptions();
+            case PRODUCAO_TEXTO -> {
+                List<SurveyResultOptionDTO> options = new ArrayList<>(getTextProductionOptions());
+                options.addAll(getSeaOptions());
+                yield options;
+            }
             case ESCRITA_SEA -> getSeaOptions();
         };
     }
@@ -104,11 +107,6 @@ public class SurveyPedagogicalLevelService {
         String candidate = result.trim().toUpperCase(Locale.ROOT);
         EvaluationType type = getEvaluationTypeForActivity(activity);
         List<SurveyResultOptionDTO> allowedOptions = new ArrayList<>(getResultOptionsByType(type));
-
-        // Para 2º e 3º anos (produção de texto), a SME-SP admite excepcionalmente hipóteses do SEA para alunos não alfabéticos
-        if (type == EvaluationType.PRODUCAO_TEXTO) {
-            allowedOptions.addAll(getSeaOptions());
-        }
 
         boolean isValid = allowedOptions.stream().anyMatch(opt ->
                 opt.value().equalsIgnoreCase(candidate)
@@ -153,22 +151,49 @@ public class SurveyPedagogicalLevelService {
     public String getLevelLabel(String code) {
         if (code == null || code.isBlank()) return "Sem avaliação";
         return switch (code.trim().toUpperCase(Locale.ROOT)) {
-            case "PS" -> "PS — Pré-Silábica";
-            case "SSVC" -> "SSVC — Silábico sem valor sonoro convencional";
-            case "SCVC" -> "SCVC — Silábico com valor convencional";
-            case "SA" -> "SA — Silábico-Alfabética";
-            case "A" -> "A — Alfabética";
-            case "NIVEL_01" -> "Nível 01";
-            case "NIVEL_02" -> "Nível 02";
-            case "NIVEL_03" -> "Nível 03";
-            case "NIVEL_04" -> "Nível 04";
-            case "NIVEL_05" -> "Nível 05";
-            case "ADEQUADA" -> "Adequada — Práticas de Leitura";
-            case "INADEQUADA" -> "Inadequada — Práticas de Leitura";
-            case "NAO_RESPONDEU" -> "Não respondeu";
-            case "ACERTOU" -> "Acertou plenamente";
-            case "ACERTOU_PARCIALMENTE" -> "Acertou parcialmente";
-            case "ERROU" -> "Errou ou não resolveu";
+            case "PS" -> "Pré-Silábica (PS)";
+            case "SSVC" -> "Silábica Sem Valor Sonoro Convencional (SSVC)";
+            case "SCVC" -> "Silábica Com Valor Sonoro Convencional (SCVC)";
+            case "SA" -> "Silábico-Alfabética (SA)";
+            case "A" -> "Alfabética (A)";
+            case "NIVEL_01", "N1" -> "Nível 01";
+            case "NIVEL_02", "N2" -> "Nível 02";
+            case "NIVEL_03", "N3" -> "Nível 03";
+            case "NIVEL_04", "N4" -> "Nível 04";
+            case "NIVEL_05", "N5" -> "Nível 05";
+            case "ADEQUADA", "AD" -> "Adequada";
+            case "INADEQUADA", "IN", "INAD" -> "Inadequada";
+            case "NAO_RESPONDEU", "NR" -> "Não respondeu";
+            case "ACERTOU", "AC" -> "Acertou";
+            case "ACERTOU_PARCIALMENTE", "AP" -> "Acertou parcialmente";
+            case "ERROU", "ER" -> "Errou";
+            default -> code;
+        };
+    }
+
+    /**
+     * Retorna o rótulo descritivo curto e amigável oficial de qualquer hipótese ou código de resultado.
+     * Usado na montagem de trajetórias e resumos de evolução.
+     */
+    public String getShortLevelLabel(String code) {
+        if (code == null || code.isBlank()) return "";
+        return switch (code.trim().toUpperCase(Locale.ROOT)) {
+            case "PS" -> "Pré-Silábica";
+            case "SSVC" -> "Silábica Sem Valor";
+            case "SCVC" -> "Silábica Com Valor";
+            case "SA" -> "Silábico-Alfabética";
+            case "A" -> "Alfabética";
+            case "NIVEL_01", "N1" -> "Nível 01";
+            case "NIVEL_02", "N2" -> "Nível 02";
+            case "NIVEL_03", "N3" -> "Nível 03";
+            case "NIVEL_04", "N4" -> "Nível 04";
+            case "NIVEL_05", "N5" -> "Nível 05";
+            case "ADEQUADA", "AD" -> "Adequada";
+            case "INADEQUADA", "IN", "INAD" -> "Inadequada";
+            case "NAO_RESPONDEU", "NR" -> "Não Respondeu";
+            case "ACERTOU", "AC" -> "Acertou";
+            case "ACERTOU_PARCIALMENTE", "AP" -> "Acertou Parcialmente";
+            case "ERROU", "ER" -> "Errou";
             default -> code;
         };
     }
@@ -216,9 +241,9 @@ public class SurveyPedagogicalLevelService {
      */
     public List<SurveyResultOptionDTO> getMathProblemOptions() {
         return List.of(
-                new SurveyResultOptionDTO("ERROU", "Errou ou não resolveu", "SITUACOES_PROBLEMA"),
+                new SurveyResultOptionDTO("ERROU", "Errou", "SITUACOES_PROBLEMA"),
                 new SurveyResultOptionDTO("ACERTOU_PARCIALMENTE", "Acertou parcialmente", "SITUACOES_PROBLEMA"),
-                new SurveyResultOptionDTO("ACERTOU", "Acertou plenamente", "SITUACOES_PROBLEMA")
+                new SurveyResultOptionDTO("ACERTOU", "Acertou", "SITUACOES_PROBLEMA")
         );
     }
 
@@ -227,9 +252,9 @@ public class SurveyPedagogicalLevelService {
      */
     public List<SurveyResultOptionDTO> getReadingOptions() {
         return List.of(
-                new SurveyResultOptionDTO("NAO_RESPONDEU", "Não Respondeu", "LEITURA"),
-                new SurveyResultOptionDTO("INADEQUADA", "Compreensão Inadequada", "LEITURA"),
-                new SurveyResultOptionDTO("ADEQUADA", "Compreensão Adequada", "LEITURA")
+                new SurveyResultOptionDTO("NAO_RESPONDEU", "Não respondeu", "LEITURA"),
+                new SurveyResultOptionDTO("INADEQUADA", "Inadequada", "LEITURA"),
+                new SurveyResultOptionDTO("ADEQUADA", "Adequada", "LEITURA")
         );
     }
 }
