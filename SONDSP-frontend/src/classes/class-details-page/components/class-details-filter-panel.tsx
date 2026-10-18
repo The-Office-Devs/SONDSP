@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { getSubmitLabel } from "@/lib/form-utils";
 import { bimesterOptions, subjectOptions } from "@/lib/options-utils";
-import { useStrandOptions } from "@/strands/strands-page/use-strands";
+import { useStrandOptions } from "@/strands/use-strands";
 import { 
   type ClassDetailsFormData, 
   type ClassDetailsFormInput, 

@@ -7,7 +7,7 @@ import { getSubmitLabel } from "@/lib/form-utils";
 import { FILE_ACCEPT } from "@/lib/file-utils";
 import { bimesterOptions, gradeLevelOptions, subjectOptions } from "@/lib/options-utils";
 import { useCreateActivity } from "../use-activities";
-import { useStrandOptions } from "@/strands/strands-page/use-strands";
+import { useStrandOptions } from "@/strands/use-strands";
 
 import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/HookForm/fields/TextField";

@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 
 import { useSessionState } from "@/hooks/use-session-state";
 import { useClass, useClassStudentsCard } from "@/classes/use-classes";
-import { useStrand } from "@/strands/strands-page/use-strands";
+import { useStrand } from "@/strands/use-strands";
 import type { ClassDetailsFormData } from "../class-details.schema";
 
 import { ClassStudentsCard } from "./class-students-card";
