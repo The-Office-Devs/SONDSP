@@ -10,6 +10,7 @@ interface ClassStudentsCardProps {
   classId: number
   title?: string;
   strandCode?: string;
+  gradeLevel?: string;
   isFetching?: boolean;
 }
 
@@ -18,10 +19,11 @@ export function ClassStudentsCard({
   classId,
   title = "Turma",
   strandCode,
+  gradeLevel,
   isFetching = false
 }: Readonly<ClassStudentsCardProps>) {
   const total = students.length;
-  const legendItems = getActiveLegend(students.map((s) => s.result), strandCode);
+  const legendItems = getActiveLegend(students.map((s) => s.result), strandCode, gradeLevel);
 
   const legend = (
     <>
