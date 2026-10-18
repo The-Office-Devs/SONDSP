@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -14,6 +15,7 @@ import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 
 interface ClassesFilterPanelProps {
+  initialValues?: ClassFilterFormData | null;
   onSearch: (data: ClassFilterFormData) => void;
   onClear: () => void;
   isSearching: boolean;
@@ -27,18 +29,24 @@ const defaultValues: ClassFilterFormInput = {
 };
 
 export function ClassesFilterPanel({
+  initialValues,
   onSearch,
   onClear,
   isSearching
 }: Readonly<ClassesFilterPanelProps>) {
   const { schoolOptions, schoolYearOptions, isLoading: isLoadingSchools } = useUserSchoolOptions();
 
+  const [initialFormValues] = useState(() =>
+    initialValues ? { ...defaultValues, ...initialValues } : undefined
+  );
   const submitLabel = getSubmitLabel(isSearching, 'filter');
   
   const form = useForm<ClassFilterFormInput, unknown, ClassFilterFormData>({
     resolver: zodResolver(classFilterSchema),
     mode: "onChange",
-    defaultValues
+    defaultValues,
+    values: initialFormValues,
+    resetOptions: { keepDefaultValues: true }
   });
 
   const onSubmit = (data: ClassFilterFormData) => onSearch(data);

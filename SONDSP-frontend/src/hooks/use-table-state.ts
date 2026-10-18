@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { useDebounce } from "./use-debounce";
+import { useSessionState } from "./use-session-state";
 
-export function useTableState(initialSize = 5) {
-  const [filter, setFilter] = useState("");
+export function useTableState(initialSize = 5, storageKey?: string) {
+  const [filter, setFilter] = useSessionState(storageKey && `${storageKey}:search`, "");
   const debouncedFilter = useDebounce(filter);
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(initialSize);
+  const [page, setPage] = useSessionState(storageKey && `${storageKey}:page`, 0);
+  const [size, setSize] = useSessionState(storageKey && `${storageKey}:size`, initialSize);
 
   const handleFilterChange = (val: string) => {
     setFilter(val);

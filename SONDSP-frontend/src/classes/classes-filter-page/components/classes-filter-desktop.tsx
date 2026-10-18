@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useClasses } from "@/classes/use-classes";
 import { useTableState } from "@/hooks/use-table-state";
+import { useSessionState } from "@/hooks/use-session-state";
 import { buildPaginationProps } from "@/api/types";
 
 import type { ClassListItem } from "@/classes/classes.types";
@@ -13,6 +13,8 @@ import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { useExportSchoolClassSurveys } from "./../../use-classes";
 
+const CLASSES_FILTER_KEY = "classes-filter";
+
 const columns: ColumnDef<ClassListItem>[] = [
   { id: "name", header: "Turma", width: "15%" },
   { id: "gradeLevel", header: "Ano Escolar", width: "10%" },
@@ -22,8 +24,11 @@ const columns: ColumnDef<ClassListItem>[] = [
 
 export function ClassesFilterDesktop() {
   const navigator = useNavigate();
-  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
-  const [appliedFilters, setAppliedFilters] = useState<ClassFilterFormData | null>(null);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5, CLASSES_FILTER_KEY);
+  const [appliedFilters, setAppliedFilters] = useSessionState<ClassFilterFormData | null>(
+    `${CLASSES_FILTER_KEY}:applied`,
+    null
+  );
   const { mutate: exportReport } = useExportSchoolClassSurveys();
   const { data: classesPage, isFetching } = useClasses(
     {
@@ -55,6 +60,11 @@ export function ClassesFilterDesktop() {
     },
   ];
 
+  const handleSearch = (data: ClassFilterFormData) => {
+    setAppliedFilters(data);
+    setPage(0);
+  };
+
   const handleClear = () => {
     setAppliedFilters(null);
     setFilter("");
@@ -70,7 +80,8 @@ export function ClassesFilterDesktop() {
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <ClassesFilterPanel
-        onSearch={setAppliedFilters}
+        initialValues={appliedFilters}
+        onSearch={handleSearch}
         onClear={handleClear}
         isSearching={isFetching}
       />

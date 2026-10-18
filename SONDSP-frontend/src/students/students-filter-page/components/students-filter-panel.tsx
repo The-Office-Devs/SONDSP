@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -10,6 +11,7 @@ import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
 
 interface StudentsFilterPanelProps {
+  initialValues?: StudentFilterFormData | null;
   onSearch: (data: StudentFilterFormData) => void;
   onClear: () => void;
   isSearching: boolean;
@@ -20,17 +22,23 @@ const defaultValues: StudentFilterFormInput = {
   schoolClassId: 0
 };
 
-export function StudentsFilterPanel({ 
+export function StudentsFilterPanel({
+  initialValues,
   onSearch, 
   onClear, 
   isSearching 
 }: StudentsFilterPanelProps) {
+  const [initialFormValues] = useState(() =>
+    initialValues ? { ...defaultValues, ...initialValues } : undefined
+  );
   const submitLabel = getSubmitLabel(isSearching, 'filter');
 
   const form = useForm<StudentFilterFormInput, unknown, StudentFilterFormData>({
     resolver: zodResolver(studentFilterSchema),
     mode: "onChange",
-    defaultValues
+    defaultValues,
+    values: initialFormValues,
+    resetOptions: { keepDefaultValues: true }
   });
 
   const schoolId = useWatch({ control: form.control, name: "schoolId" });

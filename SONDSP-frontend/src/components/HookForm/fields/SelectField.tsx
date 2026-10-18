@@ -53,6 +53,8 @@ export function SelectField<T extends FieldValues>({
           <Select
             value={selectedValue}
             onValueChange={(value) => {
+              if (value === "") return;
+              
               field.onChange(value);
               onValueChange?.(value);
             }}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { useNavigate } from "react-router-dom";
 
 import type { StudentListItem } from "@/students/students.types";
@@ -11,6 +11,8 @@ import { StudentsFilterPanel } from "./students-filter-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 
+const STUDENTS_FILTER_KEY = "students-filter";
+
 const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "10%" },
   { id: "registration", header: "Matrícula", width: "10%", },
@@ -19,8 +21,11 @@ const columns: ColumnDef<StudentListItem>[] = [
 
 export function StudentsFilterDesktop() {
   const navigator = useNavigate();
-  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
-  const [appliedFilters, setAppliedFilters] = useState<StudentFilterFormData | null>(null);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5, STUDENTS_FILTER_KEY);
+  const [appliedFilters, setAppliedFilters] = useSessionState<StudentFilterFormData | null>(
+    `${STUDENTS_FILTER_KEY}:applied`,
+    null
+  );
 
   const { data: studentsPage, isFetching } = useStudents(
     {
@@ -44,6 +49,11 @@ export function StudentsFilterDesktop() {
 
   const goToPortfolio = (studentId: number) => navigator(`portfolio/aluno/${studentId}`);
 
+  const handleSearch = (data: StudentFilterFormData) => {
+    setAppliedFilters(data);
+    setPage(0);
+  };
+
   const handleClear = () => {
     setAppliedFilters(null);
     setFilter("");
@@ -53,7 +63,8 @@ export function StudentsFilterDesktop() {
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <StudentsFilterPanel
-        onSearch={setAppliedFilters}
+        initialValues={appliedFilters}
+        onSearch={handleSearch}
         onClear={handleClear} 
         isSearching={isFetching} 
       />
