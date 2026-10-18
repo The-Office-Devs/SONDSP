@@ -77,7 +77,9 @@ public class StudentTimelineService {
                 String previousCode = previousSurvey.getResult() != null ? previousSurvey.getResult().trim() : "";
                 boolean isChanged = !Objects.equals(previousCode, currentCode);
                 EvolutionComparison comparison = isChanged ? EvolutionComparison.ALTERADO : EvolutionComparison.MANTIDO;
-                String evolutionText = isChanged ? (previousCode + " → " + currentCode) : (currentCode + " mantido");
+                String prevShort = pedagogicalLevelService.getShortLevelLabel(previousCode);
+                String currShort = pedagogicalLevelService.getShortLevelLabel(currentCode);
+                String evolutionText = isChanged ? (prevShort + " → " + currShort) : (currShort + " mantido");
 
                 evolution = new TimelineEvolutionDTO(
                         true,
@@ -154,7 +156,6 @@ public class StudentTimelineService {
                     case "LEITURA" -> "leitura";
                     case "ESCRITA" -> "escrita";
                     case "ESCRITA_NUMEROS",
-                         "SITUACOES_PROBLEMA",
                          "NUMEROS_PROBLEMAS",
                          "ALGEBRA",
                          "GEOMETRIA",

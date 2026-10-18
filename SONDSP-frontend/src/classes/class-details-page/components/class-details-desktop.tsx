@@ -49,6 +49,7 @@ export function ClassDetailsDesktop() {
             classId={classId} 
             students={students}
             strandCode={currentStrand?.code}
+            gradeLevel={schoolClass?.gradeLevel}
             isFetching={isFetching}
           />
 

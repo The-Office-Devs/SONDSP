@@ -16,6 +16,7 @@ import { FinishSurveyDialog } from "@/components/Dialog/FinishSurveyDialog";
 import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 import { ViewFileDialog } from "@/components/Dialog/ViewFileDialog";
 import { ReadOnlyField } from "@/components/ReadOnlyFields/ReadOnlyField";
+import { getResultLabel } from "@/lib/survey-utils";
 
 interface SavedSurveyHistoryFilter {
   data: SurveyHistoryFormData;
@@ -122,7 +123,7 @@ export function SurveysHistoryDesktop() {
       >
         {viewFile?.status && (
           <>
-            <ReadOnlyField label="Resultado" value={viewFile.result} />
+            <ReadOnlyField label="Resultado" value={getResultLabel(viewFile.result)} />
             {viewFile.notes && (
               <ReadOnlyField label="Observações" value={viewFile.notes} />
             )}

@@ -153,3 +153,18 @@ O portfólio deve ser utilizado nos **Conselhos de Classe**, no planejamento ped
 
 * **Modelagem**: Armazene os instrumentos e escalas em **tabelas no banco de dados**, parametrizados por eixo e ano escolar, permitindo versionamento histórico e flexibilidade.
 * **Interface**: Mostre a linha do tempo e a comparação neutra (`Anterior → Atual` ou histórico bimestral), evitando termos punitivos como "regressão", respeitando o caráter diagnóstico e formativo preconizado pelas diretrizes oficiais.
+
+### 5.1 Catálogo dos 8 Eixos Fixos no Banco de Dados (`eixo`)
+
+| ID | Código Oficial | Nome Oficial do Eixo | Matéria / Disciplina | Status |
+| :-: | :--- | :--- | :--- | :-: |
+| 1 | `ESCRITA` | Prática de Produção de Textos Escritos | Língua Portuguesa | Ativo |
+| 2 | `LEITURA` | Práticas de Leitura de Textos | Língua Portuguesa | Ativo |
+| 3 | `ESCRITA_NUMEROS` | Ditado de Números (SND) | Matemática | Ativo |
+| 4 | `NUMEROS_PROBLEMAS` | Números (Situações-Problema) | Matemática | Ativo |
+| 5 | `ALGEBRA` | Álgebra | Matemática | Ativo |
+| 6 | `GEOMETRIA` | Geometria | Matemática | Ativo |
+| 7 | `GRANDEZAS_MEDIDAS` | Grandezas e Medidas | Matemática | Ativo |
+| 8 | `PROBABILIDADE_ESTATISTICA` | Probabilidade e Estatística | Matemática | Ativo |
+
+> **Observação Metodológica**: `SITUACOES_PROBLEMA` não é um código de eixo da tabela `eixo`, mas sim a metodologia/instrumento pedagógico (`EvaluationType`) que unifica a avaliação dos 5 eixos estruturantes da Matemática (IDs 4 a 8).

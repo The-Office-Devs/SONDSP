@@ -62,11 +62,11 @@ export const resultOptions = [
   { value: "N3", label: "Nível 03" },
   { value: "N4", label: "Nível 04" },
   { value: "N5", label: "Nível 05" },
-  { value: "ADEQUADA", label: "Compreensão Adequada" },
-  { value: "INADEQUADA", label: "Compreensão Inadequada" },
+  { value: "ADEQUADA", label: "Adequada" },
+  { value: "INADEQUADA", label: "Inadequada" },
   { value: "NAO_RESPONDEU", label: "Não Respondeu" },
-  { value: "AD", label: "Compreensão Adequada" },
-  { value: "IN", label: "Compreensão Inadequada" },
+  { value: "AD", label: "Adequada" },
+  { value: "IN", label: "Inadequada" },
   { value: "NR", label: "Não Respondeu" },
   { value: "ACERTOU", label: "Acertou" },
   { value: "ACERTOU_PARCIALMENTE", label: "Acertou Parcialmente" },
@@ -104,15 +104,15 @@ export const mathNumberWritingResultOptions = [
 ];
 
 export const readingResultOptions = [
-  { value: "ADEQUADA", label: "Compreensão Adequada" },
-  { value: "INADEQUADA", label: "Compreensão Inadequada" },
-  { value: "NAO_RESPONDEU", label: "Não Respondeu" }
+  { value: "NAO_RESPONDEU", label: "Não Respondeu" },
+  { value: "INADEQUADA", label: "Inadequada" },
+  { value: "ADEQUADA", label: "Adequada" }
 ];
 
 export const mathProblemResultOptions = [
-  { value: "ACERTOU", label: "Acertou" },
+  { value: "ERROU", label: "Errou" },
   { value: "ACERTOU_PARCIALMENTE", label: "Acertou Parcialmente" },
-  { value: "ERROU", label: "Errou" }
+  { value: "ACERTOU", label: "Acertou" }
 ];
 
 export function getPedagogicalResultOptions(
@@ -125,7 +125,6 @@ export function getPedagogicalResultOptions(
   switch (code) {
     case "LEITURA":
       return readingResultOptions;
-    case "SITUACOES_PROBLEMA":
     case "NUMEROS_PROBLEMAS":
     case "ALGEBRA":
     case "GEOMETRIA":
