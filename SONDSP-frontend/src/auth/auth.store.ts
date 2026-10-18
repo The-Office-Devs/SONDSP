@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { jwtDecode } from 'jwt-decode';
 import type { AuthUser } from './auth.types';
+import { clearSessionState } from '@/hooks/use-session-state';
 
 const TOKEN_KEY = 'sondsp-token';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -65,6 +66,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     // Limpa os tokens de refresh
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+
+    // Limpa as chaves pros filtros
+    clearSessionState();
     
     set({
       token: null,

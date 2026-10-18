@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import type { StudentListItem } from "@/students/students.types";
 import { type SurveyFormData } from "../survey-schema";
+import { useSessionState } from "@/hooks/use-session-state";
 import { useStudents } from "@/students/students-page/use-students";
 import { buildPaginationProps } from "@/api/types";
 import { useTableState } from "@/hooks/use-table-state";
@@ -12,6 +13,8 @@ import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { CreateSurveyDialog } from "@/components/Dialog/CreateSurveyDialog";
 
+const SURVEYS_FILTER_KEY = "surveys-filter";
+
 const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "10%" },
   { id: "registration", header: "Matrícula", width: "10%", },
@@ -20,8 +23,11 @@ const columns: ColumnDef<StudentListItem>[] = [
 
 export function SurveysDesktop() {
   const navigator = useNavigate();
-  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5);
-  const [appliedFilters, setAppliedFilters] = useState<SurveyFormData | null>(null);
+  const { filter, setFilter, debouncedFilter, page, setPage, size } = useTableState(5, SURVEYS_FILTER_KEY);
+  const [appliedFilters, setAppliedFilters] = useSessionState<SurveyFormData | null>(
+    `${SURVEYS_FILTER_KEY}:applied`,
+    null
+  );
   const [applyStudentId, setApplyStudentId] = useState<number | null>(null);
 
   const { data: studentsPage, isFetching } = useStudents(
@@ -42,6 +48,11 @@ export function SurveysDesktop() {
 
   const goToListar = (studentId: number) => navigator(`historico/aluno/${studentId}`);
 
+  const handleSearch = (data: SurveyFormData) => {
+    setAppliedFilters(data);
+    setPage(0);
+  };
+
   const handleClear = () => {
     setAppliedFilters(null);
     setFilter("");
@@ -51,7 +62,8 @@ export function SurveysDesktop() {
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <SurveysFilterPanel 
-        onSearch={setAppliedFilters}
+        initialValues={appliedFilters}
+        onSearch={handleSearch}
         onClear={handleClear} 
         isSearching={isFetching} 
       />

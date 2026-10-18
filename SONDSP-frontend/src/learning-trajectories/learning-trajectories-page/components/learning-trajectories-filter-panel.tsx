@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { getSubmitLabel } from "@/lib/form-utils";
 import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 import { subjectOptions } from "@/lib/options-utils";
-import { useStrandOptions } from "@/strands/strands-page/use-strands";
+import { useStrandOptions } from "@/strands/use-strands";
 import { 
     learningTrajectoriesSchema,
   type LearningTrajectoriesFormData, 
@@ -16,6 +17,7 @@ import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
 
 interface LearningTractoriesFilterPanelProps {
+  initialValues?: LearningTrajectoriesFormData | null;
   onSearch: (data: LearningTrajectoriesFormData) => void;
   onClear: () => void;
   isSearching: boolean;
@@ -29,16 +31,23 @@ const defaultValues: LearningTrajectoriesFormInput = {
 };
 
 export function LearningTractoriesFilterPanel({
+  initialValues,
   onSearch,
   onClear,
   isSearching
 }: Readonly<LearningTractoriesFilterPanelProps>) {
+  const [initialFormValues] = useState(() =>
+    initialValues ? { ...defaultValues, ...initialValues } : undefined
+  );
+
   const submitLabel = getSubmitLabel(isSearching, 'filter');
 
   const form = useForm<LearningTrajectoriesFormInput, unknown, LearningTrajectoriesFormData>({
     resolver: zodResolver(learningTrajectoriesSchema),
     mode: "onChange",
-    defaultValues
+    defaultValues,
+    values: initialFormValues,
+    resetOptions: { keepDefaultValues: true }
   });
 
   const schoolId = useWatch({ control: form.control, name: "schoolId" });

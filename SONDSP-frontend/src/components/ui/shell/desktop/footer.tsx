@@ -35,7 +35,7 @@ export function DesktopShellFooter() {
                     <button
                       type="button"
                       onClick={() => navigate(crumb.to!, { state: crumb.state })}
-                      className="cursor-pointer hover:underline"
+                      className="cursor-pointer underline"
                     >
                       {crumb.label}
                     </button>

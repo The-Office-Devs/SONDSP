@@ -1,14 +1,19 @@
-import { useState } from "react"
+import { useSessionState } from "@/hooks/use-session-state";
 
 import type { LearningTrajectoriesFormData } from "../learning-trajectories.schema";
 
 import { LearningTrajectoriesCard } from "./learning-trajectories-card";
 import { LearningTractoriesFilterPanel } from "./learning-trajectories-filter-panel";
 import { useLearningTrajectory } from "@/classes/use-classes";
-import { useStrand } from "@/strands/strands-page/use-strands";
+import { useStrand } from "@/strands/use-strands";
+
+const LEARNING_TRAJECTORIES_FILTER_KEY = "learning-trajectories-filter";
 
 export function LearningTrajectoriesDesktop() {
-  const [appliedFilters, setAppliedFilters] = useState<LearningTrajectoriesFormData | null>(null);
+  const [appliedFilters, setAppliedFilters] = useSessionState<LearningTrajectoriesFormData | null>(
+    LEARNING_TRAJECTORIES_FILTER_KEY,
+    null
+  );
 
   const { data: trajectories = [], isFetching } = useLearningTrajectory(appliedFilters?.schoolClassId, {
     strandId: appliedFilters?.strandId,
@@ -22,6 +27,7 @@ export function LearningTrajectoriesDesktop() {
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <LearningTractoriesFilterPanel
+        initialValues={appliedFilters}
         onSearch={setAppliedFilters}
         onClear={handleClear}
         isSearching={isFetching}

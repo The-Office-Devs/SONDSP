@@ -152,8 +152,14 @@ public class StudentTimelineService {
             if (code != null) {
                 return switch (code.toUpperCase(Locale.ROOT)) {
                     case "LEITURA" -> "leitura";
-                    case "ESCRITA_NUMEROS", "SITUACOES_PROBLEMA" -> "matematica";
                     case "ESCRITA" -> "escrita";
+                    case "ESCRITA_NUMEROS",
+                         "SITUACOES_PROBLEMA",
+                         "NUMEROS_PROBLEMAS",
+                         "ALGEBRA",
+                         "GEOMETRIA",
+                         "GRANDEZAS_MEDIDAS",
+                         "PROBABILIDADE_ESTATISTICA" -> "matematica";
                     default -> "escrita";
                 };
             }

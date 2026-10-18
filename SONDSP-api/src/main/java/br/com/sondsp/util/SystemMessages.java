@@ -14,8 +14,6 @@ public final class SystemMessages {
 	public static final String SCHOOL_DEACTIVATED = "Escola desativada com sucesso.";
 	public static final String SCHOOL_CLASS_ACTIVATED = "Turma ativada com sucesso.";
 	public static final String SCHOOL_CLASS_DEACTIVATED = "Turma desativada com sucesso.";
-	public static final String STRAND_ACTIVATED = "Eixo ativado com sucesso.";
-	public static final String STRAND_DEACTIVATED = "Eixo desativado com sucesso.";
 	public static final String SURVEY_DELETED = "Sondagem excluída com sucesso.";
 
 	// Linking
@@ -69,6 +67,8 @@ public final class SystemMessages {
 	public static final String HAS_OPEN_SURVEY_SAME_ACVTY =
 			"O aluno já possui uma sondagem em aberto para essa atividade.";
 	public static final String NULL_SURVEYS_IN_CLASS = "Nenhuma sondagem registrada para esta turma.";
+	public static final String STUDENT_BIRTH_DATE_INVALID = "Data de nascimento inválida. Use o formato dd/MM/aaaa.";
+	public static final String STUDENT_BIRTH_DATE_FUTURE = "A data de nascimento não pode ser futura.";
 
 	// Empty properties
 	public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";

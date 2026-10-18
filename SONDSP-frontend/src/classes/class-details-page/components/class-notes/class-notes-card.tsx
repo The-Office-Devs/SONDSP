@@ -47,7 +47,7 @@ export function ClassNotesCard({ classId, isFetching }: Readonly<ClassNotesCardP
 
   const createNote = useCreateClassNote();
   const updateNote = useUpdateClassNote();
-  const deleteNote = useDeleteClassNote();
+  const { mutate: deleteNote, isPending: isDeleting } = useDeleteClassNote();
 
   const openDialog = (note: ClassNote | null) =>
     setDialog((prev) => ({ open: true, note, key: prev.key + 1 }));
@@ -67,14 +67,9 @@ export function ClassNotesCard({ classId, isFetching }: Readonly<ClassNotesCardP
     createNote.mutate({ classId, text }, { onSuccess: closeDialog });
   };
 
-  const handleDelete = () => {
-    if (dialog.note) {
-      deleteNote.mutate({ classId, id: dialog.note.id }, { onSuccess: closeDialog });
-    } 
-  };
-
   const notes: NoteView[] = (data?.pages.flatMap((page) => page.content) ?? []).map((note) => {
     const style = AUTHOR_ROLE_STYLE[note.author.role];
+    const isAuthor = note.author.id === currentUserId;
 
     return {
       id: note.id,
@@ -88,7 +83,9 @@ export function ClassNotesCard({ classId, isFetching }: Readonly<ClassNotesCardP
         </span>
       ),
       text: note.text,
-      onClick: () => openDialog(note)
+      onClick: () => openDialog(note),
+      canEdit: isAuthor,
+      onDelete: isAuthor ? (options) => deleteNote({ classId, id: note.id }, options) : undefined
     };
   });
 
@@ -106,6 +103,7 @@ export function ClassNotesCard({ classId, isFetching }: Readonly<ClassNotesCardP
         hasMore={hasNextPage}
         isLoadingMore={isFetchingNextPage}
         onLoadMore={fetchNextPage}
+        isDeleting={isDeleting}
       />
 
       <NoteDialog
@@ -116,9 +114,7 @@ export function ClassNotesCard({ classId, isFetching }: Readonly<ClassNotesCardP
         subtitle={dialog.note ? `${dialog.note.author.name} · ${AUTHOR_ROLE_LABEL[dialog.note.author.role]}` : undefined}
         canEdit={canEdit}
         onSave={handleSave}
-        onDelete={handleDelete}
         isSaving={createNote.isPending || updateNote.isPending}
-        isDeleting={deleteNote.isPending}
       />
     </>
   );

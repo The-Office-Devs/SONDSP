@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useParams } from "react-router-dom";
 
+import { useSessionState } from "@/hooks/use-session-state";
 import { useClass, useClassStudentsCard } from "@/classes/use-classes";
-import { useStrand } from "@/strands/strands-page/use-strands";
+import { useStrand } from "@/strands/use-strands";
 import type { ClassDetailsFormData } from "../class-details.schema";
 
 import { ClassStudentsCard } from "./class-students-card";
@@ -16,7 +16,10 @@ export function ClassDetailsDesktop() {
   const { data: schoolClass } = useClass(classId);
   const schoolClassName = schoolClass?.name;
 
-  const [appliedFilters, setAppliedFilters] = useState<ClassDetailsFormData | null>(null);
+  const [appliedFilters, setAppliedFilters] = useSessionState<ClassDetailsFormData | null>(
+    `class-details-filter:${classId}`,
+    null
+  );
 
   const { data: students = [], isFetching } = useClassStudentsCard(classId, appliedFilters);
   const { data: currentStrand } = useStrand(appliedFilters?.strandId ?? null);
@@ -26,6 +29,7 @@ export function ClassDetailsDesktop() {
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <ClassDetailsFilterPanel
+        initialValues={appliedFilters}
         onSearch={setAppliedFilters}
         onClear={handleClear}
         isSearching={isFetching}

@@ -5,7 +5,7 @@ import { CirclePlus } from "lucide-react";
 
 import { getSubmitLabel } from "@/lib/form-utils";
 import { bimesterOptions, statusOptions, subjectOptions } from "@/lib/options-utils";
-import { useStrandOptions } from "@/strands/strands-page/use-strands";
+import { useStrandOptions } from "@/strands/use-strands";
 import { useStudent } from "@/students/students-page/use-students";
 import { 
   type SurveyHistoryFormInput, 
@@ -19,7 +19,8 @@ import { Button } from "@/components/ui/button";
 import { CreateSurveyDialog } from "@/components/Dialog/CreateSurveyDialog";
 
 interface SurveyHistoryFilterPanelProps {
-  onSearch: (data: SurveyHistoryFormData) => void;
+  initialValues?: SurveyHistoryFormInput | null;
+  onSearch: (data: SurveyHistoryFormData, values: SurveyHistoryFormInput) => void;
   onClear: () => void;
   isSearching: boolean;
   studentId: number;
@@ -33,6 +34,7 @@ const defaultValues: SurveyHistoryFormInput = {
 };
 
 export function SurveysHistoryFilterPanel({
+  initialValues,
   onSearch,
   onClear,
   isSearching,
@@ -48,10 +50,14 @@ export function SurveysHistoryFilterPanel({
   const submitLabel = getSubmitLabel(isSearching, 'filter');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const [initialFormValues] = useState(() => initialValues ?? undefined);
+
   const form = useForm<SurveyHistoryFormInput, unknown, SurveyHistoryFormData>({
     resolver: zodResolver(surveyHistorySchema),
     mode: "onChange",
-    defaultValues
+    defaultValues,
+    values: initialFormValues,
+    resetOptions: { keepDefaultValues: true }
   });
 
   const subject = useWatch({ control: form.control, name: "subjectId" });
@@ -61,7 +67,7 @@ export function SurveysHistoryFilterPanel({
   )?.label;
   const { options: strandOptions, isLoading: isLoadingStrands } = useStrandOptions(subjectLabel);
 
-  const onSubmit = (data: SurveyHistoryFormData) => onSearch(data);
+  const onSubmit = (data: SurveyHistoryFormData) => onSearch(data, form.getValues());
 
   const handleReset = () => {
     form.reset(defaultValues);

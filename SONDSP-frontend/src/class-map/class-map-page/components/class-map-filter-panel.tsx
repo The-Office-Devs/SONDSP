@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { getSubmitLabel } from "@/lib/form-utils";
 import { bimesterOptions, subjectOptions } from "@/lib/options-utils";
-import { useStrandOptions } from "@/strands/strands-page/use-strands";
+import { useStrandOptions } from "@/strands/use-strands";
 import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 import { 
   classMapSchema, 
@@ -17,6 +18,7 @@ import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
 
 interface ClassMapFilterPanelProps {
+  initialValues?: ClassMapAppliedFilters | null;
   onSearch: (data: ClassMapAppliedFilters) => void;
   onClear: () => void;
   isSearching: boolean;
@@ -31,16 +33,22 @@ const defaultValues: ClassMapFormInput = {
 };
 
 export function ClassMapFilterPanel({
+  initialValues,
   onSearch,
   onClear,
   isSearching
 }: Readonly<ClassMapFilterPanelProps>) {
+  const [initialFormValues] = useState(() =>
+    initialValues ? { ...defaultValues, ...initialValues } : undefined
+  );
   const submitLabel = getSubmitLabel(isSearching, 'filter');
 
   const form = useForm<ClassMapFormInput, unknown, ClassMapFormData>({
     resolver: zodResolver(classMapSchema),
     mode: "onChange",
-    defaultValues
+    defaultValues,
+    values: initialFormValues,
+    resetOptions: { keepDefaultValues: true }
   });
 
   const schoolId = useWatch({ control: form.control, name: "schoolId" });
