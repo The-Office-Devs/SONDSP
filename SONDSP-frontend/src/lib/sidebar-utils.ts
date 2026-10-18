@@ -1,6 +1,5 @@
 import {
   ClipboardList, 
-  ClipboardPenLine, 
   LayoutGrid,
   NotebookPen,
   BookOpenText,
@@ -13,7 +12,6 @@ import { matchPath } from "react-router-dom";
 
 export const administratorItems = [
   { label: 'Alunos', icon: UserRound, to: '/alunos' },
-  { label: 'Eixos', icon: ClipboardPenLine, to: '/eixos' },
   { label: 'Escolas', icon: School, to: '/escolas' },
   { label: 'Modelos de Atividades', icon: NotebookPen, to: '/modelos-atividades' },
   { label: 'Turmas', icon: ClipboardList, to: '/turmas' },

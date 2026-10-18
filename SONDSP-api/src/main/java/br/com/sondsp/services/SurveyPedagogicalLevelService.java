@@ -34,11 +34,16 @@ public class SurveyPedagogicalLevelService {
         return switch (code) {
             case "LEITURA" -> EvaluationType.LEITURA;
             case "ESCRITA_NUMEROS" -> EvaluationType.ESCRITA_NUMEROS;
-            case "SITUACOES_PROBLEMA" -> EvaluationType.SITUACOES_PROBLEMA;
+            case "SITUACOES_PROBLEMA",
+                 "NUMEROS_PROBLEMAS",
+                 "ALGEBRA",
+                 "GEOMETRIA",
+                 "GRANDEZAS_MEDIDAS",
+                 "PROBABILIDADE_ESTATISTICA" -> EvaluationType.SITUACOES_PROBLEMA;
             case "ESCRITA" -> (normalizedGrade.contains("2") || normalizedGrade.contains("3"))
                     ? EvaluationType.PRODUCAO_TEXTO
                     : EvaluationType.ESCRITA_SEA;
-            default -> throw new IllegalArgumentException("Código de eixo não reconhecido ou ausente: '" + code + "'. Os eixos oficiais da SME-SP são fixos: LEITURA, ESCRITA, ESCRITA_NUMEROS e SITUACOES_PROBLEMA.");
+            default -> throw new IllegalArgumentException("Código de eixo não reconhecido ou ausente: '" + code + "'. Os eixos oficiais da SME-SP são fixos: LEITURA, ESCRITA, ESCRITA_NUMEROS, NUMEROS_PROBLEMAS, ALGEBRA, GEOMETRIA, GRANDEZAS_MEDIDAS e PROBABILIDADE_ESTATISTICA.");
         };
     }
 
