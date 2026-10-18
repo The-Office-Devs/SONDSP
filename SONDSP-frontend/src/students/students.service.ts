@@ -4,6 +4,7 @@ import type {
   CreateStudentRequest, 
   Student, 
   StudentFilter, 
+  StudentImportResult, 
   StudentListItem, 
   UpdateStudentRequest 
 } from "./students.types";
@@ -32,5 +33,15 @@ export async function updateStudentService(id: number, data: UpdateStudentReques
 
 export async function inactivateStudentService(id: number): Promise<string> {
   const response = await api.patch<string>(`/student/${id}/changeStatus`);
+  return response.data;
+}
+
+export async function importStudentsService(file: File): Promise<StudentImportResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await api.post<StudentImportResult>('/student/import', formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
   return response.data;
 }

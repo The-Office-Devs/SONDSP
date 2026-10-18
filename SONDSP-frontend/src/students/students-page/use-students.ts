@@ -13,7 +13,8 @@ import {
   inactivateStudentService, 
   getStudentService, 
   listStudentsService, 
-  updateStudentService 
+  updateStudentService, 
+  importStudentsService
 } from "../students.service";
 import type { StudentFilter, UseStudentsOption } from "../students.types";
 import type { StudentFormData } from "./student.schema";
@@ -106,5 +107,34 @@ export function useInactivateStudent() {
 
     onError: (error: AxiosError<{ error: string }>) =>
       handleApiError(error || 'Erro ao alterar status do aluno.')
+  });
+}
+
+export function useImportStudents() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (file: File) => importStudentsService(file),
+
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ['classes'] });
+
+      const details = [
+        `${result.created} criado(s)`,
+        `${result.updated} atualizado(s)`,
+        `${result.unlinked} desvinculado(s)`,
+        ...(result.ignored > 0 ? [`${result.ignored} ignorado(s)`] : [])
+      ].join(", ");
+
+      toast.success(
+        `${result.classCreated ? "Turma criada e alunos importados" : "Alunos importados"}: ` +
+        `${result.className} - ${result.schoolName}.`,
+        { description: details }
+      );
+    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || 'Erro ao importar alunos.')
   });
 }

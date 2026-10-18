@@ -22,6 +22,9 @@ public class School {
     @Column(name = "codigo_inep", unique = true, nullable = false, length = 8)
     private String codigoInep;
 
+    @Column(name = "codigo_interno", unique = true, length = 20)
+    private String codigoInterno;
+
     @Column(name = "status")
     private Boolean status;
 }

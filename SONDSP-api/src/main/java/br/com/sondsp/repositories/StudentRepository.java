@@ -4,6 +4,7 @@ import br.com.sondsp.entities.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Integer>, JpaSpecificationExecutor<Student> {
@@ -12,4 +13,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer>, JpaS
     Boolean existsBySchoolClassIdAndRowNumber(Integer schoolClassId, Integer rowNumberm);
     Boolean existsByRegistration(String registration);
     Boolean existsByRegistrationAndIdNot(String registration, Integer id);
+    List<Student> findAllBySchoolClassId(Integer schoolClassId);
+    List<Student> findAllByRegistrationIn(Collection<String> registrations);
 }

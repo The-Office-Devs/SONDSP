@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 import { studentSchema, type StudentFormData, type StudentFormInput } from "../student.schema";
-import { useCreateStudent, useStudent, useUpdateStudent } from "../use-students";
+import { useCreateStudent, useImportStudents, useStudent, useUpdateStudent } from "../use-students";
 import { useClasses } from "@/classes/use-classes";
 import { getSubmitLabel } from "@/lib/form-utils";
 
@@ -53,6 +53,7 @@ export function StudentUpsertPanel({
 }: Readonly<StudentUpsertPanelProps>) {
   const { mutate: createStudent, isPending: isCreating } = useCreateStudent();
   const { mutate: updateStudent, isPending: isUpdating } = useUpdateStudent();
+  const { mutate: importStudents, isPending: isImporting } = useImportStudents();
   const { data: student, isLoading: isLoadingClass } = useStudent(studentIdToEdit);
   const { data: classesPage } = useClasses({ size: 100, status: true });
 
@@ -125,6 +126,14 @@ export function StudentUpsertPanel({
     onCancelEdit();
   };
 
+  const handleImport = () => {
+    if (!batchFile) return;
+
+    importStudents(batchFile, {
+      onSuccess: () => setBatchFile(null)
+    });
+  };
+
   const schoolOptions = Array.from(
     new Map(
       classesPage?.content
@@ -142,8 +151,6 @@ export function StudentUpsertPanel({
         value: String(c.id),
         label: `${c.name} - ${c.schoolYear}`
       })) ?? [];
-
-  // TODO: terminar logica do cadastro em lote quando o back estiver pronto
   return (
     <Card className="border-0 bg-[#efefef] px-5 py-5 shadow-sm">
       <div className="space-y-5">
@@ -212,7 +219,6 @@ export function StudentUpsertPanel({
                   <TextField
                     name="birthDate"
                     label="Data de Nascimento"
-                    max={new Date().toLocaleDateString("en-CA")}
                   />
 
                   <SelectField
@@ -269,12 +275,12 @@ export function StudentUpsertPanel({
                     </div>
                     <Button
                       type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      className="w-auto"
-                      onClick={() => setBatchFile(null)}
+                      isRounded
+                      disabled={!batchFile || isImporting}
+                      onClick={handleImport}
                     >
-                      <X className="size-4" />
+                      <Check className="size-4" />
+                      {isImporting ? "Importando..." : "Importar"}
                     </Button>
                   </div>
                 ) : (

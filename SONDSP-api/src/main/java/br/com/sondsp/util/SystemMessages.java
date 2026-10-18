@@ -70,6 +70,16 @@ public final class SystemMessages {
 	public static final String STUDENT_BIRTH_DATE_INVALID = "Data de nascimento inválida. Use o formato dd/MM/aaaa.";
 	public static final String STUDENT_BIRTH_DATE_FUTURE = "A data de nascimento não pode ser futura.";
 
+	// Import
+	public static final String IMPORT_INVALID_FILE = "Arquivo inválido. Envie uma planilha Excel (.xlsx ou .xls).";
+	public static final String IMPORT_MISSING_HEADER = "Cabeçalho não encontrado na planilha: %s.";
+	public static final String IMPORT_NO_STUDENTS = "Nenhum aluno encontrado na planilha.";
+	public static final String IMPORT_ROW_ERRORS = "A planilha contém erros:\n%s";
+	public static final String IMPORT_SCHOOL_NOT_FOUND = "Escola com código interno %s (%s) não encontrada.";
+	public static final String IMPORT_SCHOOL_INACTIVE = "A escola %s está inativa.";
+	public static final String IMPORT_CLASS_OTHER_SCHOOL = "A turma %s já pertence a outra escola.";
+	public static final String IMPORT_CLASS_INACTIVE = "A turma %s está inativa.";
+
 	// Empty properties
 	public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";
 	public static final String EMPTY_NAME = "Um nome deve ser informado.";
