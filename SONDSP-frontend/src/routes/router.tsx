@@ -22,6 +22,7 @@ import { StudentPortfolioPage } from '@/students/student-portfolio/student-portf
 import { ClassMapPage } from '@/class-map/class-map-page/class-map-page';
 import { LearningTrajectoriesPage } from '@/learning-trajectories/learning-trajectories-page/learning-trajectories-page';
 import { StudentsFilterPage } from '@/students/students-filter-page/students-filter-page';
+import { HelpCenterPage } from '@/help-center/help-center.page';
 
 export const router = createBrowserRouter([
   {
@@ -77,6 +78,7 @@ export const router = createBrowserRouter([
               { path: 'app-turmas/turma/:id', element: <ClassDetailsPage />},
             ],
           },
+          { path: 'ajuda', element: <HelpCenterPage /> },
         ]
       }
     ],

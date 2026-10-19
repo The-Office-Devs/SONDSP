@@ -152,7 +152,13 @@ export function DesktopShellSidebar() {
             )}
 
             <div className="flex flex-col gap-3">
-              <SidebarItem icon={CircleHelp} label="Ajuda" expanded={expanded} onClick={() => {}} />
+              <SidebarItem
+                icon={CircleHelp}
+                label="Ajuda"
+                expanded={expanded}
+                active={isPathActive(location.pathname, '/ajuda')}
+                onClick={() => navigate('/ajuda')}
+              />
               <SidebarItem icon={LogOut} label="Sair" expanded={expanded} onClick={handleLogout} />
             </div>
           </nav>
