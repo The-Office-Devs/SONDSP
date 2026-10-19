@@ -20,7 +20,8 @@ export function ComboboxField<T extends FieldValues>({
   options,
   emptyMessage = "Nenhum resultado encontrado.",
   onValueChange,
-  disabled
+  disabled,
+  listClassName,
 }: ComboboxFieldProps<T>) {
   return (
     <FormField name={name} label={label} labelClassName="text-base">
@@ -50,7 +51,7 @@ export function ComboboxField<T extends FieldValues>({
             >
               <ComboboxContent className="z-[60] pointer-events-auto">
                 <ComboboxEmpty>{emptyMessage}</ComboboxEmpty>
-                <ComboboxList>
+                <ComboboxList className={listClassName}>
                   {(item: Option) => (
                     <ComboboxItem
                       key={item.value}

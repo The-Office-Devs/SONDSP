@@ -50,4 +50,5 @@ export interface ComboboxFieldProps<T extends FieldValues> extends BaseFieldProp
   options: { value: string; label: string }[]
   emptyMessage?: string
   onValueChange?: (value: string) => void
+  listClassName?: string
 }
