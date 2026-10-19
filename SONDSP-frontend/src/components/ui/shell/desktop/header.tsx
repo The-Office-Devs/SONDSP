@@ -1,19 +1,30 @@
 import { CircleHelp, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import brasaoSp from '@/assets/brasao-sp.png';
 import { useAuthStore } from '@/auth/auth.store';
+import { getHelpModuleFromPath } from '@/help-center/help-center.utils';
 
 export function DesktopShellHeader() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
+  const location = useLocation();
 
   if (!user) return null;
 
   const handleLogout = () => {
     logout();
     navigate('/login'); 
+  };
+
+  const handleHelpClick = () => {
+    const targetModule = getHelpModuleFromPath(location.pathname);
+    if (targetModule) {
+      navigate(`/ajuda?modulo=${targetModule}`);
+    } else {
+      navigate('/ajuda');
+    }
   };
 
   return (
@@ -40,6 +51,7 @@ export function DesktopShellHeader() {
         <div className="flex items-center gap-4 text-white lg:gap-5">
           <button
             type="button"
+            onClick={handleHelpClick}
             className="flex items-center gap-2 text-[1.05rem] font-medium transition-opacity hover:opacity-80 cursor-pointer"
           >
             <CircleHelp className="size-8" />
