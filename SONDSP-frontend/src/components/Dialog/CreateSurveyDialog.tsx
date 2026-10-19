@@ -98,6 +98,7 @@ export function CreateSurveyDialog({
               placeholder="Selecione o modelo de atividade"
               options={activityOptions}
               emptyMessage="Nenhum modelo de atividade encontrado"
+              listClassName="max-h-56 overflow-y-auto"
             />
 
             <SelectField
