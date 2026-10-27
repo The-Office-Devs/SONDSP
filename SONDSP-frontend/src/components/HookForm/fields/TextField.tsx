@@ -11,6 +11,7 @@ export function TextField<T extends FieldValues>({
   placeholder,
   type = 'text',
   onlyNumbers = false,
+  mask,
   ui = 'desktop',
   ...props
 }: TextFieldProps<T>) {
@@ -30,9 +31,9 @@ export function TextField<T extends FieldValues>({
           placeholder={placeholder}
           inputMode={onlyNumbers ? "numeric" : undefined}
           onChange={(e) => {
-            const value = onlyNumbers
-              ? e.target.value.replace(/\D/g, "")
-              : e.target.value;
+            let value = e.target.value;
+            if (onlyNumbers) value = value.replace(/\D/g, "");
+            if (mask) value = mask(value);
             field.onChange(value);
           }}
         />

@@ -6,6 +6,7 @@ import br.com.sondsp.dtos.portfolio.StudentPortfolioDTO;
 import br.com.sondsp.entities.Student;
 import br.com.sondsp.repositories.StudentEnrollmentRepository;
 import br.com.sondsp.repositories.StudentRepository;
+import br.com.sondsp.util.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,7 @@ public class StudentPortfolioService {
                 schoolYear,
                 student.getRegistration(),
                 student.getRowNumber(),
+                DateUtils.format(student.getBirthDate()),
                 status,
                 enrollmentHistory
         );

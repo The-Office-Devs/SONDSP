@@ -199,6 +199,7 @@ export interface StudentPortfolioDTO {
   schoolYear: string;
   registration: string;
   rowNumber?: number;
+  birthDate?: string;
   status: "ATIVO" | "INATIVO" | string;
   enrollmentHistory: EnrollmentHistoryItem[];
 }

@@ -34,7 +34,9 @@ export function StudentProfileCard({ student, isFetching }: Readonly<StudentProf
                 <span className="rounded bg-[#e0ecf8] px-2 py-0.5 text-xs font-semibold text-[#1e40af]">
                   {student.currentClass}
                 </span>
-                <span className="text-xs text-slate-500">Matrícula: {student.registration}</span>
+                {student?.birthDate && (
+                  <span className="text-xs text-slate-500">Data de Nascimento: {student.birthDate}</span>
+                )}
               </div>
             </div>
           </div>

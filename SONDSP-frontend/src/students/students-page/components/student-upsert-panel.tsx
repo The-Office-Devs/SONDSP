@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
 import { FileDropzone } from "@/components/ui/file-dropzone";
-import { cn } from "@/lib/utils";
+import { cn, maskDate } from "@/lib/utils";
 
 const defaultValues: StudentFormInput = {
   name: "",
@@ -219,6 +219,9 @@ export function StudentUpsertPanel({
                   <TextField
                     name="birthDate"
                     label="Data de Nascimento"
+                    placeholder="Data de nascimento do aluno"
+                    onlyNumbers
+                    mask={maskDate}
                   />
 
                   <SelectField
