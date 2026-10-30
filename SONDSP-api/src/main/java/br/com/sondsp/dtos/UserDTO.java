@@ -10,10 +10,34 @@ public record UserDTO(
 	String registration,
 	String email,
 	String role,
+	List<String> roles,
 	List<String> permissions,
 	Boolean status,
 	List<SchoolClassesDTO> schools
 ) {
+	public UserDTO(
+		Integer id,
+		String name,
+		String registration,
+		String email,
+		String role,
+		List<String> permissions,
+		Boolean status,
+		List<SchoolClassesDTO> schools
+	) {
+		this(
+			id,
+			name,
+			registration,
+			email,
+			role,
+			role != null ? List.of(role) : List.of(),
+			permissions,
+			status,
+			schools
+		);
+	}
+
 	public UserDTO(User user) {
 		this(
 			user.getId(),
@@ -21,8 +45,11 @@ public record UserDTO(
 			user.getRegistration(),
 			user.getEmail(),
 			user.getRole() != null ? user.getRole().getName() : null,
+			user.getRoles() != null
+				? user.getRoles().stream().map(Role::getName).sorted().toList()
+				: List.of(),
 			user.getPermissions() != null
-				? user.getPermissions().stream().map(Permission::getPermission).toList()
+				? user.getPermissions().stream().map(Permission::getPermission).sorted().toList()
 				: List.of(),
 			user.getStatus(),
 			user.getSchools() != null && user.getSchoolClasses() != null

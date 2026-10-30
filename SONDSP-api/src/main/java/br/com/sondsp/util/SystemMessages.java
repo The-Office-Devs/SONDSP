@@ -102,6 +102,13 @@ public final class SystemMessages {
 	// Delete
 	public static final String DELETED_ANNOTATION = "A anotação foi removida com sucesso.";
 
+	// Roles and Permissions
+	public static final String ROLE_ALREADY_EXISTS = "Já existe uma função cadastrada com este nome.";
+	public static final String ADMIN_ROLE_CANNOT_BE_MODIFIED = "As permissões da função de Administrador são irrevogáveis e não podem ser alteradas.";
+	public static final String ADMIN_ROLE_CANNOT_BE_DELETED = "A função de Administrador não pode ser excluída.";
+	public static final String ROLE_HAS_ASSOCIATED_USERS = "Não é possível excluir a função pois existem usuários vinculados a ela.";
+	public static final String EMPTY_ROLES = "Pelo menos uma função deve ser informada.";
+
 	// Private constructor makes class not instantiable
 	private SystemMessages() {}
 }

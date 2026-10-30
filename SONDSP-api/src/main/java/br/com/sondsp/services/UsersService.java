@@ -1,17 +1,13 @@
 package br.com.sondsp.services;
 
-import static br.com.sondsp.util.SystemMessages.*;
-
 import br.com.sondsp.entities.*;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.UserFilter;
 import br.com.sondsp.form.*;
-import br.com.sondsp.repositories.PermissionsRepository;
 import br.com.sondsp.repositories.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.*;
 import jakarta.validation.ValidationException;
-import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,17 +15,20 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
+import static br.com.sondsp.util.SystemMessages.*;
+
 @Service
 @AllArgsConstructor
 public class UsersService {
 
-	private UsersRepository repository;
+	private final UsersRepository repository;
 	private final RolesService rolesService;
-	private final PermissionsRepository permissionsRepository;
 
-	private SchoolClassService schoolClassService;
-	private SchoolService schoolService;
-	private AccountActivationService accountActivationService;
+	private final SchoolClassService schoolClassService;
+	private final SchoolService schoolService;
+	private final AccountActivationService accountActivationService;
 
 	public User registerUser(UserForm form) {
 		User verifyUser = repository.findByEmailOrRegistration(form.email(), form.registration());
@@ -44,16 +43,26 @@ public class UsersService {
 			);
 		}
 
+		Set<Role> roles = new HashSet<>();
+		if (form.roles() != null && !form.roles().isEmpty()) {
+			roles.addAll(rolesService.getRolesByNames(form.roles()));
+		} else if (form.role() != null && !form.role().isBlank()) {
+			roles.add(rolesService.getRoleByName(form.role()));
+		}
+
+		if (roles.isEmpty()) {
+			throw new ValidationException(EMPTY_ROLES);
+		}
+
 		User savedUser = save(
 			User
 				.builder()
 				.name(form.name())
 				.registration(form.registration())
-				.role(rolesService.getRoleByName(form.role()))
+				.roles(roles)
 				.status(false)
 				.email(form.email())
 				.password(null)
-				.permissions(permissionsRepository.findAllByPermissionIn(form.permissions()))
 				.build()
 		);
 
@@ -92,9 +101,18 @@ public class UsersService {
 
 		user.setName(form.name());
 		user.setRegistration(form.registration());
-		user.setRole(rolesService.getRoleByName(form.role()));
 		user.setEmail(form.email());
-		user.setPermissions(permissionsRepository.findAllByPermissionIn(form.permissions()));
+
+		Set<Role> roles = new HashSet<>();
+		if (form.roles() != null && !form.roles().isEmpty()) {
+			roles.addAll(rolesService.getRolesByNames(form.roles()));
+		} else if (form.role() != null && !form.role().isBlank()) {
+			roles.add(rolesService.getRoleByName(form.role()));
+		}
+
+		if (!roles.isEmpty()) {
+			user.setRoles(roles);
+		}
 
 		return save(user);
 	}
@@ -118,6 +136,7 @@ public class UsersService {
 			.atuacao(form.function())
 			.build();
 		user.getSchoolClasses().add(newSchoolClass);
+
 		save(user);
 		return true;
 	}
@@ -186,7 +205,8 @@ public class UsersService {
 			if (filter == null) return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
 			if (filter.search() != null && !filter.search().isBlank()) {
-				Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
+				query.distinct(true);
+				Join<User, Role> roleJoin = root.join("roles", JoinType.LEFT);
 
 				String search = filter.search().toLowerCase();
 				String searchPattern = "%" + search + "%";
@@ -223,7 +243,8 @@ public class UsersService {
 				);
 
 				if (filter.roleName() != null && !filter.roleName().isBlank()) {
-					Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
+					query.distinct(true);
+					Join<User, Role> roleJoin = root.join("roles", JoinType.INNER);
 
 					predicates.add(
 						criteriaBuilder.like(

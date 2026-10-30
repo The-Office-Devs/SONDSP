@@ -13,6 +13,7 @@ import { SchoolsPage } from '@/schools/schools-page/schools-page';
 import { ClassesPage } from '@/classes/classes-page/classes-page';
 import { StudentsPage } from '@/students/students-page/students.page';
 import { ActivitiesPage } from '@/activities/activities-page/activities-page';
+import { RolesPage } from '@/roles/roles-page/roles-page';
 
 import { SurveysPage } from '@/surveys/surveys-page/surveys-page';
 import { SurveysHistoryPage } from '@/surveys/surveys-history/surveys-history-page';
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
                   { index: true, element: <Navigate to="usuarios" replace /> },
                   { path: 'alunos', element: <StudentsPage /> },
                   { path: 'escolas', element: <SchoolsPage /> },
+                  { path: 'funcoes', element: <RolesPage /> },
                   { path: 'modelos-atividades', element: <ActivitiesPage /> },
                   { path: 'usuarios', element: <UsersPage /> },
                   { path: 'turmas', element: <ClassesPage /> },

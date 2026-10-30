@@ -6,6 +6,7 @@ export interface User {
   registration: string;
   email: string;
   role: string;
+  roles?: string[];
   permissions: string[];
   schools: SchoolWithClass[];
 }
@@ -15,7 +16,8 @@ export interface UserListItem {
   name: string;
   registration: string;
   email: string;
-  role: string
+  role: string;
+  roles?: string[];
   status: boolean;
   linked: boolean;
 }
@@ -32,8 +34,9 @@ export interface CreateUserRequest {
   name: string;
   registration: string;
   email: string;
-  role: string;
-  permissions: string[];
+  role?: string;
+  roles: string[];
+  permissions?: string[];
 }
 
 export type UpdateUserRequest = CreateUserRequest;

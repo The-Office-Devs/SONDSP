@@ -14,7 +14,20 @@ const columns: ColumnDef<UserListItem>[] = [
   { id: "registration", header: "Registro Funcional (RF)", width: "14%" },
   { id: "name", header: "Nome", width: "20%" },
   { id: "email", header: "Email", width: "26%" },
-  { id: "role", header: "Função", width: "16%" },
+  {
+    id: "role",
+    header: "Funções",
+    width: "18%",
+    accessor: (user: UserListItem) => {
+      const rolesList =
+        user.roles && user.roles.length > 0
+          ? user.roles
+          : user.role
+          ? [user.role]
+          : [];
+      return rolesList.join(", ") || "-";
+    },
+  },
   { id: "status", header: "Status", width: "10%" }
 ];
 

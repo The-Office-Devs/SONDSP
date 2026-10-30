@@ -6,13 +6,15 @@ import {
   School,
   UserRound, 
   Users,
-  Puzzle
+  Puzzle,
+  ShieldCheck
 } from "lucide-react";
 import { matchPath } from "react-router-dom";
 
 export const administratorItems = [
   { label: 'Alunos', icon: UserRound, to: '/alunos' },
   { label: 'Escolas', icon: School, to: '/escolas' },
+  { label: 'Funções e Permissões', icon: ShieldCheck, to: '/funcoes' },
   { label: 'Modelos de Atividades', icon: NotebookPen, to: '/modelos-atividades' },
   { label: 'Turmas', icon: ClipboardList, to: '/turmas' },
   { label: 'Usuários', icon: Users, to: '/usuarios' },

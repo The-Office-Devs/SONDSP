@@ -50,8 +50,9 @@ export function useCreateUser() {
         email: data.email.toLowerCase(),
         registration: data.registration,
         name: data.name,
-        role: data.role,
-        permissions: data.permissions
+        role: data.roles[0],
+        roles: data.roles,
+        permissions: []
       }),
 
     onSuccess: () => {
@@ -77,8 +78,9 @@ export function useUpdateUser() {
           email: data.email.toLowerCase(),
           registration: data.registration,
           name: data.name,
-          role: data.role,
-          permissions: data.permissions
+          role: data.roles[0],
+          roles: data.roles,
+          permissions: []
         }
       ),
 
