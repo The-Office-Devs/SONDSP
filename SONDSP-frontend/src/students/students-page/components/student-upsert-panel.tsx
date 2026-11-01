@@ -1,3 +1,4 @@
+import { useHasPermission } from "@/auth/use-permission";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,6 +60,9 @@ export function StudentUpsertPanel({
 
   const isEditMode = studentIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+  const canManageStudents = useHasPermission("ALUNO_MANAGE");
+  const canImportStudents = useHasPermission("ALUNO_IMPORT");
+
   
   const submitType = isEditMode ? "edit" : "insert";
   const submitLabel = getSubmitLabel(isPending, submitType);
@@ -254,7 +258,7 @@ export function StudentUpsertPanel({
                     <Button
                       type="submit"
                       isRounded={true}
-                      disabled={isPending || isLoadingClass|| !form.formState.isValid}
+                      disabled={isPending || isLoadingClass || !form.formState.isValid || !canManageStudents}
                     >
                       <Check className="size-4" />
                       {submitLabel}
@@ -276,7 +280,7 @@ export function StudentUpsertPanel({
                     <Button
                       type="button"
                       isRounded
-                      disabled={!batchFile || isImporting}
+                      disabled={!batchFile || isImporting || !canImportStudents}
                       onClick={handleImport}
                     >
                       <Check className="size-4" />
@@ -295,7 +299,7 @@ export function StudentUpsertPanel({
                   <Button
                     type="button"
                     isRounded
-                    disabled={!batchFile || isPending}
+                    disabled={!batchFile || isPending || !canImportStudents}
                     onClick={() => {}}
                   >
                     <Check className="size-4" />

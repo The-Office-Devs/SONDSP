@@ -1,11 +1,10 @@
 package br.com.sondsp.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
+import static br.com.sondsp.util.SystemConstants.ADMIN_ROLE_NAME;
 
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.*;
+import java.util.*;
+import lombok.*;
 
 @Entity
 @Getter
@@ -15,32 +14,25 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "funcao")
 public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
 
-    @Column(name = "nome", nullable = false)
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Integer id;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "funcao_x_permissao",
-        joinColumns = @JoinColumn(name = "id_funcao"),
-        inverseJoinColumns = @JoinColumn(name = "id_permissao")
-    )
-    @Builder.Default
-    private Set<Permission> permissions = new HashSet<>();
+	@Column(name = "nome", nullable = false, unique = true)
+	private String name;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "roles")
-    @Builder.Default
-    private Set<User> users = new HashSet<>();
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+		name = "funcao_x_permissao",
+		joinColumns = @JoinColumn(name = "id_funcao"),
+		inverseJoinColumns = @JoinColumn(name = "id_permissao")
+	)
+	@Builder.Default
+	private Set<Permission> permissions = new HashSet<>();
 
-    public boolean isAdmin() {
-        if (id != null && id == 1) return true;
-        if (name == null) return false;
-        String normalized = name.trim().toUpperCase();
-        return normalized.equals("ADMIN") || normalized.equals("ADMINISTRADOR");
-    }
+	public Boolean isAdmin() {
+		return Objects.equals(name, ADMIN_ROLE_NAME);
+	}
 }

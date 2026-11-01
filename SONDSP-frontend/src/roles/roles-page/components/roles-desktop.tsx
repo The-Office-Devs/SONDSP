@@ -3,16 +3,20 @@ import { useState, useMemo } from "react";
 import { useRoles, useDeleteRole } from "../use-roles";
 import type { Role } from "../../roles.types";
 import { RoleUpsertPanel } from "./role-upsert-panel";
+import { RolePermissionsDialog } from "./role-permissions-dialog";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
 import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
+import { useHasPermission } from "@/auth/use-permission";
 
 export function RolesDesktop() {
   const { data: roles = [], isFetching } = useRoles();
   const { mutate: deleteRole, isPending: isDeleting } = useDeleteRole();
+  const canManageRoles = useHasPermission("FUNCAO_MANAGE");
 
   const [filter, setFilter] = useState("");
   const [editRoleId, setEditRoleId] = useState<number | null>(null);
+  const [roleToView, setRoleToView] = useState<Role | null>(null);
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
 
   const filteredRoles = useMemo(() => {
@@ -47,13 +51,18 @@ export function RolesDesktop() {
 
   const actions: RowAction<Role>[] = [
     {
+      type: "view",
+      onClick: (role) => setRoleToView(role),
+    },
+    {
       type: "edit",
       onClick: (role) => setEditRoleId(role.id),
+      disabled: (role) => role.isAdmin || !canManageRoles,
     },
     {
       type: "delete",
       onClick: (role) => setRoleToDelete(role),
-      disabled: (role) => role.isAdmin,
+      disabled: (role) => role.isAdmin || !canManageRoles,
     },
   ];
 
@@ -73,6 +82,14 @@ export function RolesDesktop() {
         actions={actions}
         emptyMessage="Nenhuma função encontrada"
         isFetching={isFetching}
+      />
+
+      <RolePermissionsDialog
+        role={roleToView}
+        open={roleToView !== null}
+        onOpenChange={(open) => {
+          if (!open) setRoleToView(null);
+        }}
       />
 
       <DeleteDialog<Role>

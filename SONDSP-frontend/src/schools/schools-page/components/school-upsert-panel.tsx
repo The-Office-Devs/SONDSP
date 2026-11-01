@@ -1,3 +1,4 @@
+import { useHasPermission } from "@/auth/use-permission";
 import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,6 +32,8 @@ export function SchoolUpsertPanel({
 
   const isEditMode = schoolIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+  const canManageSchools = useHasPermission("ESCOLA_MANAGE");
+
 
   const title = getTitle("Escola", isEditMode, false);
   const submitType = isEditMode ? "edit" : "insert";
@@ -83,7 +86,7 @@ export function SchoolUpsertPanel({
     onCancelEdit();
   };
 
-  const isSubmitDisabled = isPending || isLoadingSchool || !form.formState.isValid;
+  const isSubmitDisabled = isPending || isLoadingSchool || !form.formState.isValid || !canManageSchools;
   return (
     <FormProvider {...form}>
       <Card

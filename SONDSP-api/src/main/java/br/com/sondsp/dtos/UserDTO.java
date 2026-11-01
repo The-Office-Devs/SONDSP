@@ -10,34 +10,9 @@ public record UserDTO(
 	String registration,
 	String email,
 	String role,
-	List<String> roles,
-	List<String> permissions,
 	Boolean status,
-	List<SchoolClassesDTO> schools
+	List<SchoolClassDTO> schoolClasses
 ) {
-	public UserDTO(
-		Integer id,
-		String name,
-		String registration,
-		String email,
-		String role,
-		List<String> permissions,
-		Boolean status,
-		List<SchoolClassesDTO> schools
-	) {
-		this(
-			id,
-			name,
-			registration,
-			email,
-			role,
-			role != null ? List.of(role) : List.of(),
-			permissions,
-			status,
-			schools
-		);
-	}
-
 	public UserDTO(User user) {
 		this(
 			user.getId(),
@@ -45,44 +20,19 @@ public record UserDTO(
 			user.getRegistration(),
 			user.getEmail(),
 			user.getRole() != null ? user.getRole().getName() : null,
-			user.getRoles() != null
-				? user.getRoles().stream().map(Role::getName).sorted().toList()
-				: List.of(),
-			user.getPermissions() != null
-				? user.getPermissions().stream().map(Permission::getPermission).sorted().toList()
-				: List.of(),
 			user.getStatus(),
-			user.getSchools() != null && user.getSchoolClasses() != null
-				? buildSchoolClassesDTO(user.getSchoolClasses(), user.getSchools())
-				: null
+			user.getSchoolClasses() != null ? buildSchoolClassDTO(user.getSchoolClasses()) : null
 		);
 	}
 
-	private static List<SchoolClassesDTO> buildSchoolClassesDTO(
-		Set<UserSchoolClass> schoolClasses,
-		Set<UserSchool> schools
-	) {
-		if (schools == null || schools.isEmpty()) {
-			return null;
-		}
-
-		return schools
+	private static List<SchoolClassDTO> buildSchoolClassDTO(Set<UserSchoolClass> schoolClasses) {
+		return schoolClasses
 			.stream()
-			.map(UserSchool::getSchool)
-            .filter(school -> Boolean.TRUE.equals(school.getStatus()))
-			.map(school -> {
-				List<SchoolClassDTO> classesLinkedToThisSchool = schoolClasses == null ? List.of() :
-                        schoolClasses.stream()
-						    .map(UserSchoolClass::getSchoolClass)
-						    .filter(schoolClass ->
-							    schoolClass.getSchool() != null &&
-                                        schoolClass.getSchool().getId().equals(school.getId()))
-						    .map(schoolClass -> new SchoolClassDTO(schoolClass, false))
-						    .toList();
+			.map(userSchoolClass -> {
+				SchoolClass schoolClass = userSchoolClass.getSchoolClass();
 
-				return new SchoolClassesDTO(school, classesLinkedToThisSchool);
+				return new SchoolClassDTO(schoolClass);
 			})
-			.filter(dto -> !dto.schoolClass().isEmpty())
 			.toList();
 	}
 }

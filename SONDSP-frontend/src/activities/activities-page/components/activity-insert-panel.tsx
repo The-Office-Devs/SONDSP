@@ -1,3 +1,4 @@
+import { useHasPermission } from "@/auth/use-permission";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -25,6 +26,8 @@ const defaultValues: ActivityFormInput = {
 
 export function ActivityInsertPanel() {
   const { mutate: createActivity, isPending } = useCreateActivity();
+  const canManageActivities = useHasPermission("ATIVIDADE_MANAGE");
+
 
   const submitLabel = getSubmitLabel(isPending, 'insert');
 
@@ -52,7 +55,7 @@ export function ActivityInsertPanel() {
     });
   }
 
-  const isSubmitDisabled = isPending || !form.formState.isValid;
+  const isSubmitDisabled = isPending || !form.formState.isValid || !canManageActivities;
   return (
     <FormProvider {...form}>
       <Card

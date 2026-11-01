@@ -4,6 +4,7 @@ import { useClasses, useInactivateClass } from "../../use-classes";
 import { useLinkUserToSchoolClass } from "@/users/users-page/use-users";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
+import { useHasPermission } from "@/auth/use-permission";
 
 import type { ClassListItem } from "@/classes/classes.types";
 import { ClassUpsertPanel } from "./class-upsert-panel";
@@ -32,6 +33,10 @@ export function ClassesDesktop() {
   const { mutate, isPending } = useInactivateClass();
   const { mutate: linkUserToSchoolClass } = useLinkUserToSchoolClass();
 
+  const canManageClasses = useHasPermission("TURMA_MANAGE");
+  const canStatusClasses = useHasPermission("TURMA_STATUS");
+  const canLinkClass = useHasPermission("USUARIO_VINCULAR_TURMA");
+
   const [editClassId, setEditClassId] = useState<number | null>(null);
   const [inactivateClass, setInactivateClass] = useState<ClassListItem | null>(null);
   const [linkTeachersClass, setLinkTeachersClass] = useState<ClassListItem | null>(null);
@@ -42,9 +47,22 @@ export function ClassesDesktop() {
   }
 
   const actions: RowAction<ClassListItem>[] = [
-    { type: "edit", onClick: (classItem) => setEditClassId(classItem.id), disabled: (classItem) => !classItem.status },
-    { type: "link", onClick: (classItem) => setLinkTeachersClass(classItem), disabled: (classItem) => !classItem.status },
-    { type: "inactivate", onClick: (classItem) => setInactivateClass(classItem), isActive: (classItem) => classItem.status }
+    {
+      type: "edit",
+      onClick: (classItem) => setEditClassId(classItem.id),
+      disabled: (classItem) => !classItem.status || !canManageClasses
+    },
+    {
+      type: "link",
+      onClick: (classItem) => setLinkTeachersClass(classItem),
+      disabled: (classItem) => !classItem.status || !canLinkClass
+    },
+    {
+      type: "inactivate",
+      onClick: (classItem) => setInactivateClass(classItem),
+      isActive: (classItem) => classItem.status,
+      disabled: () => !canStatusClasses
+    }
   ];
   
   return (

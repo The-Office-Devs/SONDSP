@@ -1,3 +1,4 @@
+import { useHasPermission } from "@/auth/use-permission";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +38,8 @@ export function ClassUpsertPanel({
 
   const isEditMode = classIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+  const canManageClasses = useHasPermission("TURMA_MANAGE");
+
 
   const title = getTitle("Turma", isEditMode, false);
   const submitType = isEditMode ? "edit" : "insert";
@@ -97,7 +100,7 @@ export function ClassUpsertPanel({
       label: school.name
     })) ?? [];
 
-  const isSubmitDisabled = isPending || isLoadingClass || !form.formState.isValid;
+  const isSubmitDisabled = isPending || isLoadingClass || !form.formState.isValid || !canManageClasses;
   return (
     <FormProvider {...form}>
       <Card

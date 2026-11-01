@@ -1,3 +1,4 @@
+import { useHasPermission } from "@/auth/use-permission";
 import { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,6 +37,8 @@ export function UserUpsertPanel({
 
   const isEditMode = userIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+  const canManageUsers = useHasPermission("USUARIO_MANAGE");
+
 
   const title = getTitle("Usuário", isEditMode, false);
   const submitType = isEditMode ? "edit" : "insert";
@@ -111,7 +114,7 @@ export function UserUpsertPanel({
     onCancelEdit();
   };
 
-  const isSubmitDisabled = isPending || isLoadingUser || !form.formState.isValid;
+  const isSubmitDisabled = isPending || isLoadingUser || !form.formState.isValid || !canManageUsers;
 
   return (
     <FormProvider {...form}>

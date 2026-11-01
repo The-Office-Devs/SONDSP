@@ -1,5 +1,7 @@
 package br.com.sondsp.services;
 
+import static br.com.sondsp.util.SystemMessages.*;
+
 import br.com.sondsp.entities.*;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.UserFilter;
@@ -8,16 +10,13 @@ import br.com.sondsp.repositories.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.*;
 import jakarta.validation.ValidationException;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-
-import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +26,6 @@ public class UsersService {
 	private final RolesService rolesService;
 
 	private final SchoolClassService schoolClassService;
-	private final SchoolService schoolService;
 	private final AccountActivationService accountActivationService;
 
 	public User registerUser(UserForm form) {
@@ -43,23 +41,11 @@ public class UsersService {
 			);
 		}
 
-		Set<Role> roles = new HashSet<>();
-		if (form.roles() != null && !form.roles().isEmpty()) {
-			roles.addAll(rolesService.getRolesByNames(form.roles()));
-		} else if (form.role() != null && !form.role().isBlank()) {
-			roles.add(rolesService.getRoleByName(form.role()));
-		}
-
-		if (roles.isEmpty()) {
-			throw new ValidationException(EMPTY_ROLES);
-		}
-
 		User savedUser = save(
 			User
 				.builder()
 				.name(form.name())
 				.registration(form.registration())
-				.roles(roles)
 				.status(false)
 				.email(form.email())
 				.password(null)
@@ -103,17 +89,6 @@ public class UsersService {
 		user.setRegistration(form.registration());
 		user.setEmail(form.email());
 
-		Set<Role> roles = new HashSet<>();
-		if (form.roles() != null && !form.roles().isEmpty()) {
-			roles.addAll(rolesService.getRolesByNames(form.roles()));
-		} else if (form.role() != null && !form.role().isBlank()) {
-			roles.add(rolesService.getRoleByName(form.role()));
-		}
-
-		if (!roles.isEmpty()) {
-			user.setRoles(roles);
-		}
-
 		return save(user);
 	}
 
@@ -136,37 +111,6 @@ public class UsersService {
 			.atuacao(form.function())
 			.build();
 		user.getSchoolClasses().add(newSchoolClass);
-
-		save(user);
-		return true;
-	}
-
-	public Boolean linkToSchool(Integer id, LinkSchoolForm form) {
-		// Busca o usuário e a escola
-		User user = getUser(id);
-		School school = schoolService.getSchool(form.schoolId());
-
-		// Se o usuário possui vínculo com a escola
-		if (user.getSchools().stream().anyMatch(usc -> usc.getSchool().getId().equals(school.getId()))) {
-			// Remove o vínculo do usuario com todas as turmas da escola
-			user.getSchoolClasses().removeIf(sc -> sc.getSchoolClass().getSchool().getId().equals(school.getId()));
-
-			// Remove o vínculo com a escola
-			user.getSchools().removeIf(usc -> usc.getSchool().getId().equals(school.getId()));
-
-			save(user);
-			return false;
-		}
-
-		// Se não possui vínculo com a escola, deve criá-lo
-		if (form.function() == null || form.function().isBlank()) {
-			// Caso esteja criando um vínculo, deve ser passada a função do usuário na
-			// escola
-			throw new ValidationException(EMPTY_FUNCTION);
-		}
-
-		UserSchool newSchool = UserSchool.builder().user(user).school(school).atuacao(form.function()).build();
-		user.getSchools().add(newSchool);
 
 		save(user);
 		return true;
@@ -262,33 +206,19 @@ public class UsersService {
 				);
 			}
 
-			if (filter.linkedToSchoolId() != null) {
-				Subquery<Integer> sub = query.subquery(Integer.class);
-				Root<UserSchool> usRoot = sub.from(UserSchool.class);
-				sub
-					.select(usRoot.get("user").get("id"))
-					.where(criteriaBuilder.equal(usRoot.get("school").get("id"), filter.linkedToSchoolId()));
-				predicates.add(root.get("id").in(sub));
-			}
-
 			if (filter.status() != null) predicates.add(criteriaBuilder.equal(root.get("status"), filter.status()));
 
 			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 		};
 	}
 
-	public boolean isLinked(User user, Integer schoolId, Integer schoolClassId) {
+	public boolean isLinked(User user, Integer schoolClassId) {
 		if (schoolClassId != null) return (
 			user.getSchoolClasses() != null &&
 			user
 				.getSchoolClasses()
 				.stream()
 				.anyMatch(usc -> usc.getSchoolClass() != null && schoolClassId.equals(usc.getSchoolClass().getId()))
-		);
-
-		if (schoolId != null) return (
-			user.getSchools() != null &&
-			user.getSchools().stream().anyMatch(us -> us.getSchool() != null && schoolId.equals(us.getSchool().getId()))
 		);
 
 		return false;

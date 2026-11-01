@@ -4,6 +4,7 @@ import { useInactivateSchool, useSchools } from "../use-schools";
 import { useLinkUserToSchool } from "@/users/users-page/use-users";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
+import { useHasPermission } from "@/auth/use-permission";
 
 import type { School } from "@/schools/schools.types";
 import { SchoolUpsertPanel } from "./school-upsert-panel";
@@ -29,6 +30,10 @@ export function SchoolsDesktop() {
   const { mutate, isPending } = useInactivateSchool();
   const { mutate: linkUserToSchool } = useLinkUserToSchool();
 
+  const canManageSchools = useHasPermission("ESCOLA_MANAGE");
+  const canStatusSchools = useHasPermission("ESCOLA_STATUS");
+  const canLinkSchool = useHasPermission("USUARIO_VINCULAR_ESCOLA");
+
   const [editSchoolId, setEditSchoolId] = useState<number | null>(null);
   const [inactivateSchool, setInactivateSchool] = useState<School | null>(null);
   const [linkUsersSchool, setLinkUsersSchool] = useState<School | null>(null);
@@ -39,9 +44,22 @@ export function SchoolsDesktop() {
   }
 
   const actions: RowAction<School>[] = [
-    { type: "edit", onClick: (school) => setEditSchoolId(school.id), disabled: (user) => !user.status },
-    { type: "link", onClick: (school) => setLinkUsersSchool(school), disabled: (school) => !school.status },
-    { type: "inactivate", onClick: (school) => setInactivateSchool(school), isActive: (school) => school.status }
+    {
+      type: "edit",
+      onClick: (school) => setEditSchoolId(school.id),
+      disabled: (user) => !user.status || !canManageSchools
+    },
+    {
+      type: "link",
+      onClick: (school) => setLinkUsersSchool(school),
+      disabled: (school) => !school.status || !canLinkSchool
+    },
+    {
+      type: "inactivate",
+      onClick: (school) => setInactivateSchool(school),
+      isActive: (school) => school.status,
+      disabled: () => !canStatusSchools
+    }
   ];
 
   return (

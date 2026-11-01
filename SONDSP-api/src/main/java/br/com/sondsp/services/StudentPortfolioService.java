@@ -37,10 +37,6 @@ public class StudentPortfolioService {
                 ? new SchoolClassDTO(student.getSchoolClass())
                 : null;
 
-        String schoolName = (student.getSchoolClass() != null && student.getSchoolClass().getSchool() != null)
-                ? student.getSchoolClass().getSchool().getName()
-                : "Sem escola vinculada";
-
         String schoolYear = (student.getSchoolClass() != null && student.getSchoolClass().getSchoolYear() != null)
                 ? student.getSchoolClass().getSchoolYear()
                 : "2026";
@@ -59,7 +55,6 @@ public class StudentPortfolioService {
                 initials,
                 currentClassName,
                 schoolClassDTO,
-                schoolName,
                 schoolYear,
                 student.getRegistration(),
                 student.getRowNumber(),

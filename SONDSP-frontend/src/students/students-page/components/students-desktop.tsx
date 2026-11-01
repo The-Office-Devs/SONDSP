@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTableState } from "@/hooks/use-table-state";
 import { useInactivateStudent, useStudents } from "../use-students";
 import { buildPaginationProps } from "@/api/types";
+import { useHasPermission } from "@/auth/use-permission";
 
 import type { StudentListItem } from "@/students/students.types";
 import { StudentUpsertPanel } from "./student-upsert-panel";
@@ -29,12 +30,24 @@ export function StudentsDesktop() {
   });
   const { mutate, isPending } = useInactivateStudent();
 
+  const canManageStudents = useHasPermission("ALUNO_MANAGE");
+  const canStatusStudents = useHasPermission("ALUNO_STATUS");
+
   const [editStudentId, setEditStudentId] = useState<number | null>(null);
   const [inactivateStudent, setInactivateStudent] = useState<StudentListItem | null>(null);
 
   const actions: RowAction<StudentListItem>[] = [
-    { type: "edit", onClick: (studentItem) => setEditStudentId(studentItem.id), disabled: (studentItem) => !studentItem.status },
-    { type: "inactivate", onClick: (studentItem) => setInactivateStudent(studentItem), isActive: (studentItem) => studentItem.status }
+    {
+      type: "edit",
+      onClick: (studentItem) => setEditStudentId(studentItem.id),
+      disabled: (studentItem) => !studentItem.status || !canManageStudents
+    },
+    {
+      type: "inactivate",
+      onClick: (studentItem) => setInactivateStudent(studentItem),
+      isActive: (studentItem) => studentItem.status,
+      disabled: () => !canStatusStudents
+    }
   ];
   
   return (
