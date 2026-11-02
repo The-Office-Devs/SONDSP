@@ -26,7 +26,7 @@ export function DesktopShellSidebar() {
   const logout = useAuthStore((state) => state.logout);
 
   const permissions = user?.permissions || [];
-  const isAdmin = user?.role === 'Administrador' || (user as any)?.isAdmin;
+  const isAdmin = user?.role.name === 'Administrador' || (user as any)?.isAdmin;
 
   const visibleAdminItems = useMemo(
     () => administratorItems.filter((item) => canAccessItem(item, permissions, isAdmin)),
@@ -80,7 +80,7 @@ export function DesktopShellSidebar() {
         <div className={cn('flex h-full min-h-0 flex-col gap-8 px-3 py-6', expanded ? 'items-stretch' : 'items-center')}>
           <div className="flex w-fit items-center gap-3 rounded-full bg-white px-2 py-1 text-primary shadow-sm">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef4ff] text-lg font-semibold">{user.name.charAt(0).toUpperCase()}</div>
-            {expanded ? <span className="pr-2 text-lg font-semibold">{user.role}</span> : null}
+            {expanded ? <span className="pr-2 text-lg font-semibold">{user.role.name}</span> : null}
           </div>
 
           <nav

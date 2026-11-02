@@ -9,7 +9,6 @@ import { ForgotPasswordPage } from '@/auth/forgot-password/forgot-password-page'
 import { ActivateAccountPage } from '@/auth/activate-account/activate-account-page';
 
 import { UsersPage } from '@/users/users-page/users-page';
-import { SchoolsPage } from '@/schools/schools-page/schools-page';
 import { ClassesPage } from '@/classes/classes-page/classes-page';
 import { StudentsPage } from '@/students/students-page/students.page';
 import { ActivitiesPage } from '@/activities/activities-page/activities-page';
@@ -58,7 +57,6 @@ export const router = createBrowserRouter([
                 children: [
                   { index: true, element: <Navigate to="usuarios" replace /> },
                   { path: 'alunos', element: <StudentsPage /> },
-                  { path: 'escolas', element: <SchoolsPage /> },
                   { path: 'funcoes', element: <RolesPage /> },
                   { path: 'modelos-atividades', element: <ActivitiesPage /> },
                   { path: 'usuarios', element: <UsersPage /> },

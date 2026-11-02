@@ -6,7 +6,7 @@ export function useHasPermission(permission: string | string[]): boolean {
   if (!user) return false;
 
   // Administrador Geral do Sistema possui todas as permissões irrestritas
-  if (user.role === 'Administrador' || (user as any).isAdmin) {
+  if (user.role.name === 'Administrador' || (user as any).isAdmin) {
     return true;
   }
 

@@ -10,11 +10,10 @@ import type { ClassListItem } from "@/classes/classes.types";
 import { ClassUpsertPanel } from "./class-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
-import { LinkUsersDialog } from "@/schools/schools-page/components/link-users-dialog";
+import { LinkUsersDialog } from "@/classes/classes-page/components/link-users-dialog";
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<ClassListItem>[] = [
-  { id: "school", header: "Escola", width: "30%", accessor: (row) => row.school.name },
   { id: "name", header: "Nome", width: "10%" },
   { id: "shift", header: "Turno", width: "10%" },
   { id: "gradeLevel", header: "Ano Escolar", width: "10%" },
@@ -90,7 +89,7 @@ export function ClassesDesktop() {
         onLink={handleLinkUserToSchoolClass}
         queryParams={
           linkTeachersClass
-            ? { linkedToSchoolId: linkTeachersClass.school.id, schoolClassId: linkTeachersClass.id }
+            ? { schoolClassId: linkTeachersClass.id }
             : undefined
         }
         isTeachers={true}

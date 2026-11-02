@@ -15,9 +15,12 @@ export const userSchema = z.object({
     .string()
     .trim()
     .min(1, "O nome completo do usuário é obrigatório"),
-  roles: z
-    .array(z.string())
-    .min(1, "Selecione ao menos uma função para o usuário"),
+  roleId: z
+    .coerce
+    .number()
+    .int()
+    .positive("Selecione uma função para o usuário"),
 });
 
 export type UserFormData = z.infer<typeof userSchema>;
+export type UserFormInput = z.input<typeof userSchema>;

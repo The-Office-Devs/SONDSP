@@ -1,16 +1,17 @@
-import type { AuthUser, UserRole } from "./auth.types";
+import type { AuthUser } from "./auth.types";
 import { administratorItems, applicationItems, canAccessItem } from "@/lib/sidebar-utils";
+import type { Role } from "@/roles/roles.types";
 
 export type AppArea = 'admin' | 'application';
 
-export function canAccessByRole(role: UserRole, area: AppArea): boolean {
-  if (role === 'Administrador' || role === 'Administrador da Escola') {
+export function canAccessByRole(role: Role, area: AppArea): boolean {
+  if (role.name === 'Administrador') {
     return area === 'admin' || area === 'application';
   }
   return area === 'application';
 }
 
-export function canAccess(target: AuthUser | UserRole | null | undefined, area: AppArea): boolean {
+export function canAccess(target: AuthUser | Role | null | undefined, area: AppArea): boolean {
   if (!target) return false;
 
   if (typeof target === 'string') {
@@ -18,7 +19,7 @@ export function canAccess(target: AuthUser | UserRole | null | undefined, area: 
   }
 
   const user = target;
-  const isAdmin = user.role === 'Administrador' || (user as any).isAdmin;
+  const isAdmin = user.role.isAdmin;
   if (isAdmin) return true;
 
   const permissions = user.permissions || [];
@@ -43,7 +44,7 @@ export function getHomePath(target: AuthUser | UserRole | null | undefined): str
   }
 
   const user = target;
-  const isAdmin = user.role === 'Administrador' || (user as any).isAdmin;
+  const isAdmin = user.role.isAdmin;
   const permissions = user.permissions || [];
 
   if (isAdmin) {

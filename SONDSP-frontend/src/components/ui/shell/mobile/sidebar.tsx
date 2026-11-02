@@ -37,7 +37,7 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
   }, [open]);
 
   const permissions = user?.permissions || [];
-  const isAdmin = user?.role === 'Administrador' || (user as any)?.isAdmin;
+  const isAdmin = user?.role.name === 'Administrador' || (user as any)?.isAdmin;
 
   const visibleAdminItems = useMemo(
     () => administratorItems.filter((item) => canAccessItem(item, permissions, isAdmin)),
@@ -68,11 +68,11 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
 
   return (
     <div className={cn(
-        'fixed inset-0 z-40 lg:hidden',
-        open ? 'pointer-events-auto' : 'pointer-events-none',
-      )}
+      'fixed inset-0 z-40 lg:hidden',
+      open ? 'pointer-events-auto' : 'pointer-events-none',
+    )}
     >
-      { /* Parte a direita quando o sidebar abre */ }
+      { /* Parte a direita quando o sidebar abre */}
       <div
         onClick={onClose}
         className={cn(
@@ -93,7 +93,7 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef4ff] text-lg font-semibold">
                 {user.name.charAt(0).toUpperCase()}
               </div>
-              <span className="pr-2 text-lg font-semibold">{user.role}</span>
+              <span className="pr-2 text-lg font-semibold">{user.role.name}</span>
             </div>
 
             <button
@@ -139,7 +139,7 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
             {showApplication && (
               <>
                 <MobileSidebarSection title="Área do Professor" icon={ClipboardList} />
-                
+
                 <div className="space-y-1">
                   {visibleAppItems.map((item) => (
                     <MobileSidebarItem

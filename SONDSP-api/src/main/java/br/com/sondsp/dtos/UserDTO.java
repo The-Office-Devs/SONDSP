@@ -9,7 +9,7 @@ public record UserDTO(
 	String name,
 	String registration,
 	String email,
-	String role,
+	RoleDTO role,
 	Boolean status,
 	List<SchoolClassDTO> schoolClasses
 ) {
@@ -19,7 +19,7 @@ public record UserDTO(
 			user.getName(),
 			user.getRegistration(),
 			user.getEmail(),
-			user.getRole() != null ? user.getRole().getName() : null,
+			user.getRole() != null ? new RoleDTO(user.getRole()) : null,
 			user.getStatus(),
 			user.getSchoolClasses() != null ? buildSchoolClassDTO(user.getSchoolClasses()) : null
 		);

@@ -5,7 +5,6 @@ export interface StudentListItem {
   name: string;
   registration: string;
   schoolClass?: Class | null;
-  schoolName?: Class | null;
   rowNumber?: number | null;
   birthDate?: string | null;
   classEntryDate?: string | null;
@@ -36,7 +35,6 @@ export interface CreateStudentRequest {
 export type UpdateStudentRequest = CreateStudentRequest;
 
 export interface StudentImportResult {
-  schoolName: string;
   className: string;
   classCreated: boolean;
   created: number;

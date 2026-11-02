@@ -15,7 +15,6 @@ export interface Role {
   name: string;
   permissions: Permission[];
   isAdmin: boolean;
-  userCount: number;
 }
 
 export interface RoleFormData {

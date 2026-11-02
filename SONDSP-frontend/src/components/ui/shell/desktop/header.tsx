@@ -15,7 +15,7 @@ export function DesktopShellHeader() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login'); 
+    navigate('/login');
   };
 
   const handleHelpClick = () => {
@@ -43,7 +43,7 @@ export function DesktopShellHeader() {
             <h1 className="truncate text-[1.45rem] font-medium leading-tight">{user.name}</h1>
             <p className="mt-1 flex items-center gap-2 text-sm text-white/65">
               <span className="h-2 w-2 rounded-full bg-white/65" />
-              <span> Função: {user.role} </span>
+              <span> Função: {user.role.name} </span>
             </p>
           </div>
         </div>

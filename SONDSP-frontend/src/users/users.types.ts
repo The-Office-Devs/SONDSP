@@ -1,14 +1,14 @@
-import type { SchoolWithClass } from "@/schools/schools.types";
+import type { Class } from "@/classes/classes.types";
+import type { Role } from "@/roles/roles.types";
 
 export interface User {
   id: number;
   name: string;
   registration: string;
   email: string;
-  role: string;
-  roles?: string[];
+  role: Role;
   permissions: string[];
-  schools: SchoolWithClass[];
+  schoolClasses: Class[];
 }
 
 export interface UserListItem {
@@ -16,8 +16,7 @@ export interface UserListItem {
   name: string;
   registration: string;
   email: string;
-  role: string;
-  roles?: string[];
+  role: Role;
   status: boolean;
   linked: boolean;
 }
@@ -25,8 +24,7 @@ export interface UserListItem {
 export interface UserFilter {
   search?: string;
   status?: boolean;
-  roleName?: string;
-  schoolId?: number;
+  roleId?: number;
   schoolClassId?: number;
 }
 
@@ -34,17 +32,11 @@ export interface CreateUserRequest {
   name: string;
   registration: string;
   email: string;
-  role?: string;
-  roles: string[];
+  roleId: number;
   permissions?: string[];
 }
 
 export type UpdateUserRequest = CreateUserRequest;
-
-export interface LinkSchoolRequest {
-  schoolId: number;
-  function: string;
-}
 
 export interface LinkSchoolClassRequest {
   schoolClassId: number;

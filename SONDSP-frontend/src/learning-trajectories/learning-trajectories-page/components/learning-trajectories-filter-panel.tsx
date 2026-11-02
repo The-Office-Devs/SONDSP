@@ -3,7 +3,6 @@ import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { getSubmitLabel } from "@/lib/form-utils";
-import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 import { subjectOptions } from "@/lib/options-utils";
 import { useStrandOptions } from "@/strands/use-strands";
 import { 
@@ -15,6 +14,7 @@ import {
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
+import { useUserClassOptions } from "@/classes/use-classes";
 
 interface LearningTractoriesFilterPanelProps {
   initialValues?: LearningTrajectoriesFormData | null;
@@ -24,7 +24,6 @@ interface LearningTractoriesFilterPanelProps {
 }
 
 const defaultValues: LearningTrajectoriesFormInput = {
-  schoolId: 0,
   schoolClassId: 0,
   subjectId: 0,
   strandId: 0
@@ -50,10 +49,9 @@ export function LearningTractoriesFilterPanel({
     resetOptions: { keepDefaultValues: true }
   });
 
-  const schoolId = useWatch({ control: form.control, name: "schoolId" });
   const subject = useWatch({ control: form.control, name: "subjectId" });
 
-  const { schoolOptions, classOptions, isLoading: isLoadingSchools } = useUserSchoolOptions(Number(schoolId));
+  const { classOptions } = useUserClassOptions();
 
   const subjectLabel = subjectOptions.find(
     (opt) => opt.value === String(subject)
@@ -79,21 +77,12 @@ export function LearningTractoriesFilterPanel({
         onReset={handleReset}
         collapsible
       >
-        <SelectField
-          name="schoolId"
-          label="Escola"
-          placeholder={isLoadingSchools ? "Carregando escolas..." : "Selecione a escola"}
-          options={schoolOptions}
-          onValueChange={() => form.setValue("schoolClassId", 0, { shouldValidate: true })}
-        />
-
         <ComboboxField
           name="schoolClassId"
           label="Turma"
           placeholder="Selecione a turma"
           options={classOptions}
           emptyMessage="Nenhuma turma encontrada."
-          disabled={!schoolId}
         />
 
         <SelectField

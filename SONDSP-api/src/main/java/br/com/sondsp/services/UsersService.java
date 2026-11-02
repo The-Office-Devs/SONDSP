@@ -1,7 +1,5 @@
 package br.com.sondsp.services;
 
-import static br.com.sondsp.util.SystemMessages.*;
-
 import br.com.sondsp.entities.*;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import br.com.sondsp.filters.UserFilter;
@@ -10,13 +8,16 @@ import br.com.sondsp.repositories.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.*;
 import jakarta.validation.ValidationException;
-import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -49,6 +50,7 @@ public class UsersService {
 				.status(false)
 				.email(form.email())
 				.password(null)
+				.role(rolesService.getRoleById(form.roleId()))
 				.build()
 		);
 
@@ -88,6 +90,7 @@ public class UsersService {
 		user.setName(form.name());
 		user.setRegistration(form.registration());
 		user.setEmail(form.email());
+		user.setRole(rolesService.getRoleById(form.roleId()));
 
 		return save(user);
 	}

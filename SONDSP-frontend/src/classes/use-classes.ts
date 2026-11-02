@@ -24,6 +24,9 @@ import type { ClassMapFilter } from "@/class-map/class-map.types";
 import type { ClassFormData } from "./classes-page/class.schema";
 import type { PaginationParams } from "@/api/types";
 import type { LearningTrajectoryFilter } from "@/learning-trajectories/learning-trajectories.types";
+import { useAuthStore } from '@/auth/auth.store';
+import { useUser } from "@/users/users-page/use-users";
+import { ALL_VALUE } from '@/lib/options-utils';
 
 const CLASSES_QUERY_KEY = ['classes'] as const;
 
@@ -53,7 +56,6 @@ export function useCreateClass() {
   return useMutation({
     mutationFn: (data: ClassFormData) => 
       createClassService({
-        schoolId: data.schoolId,
         name: data.name,
         gradeLevel: data.gradeLevel,
         schoolYear: data.schoolYear,
@@ -78,7 +80,6 @@ export function useUpdateClass() {
       updateClassService(
         id, 
         {
-          schoolId: data.schoolId,
           name: data.name,
           gradeLevel: data.gradeLevel,
           schoolYear: data.schoolYear,
@@ -173,4 +174,35 @@ export function useExportSchoolClassSurveys() {
       handleApiError(error || 'Erro ao gerar relatório da turma.');
     }
   });
+}
+
+export function useUserClassOptions() {
+  const userId = useAuthStore((state) => state.user)?.id;
+  const { data: userData, isLoading } = useUser(userId!);
+  
+  const classOptions = userData?.schoolClasses
+    .filter((schoolClass) => schoolClass.status)
+    .map((schoolClass) => ({
+      value: String(schoolClass.id),
+      label: `${schoolClass.name} - ${schoolClass.schoolYear}`,
+      schoolYear: schoolClass.schoolYear
+    })) ?? [];
+
+  const years = new Set(
+    classOptions.map(schoolClass => schoolClass.schoolYear)
+    .filter(Boolean)
+  );
+
+  const schoolYearOptions = [
+    { value: ALL_VALUE, label: "Todos" },
+    ...[...years]
+      .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
+      .map((year) => ({ value: year, label: year }))
+  ]
+
+  return {
+    classOptions,
+    schoolYearOptions,
+    isLoading
+  };
 }

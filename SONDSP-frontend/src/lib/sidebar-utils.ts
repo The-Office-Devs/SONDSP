@@ -3,7 +3,6 @@ import {
   LayoutGrid,
   NotebookPen,
   BookOpenText,
-  School,
   UserRound, 
   Users,
   Puzzle,
@@ -21,7 +20,6 @@ export interface SidebarNavItem {
 
 export const administratorItems: SidebarNavItem[] = [
   { label: 'Alunos', icon: UserRound, to: '/alunos', permissions: ['ALUNO_VIEW', 'ALUNO_MANAGE', 'ALUNO_IMPORT', 'ALUNO_STATUS'] },
-  { label: 'Escolas', icon: School, to: '/escolas', permissions: ['ESCOLA_VIEW', 'ESCOLA_MANAGE', 'ESCOLA_STATUS'] },
   { label: 'Funções e Permissões', icon: ShieldCheck, to: '/funcoes', permissions: ['FUNCAO_VIEW', 'FUNCAO_MANAGE'] },
   { label: 'Modelos de Atividades', icon: NotebookPen, to: '/modelos-atividades', permissions: ['ATIVIDADE_VIEW', 'ATIVIDADE_MANAGE', 'ATIVIDADE_STATUS'] },
   { label: 'Turmas', icon: ClipboardList, to: '/turmas', permissions: ['TURMA_VIEW', 'TURMA_MANAGE', 'TURMA_STATUS'] },

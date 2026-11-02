@@ -14,10 +14,6 @@ export const studentSchema = z.object({
     .string()
     .trim()
     .min(1, "O nome completo do aluno é obrigatório"),
-  schoolId: z.coerce
-    .number()
-    .int()
-    .positive("Selecione uma escola"),
   schoolClassId: z.coerce
     .number()
     .int()

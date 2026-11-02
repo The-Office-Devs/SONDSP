@@ -3,7 +3,7 @@ import { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { type UserFormData, userSchema } from "../user-schema";
+import { type UserFormData, type UserFormInput, userSchema } from "../user-schema";
 import { useCreateUser, useUpdateUser, useUser } from "../use-users";
 import { useRoles } from "@/roles/roles-page/use-roles";
 import { getTitle } from "@/lib/card-utils";
@@ -12,13 +12,13 @@ import { roleOptions } from "@/lib/options-utils";
 
 import { Card } from "@/components/Card/Card";
 import { TextField } from "@/components/HookForm/fields/TextField";
-import { MultiSelectField } from "@/components/HookForm/fields/MultiSelectField";
+import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
 
-const defaultValues: UserFormData = {
+const defaultValues: UserFormInput = {
   email: "",
   registration: "",
   name: "",
-  roles: []
+  roleId: 0
 };
 
 type UserUpsertPanelProps = {
@@ -44,7 +44,7 @@ export function UserUpsertPanel({
   const submitType = isEditMode ? "edit" : "insert";
   const submitLabel = getSubmitLabel(isPending, submitType);
 
-  const form = useForm<UserFormData>({
+  const form = useForm<UserFormInput, unknown, UserFormData>({
     resolver: zodResolver(userSchema),
     mode: "onChange",
     defaultValues
@@ -53,7 +53,7 @@ export function UserUpsertPanel({
   const availableRoleOptions = useMemo(() => {
     if (dynamicRoles && dynamicRoles.length > 0) {
       return dynamicRoles.map((r) => ({
-        value: r.name,
+        value: String(r.id),
         label: r.name,
       }));
     }
@@ -67,18 +67,11 @@ export function UserUpsertPanel({
     }
 
     if (user) {
-      const userRoles =
-        user.roles && user.roles.length > 0
-          ? user.roles
-          : user.role
-          ? [user.role]
-          : [];
-
       form.reset({
         email: user.email,
         registration: user.registration,
         name: user.name,
-        roles: userRoles,
+        roleId: user.role.id,
       });
     }
   }, [isEditMode, user, form]);
@@ -86,7 +79,7 @@ export function UserUpsertPanel({
   const onSubmit = (data: UserFormData) => {
     const payload = {
       ...data,
-      role: data.roles[0], // retrocompatibilidade
+      roleId: data.roleId,
     };
 
     if (isEditMode && userIdToEdit) {
@@ -118,8 +111,8 @@ export function UserUpsertPanel({
 
   return (
     <FormProvider {...form}>
-      <Card 
-        title={title} 
+      <Card
+        title={title}
         submitLabel={submitLabel}
         isEditMode={isEditMode}
         isFilter={false}
@@ -133,22 +126,25 @@ export function UserUpsertPanel({
           placeholder="email@sme.prefeitura.gov.br"
         />
 
-        <TextField 
-          name="registration" 
-          label="Registro Funcional (RF)" 
+        <TextField
+          name="registration"
+          label="Registro Funcional (RF)"
           placeholder="Registro funcional do usuário"
           maxLength={8}
-          onlyNumbers 
+          onlyNumbers
         />
 
         <TextField name="name" label="Nome Completo" placeholder="Nome completo do usuário" />
 
-        <MultiSelectField
-          name="roles"
-          label="Funções no Sistema"
-          placeholder="Selecione uma ou mais funções"
+        <ComboboxField
+          name="roleId"
+          label="Função no Sistema"
+          placeholder="Selecione a função"
           options={availableRoleOptions}
+          emptyMessage="Nenhuma função encontrada."
         />
+
+
       </Card>
     </FormProvider>
   );

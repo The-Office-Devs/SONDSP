@@ -15,7 +15,6 @@ const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "10%" },
   { id: "registration", header: "Matrícula", width: "14%", },
   { id: "name", header: "Nome", width: "20%" },
-  { id: "schoolName", header: "Escola", width: "22%", accessor: (row) => row.schoolClass ? row.schoolClass.school.name : "-" },
   { id: "schoolClass", header: "Turma", width: "12%", accessor: (row) => row.schoolClass ? row.schoolClass.name : "-" },
   { id: "status", header: "Status", width: "8%" },
 ];

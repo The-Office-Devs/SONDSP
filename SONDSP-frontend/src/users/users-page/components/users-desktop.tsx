@@ -20,13 +20,7 @@ const columns: ColumnDef<UserListItem>[] = [
     header: "Funções",
     width: "18%",
     accessor: (user: UserListItem) => {
-      const rolesList =
-        user.roles && user.roles.length > 0
-          ? user.roles
-          : user.role
-          ? [user.role]
-          : [];
-      return rolesList.join(", ") || "-";
+      return user.role?.name ?? "-";
     },
   },
   { id: "status", header: "Status", width: "10%" }
@@ -66,9 +60,9 @@ export function UsersDesktop() {
     <div className="space-y-4 p-4 lg:p-6">
       <UserUpsertPanel
         userIdToEdit={editUserId}
-        onCancelEdit={() => setEditUserId(null)} 
+        onCancelEdit={() => setEditUserId(null)}
       />
-      
+
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<UserListItem>
@@ -87,15 +81,15 @@ export function UsersDesktop() {
         open={statusUser !== null}
         onOpenChange={(open) => { if (!open) setStatusUser(null); }}
         isPending={isPending}
-        onConfirm={(user) => 
+        onConfirm={(user) =>
           mutate(user.id, {
             onSuccess: () => {
               setStatusUser(null);
-              
+
               if (user.id === editUserId) {
                 setEditUserId(null);
               }
-            } 
+            }
           })
         }
       />
