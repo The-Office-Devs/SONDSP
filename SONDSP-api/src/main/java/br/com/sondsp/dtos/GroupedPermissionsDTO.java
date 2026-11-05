@@ -1,9 +1,5 @@
 package br.com.sondsp.dtos;
 
-import java.util.List;
+import java.util.Set;
 
-public record GroupedPermissionsDTO(
-        String area,
-        List<PermissionDTO> permissions
-) {
-}
+public record GroupedPermissionsDTO(String area, Set<PermissionDTO> permissions) {}

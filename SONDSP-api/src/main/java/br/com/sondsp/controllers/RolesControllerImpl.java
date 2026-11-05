@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/roles")
@@ -56,7 +57,7 @@ public class RolesControllerImpl implements RolesController {
 
 	@Override
 	@GetMapping("/permissions")
-	public ResponseEntity<List<GroupedPermissionsDTO>> getPermissionsGroupedByArea() {
+	public ResponseEntity<Set<GroupedPermissionsDTO>> getPermissionsGroupedByArea() {
 		return ResponseEntity.ok(rolesService.getGroupedPermissions());
 	}
 }

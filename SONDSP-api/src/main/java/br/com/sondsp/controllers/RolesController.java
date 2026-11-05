@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Set;
 
 @Tag(
 	name = "Funções e Permissões",
@@ -138,5 +139,5 @@ public interface RolesController {
 			)
 		}
 	)
-	ResponseEntity<List<GroupedPermissionsDTO>> getPermissionsGroupedByArea();
+	ResponseEntity<Set<GroupedPermissionsDTO>> getPermissionsGroupedByArea();
 }

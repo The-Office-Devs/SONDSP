@@ -153,7 +153,7 @@ public class UsersService {
 
 			if (filter.search() != null && !filter.search().isBlank()) {
 				query.distinct(true);
-				Join<User, Role> roleJoin = root.join("roles", JoinType.LEFT);
+				Join<User, Role> roleJoin = root.join("role", JoinType.LEFT);
 
 				String search = filter.search().toLowerCase();
 				String searchPattern = "%" + search + "%";
@@ -191,7 +191,7 @@ public class UsersService {
 
 				if (filter.roleName() != null && !filter.roleName().isBlank()) {
 					query.distinct(true);
-					Join<User, Role> roleJoin = root.join("roles", JoinType.INNER);
+					Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
 
 					predicates.add(
 						criteriaBuilder.like(
