@@ -1,5 +1,14 @@
-import type { AuthorRole, ClassNotesFilter } from "@/classes/class-details-page/components/class-notes/class-notes.types";
+import type { AuthorRole, ClassNotesFilter, NoteAuthorRole } from "@/classes/class-details-page/components/class-notes/class-notes.types";
 import type { NoteFilter } from "@/components/Card/NotesCard";
+
+const FALLBACK_ROLE_STYLE = {
+  soft: "bg-slate-100 text-slate-700",
+  solid: "bg-slate-600 text-white"
+};
+
+function isKnownRole(name: string): name is AuthorRole {
+  return AUTHOR_ROLES.includes(name as AuthorRole);
+}
 
 export const AUTHOR_ROLE_LABEL: Record<AuthorRole, string> = {
   Coordenador: "Coordenador",
@@ -32,6 +41,16 @@ export const FILTERS: NoteFilter<NotesFilter>[] = [
     inactiveClassName: AUTHOR_ROLE_STYLE[role].soft
   }))
 ];
+
+export function getAuthorRoleMeta(role: NoteAuthorRole | string | null | undefined) {
+  const name = (typeof role === "string" ? role : role?.name) ?? "";
+
+  if (isKnownRole(name)) {
+    return { label: AUTHOR_ROLE_LABEL[name], style: AUTHOR_ROLE_STYLE[name] };
+  }
+
+  return { label: name || "Sem função", style: FALLBACK_ROLE_STYLE };
+}
 
 export function formatNoteDate(value: string) {
   const [year, month, day] = value.slice(0, 10).split("-");

@@ -1,5 +1,11 @@
 export type AuthorRole = "Coordenador" | "Professor" | "POA";
 
+export interface NoteAuthorRole {
+  id: number;
+  name: string;
+  isAdmin: boolean;
+}
+
 export interface NoteAuthor {
   id: number;
   name: string;

@@ -3,9 +3,9 @@ import { cn } from "@/lib/utils";
 
 import { 
   AUTHOR_ROLE_LABEL, 
-  AUTHOR_ROLE_STYLE, 
   FILTERS, 
   formatNoteDate, 
+  getAuthorRoleMeta, 
   getEmptyMessage, 
   toNotesQuery, 
   type NotesFilter 
@@ -68,7 +68,7 @@ export function ClassNotesCard({ classId, isFetching }: Readonly<ClassNotesCardP
   };
 
   const notes: NoteView[] = (data?.pages.flatMap((page) => page.content) ?? []).map((note) => {
-    const style = AUTHOR_ROLE_STYLE[note.author.role];
+    const { style, label } = getAuthorRoleMeta(note.author.role);
     const isAuthor = note.author.id === currentUserId;
 
     return {
@@ -79,7 +79,7 @@ export function ClassNotesCard({ classId, isFetching }: Readonly<ClassNotesCardP
       dateTime: note.creationDate,
       badges: (
         <span className={cn("rounded-full px-2 py-0.5 text-xs", style.soft)}>
-          {AUTHOR_ROLE_LABEL[note.author.role]}
+          {label}
         </span>
       ),
       text: note.text,
