@@ -5,6 +5,7 @@ import { downloadUrl } from "@/lib/file-utils";
 import { 
   Dialog, 
   DialogContent, 
+  DialogDescription, 
   DialogFooter, 
   DialogHeader, 
   DialogTitle 
@@ -14,6 +15,7 @@ import { Button } from "../ui/button";
 interface ViewFileDialogProps {
   fileUrl?: string | null;
   title: string;
+  subtitle?: ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children?: ReactNode;
@@ -22,6 +24,7 @@ interface ViewFileDialogProps {
 export function ViewFileDialog({
   fileUrl,
   title,
+  subtitle,
   open,
   onOpenChange,
   children
@@ -37,26 +40,34 @@ export function ViewFileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-fit max-w-[90vw]">
-        <DialogHeader className="pt-2 pr-2">
-          <DialogTitle>{title}</DialogTitle>
+      <DialogContent 
+        className="flex max-h-[90vh] w-fit max-w-[min(90vw,48rem)] flex-col"
+        {...(subtitle ? {} : { "aria-describedby": undefined })}
+      >
+        <DialogHeader className="border-b border-neutral-100 pt-2 pr-2 pb-3">
+          <DialogTitle className="text-base font-bold text-slate-900">{title}</DialogTitle>
+          {subtitle && (
+            <DialogDescription className="text-sm font-medium text-slate-500">Estudante: {subtitle}</DialogDescription>
+          )}
         </DialogHeader>
 
-        <div className="flex max-h-[75vh] items-center justify-center overflow-auto rounded-md min-h-[200px] min-w-[300px]">
-          {fileUrl && isImage && (
-            <img src={fileUrl} alt={title} className="h-auto w-auto max-h-[55vh] max-w-full" />
-          )}
-          {fileUrl && isPdf && (
-            <iframe src={fileUrl} title={title} className="h-[55vh] w-[60vw] max-w-full" />
-          )}
-          {!fileUrl && (
-            <p className="p-8 text-sm text-slate-500 animate-pulse">
-              Carregando arquivo...
-            </p>
-          )}
-        </div>
+        <div className="-mr-2 min-h-0 flex-1 space-y-4 overflow-y-auto pr-2">
+          <div className="flex min-h-[200px] min-w-[300px] items-center justify-center rounded-md">
+            {fileUrl && isImage && (
+              <img src={fileUrl} alt={title} className="h-auto w-auto max-h-[50vh] max-w-full" />
+            )}
+            {fileUrl && isPdf && (
+              <iframe src={fileUrl} title={title} className="h-[50vh] w-[60vw] max-w-full" />
+            )}
+            {!fileUrl && (
+              <p className="p-8 text-sm text-slate-500 animate-pulse">
+                Carregando arquivo...
+              </p>
+            )}
+          </div>
 
-        {children}
+          {children}
+        </div>
         
         <DialogFooter>
           <Button 
