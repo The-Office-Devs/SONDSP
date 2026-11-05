@@ -111,7 +111,7 @@ export function ClassNotesCard({ classId, isFetching }: Readonly<ClassNotesCardP
         open={dialog.open}
         onOpenChange={handleOpenChange}
         note={dialog.note}
-        subtitle={dialog.note ? `${dialog.note.author.name} · ${AUTHOR_ROLE_LABEL[dialog.note.author.role]}` : undefined}
+        subtitle={dialog.note ? `${dialog.note.author.name} · ${getAuthorRoleMeta(dialog.note.author.role).label}` : undefined}
         canEdit={canEdit}
         onSave={handleSave}
         isSaving={createNote.isPending || updateNote.isPending}
