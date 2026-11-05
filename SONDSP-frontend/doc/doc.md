@@ -24,12 +24,12 @@ Estão disponíveis as telas de login, ativação da conta, recuperação de sen
 
 O acesso é separado por áreas:
 
-* **Administração:** administradores e administradores de escola;
+* **Administração:** administradores;
 * **Aplicação:** coordenadores, professores e POAs.
 
 ### Gerenciamento
 
-A área administrativa possui telas para usuários, escolas, turmas, alunos, eixos e modelos de atividades. As telas têm versões desktop e mobile quando aplicável, formulários validados e operações de listagem, filtros, paginação, criação, edição e inativação conforme o domínio.
+A área administrativa possui telas para usuários, turmas, alunos, eixos e modelos de atividades. As telas têm versões desktop e mobile quando aplicável, formulários validados e operações de listagem, filtros, paginação, criação, edição e inativação conforme o domínio.
 
 ### Aplicação de sondagens
 
@@ -59,7 +59,6 @@ Rotas protegidas:
 | Rota | Área |
 | --- | --- |
 | `/gerenciamento/usuarios` | Usuários |
-| `/gerenciamento/escolas` | Escolas |
 | `/gerenciamento/turmas` | Turmas |
 | `/gerenciamento/alunos` | Alunos |
 | `/gerenciamento/eixos` | Eixos |
@@ -78,7 +77,6 @@ src/
 ├── auth/                 # Login, conta, senha, store e autorização
 ├── activities/           # Modelos de atividades
 ├── classes/              # Turmas e filtro de turmas
-├── schools/              # Escolas
 ├── strands/              # Eixos
 ├── students/             # Alunos
 ├── surveys/              # Sondagens e histórico

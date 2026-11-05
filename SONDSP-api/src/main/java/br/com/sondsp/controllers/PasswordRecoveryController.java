@@ -14,31 +14,30 @@ import java.util.Map;
 
 @Tag(name = "Recuperação de Senha", description = "Endpoints de solicitação e redefinição de senha")
 public interface PasswordRecoveryController {
+	@Operation(
+		summary = "Solicitação de recuperação de senha",
+		description = "Envia e-mail com link de recuperação de senha se o e-mail estiver cadastrado e ativo. A resposta é genérica por segurança.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Solicitação processada com sucesso"),
+			@ApiResponse(responseCode = "400", description = "Formato de e-mail inválido")
+		}
+	)
+	ResponseEntity<Map<String, String>> requestRecovery(
+		@Valid @RequestBody PasswordRecoveryForm form,
+		HttpServletRequest httpRequest
+	);
 
-    @Operation(
-            summary = "Solicitação de recuperação de senha",
-            description = "Envia e-mail com link de recuperação de senha se o e-mail estiver cadastrado e ativo. A resposta é genérica por segurança.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Solicitação processada com sucesso"),
-                    @ApiResponse(responseCode = "400", description = "Formato de e-mail inválido")
-            }
-    )
-    ResponseEntity<Map<String, String>> requestRecovery(
-            @Valid @RequestBody PasswordRecoveryForm form,
-            HttpServletRequest httpRequest
-    );
-
-    @Operation(
-            summary = "Redefinição de senha",
-            description = "Redefine a senha do usuário validando o token recebido por e-mail e os requisitos de senha forte.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Senha redefinida com sucesso"),
-                    @ApiResponse(responseCode = "400", description = "Senha inválida ou confirmação divergente"),
-                    @ApiResponse(responseCode = "404", description = "Token inválido ou expirado")
-            }
-    )
-    ResponseEntity<Map<String, String>> resetPassword(
-            @Valid @RequestBody PasswordResetForm form,
-            HttpServletRequest httpRequest
-    );
+	@Operation(
+		summary = "Redefinição de senha",
+		description = "Redefine a senha do usuário validando o token recebido por e-mail e os requisitos de senha forte.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Senha redefinida com sucesso"),
+			@ApiResponse(responseCode = "400", description = "Senha inválida ou confirmação divergente"),
+			@ApiResponse(responseCode = "404", description = "Token inválido ou expirado")
+		}
+	)
+	ResponseEntity<Map<String, String>> resetPassword(
+		@Valid @RequestBody PasswordResetForm form,
+		HttpServletRequest httpRequest
+	);
 }

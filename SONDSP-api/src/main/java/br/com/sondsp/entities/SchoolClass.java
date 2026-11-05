@@ -20,10 +20,6 @@ public class SchoolClass {
     @Column(name = "codigo_interno", unique = true, length = 20)
     private String codigoInterno;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_escola", referencedColumnName = "id", updatable = false)
-    private School school;
-
     @Column(name = "nome")
     private String name;
 

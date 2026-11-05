@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { surveySchema, type SurveyFormData, type SurveyFormInput } from "../survey-schema";
 
 import { Card } from "@/components/Card/Card";
-import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
+import { useUserClassOptions } from "@/classes/use-classes";
 
 interface SurveyFilterPanelProps {
   initialValues?: SurveyFormData | null;
@@ -18,7 +17,6 @@ interface SurveyFilterPanelProps {
 }
 
 const defaultValues: SurveyFormInput = {
-  schoolId: 0,
   schoolClassId: 0
 };
 
@@ -42,8 +40,7 @@ export function SurveysFilterPanel({
     resetOptions: { keepDefaultValues: true }
   });
 
-  const schoolId = useWatch({ control: form.control, name: "schoolId" });
-  const { schoolOptions, classOptions, isLoading: isLoadingSchools } = useUserSchoolOptions(Number(schoolId));
+  const { classOptions } = useUserClassOptions(); 
 
   const onSubmit = (data: SurveyFormData) => onSearch(data);
 
@@ -64,13 +61,6 @@ export function SurveysFilterPanel({
         onReset={handleReset}
         collapsible
       >
-        <SelectField
-          name="schoolId"
-          label="Escola"
-          placeholder={isLoadingSchools ? "Carregando escolas..." : "Selecione a escola"}
-          options={schoolOptions}
-          onValueChange={() => form.setValue("schoolClassId", 0, { shouldValidate: true })}
-        />
 
         <ComboboxField
           name="schoolClassId"
@@ -78,7 +68,6 @@ export function SurveysFilterPanel({
           placeholder="Selecione a turma"
           options={classOptions}
           emptyMessage="Nenhuma turma encontrada."
-          disabled={!schoolId}
         />
       </Card>
     </FormProvider>

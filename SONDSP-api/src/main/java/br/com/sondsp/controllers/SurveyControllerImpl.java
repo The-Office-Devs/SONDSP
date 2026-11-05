@@ -1,11 +1,5 @@
 package br.com.sondsp.controllers;
 
-import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
-
-import br.com.sondsp.dtos.ImageDTO;
-import br.com.sondsp.dtos.PageResponse;
-import br.com.sondsp.dtos.SurveyDTO;
-
 import br.com.sondsp.dtos.*;
 import br.com.sondsp.entities.Survey;
 import br.com.sondsp.entities.User;
@@ -15,8 +9,6 @@ import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.SurveyService;
 import br.com.sondsp.util.SystemMessages;
 import jakarta.xml.bind.ValidationException;
-import java.io.IOException;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +16,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.util.List;
+
+import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
 
 @RestController
 @RequestMapping("/survey")
@@ -91,15 +88,17 @@ public class SurveyControllerImpl implements SurveyController {
 
 	@Override
 	@GetMapping("/activity/{activityId}/result-options")
-	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(@PathVariable Integer activityId) {
+	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(
+		Integer activityId
+	) {
 		return ResponseEntity.ok(surveyService.getResultOptionsForActivity(activityId));
 	}
 
 	@Override
 	@GetMapping("/result-options")
 	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getResultOptions(
-			@RequestParam(required = false) String strandCode,
-			@RequestParam(required = false) String gradeLevel
+		String strandCode,
+		String gradeLevel
 	) {
 		return ResponseEntity.ok(surveyService.getResultOptions(strandCode, gradeLevel));
 	}

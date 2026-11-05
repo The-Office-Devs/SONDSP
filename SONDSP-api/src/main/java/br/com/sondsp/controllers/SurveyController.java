@@ -7,12 +7,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.xml.bind.ValidationException;
-import java.io.IOException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 public interface SurveyController {
 	@Operation(
@@ -151,12 +152,16 @@ public interface SurveyController {
 				description = "Opções de níveis retornadas com sucesso",
 				content = @Content(
 					mediaType = "application/json",
-					array = @ArraySchema(schema = @Schema(implementation = br.com.sondsp.dtos.survey.SurveyResultOptionDTO.class))
+					array = @ArraySchema(
+						schema = @Schema(implementation = br.com.sondsp.dtos.survey.SurveyResultOptionDTO.class)
+					)
 				)
 			)
 		}
 	)
-	ResponseEntity<java.util.List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(@PathVariable Integer activityId);
+	ResponseEntity<java.util.List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(
+		@PathVariable Integer activityId
+	);
 
 	@Operation(
 		description = "Retorna os níveis oficiais de avaliação permitidos filtrando por código do eixo e ano escolar.",
@@ -166,7 +171,9 @@ public interface SurveyController {
 				description = "Opções de níveis retornadas com sucesso",
 				content = @Content(
 					mediaType = "application/json",
-					array = @ArraySchema(schema = @Schema(implementation = br.com.sondsp.dtos.survey.SurveyResultOptionDTO.class))
+					array = @ArraySchema(
+						schema = @Schema(implementation = br.com.sondsp.dtos.survey.SurveyResultOptionDTO.class)
+					)
 				)
 			)
 		}

@@ -1,4 +1,4 @@
-import { useState, type ComponentType } from 'react';
+import { useState, useMemo, type ComponentType } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronRight,
@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { administratorItems, applicationItems, isPathActive } from '@/lib/sidebar-utils';
+import { administratorItems, applicationItems, canAccessItem, isPathActive } from '@/lib/sidebar-utils';
 import { useAuthStore } from '@/auth/auth.store';
 import { canAccess, getHomePath } from '@/auth/role-access';
 
@@ -25,11 +25,24 @@ export function DesktopShellSidebar() {
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
 
+  const permissions = user?.permissions || [];
+  const isAdmin = user?.role.name === 'Administrador' || (user as any)?.isAdmin;
+
+  const visibleAdminItems = useMemo(
+    () => administratorItems.filter((item) => canAccessItem(item, permissions, isAdmin)),
+    [permissions, isAdmin]
+  );
+
+  const visibleAppItems = useMemo(
+    () => applicationItems.filter((item) => canAccessItem(item, permissions, isAdmin)),
+    [permissions, isAdmin]
+  );
+
   if (!user) return null;
 
-  const homePath = getHomePath(user.role);
-  const showAdmin = canAccess(user.role, 'admin');
-  const showApplication = canAccess(user.role, 'application');
+  const homePath = getHomePath(user);
+  const showAdmin = canAccess(user, 'admin') && visibleAdminItems.length > 0;
+  const showApplication = canAccess(user, 'application') && visibleAppItems.length > 0;
 
   const handleLogout = () => {
     logout();
@@ -49,10 +62,10 @@ export function DesktopShellSidebar() {
     }
   };
 
-  const adminHasActiveChild = administratorItems.some((item) =>
+  const adminHasActiveChild = visibleAdminItems.some((item) =>
     isPathActive(location.pathname, `/gerenciamento${item.to}`),
   );
-  const applicationHasActiveChild = applicationItems.some((item) =>
+  const applicationHasActiveChild = visibleAppItems.some((item) =>
     isPathActive(location.pathname, item.to),
   );
 
@@ -67,7 +80,7 @@ export function DesktopShellSidebar() {
         <div className={cn('flex h-full min-h-0 flex-col gap-8 px-3 py-6', expanded ? 'items-stretch' : 'items-center')}>
           <div className="flex w-fit items-center gap-3 rounded-full bg-white px-2 py-1 text-primary shadow-sm">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef4ff] text-lg font-semibold">{user.name.charAt(0).toUpperCase()}</div>
-            {expanded ? <span className="pr-2 text-lg font-semibold">{user.role}</span> : null}
+            {expanded ? <span className="pr-2 text-lg font-semibold">{user.role.name}</span> : null}
           </div>
 
           <nav
@@ -100,7 +113,7 @@ export function DesktopShellSidebar() {
                 />
                 {expanded && openSections.admin && (
                   <div className="mt-3 flex flex-col gap-3">
-                    {administratorItems.map((item) => {
+                    {visibleAdminItems.map((item) => {
                       const path = `/gerenciamento${item.to}`;
 
                       return (
@@ -121,7 +134,6 @@ export function DesktopShellSidebar() {
             )}
 
             {showApplication && (
-
               <div className="group/application">
                 <SidebarItem
                   icon={ClipboardList}
@@ -135,7 +147,7 @@ export function DesktopShellSidebar() {
                 />
                 {expanded && openSections.application && (
                   <div className="mt-3 flex flex-col gap-3">
-                    {applicationItems.map((item) => (
+                    {visibleAppItems.map((item) => (
                       <SidebarItem
                         key={item.label}
                         icon={item.icon}

@@ -8,15 +8,16 @@ import {
 } from '@/components/ui/dialog';
 
 import type { UserListItem } from "@/users/users.types";
-import { useUsers } from '../use-schools';
+import { useUsers } from '@/users/users-page/use-users';
 import { DataTable, type ColumnDef, type RowAction } from '@/components/DataTable/DataTable';
 import { useTableState } from '@/hooks/use-table-state';
 import { buildPaginationProps } from '@/api/types';
+import type { Role } from "@/roles/roles.types";
 
 interface LinkUsersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onLink: (userId: number, userFunction: string) => void;
+  onLink: (userId: number, userFunction: Role) => void;
   queryParams?: Record<string, string | number | boolean>; // Pra filtrar se é de escola ou turma 
   isTeachers?: boolean;
 }

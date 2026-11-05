@@ -70,16 +70,11 @@ export type EnrollmentStatus = "CURSANDO" | "CONCLUIDO" | "TRANSFERIDO" | "REMAN
 export type EvolutionComparison = "PRIMEIRO_REGISTRO" | "MANTIDO" | "ALTERADO";
 
 /** Papéis de Usuários Autorizados no SONDSP. */
-export type UserRole = "ADMINISTRATOR" | "SCHOOL_ADMINISTRATOR" | "COORDINATOR" | "TEACHER" | "POA";
+export type UserRole = "ADMINISTRATOR" | "COORDINATOR" | "TEACHER" | "POA";
 
 // ============================================================================
 // 2. Contratos de Dados e DTOs (API Back-end Spring Boot)
 // ============================================================================
-
-export interface SchoolRef {
-  id: number;
-  name: string;
-}
 
 export interface SchoolClassRef {
   id: number;
@@ -87,7 +82,6 @@ export interface SchoolClassRef {
   gradeLevel: string;
   schoolYear: string;
   shift?: string | null;
-  school?: SchoolRef;
 }
 
 export interface EnrollmentHistoryItem {
@@ -98,7 +92,6 @@ export interface EnrollmentHistoryItem {
     id: number;
     name: string;
     gradeLevel: string;
-    schoolName: string;
   } | null;
   externalDescription?: string | null;
   status: EnrollmentStatus;
@@ -195,7 +188,6 @@ export interface StudentPortfolioDTO {
   initials: string;
   currentClass: string;
   currentSchoolClass?: SchoolClassRef | null;
-  school: string;
   schoolYear: string;
   registration: string;
   rowNumber?: number;

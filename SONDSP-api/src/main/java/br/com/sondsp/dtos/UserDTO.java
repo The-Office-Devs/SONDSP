@@ -9,10 +9,9 @@ public record UserDTO(
 	String name,
 	String registration,
 	String email,
-	String role,
-	List<String> permissions,
+	RoleDTO role,
 	Boolean status,
-	List<SchoolClassesDTO> schools
+	List<SchoolClassDTO> schoolClasses
 ) {
 	public UserDTO(User user) {
 		this(
@@ -20,42 +19,20 @@ public record UserDTO(
 			user.getName(),
 			user.getRegistration(),
 			user.getEmail(),
-			user.getRole() != null ? user.getRole().getName() : null,
-			user.getPermissions() != null
-				? user.getPermissions().stream().map(Permission::getPermission).toList()
-				: List.of(),
+			user.getRole() != null ? new RoleDTO(user.getRole()) : null,
 			user.getStatus(),
-			user.getSchools() != null && user.getSchoolClasses() != null
-				? buildSchoolClassesDTO(user.getSchoolClasses(), user.getSchools())
-				: null
+			user.getSchoolClasses() != null ? buildSchoolClassDTO(user.getSchoolClasses()) : null
 		);
 	}
 
-	private static List<SchoolClassesDTO> buildSchoolClassesDTO(
-		Set<UserSchoolClass> schoolClasses,
-		Set<UserSchool> schools
-	) {
-		if (schools == null || schools.isEmpty()) {
-			return null;
-		}
-
-		return schools
+	private static List<SchoolClassDTO> buildSchoolClassDTO(Set<UserSchoolClass> schoolClasses) {
+		return schoolClasses
 			.stream()
-			.map(UserSchool::getSchool)
-            .filter(school -> Boolean.TRUE.equals(school.getStatus()))
-			.map(school -> {
-				List<SchoolClassDTO> classesLinkedToThisSchool = schoolClasses == null ? List.of() :
-                        schoolClasses.stream()
-						    .map(UserSchoolClass::getSchoolClass)
-						    .filter(schoolClass ->
-							    schoolClass.getSchool() != null &&
-                                        schoolClass.getSchool().getId().equals(school.getId()))
-						    .map(schoolClass -> new SchoolClassDTO(schoolClass, false))
-						    .toList();
+			.map(userSchoolClass -> {
+				SchoolClass schoolClass = userSchoolClass.getSchoolClass();
 
-				return new SchoolClassesDTO(school, classesLinkedToThisSchool);
+				return new SchoolClassDTO(schoolClass);
 			})
-			.filter(dto -> !dto.schoolClass().isEmpty())
 			.toList();
 	}
 }

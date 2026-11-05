@@ -1,14 +1,9 @@
 package br.com.sondsp.controllers;
 
-import static br.com.sondsp.util.SystemMessages.UNEXPECTED_ERROR;
-
 import br.com.sondsp.dtos.StandardErrorDTO;
-import br.com.sondsp.exceptions.SchoolAlreadyExistsException;
 import br.com.sondsp.exceptions.UserAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
-import java.nio.file.AccessDeniedException;
-import javax.security.auth.login.LoginException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -17,6 +12,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.security.auth.login.LoginException;
+import java.nio.file.AccessDeniedException;
+
+import static br.com.sondsp.util.SystemMessages.UNEXPECTED_ERROR;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardErrorDTO(e.getMessage()));
 	}
 
-	@ExceptionHandler({ UserAlreadyExistsException.class, SchoolAlreadyExistsException.class })
+	@ExceptionHandler({ UserAlreadyExistsException.class })
 	public ResponseEntity<StandardErrorDTO> resourceAlreadyExists(Exception e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardErrorDTO(e.getMessage()));
 	}
@@ -67,10 +67,7 @@ public class GlobalExceptionHandler {
 			.body(new StandardErrorDTO("Erro ao atualizar dados no banco"));
 	}
 
-	@ExceptionHandler({
-		AccessDeniedException.class,
-		org.springframework.security.access.AccessDeniedException.class
-	})
+	@ExceptionHandler({ AccessDeniedException.class, org.springframework.security.access.AccessDeniedException.class })
 	public ResponseEntity<StandardErrorDTO> accessDeniedException(Exception e) {
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StandardErrorDTO(e.getMessage()));
 	}

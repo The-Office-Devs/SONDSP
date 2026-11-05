@@ -102,7 +102,8 @@ public class SchoolClassAnnotationService {
                 Join<SchoolClassAnnotation, User> authorJoin = root.join("author", JoinType.INNER);
 
                 if (hasRole) {
-                    Join<User, Role> roleJoin = authorJoin.join("role", JoinType.INNER);
+                    query.distinct(true);
+                    Join<User, Role> roleJoin = authorJoin.join("roles", JoinType.INNER);
                     predicates.add(cb.equal(roleJoin.get("name"), filter.authorRole()));
                 }
 

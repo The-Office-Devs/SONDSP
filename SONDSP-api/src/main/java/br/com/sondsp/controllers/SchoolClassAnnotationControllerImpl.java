@@ -2,7 +2,6 @@ package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.SchoolClassAnnotationDTO;
-
 import br.com.sondsp.entities.SchoolClassAnnotation;
 import br.com.sondsp.filters.SchoolClassAnnotationFilter;
 import br.com.sondsp.form.SchoolClassAnnotationForm;
@@ -21,52 +20,64 @@ import static br.com.sondsp.util.SystemMessages.DELETED_ANNOTATION;
 @RestController
 @RequestMapping("/schoolClass/{schoolClassId}/annotations")
 public class SchoolClassAnnotationControllerImpl implements SchoolClassAnnotationController {
-    @Autowired
-    private SchoolClassAnnotationService service;
 
-    @GetMapping("/{annotationId}")
-    public ResponseEntity<?> getAnnotation(Integer schoolClassId, Integer annotationId) {
-        return ResponseEntity.ok().body(new SchoolClassAnnotationDTO(service.getAnnotation(schoolClassId, annotationId)));
-    }
+	@Autowired
+	private SchoolClassAnnotationService service;
 
-    @GetMapping
-    public ResponseEntity<?> getAnnotations(
-            Integer schoolClassId,
-            SchoolClassAnnotationFilter filter,
-            Pageable pageable) {
+	@GetMapping("/{annotationId}")
+	public ResponseEntity<?> getAnnotation(Integer schoolClassId, Integer annotationId) {
+		return ResponseEntity
+			.ok()
+			.body(new SchoolClassAnnotationDTO(service.getAnnotation(schoolClassId, annotationId)));
+	}
 
-        Page<SchoolClassAnnotation> schoolClassAnnotationPage = service.getAnnotations(schoolClassId, filter, pageable);
+	@GetMapping
+	public ResponseEntity<?> getAnnotations(
+		Integer schoolClassId,
+		SchoolClassAnnotationFilter filter,
+		Pageable pageable
+	) {
+		Page<SchoolClassAnnotation> schoolClassAnnotationPage = service.getAnnotations(schoolClassId, filter, pageable);
 
-        List<SchoolClassAnnotationDTO> contentDTO = schoolClassAnnotationPage.getContent().stream()
-                .map(SchoolClassAnnotationDTO::new)
-                .toList();
+		List<SchoolClassAnnotationDTO> contentDTO = schoolClassAnnotationPage
+			.getContent()
+			.stream()
+			.map(SchoolClassAnnotationDTO::new)
+			.toList();
 
-        PageResponse<SchoolClassAnnotationDTO> response = new PageResponse<>(
-                contentDTO,
-                schoolClassAnnotationPage.getNumber(),
-                schoolClassAnnotationPage.getSize(),
-                schoolClassAnnotationPage.getTotalElements(),
-                schoolClassAnnotationPage.getTotalPages(),
-                schoolClassAnnotationPage.hasNext(),
-                schoolClassAnnotationPage.hasPrevious()
-        );
+		PageResponse<SchoolClassAnnotationDTO> response = new PageResponse<>(
+			contentDTO,
+			schoolClassAnnotationPage.getNumber(),
+			schoolClassAnnotationPage.getSize(),
+			schoolClassAnnotationPage.getTotalElements(),
+			schoolClassAnnotationPage.getTotalPages(),
+			schoolClassAnnotationPage.hasNext(),
+			schoolClassAnnotationPage.hasPrevious()
+		);
 
-        return ResponseEntity.ok().body(response);
-    }
+		return ResponseEntity.ok().body(response);
+	}
 
-    @PostMapping
-    public ResponseEntity<?> createAnnotation(Integer schoolClassId, SchoolClassAnnotationForm form) {
-        return ResponseEntity.ok().body(new SchoolClassAnnotationDTO(service.createAnnotation(schoolClassId, form)));
-    }
+	@PostMapping
+	public ResponseEntity<?> createAnnotation(Integer schoolClassId, SchoolClassAnnotationForm form) {
+		return ResponseEntity.ok().body(new SchoolClassAnnotationDTO(service.createAnnotation(schoolClassId, form)));
+	}
 
-    @PutMapping("/{annotationId}")
-    public ResponseEntity<?> updateAnnotation(Integer schoolClassId, Integer annotationId, SchoolClassAnnotationForm form) throws AccessDeniedException {
-        return ResponseEntity.ok().body(new SchoolClassAnnotationDTO(service.updateAnnotation(schoolClassId, annotationId, form)));
-    }
+	@PutMapping("/{annotationId}")
+	public ResponseEntity<?> updateAnnotation(
+		Integer schoolClassId,
+		Integer annotationId,
+		SchoolClassAnnotationForm form
+	) throws AccessDeniedException {
+		return ResponseEntity
+			.ok()
+			.body(new SchoolClassAnnotationDTO(service.updateAnnotation(schoolClassId, annotationId, form)));
+	}
 
-    @DeleteMapping("/{annotationId}")
-    public ResponseEntity<?> deleteAnnotation(Integer schoolClassId, Integer annotationId) throws AccessDeniedException {
-        service.deleteAnnotation(schoolClassId, annotationId);
-        return ResponseEntity.ok(DELETED_ANNOTATION);
-    }
+	@DeleteMapping("/{annotationId}")
+	public ResponseEntity<?> deleteAnnotation(Integer schoolClassId, Integer annotationId)
+		throws AccessDeniedException {
+		service.deleteAnnotation(schoolClassId, annotationId);
+		return ResponseEntity.ok(DELETED_ANNOTATION);
+	}
 }

@@ -1,5 +1,6 @@
+import { useHasPermission } from "@/auth/use-permission";
 import { useEffect, useState } from "react";
-import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { 
@@ -25,14 +26,12 @@ import {
 import { Card } from "@/components/ui/card";
 import { TextField } from "@/components/HookForm/fields/TextField";
 import { Button } from "@/components/ui/button";
-import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
 import { FileDropzone } from "@/components/ui/file-dropzone";
 import { cn, maskDate } from "@/lib/utils";
 
 const defaultValues: StudentFormInput = {
   name: "",
-  schoolId: 0,
   schoolClassId: 0,
   rowNumber: "",
   registration: "",
@@ -59,6 +58,9 @@ export function StudentUpsertPanel({
 
   const isEditMode = studentIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+  const canManageStudents = useHasPermission("ALUNO_MANAGE");
+  const canImportStudents = useHasPermission("ALUNO_IMPORT");
+
   
   const submitType = isEditMode ? "edit" : "insert";
   const submitLabel = getSubmitLabel(isPending, submitType);
@@ -69,7 +71,6 @@ export function StudentUpsertPanel({
     defaultValues
   });
 
-  const schoolId = useWatch({ control: form.control, name: "schoolId" });
   const [registrationMode, setRegistrationMode] = useState<"individual" | "batch">("individual");
   const [batchFile, setBatchFile] = useState<File | null>(null);
   const [open, setOpen] = useState(true);
@@ -90,7 +91,6 @@ export function StudentUpsertPanel({
     if (student) {
       form.reset({ 
         name: student.name,
-        schoolId: student.schoolClass?.school?.id ?? 0,
         schoolClassId: student.schoolClass?.id ?? 0,
         rowNumber: student.rowNumber ?? "",
         registration: student.registration,
@@ -134,19 +134,8 @@ export function StudentUpsertPanel({
     });
   };
 
-  const schoolOptions = Array.from(
-    new Map(
-      classesPage?.content
-        .map((c) => [
-          c.school.id, 
-          { value: String(c.school.id), label: c.school.name }
-        ]) ?? []
-    ).values()
-  );
-
   const classOptions =
     classesPage?.content
-      ?.filter((c) => !schoolId || c.school.id == schoolId)
       .map((c) => ({
         value: String(c.id),
         label: `${c.name} - ${c.schoolYear}`
@@ -224,21 +213,12 @@ export function StudentUpsertPanel({
                     mask={maskDate}
                   />
 
-                  <SelectField
-                    name="schoolId"
-                    label="Escola"
-                    placeholder="Selecione a escola"
-                    options={schoolOptions}
-                    onValueChange={() => form.setValue("schoolClassId", 0, { shouldValidate: true })}
-                  />
-
                   <ComboboxField
                     name="schoolClassId"
                     label="Turma"
                     placeholder="Selecione a turma"
                     options={classOptions}
                     emptyMessage="Nenhuma turma encontrada."
-                    disabled={!schoolId}
                   />
         
                   <div className="flex gap-2 items-end justify-end xl:col-start-3 self-start mt-[2rem]">
@@ -257,7 +237,7 @@ export function StudentUpsertPanel({
                     <Button
                       type="submit"
                       isRounded={true}
-                      disabled={isPending || isLoadingClass|| !form.formState.isValid}
+                      disabled={isPending || isLoadingClass || !form.formState.isValid || !canManageStudents}
                     >
                       <Check className="size-4" />
                       {submitLabel}
@@ -279,7 +259,7 @@ export function StudentUpsertPanel({
                     <Button
                       type="button"
                       isRounded
-                      disabled={!batchFile || isImporting}
+                      disabled={!batchFile || isImporting || !canImportStudents}
                       onClick={handleImport}
                     >
                       <Check className="size-4" />
@@ -298,7 +278,7 @@ export function StudentUpsertPanel({
                   <Button
                     type="button"
                     isRounded
-                    disabled={!batchFile || isPending}
+                    disabled={!batchFile || isPending || !canImportStudents}
                     onClick={() => {}}
                   >
                     <Check className="size-4" />
