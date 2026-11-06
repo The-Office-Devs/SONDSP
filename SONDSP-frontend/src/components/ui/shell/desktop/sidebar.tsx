@@ -25,7 +25,7 @@ export function DesktopShellSidebar() {
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
 
-  const permissions = user?.permissions || [];
+  const permissions = user?.role?.permissions.map(p => p.permission) || [];
   const isAdmin = user?.role.name === 'Administrador' || (user as any)?.isAdmin;
 
   const visibleAdminItems = useMemo(

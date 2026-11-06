@@ -1,5 +1,9 @@
 package br.com.sondsp.controllers;
 
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_ACTIVATED;
+import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_DEACTIVATED;
+import static org.springframework.http.HttpStatus.OK;
+
 import br.com.sondsp.dtos.*;
 import br.com.sondsp.entities.SchoolClass;
 import br.com.sondsp.filters.ClassMapFilter;
@@ -7,21 +11,17 @@ import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
 import br.com.sondsp.services.ExportService;
 import br.com.sondsp.services.SchoolClassService;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_ACTIVATED;
-import static br.com.sondsp.util.SystemMessages.SCHOOL_CLASS_DEACTIVATED;
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/schoolClass")
@@ -34,16 +34,19 @@ public class SchoolClassControllerImpl implements SchoolClassController {
 	private ExportService exportService;
 
 	@PostMapping
+	@PreAuthorize("hasAuthority('TURMA_MANAGE')")
 	public ResponseEntity<?> createSchoolClass(SchoolClassForm form) {
 		return ResponseEntity.ok().body(new SchoolClassDTO(service.createSchoolClass(form)));
 	}
 
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('TURMA_VIEW')")
 	public ResponseEntity<?> getSchoolClassById(Integer id) {
 		return ResponseEntity.ok().body(new SchoolClassDTO(service.getSchoolClass(id)));
 	}
 
 	@GetMapping
+	@PreAuthorize("hasAuthority('TURMA_VIEW')")
 	public ResponseEntity<PageResponse<SchoolClassDTO>> getSchoolsClassesByFilter(
 		SchoolClassFilter filter,
 		Pageable pageable
@@ -66,11 +69,13 @@ public class SchoolClassControllerImpl implements SchoolClassController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('TURMA_MANAGE')")
 	public ResponseEntity<?> updateSchoolClass(Integer id, SchoolClassForm form) {
 		return ResponseEntity.ok().body(new SchoolClassDTO(service.updateSchoolClass(id, form)));
 	}
 
 	@PatchMapping("/{id}/changeStatus")
+	@PreAuthorize("hasAuthority('TURMA_STATUS')")
 	public ResponseEntity<?> changeStatus(Integer id) {
 		if (service.changeStatus(id)) return ResponseEntity.ok(SCHOOL_CLASS_ACTIVATED);
 
@@ -78,21 +83,25 @@ public class SchoolClassControllerImpl implements SchoolClassController {
 	}
 
 	@GetMapping("/{id}/students-pannel")
+	@PreAuthorize("hasAuthority('TURMA_VIEW')")
 	public ResponseEntity<?> getStudentsPannel(Integer id, String applicationPeriod, Integer strandId) {
 		return ResponseEntity.ok().body(service.getStudentsPannel(id, applicationPeriod, strandId));
 	}
 
 	@GetMapping("/{id}/trajectory")
+	@PreAuthorize("hasAuthority('TURMA_VIEW')")
 	public ResponseEntity<?> getStudentsTrajectory(Integer id, Integer strandId) {
 		return ResponseEntity.ok().body(service.getStudentsTrajectory(id, strandId));
 	}
 
 	@GetMapping("/{id}/classMap")
+	@PreAuthorize("hasAuthority('TURMA_VIEW')")
 	public ResponseEntity<ClassMapDTO> getClassMap(Integer id, ClassMapFilter filter) {
 		return ResponseEntity.ok().body(service.getClassMap(id, filter));
 	}
 
 	@GetMapping("/report/school-class-surveys/{schoolClassId}")
+	@PreAuthorize("hasAuthority('TURMA_VIEW')")
 	public ResponseEntity<ByteArrayResource> exportSchoolClassSurveys(@PathVariable Integer schoolClassId)
 		throws IOException {
 		SchoolClassSurveysReportDTO data = service.getSchoolClassSurveys(schoolClassId);

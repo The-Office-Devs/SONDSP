@@ -16,7 +16,7 @@ public record UserForm(
 	@Pattern(regexp = "^\\d{1,10}$", message = INVALID_REGISTRATION_FORMAT)
 	String registration,
 	@NotBlank(message = EMPTY_NAME) String name,
-	@NotNull Integer roleId
+	@NotNull(message = EMPTY_ROLE) Integer roleId
 ) {
 	public UserForm {
 		name = name != null ? name.trim() : null;

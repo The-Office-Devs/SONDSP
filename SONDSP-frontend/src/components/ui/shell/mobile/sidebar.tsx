@@ -36,8 +36,11 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
     }
   }, [open]);
 
-  const permissions = user?.permissions || [];
+  const permissions = user?.role?.permissions.map(p => p.permission) || [];
   const isAdmin = user?.role.name === 'Administrador' || (user as any)?.isAdmin;
+
+  console.log(permissions);
+  
 
   const visibleAdminItems = useMemo(
     () => administratorItems.filter((item) => canAccessItem(item, permissions, isAdmin)),

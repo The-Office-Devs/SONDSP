@@ -1,11 +1,12 @@
 package br.com.sondsp.entities;
 
 import jakarta.persistence.*;
-import java.util.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.*;
 
 @Entity
 @Getter
@@ -45,8 +46,14 @@ public class User implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		String roleName = "ROLE_" + this.role.getName().toUpperCase();
-		return List.of(new SimpleGrantedAuthority(roleName));
+		Set<GrantedAuthority> authorities = new HashSet<>();
+
+		if (this.role != null && this.role.getPermissions() != null) {
+			this.role.getPermissions()
+				.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getPermission())));
+		}
+
+		return authorities;
 	}
 
 	@Override

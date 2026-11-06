@@ -1,17 +1,16 @@
 package br.com.sondsp.util;
 
 public final class SystemMessages {
-    // System errors
-    public static final String UNEXPECTED_ERROR = "Ocorreu um erro inesperado: ";
-    public static final String UNABLE_TO_SAVE_IMAGE = "Ocorreu um erro ao salvar a imagem.";
+
+	// System errors
+	public static final String UNEXPECTED_ERROR = "Ocorreu um erro inesperado: ";
+	public static final String UNABLE_TO_SAVE_IMAGE = "Ocorreu um erro ao salvar a imagem.";
 
 	// Status toggling
 	public static final String USER_ACTIVATED = "Usuário ativado com sucesso.";
 	public static final String USER_DEACTIVATED = "Usuário desativado com sucesso.";
 	public static final String STUDENT_ACTIVATED = "Aluno ativado com sucesso.";
 	public static final String STUDENT_DEACTIVATED = "Aluno desativado com sucesso.";
-	public static final String SCHOOL_ACTIVATED = "Escola ativada com sucesso.";
-	public static final String SCHOOL_DEACTIVATED = "Escola desativada com sucesso.";
 	public static final String SCHOOL_CLASS_ACTIVATED = "Turma ativada com sucesso.";
 	public static final String SCHOOL_CLASS_DEACTIVATED = "Turma desativada com sucesso.";
 	public static final String SURVEY_DELETED = "Sondagem excluída com sucesso.";
@@ -29,7 +28,7 @@ public final class SystemMessages {
 	public static final String ACTIVITY_NOT_FOUND = "A atividade não foi encontrada.";
 	public static final String SURVEY_NOT_FOUND = "A sondagem não foi encontrada.";
 	public static final String ROLE_NOT_FOUND = "A função não foi encontrada.";
-    public static final String ANNOTATION_NOT_FOUND = "A anotação não foi encontrada.";
+	public static final String ANNOTATION_NOT_FOUND = "A anotação não foi encontrada.";
 
 	// Auth
 	public static final String EMAIL_ALREADY_EXISTS = "O email já está sendo utilizado.";
@@ -50,15 +49,13 @@ public final class SystemMessages {
 		"O número de chamada passado já está sendo utilizado por um aluno na turma.";
 	public static final String STUDENT_REGISTRATION_ALREADY_EXISTS = "A matrícula já está sendo utilizada.";
 	public static final String STUDENT_CANNOT_ACTIVATE = "O aluno não pode ser ativado, pois a turma está inativa.";
-	public static final String INEP_ALREADY_EXISTS = "Este código INEP já está cadastrado.";
-	public static final String INVALID_INEP_FORMAT = "Formato de código INEP inválido (deve ter 8 dígitos).";
 	public static final String INVALID_REGISTRATION_FORMAT = "O formato do registro funcional está incorreto.";
 	public static final String MUST_HAVE_CLASS = "O aluno deve estar em uma turma para ter número da chamada.";
 	public static final String MUST_HAVE_ROW_NUMBER = "O aluno deve possuir um número de chamada na turma.";
 	public static final String SURVEY_CANNOT_DELETE = "A sondagem não foi encontrada.";
 	public static final String DIFFERENT_AUTHOR = "Somente o criador da mensagem pode edita-lá.";
 	public static final String HAS_OPEN_SURVEY_SAME_ACVTY =
-			"O aluno já possui uma sondagem em aberto para essa atividade.";
+		"O aluno já possui uma sondagem em aberto para essa atividade.";
 	public static final String NULL_SURVEYS_IN_CLASS = "Nenhuma sondagem registrada para esta turma.";
 	public static final String STUDENT_BIRTH_DATE_INVALID = "Data de nascimento inválida. Use o formato dd/MM/aaaa.";
 	public static final String STUDENT_BIRTH_DATE_FUTURE = "A data de nascimento não pode ser futura.";
@@ -68,36 +65,30 @@ public final class SystemMessages {
 	public static final String IMPORT_MISSING_HEADER = "Cabeçalho não encontrado na planilha: %s.";
 	public static final String IMPORT_NO_STUDENTS = "Nenhum aluno encontrado na planilha.";
 	public static final String IMPORT_ROW_ERRORS = "A planilha contém erros:\n%s";
-	public static final String IMPORT_SCHOOL_NOT_FOUND = "Escola com código interno %s (%s) não encontrada.";
 	public static final String IMPORT_CLASS_INACTIVE = "A turma %s está inativa.";
 
 	// Empty properties
-	public static final String EMPTY_DATA = "Preencha todos os dados obrigatórios.";
 	public static final String EMPTY_NAME = "Um nome deve ser informado.";
 	public static final String EMPTY_EMAIL = "Um email deve ser informado.";
 	public static final String EMPTY_REGISTRATION = "Um registro funcional deve ser informado.";
-	public static final String EMPTY_ROLE = "A função do usuário deve ser passada.";
-	public static final String EMPTY_PERMISSIONS = "As permissões devem ser informadas.";
+	public static final String EMPTY_ROLE = "A função do usuário deve ser informada.";
 	public static final String EMPTY_PASSWORD = "Uma senha deve ser informada.";
-	public static final String EMPTY_PERMISSION = "Pelo menos uma permissão deve ser informada.";
 	public static final String EMPTY_YEAR = "Um ano letivo deve ser informado.";
-	public static final String EMPTY_INEP = "O código INEP é obrigatório.";
 	public static final String EMPTY_FUNCTION = "A função do usuário deve ser informada.";
 	public static final String EMPTY_SCHOOL_CLASS = "Uma turma deve ser informada.";
 	public static final String EMPTY_GRADE_LEVEL = "Um ano escolar deve ser informado.";
 	public static final String EMPTY_SHIFT = "Um turno deve ser informado.";
 	public static final String EMPTY_STRAND = "Um eixo deve ser informado.";
-    public static final String EMPTY_TEXT = "Deve ser informado o texto.";
+	public static final String EMPTY_TEXT = "Deve ser informado o texto.";
 
 	// Delete
 	public static final String DELETED_ANNOTATION = "A anotação foi removida com sucesso.";
 
 	// Roles and Permissions
 	public static final String ROLE_ALREADY_EXISTS = "Já existe uma função cadastrada com este nome.";
-	public static final String ADMIN_ROLE_CANNOT_BE_MODIFIED = "As permissões da função de Administrador são irrevogáveis e não podem ser alteradas.";
+	public static final String ADMIN_ROLE_CANNOT_BE_MODIFIED =
+		"As permissões da função de Administrador são irrevogáveis e não podem ser alteradas.";
 	public static final String ADMIN_ROLE_CANNOT_BE_DELETED = "A função de Administrador não pode ser excluída.";
-	public static final String ROLE_HAS_ASSOCIATED_USERS = "Não é possível excluir a função pois existem usuários vinculados a ela.";
-	public static final String EMPTY_ROLES = "Pelo menos uma função deve ser informada.";
 
 	// Private constructor makes class not instantiable
 	private SystemMessages() {}

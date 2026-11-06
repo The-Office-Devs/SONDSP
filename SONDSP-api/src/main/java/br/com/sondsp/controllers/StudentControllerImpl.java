@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,21 +32,25 @@ public class StudentControllerImpl implements StudentController {
 	private StudentImportService importService;
 
 	@PostMapping
+	@PreAuthorize("hasAuthority('ALUNO_MANAGE')")
 	public ResponseEntity<?> createStudent(StudentForm form) {
 		return ResponseEntity.ok().body(new StudentDTO(service.createStudent(form)));
 	}
 
 	@PostMapping("/load")
+	@PreAuthorize("hasAuthority('ALUNO_MANAGE')")
 	public ResponseEntity<?> createStudents(List<StudentForm> forms) {
 		return ResponseEntity.ok().body(service.createStudents(forms).stream().map(StudentDTO::new));
 	}
 
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('ALUNO_VIEW')")
 	public ResponseEntity<?> getStudent(Integer id) {
 		return ResponseEntity.ok().body(new StudentDTO(service.getStudent(id)));
 	}
 
 	@GetMapping
+	@PreAuthorize("hasAuthority('ALUNO_VIEW')")
 	public ResponseEntity<PageResponse<StudentDTO>> getStudents(StudentFilter filter, Pageable pageable) {
 		Page<Student> studentPage = service.getStudents(filter, pageable);
 
@@ -65,11 +70,13 @@ public class StudentControllerImpl implements StudentController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('ALUNO_MANAGE')")
 	public ResponseEntity<?> updateStudent(Integer id, StudentForm form) {
 		return ResponseEntity.ok().body(new StudentDTO(service.updateStudent(id, form)));
 	}
 
 	@PatchMapping("/{id}/changeStatus")
+	@PreAuthorize("hasAuthority('ALUNO_STATUS')")
 	public ResponseEntity<?> changeStatus(Integer id) {
 		if (service.changeStatus(id)) return ResponseEntity.ok(STUDENT_ACTIVATED);
 
@@ -77,6 +84,7 @@ public class StudentControllerImpl implements StudentController {
 	}
 
 	@PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PreAuthorize("hasAuthority('ALUNO_IMPORT')")
 	public ResponseEntity<?> importStudents(MultipartFile file) {
 		return ResponseEntity.ok().body(importService.importStudents(file));
 	}

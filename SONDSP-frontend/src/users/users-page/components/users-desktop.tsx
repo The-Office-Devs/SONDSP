@@ -17,7 +17,7 @@ const columns: ColumnDef<UserListItem>[] = [
   { id: "email", header: "Email", width: "26%" },
   {
     id: "role",
-    header: "Funções",
+    header: "Função",
     width: "18%",
     accessor: (user: UserListItem) => {
       return user.role?.name ?? "-";

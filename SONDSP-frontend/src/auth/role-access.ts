@@ -22,7 +22,7 @@ export function canAccess(target: AuthUser | Role | null | undefined, area: AppA
   const isAdmin = user.role.isAdmin;
   if (isAdmin) return true;
 
-  const permissions = user.permissions || [];
+  const permissions = user?.role?.permissions.map(p => p.permission) || [];
 
   if (area === 'admin') {
     return administratorItems.some((item) => canAccessItem(item, permissions, false));
@@ -35,7 +35,7 @@ export function canAccess(target: AuthUser | Role | null | undefined, area: AppA
   return false;
 }
 
-export function getHomePath(target: AuthUser | UserRole | null | undefined): string {
+export function getHomePath(target: AuthUser  | null | undefined): string {
   if (!target) return '/login';
 
   if (typeof target === 'string') {

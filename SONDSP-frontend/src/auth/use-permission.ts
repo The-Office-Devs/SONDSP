@@ -2,15 +2,14 @@ import { useAuthStore } from './auth.store';
 
 export function useHasPermission(permission: string | string[]): boolean {
   const user = useAuthStore((state) => state.user);
-
+  
   if (!user) return false;
 
-  // Administrador Geral do Sistema possui todas as permissões irrestritas
-  if (user.role.name === 'Administrador' || (user as any).isAdmin) {
+  if ((user as any).isAdmin) {
     return true;
   }
 
-  const userPermissions = user.permissions || [];
+  const userPermissions = user?.role?.permissions.map(p => p.permission) || [];
 
   if (Array.isArray(permission)) {
     return permission.some((p) => userPermissions.includes(p));

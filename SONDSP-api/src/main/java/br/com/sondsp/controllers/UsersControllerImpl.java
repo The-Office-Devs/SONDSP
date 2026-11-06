@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,16 +25,19 @@ public class UsersControllerImpl implements UsersController {
 	private UsersService service;
 
 	@PostMapping
+	@PreAuthorize("hasAuthority('USER_MANAGE')")
 	public ResponseEntity<?> register(UserForm form) {
 		return ResponseEntity.ok().body(new RegisterDTO(service.registerUser(form)));
 	}
 
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('USER_VIEW')")
 	public ResponseEntity<?> getUserById(Integer id) {
 		return ResponseEntity.ok().body(new UserDTO(service.getUser(id)));
 	}
 
 	@GetMapping
+	@PreAuthorize("hasAuthority('USER_VIEW')")
 	public ResponseEntity<PageResponse<UsersListDTO>> listUser(UserFilter filter, Pageable pageable) {
 		Page<User> userPage = service.getUsers(filter, pageable);
 
@@ -59,11 +63,13 @@ public class UsersControllerImpl implements UsersController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('USER_MANAGE')")
 	public ResponseEntity<?> updateUser(Integer id, UserForm user) {
 		return ResponseEntity.ok().body(new UserDTO(service.updateUser(id, user)));
 	}
 
 	@PatchMapping("/{id}/linkSchoolClass")
+	@PreAuthorize("hasAuthority('USUARIO_VINCULAR_TURMA')")
 	public ResponseEntity<?> linkToSchoolClass(Integer id, LinkSchoolClassForm form) {
 		if (service.linkToSchoolClass(id, form)) return ResponseEntity.ok().body(USER_LINKED_TO_SCHOOL_CLASS);
 
@@ -71,6 +77,7 @@ public class UsersControllerImpl implements UsersController {
 	}
 
 	@PatchMapping("/{id}/changeStatus")
+	@PreAuthorize("hasAuthority('USUARIO_STATUS')")
 	public ResponseEntity<?> changeStatus(Integer id) {
 		if (service.changeStatus(id)) return ResponseEntity.ok(USER_ACTIVATED);
 

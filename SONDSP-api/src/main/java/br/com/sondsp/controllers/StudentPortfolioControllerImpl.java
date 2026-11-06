@@ -1,20 +1,20 @@
 package br.com.sondsp.controllers;
 
+import static br.com.sondsp.util.SystemMessages.DELETED_ANNOTATION;
+
 import br.com.sondsp.dtos.PageResponse;
 import br.com.sondsp.dtos.portfolio.*;
 import br.com.sondsp.entities.enums.AnnotationTag;
 import br.com.sondsp.form.StudentAnnotationForm;
 import br.com.sondsp.form.UpdateAnnotationTagsForm;
 import br.com.sondsp.services.*;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-import static br.com.sondsp.util.SystemMessages.DELETED_ANNOTATION;
 
 @RestController
 @RequestMapping("/student")
@@ -27,18 +27,21 @@ public class StudentPortfolioControllerImpl implements StudentPortfolioControlle
 
 	@Override
 	@GetMapping("/{id}/portfolio")
+	@PreAuthorize("hasAuthority('PORTFOLIO_VIEW')")
 	public ResponseEntity<StudentPortfolioDTO> getStudentPortfolio(Integer id) {
 		return ResponseEntity.ok(portfolioService.getStudentPortfolio(id));
 	}
 
 	@Override
 	@GetMapping("/{id}/timeline")
+	@PreAuthorize("hasAuthority('PORTFOLIO_VIEW')")
 	public ResponseEntity<List<TimelineItemDTO>> getStudentTimeline(Integer id, Integer strandId) {
 		return ResponseEntity.ok(timelineService.getStudentTimeline(id, strandId));
 	}
 
 	@Override
 	@GetMapping("/{id}/annotations")
+	@PreAuthorize("hasAuthority('PORTFOLIO_ANOTACOES_MANAGE')")
 	public ResponseEntity<PageResponse<StudentAnnotationDTO>> getStudentAnnotations(
 		Integer id,
 		AnnotationTag tag,
@@ -49,12 +52,14 @@ public class StudentPortfolioControllerImpl implements StudentPortfolioControlle
 
 	@Override
 	@PostMapping("/{id}/annotations")
+	@PreAuthorize("hasAuthority('PORTFOLIO_ANOTACOES_MANAGE')")
 	public ResponseEntity<StudentAnnotationDTO> createAnnotation(Integer id, StudentAnnotationForm form) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(annotationService.createAnnotation(id, form));
 	}
 
 	@Override
 	@PutMapping("/{id}/annotations/{annotationId}")
+	@PreAuthorize("hasAuthority('PORTFOLIO_ANOTACOES_MANAGE')")
 	public ResponseEntity<StudentAnnotationDTO> updateAnnotation(
 		Integer id,
 		Integer annotationId,
@@ -65,6 +70,7 @@ public class StudentPortfolioControllerImpl implements StudentPortfolioControlle
 
 	@Override
 	@PatchMapping("/{id}/annotations/{annotationId}/tags")
+	@PreAuthorize("hasAuthority('PORTFOLIO_ANOTACOES_MANAGE')")
 	public ResponseEntity<StudentAnnotationDTO> updateAnnotationTags(
 		Integer id,
 		Integer annotationId,
@@ -75,6 +81,7 @@ public class StudentPortfolioControllerImpl implements StudentPortfolioControlle
 
 	@Override
 	@DeleteMapping("/{id}/annotations/{annotationId}")
+	@PreAuthorize("hasAuthority('PORTFOLIO_ANOTACOES_MANAGE')")
 	public ResponseEntity<?> deleteAnnotation(Integer id, Integer annotationId) {
 		annotationService.deleteAnnotation(id, annotationId);
 		return ResponseEntity.ok(DELETED_ANNOTATION);

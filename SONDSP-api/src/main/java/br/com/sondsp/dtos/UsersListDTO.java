@@ -7,7 +7,7 @@ public record UsersListDTO(
 	String name,
 	String registration,
 	String email,
-	String role,
+	RoleDTO role,
 	Boolean status,
 	Boolean linked
 ) {
@@ -17,7 +17,7 @@ public record UsersListDTO(
 			user.getName(),
 			user.getRegistration(),
 			user.getEmail(),
-			user.getRole() != null ? user.getRole().getName() : null,
+			user.getRole() != null ? new RoleDTO(user.getRole()) : null,
 			user.getStatus(),
 			linked
 		);
