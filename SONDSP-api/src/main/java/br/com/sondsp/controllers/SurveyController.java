@@ -1,6 +1,7 @@
 package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.*;
+import br.com.sondsp.dtos.survey.SurveyResultOptionDTO;
 import br.com.sondsp.filters.SurveyFilter;
 import br.com.sondsp.form.SurveyForm;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface SurveyController {
 	@Operation(
@@ -102,7 +104,8 @@ public interface SurveyController {
 			)
 		}
 	)
-	ResponseEntity<?> updateSurvey(@PathVariable Integer id, @ModelAttribute SurveyForm form) throws IOException;
+	ResponseEntity<?> updateSurvey(@PathVariable Integer id, @ModelAttribute SurveyForm form)
+		throws IOException, ValidationException;
 
 	@Operation(
 		description = "Desativa a Sondagem com o id passado.",
@@ -152,16 +155,12 @@ public interface SurveyController {
 				description = "Opções de níveis retornadas com sucesso",
 				content = @Content(
 					mediaType = "application/json",
-					array = @ArraySchema(
-						schema = @Schema(implementation = br.com.sondsp.dtos.survey.SurveyResultOptionDTO.class)
-					)
+					array = @ArraySchema(schema = @Schema(implementation = SurveyResultOptionDTO.class))
 				)
 			)
 		}
 	)
-	ResponseEntity<java.util.List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(
-		@PathVariable Integer activityId
-	);
+	ResponseEntity<List<SurveyResultOptionDTO>> getActivityResultOptions(@PathVariable Integer activityId);
 
 	@Operation(
 		description = "Retorna os níveis oficiais de avaliação permitidos filtrando por código do eixo e ano escolar.",
@@ -171,15 +170,49 @@ public interface SurveyController {
 				description = "Opções de níveis retornadas com sucesso",
 				content = @Content(
 					mediaType = "application/json",
-					array = @ArraySchema(
-						schema = @Schema(implementation = br.com.sondsp.dtos.survey.SurveyResultOptionDTO.class)
-					)
+					array = @ArraySchema(schema = @Schema(implementation = SurveyResultOptionDTO.class))
 				)
 			)
 		}
 	)
-	ResponseEntity<java.util.List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getResultOptions(
+	ResponseEntity<List<SurveyResultOptionDTO>> getResultOptions(
 		@RequestParam(required = false) String strandCode,
 		@RequestParam(required = false) String gradeLevel
 	);
+
+	@Operation(
+		description = "Inicia a sondagem como digital.",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Sondagem iniciada com sucesso",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = SurveyDTO.class))
+			)
+		}
+	)
+	ResponseEntity<SurveyDTO> startSurveyAsDigital(@PathVariable Integer id) throws ValidationException;
+
+	@Operation(
+		description = "Atualiza a resposta da sondagem.",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Sondagem atualizada com sucesso",
+				content = @Content(mediaType = "application/json")
+			)
+		}
+	)
+	ResponseEntity<?> updateResponse(@PathVariable Integer id, @RequestBody String response) throws ValidationException;
+
+	@Operation(
+		description = "Fecha a sondagem digital.",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Sondagem fechada com sucesso",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = SurveyDTO.class))
+			)
+		}
+	)
+	ResponseEntity<SurveyDTO> closeDigitalSurvey(@PathVariable Integer id) throws ValidationException;
 }
