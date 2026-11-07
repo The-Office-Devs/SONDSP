@@ -1,42 +1,19 @@
 package br.com.sondsp.repositories.report;
 
 import br.com.sondsp.dtos.SchoolClassSurveysReportDTO;
-import br.com.sondsp.dtos.SchoolClassSurveysReportDTO.LegendEntry;
-import br.com.sondsp.dtos.SchoolClassSurveysReportDTO.StrandSheet;
-import br.com.sondsp.dtos.SchoolClassSurveysReportDTO.StudentRow;
+import br.com.sondsp.dtos.SchoolClassSurveysReportDTO.*;
 import br.com.sondsp.repositories.projections.SchoolClassSurveysProjection;
 import br.com.sondsp.util.SurveyPeriod;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Picture;
-import org.apache.poi.ss.usermodel.PrintSetup;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Repository;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -100,11 +77,6 @@ public class SchoolClassReportRepository extends ExcelReportRepository {
         merge(sheet, 1, 1, 0, LAST_COL);
 
         // ---- Linhas 3 a 5: escola, professor, turma / ano letivo (+ logo à direita) ------------
-        row = newRow(sheet, 2, 23.25f);
-        fill(row, 0, LAST_COL, s.info);
-        row.getCell(0).setCellValue(labelValue(s, "Nome da Escola:", header.getSchoolName()));
-        merge(sheet, 2, 2, 0, 4);
-
         row = newRow(sheet, 3, 27f);
         fill(row, 0, LAST_COL, s.info);
         row.getCell(0).setCellValue(labelValue(s, "Professor(a):", header.getTeacher()));

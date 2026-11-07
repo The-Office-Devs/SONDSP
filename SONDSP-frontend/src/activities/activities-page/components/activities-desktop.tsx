@@ -1,3 +1,4 @@
+import { useHasPermission } from "@/auth/use-permission";
 import { useState } from "react";
 
 import type { ActivityListItem } from "@/activities/activities.types";
@@ -28,6 +29,8 @@ export function ActivitiesDesktop() {
     ...(debouncedFilter.trim() ? { search: debouncedFilter.trim() } : {})
   });
   const { mutate, isPending } = useInactivateActivity();
+  const canStatusActivities = useHasPermission("ATIVIDADE_STATUS");
+
 
   const [viewActivity, setViewActivity] = useState<ActivityListItem | null>(null);
   const [inactivateActivity, setInactivateActivity] = useState<ActivityListItem | null>(null);
@@ -36,7 +39,7 @@ export function ActivitiesDesktop() {
 
   const actions: RowAction<ActivityListItem>[] = [
     { type: "view", onClick: (activityItem) => setViewActivity(activityItem) },
-    { type: "inactivate", onClick: (activityItem) => setInactivateActivity(activityItem), isActive: (activityItem) => activityItem.status }
+    { type: "inactivate", onClick: (activityItem) => setInactivateActivity(activityItem), isActive: (activityItem) => activityItem.status, disabled: () => !canStatusActivities }
   ];
 
   return (

@@ -1,12 +1,7 @@
 package br.com.sondsp.controllers;
 
-import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
-
-import br.com.sondsp.dtos.ImageDTO;
-import br.com.sondsp.dtos.PageResponse;
-import br.com.sondsp.dtos.SurveyDTO;
-
 import br.com.sondsp.dtos.*;
+import br.com.sondsp.dtos.survey.SurveyResultOptionDTO;
 import br.com.sondsp.entities.Survey;
 import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.SurveyFilter;
@@ -15,15 +10,19 @@ import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.SurveyService;
 import br.com.sondsp.util.SystemMessages;
 import jakarta.xml.bind.ValidationException;
-import java.io.IOException;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.util.List;
+
+import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
 
 @RestController
 @RequestMapping("/survey")
@@ -36,16 +35,19 @@ public class SurveyControllerImpl implements SurveyController {
 	private AuthenticationService authenticationService;
 
 	@PostMapping
+	@PreAuthorize("hasAuthority('SONDAGEM_MANAGE')")
 	public ResponseEntity<?> createSurvey(SurveyForm form) throws ValidationException, IOException {
 		return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form)));
 	}
 
 	@GetMapping
+	@PreAuthorize("hasAuthority('SONDAGEM_VIEW')")
 	public ResponseEntity<?> getSurveys(SurveyFilter filter) {
 		return ResponseEntity.ok().body(surveyService.listSurveys(filter).stream().map(SurveyDTO::new));
 	}
 
 	@GetMapping("/student-surveys/{id}")
+	@PreAuthorize("hasAuthority('SONDAGEM_VIEW')")
 	public ResponseEntity<PageResponse<SurveyDTO>> getStudentSurveys(
 		Integer id,
 		SurveyFilter filter,
@@ -73,17 +75,20 @@ public class SurveyControllerImpl implements SurveyController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
+	@PreAuthorize("hasAuthority('SONDAGEM_MANAGE')")
 	public ResponseEntity<?> updateSurvey(Integer id, SurveyForm form) throws IOException {
 		return ResponseEntity.ok().body(new SurveyDTO(surveyService.updateSurvey(id, form)));
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('SONDAGEM_DELETE')")
 	public ResponseEntity<?> deleteSurvey(Integer id) throws ValidationException {
 		surveyService.deleteSurvey(id);
 		return ResponseEntity.ok(SURVEY_DELETED);
 	}
 
 	@GetMapping("get-survey-image/{id}")
+	@PreAuthorize("hasAuthority('SONDAGEM_VIEW')")
 	public ResponseEntity<?> getSurveyImage(Integer id) {
 		String imageUrl = surveyService.getSurveyImageSignedUrl(id);
 		return ResponseEntity.ok().body(new ImageDTO(imageUrl));
@@ -91,16 +96,15 @@ public class SurveyControllerImpl implements SurveyController {
 
 	@Override
 	@GetMapping("/activity/{activityId}/result-options")
-	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getActivityResultOptions(@PathVariable Integer activityId) {
+	@PreAuthorize("hasAuthority('SONDAGEM_VIEW')")
+	public ResponseEntity<List<SurveyResultOptionDTO>> getActivityResultOptions(Integer activityId) {
 		return ResponseEntity.ok(surveyService.getResultOptionsForActivity(activityId));
 	}
 
 	@Override
 	@GetMapping("/result-options")
-	public ResponseEntity<List<br.com.sondsp.dtos.survey.SurveyResultOptionDTO>> getResultOptions(
-			@RequestParam(required = false) String strandCode,
-			@RequestParam(required = false) String gradeLevel
-	) {
+	@PreAuthorize("hasAuthority('SONDAGEM_VIEW')")
+	public ResponseEntity<List<SurveyResultOptionDTO>> getResultOptions(String strandCode, String gradeLevel) {
 		return ResponseEntity.ok(surveyService.getResultOptions(strandCode, gradeLevel));
 	}
 }

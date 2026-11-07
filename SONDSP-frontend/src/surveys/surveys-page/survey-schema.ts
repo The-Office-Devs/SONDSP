@@ -1,10 +1,6 @@
 import { z } from "zod/v4";
 
 export const surveySchema = z.object({
-  schoolId: z.coerce
-    .number()
-    .int()
-    .positive("Selecione uma escola"),
   schoolClassId: z.coerce
     .number()
     .int()

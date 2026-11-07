@@ -6,17 +6,13 @@ import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.ClassMapFilter;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
-import br.com.sondsp.repositories.ActivityRepository;
-import br.com.sondsp.repositories.SchoolClassRepository;
-import br.com.sondsp.repositories.StrandRepository;
-import br.com.sondsp.repositories.StudentRepository;
-import br.com.sondsp.repositories.SurveyRepository;
+import br.com.sondsp.repositories.*;
 import br.com.sondsp.repositories.projections.SchoolClassSurveysProjection;
 import br.com.sondsp.util.SurveyPeriod;
 import br.com.sondsp.util.SurveyReportLegend;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Tuple;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +36,6 @@ import static br.com.sondsp.util.SystemMessages.*;
 public class SchoolClassService {
 
 	private SchoolClassRepository repository;
-	private SchoolService schoolService;
 	private StudentRepository studentRepository;
 	private StrandRepository strandRepository;
 	private ActivityRepository activityRepository;
@@ -49,16 +44,13 @@ public class SchoolClassService {
 
 	public SchoolClass createSchoolClass(SchoolClassForm form) {
 		if (
-			repository.existsBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShift(
-				form.schoolId(),
+			repository.existsByNameAndGradeLevelAndSchoolYearAndShift(
 				form.name(),
 				form.gradeLevel(),
 				form.schoolYear(),
 				form.shift()
 			)
 		) throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
-
-		School school = schoolService.getSchool(form.schoolId());
 
 		return repository.save(
 			SchoolClass
@@ -67,7 +59,6 @@ public class SchoolClassService {
 				.gradeLevel(form.gradeLevel())
 				.schoolYear(form.schoolYear())
 				.shift(form.shift())
-				.school(school)
 				.status(true)
 				.build()
 		);
@@ -123,8 +114,7 @@ public class SchoolClassService {
 
 	public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
 		if (
-			repository.existsBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShiftAndIdNot(
-				form.schoolId(),
+			repository.existsByNameAndGradeLevelAndSchoolYearAndShiftAndIdNot(
 				form.name(),
 				form.gradeLevel(),
 				form.schoolYear(),
@@ -140,20 +130,11 @@ public class SchoolClassService {
         schoolClass.setSchoolYear(form.schoolYear());
         schoolClass.setShift(form.shift());
 
-        if (!java.util.Objects.equals(schoolClass.getSchool().getId(), form.schoolId())) {
-            schoolClass.setSchool(schoolService.getSchool(form.schoolId()));
-        }
-
         return repository.save(schoolClass);
     }
 
 	public Boolean changeStatus(Integer id) {
 		SchoolClass schoolClass = getSchoolClass(id);
-
-		// Se a turma estiver inativa e a escola também
-		if (
-			!schoolClass.getStatus() && !schoolService.getSchool(schoolClass.getSchool().getId()).getStatus()
-		) throw new ValidationException(SCHOOL_CLASS_CANNOT_ACTIVATE);
 
 		List<Student> students = studentRepository.findAllBySchoolClassIdAndStatusTrue(id);
 
@@ -274,7 +255,6 @@ public class SchoolClassService {
 		);
 
 		return new ClassMapDTO(
-			schoolClass.getSchool() != null ? schoolClass.getSchool().getName() : null,
 			schoolClass.getName(),
 			domainPercentage,
 			distribution,
@@ -567,13 +547,10 @@ public class SchoolClassService {
 			if (filter == null) return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
 			if (filter.search() != null && !filter.search().isBlank()) {
-				Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
-
 				String search = filter.search().toLowerCase();
 				String searchPattern = "%" + search + "%";
 
 				List<Predicate> orPredicates = new ArrayList<>();
-				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(schoolJoin.get("name")), searchPattern));
 				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
 				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("gradeLevel")), searchPattern));
 				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern));
@@ -592,23 +569,6 @@ public class SchoolClassService {
 				if (status != null) orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
 				predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
-			}
-
-			if (filter.schoolId() != null) {
-				Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
-
-				predicates.add(criteriaBuilder.equal(schoolJoin.get("id"), filter.schoolId()));
-			}
-
-			if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
-				Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
-
-				predicates.add(
-					criteriaBuilder.like(
-						criteriaBuilder.lower(schoolJoin.get("name")),
-						"%" + filter.schoolName().toLowerCase() + "%"
-					)
-				);
 			}
 
 			if (filter.name() != null && !filter.name().isBlank()) {

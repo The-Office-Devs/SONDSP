@@ -6,9 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -18,52 +16,48 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "usuario")
 public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
 
-    @Column(name = "nome")
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Integer id;
 
-    @Column(name = "matricula")
-    private String registration;
+	@Column(name = "nome")
+	private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_funcao", referencedColumnName = "id")
-    private Role role;
+	@Column(name = "matricula")
+	private String registration;
 
-    @Column(name = "email")
-    private String email;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_funcao", referencedColumnName = "id")
+	private Role role;
 
-    @Column(name = "status")
-    private Boolean status;
+	@Column(name = "email")
+	private String email;
 
-    @Column(name = "senha")
-    private String password;
+	@Column(name = "status")
+	private Boolean status;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "permissao_x_usuario",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_permissao")
-    )
-    private Set<Permission> permissions;
+	@Column(name = "senha")
+	private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<UserSchool> schools;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private Set<UserSchoolClass> schoolClasses;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<UserSchoolClass> schoolClasses;
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		Set<GrantedAuthority> authorities = new HashSet<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        String roleName = "ROLE_" + this.role.getName().toUpperCase();
-        return List.of(new SimpleGrantedAuthority(roleName));
-    }
+		if (this.role != null && this.role.getPermissions() != null) {
+			this.role.getPermissions()
+				.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getPermission())));
+		}
 
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
+		return authorities;
+	}
+
+	@Override
+	public String getUsername() {
+		return this.email;
+	}
 }

@@ -1,9 +1,11 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const userSchema = z.object({
   email: z
-    .email("Digite um e-mail válido")
-    .regex(/@sme\.prefeitura\.gov\.br$/i, "O e-mail deve ser institucional"),
+    .string()
+    .trim()
+    .min(1, "O e-mail institucional é obrigatório")
+    .regex(/^[a-z0-9._]+@sme\.prefeitura\.gov\.br$/i, "O e-mail deve ser institucional (@sme.prefeitura.gov.br)"),
   registration: z
     .string()
     .trim()
@@ -13,12 +15,12 @@ export const userSchema = z.object({
     .string()
     .trim()
     .min(1, "O nome completo do usuário é obrigatório"),
-  role: z
-    .string()
-    .min(1, { error: "" }),
-  permissions: z
-    .array(z.string())
-    .min(1, 'Selecione ao menos uma permissão')
+  roleId: z
+    .coerce
+    .number()
+    .int()
+    .positive("Selecione uma função para o usuário"),
 });
 
 export type UserFormData = z.infer<typeof userSchema>;
+export type UserFormInput = z.input<typeof userSchema>;

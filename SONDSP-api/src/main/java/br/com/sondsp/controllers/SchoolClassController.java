@@ -133,20 +133,20 @@ public interface SchoolClassController {
 			@ApiResponse(
 				responseCode = "200",
 				description = "Turma ativada/desativada com sucesso.",
-							content = @Content(
-									mediaType = "application/json",
-									schema = @Schema(implementation = SchoolClassDTO.class)
-							)
-					),
-					@ApiResponse(
-							responseCode = "404",
-							description = "Turma não encontrada.",
-							content = @Content(
-									mediaType = "application/json",
-									schema = @Schema(implementation = StandardErrorDTO.class)
-							)
-					)
-			}
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(implementation = SchoolClassDTO.class)
+				)
+			),
+			@ApiResponse(
+				responseCode = "404",
+				description = "Turma não encontrada.",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(implementation = StandardErrorDTO.class)
+				)
+			)
+		}
 	)
 	ResponseEntity<?> getStudentsPannel(
 		@PathVariable Integer id,
@@ -177,25 +177,25 @@ public interface SchoolClassController {
 	ResponseEntity<ClassMapDTO> getClassMap(@PathVariable Integer id, @ModelAttribute ClassMapFilter filter);
 
 	@Operation(
-			description = "Exporta o relatório das sondagens vinculadas a turma.",
-			responses = {
-					@ApiResponse(
-							responseCode = "200",
-							description = "Relatório exportado com sucesso.",
-							content = @Content(
-									mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-									schema = @Schema(type = "string", format = "binary")
-							)
-					),
-					@ApiResponse(
-							responseCode = "404",
-							description = "Turma não encontrada.",
-							content = @Content(
-									mediaType = "application/json",
-									schema = @Schema(implementation = StandardErrorDTO.class)
-							)
-					)
-			}
+		description = "Exporta o relatório das sondagens vinculadas a turma.",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Relatório exportado com sucesso.",
+				content = @Content(
+					mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+					schema = @Schema(type = "string", format = "binary")
+				)
+			),
+			@ApiResponse(
+				responseCode = "404",
+				description = "Turma não encontrada.",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(implementation = StandardErrorDTO.class)
+				)
+			)
+		}
 	)
 	ResponseEntity<ByteArrayResource> exportSchoolClassSurveys(@PathVariable Integer schoolClassId) throws IOException;
 }

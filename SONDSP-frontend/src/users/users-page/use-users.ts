@@ -9,17 +9,15 @@ import type { AxiosError } from "axios";
 
 import { handleApiError } from "@/lib/utils";
 import { useAuthStore } from "@/auth/auth.store";
-import { UserRole } from "@/auth/auth.types";
 import { 
   createUserService, 
   changeUserStatusService, 
   getUserService, 
   listUsersService, 
   updateUserService,
-  linkUserToSchoolService,
   linkUserToSchoolClassService
 } from "../users.service";
-import type { LinkSchoolClassRequest, LinkSchoolRequest, UserFilter } from "../users.types";
+import type { LinkSchoolClassRequest, UserFilter } from "../users.types";
 import type { UserFormData } from "./user-schema";
 import type { PaginationParams } from "@/api/types";
 
@@ -50,8 +48,8 @@ export function useCreateUser() {
         email: data.email.toLowerCase(),
         registration: data.registration,
         name: data.name,
-        role: data.role,
-        permissions: data.permissions
+        roleId: data.roleId,
+        permissions: []
       }),
 
     onSuccess: () => {
@@ -77,8 +75,8 @@ export function useUpdateUser() {
           email: data.email.toLowerCase(),
           registration: data.registration,
           name: data.name,
-          role: data.role,
-          permissions: data.permissions
+          roleId: data.roleId,
+          permissions: []
         }
       ),
 
@@ -94,7 +92,7 @@ export function useUpdateUser() {
           name: updatedUser.name,
           registration: updatedUser.registration,
           email: updatedUser.email.toLowerCase(),
-          role: updatedUser.role as UserRole,
+          role: updatedUser.role,
           permissions: updatedUser.permissions,
         });
       }
@@ -121,23 +119,6 @@ export function useChangeUserStatus() {
 
     onError: (error: AxiosError<{ error: string }>) =>
       handleApiError(error || 'Erro ao alterar status do usuário.')
-  });
-}
-
-export function useLinkUserToSchool() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: LinkSchoolRequest }) => 
-      linkUserToSchoolService(id, data),
-
-    onSuccess: (message) => {
-      queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
-      toast.success(message || 'Usuário vinculado à escola com sucesso.');
-    },
-
-    onError: (error: AxiosError<{ error: string }>) =>
-      handleApiError(error || 'Erro ao vincular usuário à escola.')
   });
 }
 

@@ -10,7 +10,6 @@ public record StudentPortfolioDTO(
     String initials,
     String currentClass,
     SchoolClassDTO currentSchoolClass,
-    String school,
     String schoolYear,
     String registration,
     Integer rowNumber,
