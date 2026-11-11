@@ -17,6 +17,7 @@ import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 import { ViewFileDialog } from "@/components/Dialog/ViewFileDialog";
 import { ReadOnlyField } from "@/components/ReadOnlyFields/ReadOnlyField";
 import { getResultLabel } from "@/lib/survey-utils";
+import { ReadOnlyTextAreaField } from "@/components/ReadOnlyFields/ReadOnlyTextAreaField";
 
 interface SavedSurveyHistoryFilter {
   data: SurveyHistoryFormData;
@@ -93,6 +94,8 @@ export function SurveysHistoryDesktop() {
   const imageUrl = useSurveyImg ? surveyImageUrl : activityImageUrl;
   const isFetchingImage = useSurveyImg ? isFetchingSurvey : isFetchingActivity;
 
+  console.log(viewFile)
+
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <SurveysHistoryFilterPanel
@@ -118,6 +121,7 @@ export function SurveysHistoryDesktop() {
       <ViewFileDialog
         fileUrl={imageUrl}
         title={isFetchingImage ? "Carregando arquivo..." : (viewFile?.activity.name ?? "")}
+        subtitle={viewFile?.result ? `${viewFile?.studentName}` : undefined}
         open={viewFile !== null}
         onOpenChange={(open) => { if (!open) setViewFile(null) }}
       >
@@ -125,7 +129,7 @@ export function SurveysHistoryDesktop() {
           <>
             <ReadOnlyField label="Resultado" value={getResultLabel(viewFile.result)} />
             {viewFile.notes && (
-              <ReadOnlyField label="Observações" value={viewFile.notes} />
+              <ReadOnlyTextAreaField label="Observações" value={viewFile.notes} />
             )}
           </>
         )}
