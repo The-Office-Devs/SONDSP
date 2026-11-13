@@ -7,6 +7,7 @@ import {
   ClipboardList,
   Download,
   Eye,
+  FilePen,
   IdCardLanyard,
   Link2, 
   Link2Off, 
@@ -14,6 +15,7 @@ import {
   Loader2, 
   NotebookPen, 
   PencilLine, 
+  SquareCheckBig, 
   X, 
   type LucideIcon
 } from "lucide-react";
@@ -31,16 +33,18 @@ import { AppPagination } from "../ui/pagination";
 
 type RowActionType =
   | 'apply'
+  | 'create'
   | 'delete'
   | 'download'
   | 'edit'
   | 'finish'
+  | 'finishDigitalSurvey'
   | 'inactivate'
   | 'link'
   | 'list'
   | 'normal'
   | 'openClass'
-  | 'create'
+  | 'startDigitalSurvey'
   | 'view'
   | 'viewPortfolio'
 
@@ -98,11 +102,15 @@ export function DataTable<T>({
     return String(value);
   };
 
-  const maxActions = typeof actions === "function" ? 1 : actions.length;
+  const getRowActions = (row: T) => (typeof actions === "function" ? actions(row) : actions);
 
-  const labeledActions = typeof actions === "function"
-    ? 0
-    : actions.filter((action) => action.label).length;
+  const rowActionsList = data.map(getRowActions);
+  const maxActions = Math.max(0, ...rowActionsList.map((rowActions) => rowActions.length));
+
+  const labeledActions = Math.max(
+    0,
+    ...rowActionsList.map((rowActions) => rowActions.filter((action) => action.label).length)
+  );
 
   if (data.length === 0) {
     return (
@@ -181,7 +189,7 @@ export function DataTable<T>({
 
                 <TableCell className="px-4 py-3">
                   <div className="flex items-center justify-center gap-2 whitespace-nowrap">
-                    {(typeof actions === "function" ? actions(row) : actions).map((action) => {
+                    {getRowActions(row).map((action) => {
                       const isDisabled = typeof action.disabled === "function"
                           ? action.disabled(row)
                           : action.disabled ?? false;
@@ -231,10 +239,12 @@ type ActionAppearance = {
 
 const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppearance> = {
   apply: () => ({ title: "Aplicar", icon: NotebookPen }),
+  create: () => ({ title: "Criar", icon: CirclePlus }),
   download: () => ({ title: "Gerar Relatório", icon: Download }),
   delete: () => ({ title: "Excluir", icon: X, variant: "destructive" }),
   edit: () => ({ title: "Editar", icon: PencilLine }),
   finish: () => ({ title: "Finalizar", icon: BookOpenCheck }),
+  finishDigitalSurvey: () => ({ title: "Finalizar Sondagem Digital", icon: SquareCheckBig }),
 
   link: (isLinked) =>
     isLinked
@@ -250,7 +260,7 @@ const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppe
 
   normal: () => ({ title: "", icon: AlarmSmoke }),
   openClass: () => ({ title: "Abrir Turma", icon: ClipboardList }),
-  create: () => ({ title: "Criar", icon: CirclePlus }),
+  startDigitalSurvey: () => ({ title: "Iniciar Sondagem Digital", icon: FilePen }),
   view: () => ({ title: "Visualizar", icon: Eye, variant: "outline" }),
   viewPortfolio: () => ({ title: "Ver Portfólio", icon: IdCardLanyard })
 }

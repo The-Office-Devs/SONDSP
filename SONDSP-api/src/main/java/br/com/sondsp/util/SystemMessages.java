@@ -59,8 +59,9 @@ public final class SystemMessages {
 	public static final String NULL_SURVEYS_IN_CLASS = "Nenhuma sondagem registrada para esta turma.";
 	public static final String STUDENT_BIRTH_DATE_INVALID = "Data de nascimento inválida. Use o formato dd/MM/aaaa.";
 	public static final String STUDENT_BIRTH_DATE_FUTURE = "A data de nascimento não pode ser futura.";
-	public static final String CLOSED_SURVEY = "A sondagem já foi finanalizada.";
+	public static final String CLOSED_SURVEY = "A sondagem já foi finalizada.";
 	public static final String ANSWERED_SURVEY = "A sondagem já foi respondida.";
+	public static final String SURVEY_NOT_DIGITAL = "A sondagem não foi iniciada no modo digital.";
 
 	// Import
 	public static final String IMPORT_INVALID_FILE = "Arquivo inválido. Envie uma planilha Excel (.xlsx ou .xls).";

@@ -25,19 +25,19 @@ public class UsersControllerImpl implements UsersController {
 	private UsersService service;
 
 	@PostMapping
-	@PreAuthorize("hasAuthority('USER_MANAGE')")
+	@PreAuthorize("hasAuthority('USUARIO_MANAGE')")
 	public ResponseEntity<?> register(UserForm form) {
 		return ResponseEntity.ok().body(new RegisterDTO(service.registerUser(form)));
 	}
 
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('USER_VIEW')")
+	@PreAuthorize("hasAuthority('USUARIO_VIEW')")
 	public ResponseEntity<?> getUserById(Integer id) {
 		return ResponseEntity.ok().body(new UserDTO(service.getUser(id)));
 	}
 
 	@GetMapping
-	@PreAuthorize("hasAuthority('USER_VIEW')")
+	@PreAuthorize("hasAuthority('USUARIO_VIEW')")
 	public ResponseEntity<PageResponse<UsersListDTO>> listUser(UserFilter filter, Pageable pageable) {
 		Page<User> userPage = service.getUsers(filter, pageable);
 
@@ -63,7 +63,7 @@ public class UsersControllerImpl implements UsersController {
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('USER_MANAGE')")
+	@PreAuthorize("hasAuthority('USUARIO_MANAGE')")
 	public ResponseEntity<?> updateUser(Integer id, UserForm user) {
 		return ResponseEntity.ok().body(new UserDTO(service.updateUser(id, user)));
 	}

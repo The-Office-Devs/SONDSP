@@ -119,6 +119,10 @@ public class SurveyService {
 		return this.activityRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ACTIVITY_NOT_FOUND));
 	}
 
+	public Survey getSurvey(Integer id) {
+		return findSurveyById(id);
+	}
+
 	public List<Survey> listSurveys(SurveyFilter filter) {
 		List<SpecificationFilter.FilterColumn> columnsConfig = List.of(
 			new SpecificationFilter.FilterColumn("result", "result"),
@@ -208,12 +212,20 @@ public class SurveyService {
 	}
 
 	private void validadeSurvey(Survey survey) throws ValidationException {
-		if (survey.getStatus()) {
+		if (Boolean.TRUE.equals(survey.getStatus())) {
 			throw new ValidationException(CLOSED_SURVEY);
 		}
 
-		if (survey.getIsClosed()) {
+		if (Boolean.TRUE.equals(survey.getIsClosed())) {
 			throw new ValidationException(ANSWERED_SURVEY);
+		}
+	}
+
+	private void validateDigitalSurvey(Survey survey) throws ValidationException {
+		validadeSurvey(survey);
+
+		if (!Boolean.TRUE.equals(survey.getIsDigital())) {
+			throw new ValidationException(SURVEY_NOT_DIGITAL);
 		}
 	}
 
@@ -230,7 +242,7 @@ public class SurveyService {
 	public void updateResponse(Integer id, String response) throws ValidationException {
 		Survey survey = findSurveyById(id);
 
-		validadeSurvey(survey);
+		validateDigitalSurvey(survey);
 
 		survey.setResponse(response);
 
@@ -240,7 +252,7 @@ public class SurveyService {
 	public Survey closeDigitalSurvey(Integer id) throws ValidationException {
 		Survey survey = findSurveyById(id);
 
-		validadeSurvey(survey);
+		validateDigitalSurvey(survey);
 
 		survey.setIsClosed(true);
 

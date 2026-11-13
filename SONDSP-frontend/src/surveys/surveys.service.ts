@@ -14,6 +14,11 @@ export async function createSurveyService(data: CreateSurveyRequest): Promise<Su
   return response.data; 
 };
 
+export async function getSurveyService(surveyId: number) {
+  const response = await api.get<SurveyListItem>(`/survey/${surveyId}`);
+  return response.data;
+}
+
 export async function getStudentSurveysService(
   id: number,
   filter?: SurveyFilter & PaginationParams
@@ -77,4 +82,18 @@ export async function getSurveyResultOptionsService(
     { params: { strandCode, gradeLevel } }
   );
   return response.data;
+}
+
+export async function startDigitalSurveyService(surveyId: number) {
+  const response = await api.patch(`/survey/${surveyId}/startSurveyAsDigital`);
+  return response.data;
+}
+
+export async function closeDigitalSurveyService(surveyId: number) {
+  const response = await api.patch(`/survey/${surveyId}/closeDigitalSurvey`);
+  return response.data;
+}
+
+export async function updateSurveyResponseService(surveyId: number, response: string) {
+  await api.patch(`/survey/${surveyId}/updateResponse`, { response });
 }

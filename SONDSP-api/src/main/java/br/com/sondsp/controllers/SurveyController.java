@@ -2,6 +2,7 @@ package br.com.sondsp.controllers;
 
 import br.com.sondsp.dtos.*;
 import br.com.sondsp.dtos.survey.SurveyResultOptionDTO;
+import br.com.sondsp.dtos.survey.UpdateDigitalSurveyDTO;
 import br.com.sondsp.filters.SurveyFilter;
 import br.com.sondsp.form.SurveyForm;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +30,21 @@ public interface SurveyController {
 		}
 	)
 	ResponseEntity<?> createSurvey(@RequestBody SurveyForm form) throws ValidationException, IOException;
+
+	@Operation(
+			description = "Retorna uma sondagem específica",
+			responses = {
+					@ApiResponse(
+							responseCode = "200",
+							description = "Sondagem retornada.",
+							content = @Content(
+									mediaType = "application/json",
+									array = @ArraySchema(schema = @Schema(implementation = SurveyDTO.class))
+							)
+					)
+			}
+	)
+	ResponseEntity<?> getSurvey(@ModelAttribute @PathVariable Integer id);
 
 	@Operation(
 		description = "Retorna uma lista das Sondagens com base no filtro passado. Se nenhum filtro for passado, retorna todas as Sondagens.",
@@ -202,7 +218,7 @@ public interface SurveyController {
 			)
 		}
 	)
-	ResponseEntity<?> updateResponse(@PathVariable Integer id, @RequestBody String response) throws ValidationException;
+	ResponseEntity<?> updateResponse(@PathVariable Integer id, @RequestBody UpdateDigitalSurveyDTO digitalSurvey) throws ValidationException;
 
 	@Operation(
 		description = "Fecha a sondagem digital.",

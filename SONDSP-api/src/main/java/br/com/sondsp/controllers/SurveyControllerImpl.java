@@ -4,6 +4,7 @@ import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
 
 import br.com.sondsp.dtos.*;
 import br.com.sondsp.dtos.survey.SurveyResultOptionDTO;
+import br.com.sondsp.dtos.survey.UpdateDigitalSurveyDTO;
 import br.com.sondsp.entities.Survey;
 import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.SurveyFilter;
@@ -37,6 +38,11 @@ public class SurveyControllerImpl implements SurveyController {
 	@PreAuthorize("hasAuthority('SONDAGEM_MANAGE')")
 	public ResponseEntity<?> createSurvey(SurveyForm form) throws ValidationException, IOException {
 		return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form)));
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<SurveyDTO> getSurvey(Integer id) {
+		return ResponseEntity.ok().body(new SurveyDTO(surveyService.getSurvey(id)));
 	}
 
 	@GetMapping
@@ -114,13 +120,12 @@ public class SurveyControllerImpl implements SurveyController {
 	}
 
 	@PatchMapping("/{id}/updateResponse")
-	@PreAuthorize("hasAuthority('SONDAGEM_DIGITAL_MANAGE')")
-	public ResponseEntity<?> updateResponse(Integer id, String response) throws ValidationException {
-		surveyService.updateResponse(id, response);
+	public ResponseEntity<?> updateResponse(Integer id, UpdateDigitalSurveyDTO digitalSurvey) throws ValidationException {
+		surveyService.updateResponse(id, digitalSurvey.response());
 		return ResponseEntity.ok().build();
 	}
 
-	@PatchMapping("/{id}/closesDifitalSurvey")
+	@PatchMapping("/{id}/closeDigitalSurvey")
 	@PreAuthorize("hasAuthority('SONDAGEM_DIGITAL_MANAGE')")
 	public ResponseEntity<SurveyDTO> closeDigitalSurvey(Integer id) throws ValidationException {
 		return ResponseEntity.ok().body(new SurveyDTO(surveyService.closeDigitalSurvey(id)));
