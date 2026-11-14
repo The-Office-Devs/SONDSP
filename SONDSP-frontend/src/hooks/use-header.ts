@@ -1,23 +1,12 @@
-import { useEffect, useRef, type DependencyList } from "react";
+import { useEffect } from "react";
 import { DEFAULT_HEADER, type HeaderConfig } from "@/contexts/shell-context";
 import { useShell } from "./use-shell";
 
-export function useHeader(config: HeaderConfig, deps: DependencyList = []) {
+export function useHeader(config: HeaderConfig) {
   const { setHeader } = useShell();
 
-  const ref = useRef(config);
   useEffect(() => {
-    ref.current = config;
-  });
-
-  useEffect(() => {
-    const { title, variant, onSearch } = ref.current;
-
-    setHeader({
-      title,
-      variant: variant ?? "menu",
-      onSearch: onSearch && (() => ref.current.onSearch!()),
-    });
+    setHeader({ title: config.title, variant: config.variant ?? "menu" });
     return () => setHeader(DEFAULT_HEADER);
-  }, [config.title, config.variant, setHeader, ...deps]);
+  }, [config.title, config.variant, setHeader]);
 }

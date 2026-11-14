@@ -2,7 +2,6 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 import { 
-  AUTHOR_ROLE_LABEL, 
   FILTERS, 
   formatNoteDate, 
   getAuthorRoleMeta, 

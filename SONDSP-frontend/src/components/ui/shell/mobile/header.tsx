@@ -1,26 +1,54 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Menu, Search, UserRound } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ArrowLeft, Menu, UserRound } from "lucide-react";
 
 import { useShell } from "@/hooks/use-shell";
 import { useAuthStore } from "@/auth/auth.store";
+import type { FooterConfig } from "@/contexts/shell-context";
 
 import { MobileShellSidebar } from "./sidebar";
 
+function getFooterTitle(title: FooterConfig["title"]) {
+  if (typeof title === "string") return title;
+  return title[title.length - 1]?.label ?? "";
+}
+
 export function MobileShellHeader() {
-  const { header } = useShell();
+  const { header, footer } = useShell();
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useAuthStore((state) => state.user);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const handleBack = () => { navigate(-1) };
 
-  // TODO: implementar o onSearch para expandir quando abrir e passar onSearch pro campo que abrir
+  const isBack = header.variant === "back" || !!footer.leftAction;
+  const title = header.title || getFooterTitle(footer.title);
+
+  const handleBack = () => {
+    if (footer.leftAction) {
+      footer.leftAction.onClick();
+      return;
+    }
+
+    if (location.key === "default") navigate("/");
+    else navigate(-1);
+  };
+
   return (
     <>
       <header className="sticky top-0 z-30 flex flex-col bg-primary text-white">
         <div className="flex h-14 items-center gap-2 px-2">
-          {header.variant === "menu" ? (
+          {isBack ? (
+            <button
+              type="button"
+              onClick={handleBack}
+              disabled={footer.leftAction?.disabled}
+              aria-label="Voltar"
+              className="flex h-10 w-10 shrink-0 items-center justify-center disabled:opacity-50"
+            >
+              <ArrowLeft className="size-6" />
+            </button>
+          ) : (
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
@@ -29,29 +57,13 @@ export function MobileShellHeader() {
             >
               <Menu className="size-6" />
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleBack}
-              aria-label="Voltar"
-              className="flex h-10 w-10 shrink-0 items-center justify-center"
-            >
-              <ArrowLeft className="size-6" />
-            </button>
           )}
 
           <span className="flex-1 truncate text-center text-lg font-semibold">
-            {header.title}
+            {title}
           </span>
 
-          <button
-            type="button"
-            aria-label="Buscar"
-            className="flex h-10 w-10 shrink-0 items-center justify-center"
-            onClick={header.onSearch}
-          >
-            <Search className="size-6" />
-          </button>
+          <span aria-hidden="true" className="h-10 w-10 shrink-0" />
         </div>
 
         <div className="flex items-center gap-3 px-3 pb-3">
@@ -63,18 +75,18 @@ export function MobileShellHeader() {
               {user?.name ?? "Usuário"}
             </p>
             <p className="truncate text-xs leading-tight text-white/70">
-              {user?.role ?? "Cargo"}
+              {user?.role?.name ?? "Cargo"}
             </p>
           </div>
         </div>
       </header>
 
-      {header.variant === "menu" ? (
+      {!isBack && (
         <MobileShellSidebar 
           open={sidebarOpen} 
           onClose={() => setSidebarOpen(false)} 
         />
-      ) : null}
+      )}
     </>
   );
 }

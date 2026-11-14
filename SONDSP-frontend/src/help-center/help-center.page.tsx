@@ -10,6 +10,7 @@ import { HelpModuleSection } from './components/help-module-section';
 import { HelpSupportFooter } from './components/help-support-footer';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useHeader } from '@/hooks/use-header';
 
 export function HelpCenterPage() {
   const navigate = useNavigate();
@@ -81,6 +82,8 @@ export function HelpCenterPage() {
   const handleCollapseAll = () => {
     setExpandedModules({});
   };
+
+  useHeader({ title: "Central de Ajuda" });
 
   // Configura botão "Voltar" e título no rodapé padrão do SONDSP
   useFooter({

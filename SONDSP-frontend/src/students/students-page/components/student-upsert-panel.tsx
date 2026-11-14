@@ -1,5 +1,5 @@
 import { useHasPermission } from "@/auth/use-permission";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -74,11 +74,14 @@ export function StudentUpsertPanel({
   const [registrationMode, setRegistrationMode] = useState<"individual" | "batch">("individual");
   const [batchFile, setBatchFile] = useState<File | null>(null);
   const [open, setOpen] = useState(true);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isEditMode) {
       setRegistrationMode("individual");
       setBatchFile(null);
+      setOpen(true);
+      panelRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
     }
   }, [isEditMode]);
 
@@ -142,14 +145,14 @@ export function StudentUpsertPanel({
       })) ?? [];
   return (
     <Card className="border-0 bg-[#efefef] px-5 py-5 shadow-sm">
-      <div className="space-y-5">
-        <div className="flex flex-row items-center gap-4">
+      <div ref={panelRef} className="scroll-mt-24 space-y-5">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           <h2 className="text-lg font-semibold text-slate-950 whitespace-nowrap">
             {isEditMode ? "Edição de Aluno" : "Cadastro de Aluno"}
           </h2>
 
           {!isEditMode && (
-            <div className="flex items-center gap-2">
+            <div className="order-last flex w-full items-center gap-2 sm:order-none sm:w-auto">
               <span className="text-sm text-muted-foreground whitespace-nowrap">
                 Modo do Cadastro
               </span>
@@ -171,7 +174,7 @@ export function StudentUpsertPanel({
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
-            className="ml-auto cursor-pointer text-slate-950"
+            className="-m-2 ml-auto cursor-pointer p-2 text-slate-950"
           >
             {open ? <ChevronUp className="size-5" /> : <ChevronDown className="size-5" />}
           </button>
@@ -221,7 +224,7 @@ export function StudentUpsertPanel({
                     emptyMessage="Nenhuma turma encontrada."
                   />
         
-                  <div className="flex gap-2 items-end justify-end xl:col-start-3 self-start mt-[2rem]">
+                  <div className="flex gap-2 items-end justify-end xl:col-start-3 self-start md:mt-[2rem]">
                     {isEditMode && (
                       <Button
                         type="button"
@@ -248,17 +251,18 @@ export function StudentUpsertPanel({
             ) : (
               <div className="space-y-4">
                 {batchFile ? (
-                  <div className="flex justify-between rounded-lg border border-input bg-white px-4 py-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <FileSpreadsheet className="size-4 text-muted-foreground" />
-                      <p className="font-medium"> {batchFile.name} </p>
-                      <p className="text-muted-foreground">
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-input bg-white px-4 py-3">
+                    <div className="flex min-w-0 items-center gap-2 text-sm">
+                      <FileSpreadsheet className="size-4 shrink-0 text-muted-foreground" />
+                      <p className="truncate font-medium">{batchFile.name}</p>
+                      <p className="shrink-0 text-muted-foreground">
                         {(batchFile.size / 1024).toFixed(0)} KB
                       </p>
                     </div>
                     <Button
                       type="button"
                       isRounded
+                      className="ml-auto"
                       disabled={!batchFile || isImporting || !canImportStudents}
                       onClick={handleImport}
                     >

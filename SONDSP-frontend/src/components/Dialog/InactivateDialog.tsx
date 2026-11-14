@@ -37,9 +37,9 @@ export function InactivateDialog<T extends { id: number | string; name: string; 
   const actionText = isInactive ? "ativar" : "inativar";
   const pendingText = isInactive ? "Ativando..." : "Inativando...";
 
-  return (
+    return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
@@ -53,7 +53,7 @@ export function InactivateDialog<T extends { id: number | string; name: string; 
             variant="outline"
             size="lg"
             onClick={() => onOpenChange(false)}
-            className="flex-1 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700"
+            className="border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700 sm:flex-1"
           >
             Não
           </Button>
@@ -63,7 +63,7 @@ export function InactivateDialog<T extends { id: number | string; name: string; 
             onClick={handleConfirm}
             disabled={isPending}
             className={cn(
-              "flex-1 border-transparent text-white",
+              "border-transparent text-white sm:flex-1",
               isInactive 
                 ? "bg-emerald-600 hover:bg-emerald-700" 
                 : "bg-destructive hover:bg-destructive/90"

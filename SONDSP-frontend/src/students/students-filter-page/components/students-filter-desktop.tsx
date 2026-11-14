@@ -16,7 +16,7 @@ const STUDENTS_FILTER_KEY = "students-filter";
 const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "10%" },
   { id: "registration", header: "Matrícula", width: "10%", },
-  { id: "name", header: "Nome", width: "40%" }
+  { id: "name", header: "Nome", width: "40%", mobile: "title" }
 ];
 
 export function StudentsFilterDesktop() {
@@ -72,7 +72,7 @@ export function StudentsFilterDesktop() {
       {!appliedFilters ? (
         <div className="flex flex-col items-center p-4 text-center">
           <p className="max-w-md text-sm text-slate-500">
-            Por favor, selecione uma turma no filtro acima para carregar a lista de alunos e ver seus portólios
+            Por favor, selecione uma turma no filtro acima para carregar a lista de alunos e ver seus portfólios
           </p>
         </div>
       ) : (

@@ -93,7 +93,7 @@ export function NoteDialog<T extends string>({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-md sm:max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+        className="max-h-[90dvh] w-full max-w-[calc(100%-2rem)] overflow-y-auto rounded-2xl bg-white p-6 shadow-xl sm:max-w-lg"
         onOpenAutoFocus={(event) => event.preventDefault()}
         {...(subtitle ? {} : { "aria-describedby": undefined })}
       >
@@ -178,7 +178,7 @@ export function NoteDialog<T extends string>({
                     size="lg"
                     onClick={handleClose}
                     disabled={isSaving}
-                    className="w-auto min-w-32 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700"
+                    className="flex-1 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700 sm:w-auto sm:min-w-32 sm:flex-none"
                   >
                     Cancelar
                   </Button>
@@ -187,7 +187,7 @@ export function NoteDialog<T extends string>({
                     type="submit"
                     size="lg"
                     disabled={!canSave}
-                    className="w-auto min-w-32 border-transparent bg-emerald-600 text-white hover:bg-emerald-700"
+                    className="flex-1 border-transparent bg-emerald-600 text-white hover:bg-emerald-700 sm:w-auto sm:min-w-32 sm:flex-none"
                   >
                     {isSaving ? "Salvando..." : "Salvar"}
                   </Button>

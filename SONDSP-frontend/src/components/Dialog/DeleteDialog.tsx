@@ -34,7 +34,7 @@ export function DeleteDialog<T extends { id: number | string; }>({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
@@ -47,7 +47,7 @@ export function DeleteDialog<T extends { id: number | string; }>({
             variant="outline"
             size="lg"
             onClick={() => onOpenChange(false)}
-            className="flex-1 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700"
+            className="border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700 sm:flex-1"
           >
             Não
           </Button>
@@ -56,7 +56,7 @@ export function DeleteDialog<T extends { id: number | string; }>({
             size="lg"
             onClick={handleConfirm}
             disabled={isPending}
-            className="flex-1 border-transparent text-white bg-destructive hover:bg-destructive/90"
+            className="border-transparent bg-destructive text-white hover:bg-destructive/90 sm:flex-1"
           >
             {isPending ? 'Excluindo...' : 'Sim'}
           </Button>
