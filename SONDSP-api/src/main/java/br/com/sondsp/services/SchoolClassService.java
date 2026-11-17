@@ -27,6 +27,10 @@ import java.text.Collator;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import br.com.sondsp.util.SurveySheetGroup;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static br.com.sondsp.util.SystemMessages.*;
 
@@ -478,43 +482,82 @@ public class SchoolClassService {
 			if (current == null || isNewer(survey, current)) latest.put(key, survey);
 		}
 
-		if (strandNames.isEmpty()) throw new ValidationException(NULL_SURVEYS_IN_CLASS);
+		if (strandNames.isEmpty()) throw new ValidationException("Nenhuma sondagem registrada para esta turma.");
 
-		List<Integer> strandIds = strandNames
-				.keySet()
-				.stream()
-				.sorted((a, b) -> collator.compare(strandNames.get(a), strandNames.get(b)))
-				.toList();
+		Map<String, Integer> strandIdByCode = new HashMap<>();
+		strandCodes.forEach((id, code) -> strandIdByCode.putIfAbsent(SurveySheetGroup.normalize(code), id));
 
 		SurveyPeriod[] periods = SurveyPeriod.values();
-		List<SchoolClassSurveysReportDTO.StrandSheet> sheets = new ArrayList<>();
+		String gradeLevel = header.getGradeLevel();
+		List<SchoolClassSurveysReportDTO.SurveySheet> sheets = new ArrayList<>();
+		Set<SurveySheetGroup> groupsDone = EnumSet.noneOf(SurveySheetGroup.class);
 
-		for (Integer strandId : strandIds) {
-			List<SchoolClassSurveysReportDTO.StudentRow> rows = new ArrayList<>();
+		for (Integer strandId : new TreeSet<>(strandNames.keySet())) {
+			String code = strandCodes.get(strandId);
+			Optional<SurveySheetGroup> group = SurveySheetGroup.fromStrandCode(code);
 
-			for (Student student : students) {
-				List<String> results = new ArrayList<>(periods.length);
-				for (SurveyPeriod period : periods) {
-					SurveyResultDTO survey = latest.get(new ResultKey(student.getId(), strandId, period));
-					results.add(survey == null ? null : survey.result());
-				}
+			if (group.isEmpty()) {
+				sheets.add(
+						new SchoolClassSurveysReportDTO.SurveySheet(
+								strandNames.get(strandId),
+								code,
+								strandNames.get(strandId),
+								null,
+								List.of(),
+								buildLegend(code, gradeLevel),
+								buildRows(students, List.of(strandId), periods, latest)
+						)
+				);
+			} else if (groupsDone.add(group.get())) {
+				SurveySheetGroup g = group.get();
 
-				int number = student.getRowNumber() != null ? student.getRowNumber() : rows.size() + 1;
-				rows.add(new SchoolClassSurveysReportDTO.StudentRow(number, student.getName(), results));
+				List<Integer> columnStrandIds = g
+						.getMembers()
+						.stream()
+						.map(member -> strandIdByCode.get(member.strandCode()))
+						.toList();
+
+				sheets.add(
+						new SchoolClassSurveysReportDTO.SurveySheet(
+								g.getSheetName(),
+								null,
+								g.getTitle(),
+								g.getSubtitle(),
+								g.getColumnLabels(),
+								buildLegend(g.getLegendStrandCode(), gradeLevel),
+								buildRows(students, columnStrandIds, periods, latest)
+						)
+				);
 			}
-
-			sheets.add(
-					new SchoolClassSurveysReportDTO.StrandSheet(
-							strandId,
-							strandNames.get(strandId),
-							strandCodes.get(strandId),
-							buildLegend(strandCodes.get(strandId), header.getGradeLevel()),
-							rows
-					)
-			);
 		}
 
 		return new SchoolClassSurveysReportDTO(header, sheets);
+	}
+
+	private static List<SchoolClassSurveysReportDTO.StudentRow> buildRows(
+			List<Student> students,
+			List<Integer> strandIds,
+			SurveyPeriod[] periods,
+			Map<ResultKey, SurveyResultDTO> latest
+	) {
+		List<SchoolClassSurveysReportDTO.StudentRow> rows = new ArrayList<>();
+
+		for (Student student : students) {
+			List<String> results = new ArrayList<>(periods.length * strandIds.size());
+			for (SurveyPeriod period : periods) {
+				for (Integer strandId : strandIds) {
+					SurveyResultDTO survey = strandId == null
+							? null
+							: latest.get(new ResultKey(student.getId(), strandId, period));
+					results.add(survey == null ? null : survey.result());
+				}
+			}
+
+			int number = student.getRowNumber() != null ? student.getRowNumber() : rows.size() + 1;
+			rows.add(new SchoolClassSurveysReportDTO.StudentRow(number, student.getName(), results));
+		}
+
+		return rows;
 	}
 
 	private List<SchoolClassSurveysReportDTO.LegendEntry> buildLegend(String strandCode, String gradeLevel) {
