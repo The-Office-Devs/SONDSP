@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ComponentType } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ClipboardList,
@@ -216,45 +216,6 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
           </nav>
         </div>
       </aside>
-    </div>
-  );
-}
-
-interface MobileSidebarItemProps {
-  icon: ComponentType<{ className?: string }>;
-  label: string;
-  indent?: boolean;
-  active?: boolean;
-  onClick?: () => void;
-}
-
-function MobileSidebarItem({ icon: Icon, label, indent = false, active = false, onClick }: MobileSidebarItemProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors',
-        active ? 'bg-white/12 text-white' : 'text-white/95 hover:bg-white/10',
-        indent && 'pl-5',
-      )}
-    >
-      <Icon className="size-6 shrink-0" />
-      <span className="truncate text-[1.05rem] font-medium">{label}</span>
-    </button>
-  );
-}
-
-interface MobileSidebarSectionProps {
-  icon: ComponentType<{ className?: string }>;
-  title: string;
-}
-
-function MobileSidebarSection({ icon: Icon, title }: MobileSidebarSectionProps) {
-  return (
-    <div className="mt-3 flex items-start gap-3 px-3 text-white/90">
-      <Icon className="mt-0.5 size-5 shrink-0" />
-      <span className="whitespace-nowrap text-[0.95rem] font-medium leading-tight">{title}</span>
     </div>
   );
 }
