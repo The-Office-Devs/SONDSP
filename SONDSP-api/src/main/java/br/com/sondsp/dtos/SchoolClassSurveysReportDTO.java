@@ -3,12 +3,13 @@ package br.com.sondsp.dtos;
 import br.com.sondsp.repositories.projections.SchoolClassSurveysProjection;
 import java.util.List;
 
-public record SchoolClassSurveysReportDTO(SchoolClassSurveysProjection header, List<StrandSheet> sheets) {
-
-    public record StrandSheet(
-            Integer strandId,
-            String strandName,
-            String strandCode,
+public record SchoolClassSurveysReportDTO(SchoolClassSurveysProjection header, List<SurveySheet> sheets) {
+    public record SurveySheet(
+            String name,
+            String code,
+            String title,
+            String subtitle,
+            List<String> columns,
             List<LegendEntry> legend,
             List<StudentRow> students
     ) {}
