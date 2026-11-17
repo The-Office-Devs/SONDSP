@@ -12,21 +12,22 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "usuario_x_turma")
 public class UserSchoolClass {
-    @Builder.Default
-    @EmbeddedId
-    @EqualsAndHashCode.Include
-    private UserSchoolClassId id = new UserSchoolClassId();
 
-    @ManyToOne
-    @MapsId("userId")
-    @JoinColumn(name = "id_usuario")
-    private User user;
+	@Builder.Default
+	@EmbeddedId
+	@EqualsAndHashCode.Include
+	private UserSchoolClassId id = new UserSchoolClassId();
 
-    @ManyToOne
-    @MapsId("schoolClassId")
-    @JoinColumn(name = "id_turma")
-    private SchoolClass schoolClass;
+	@ManyToOne
+	@MapsId("userId")
+	@JoinColumn(name = "id_usuario")
+	private User user;
 
-    @Column(name = "atuacao")
-    private String atuacao;
+	@ManyToOne
+	@MapsId("schoolClassId")
+	@JoinColumn(name = "id_turma")
+	private SchoolClass schoolClass;
+
+	@Column(name = "atuacao")
+	private String atuacao;
 }

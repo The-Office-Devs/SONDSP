@@ -129,7 +129,7 @@ export function useImportStudents() {
 
       toast.success(
         `${result.classCreated ? "Turma criada e alunos importados" : "Alunos importados"}: ` +
-        `${result.className} - ${result.schoolName}.`,
+        `${result.className}.`,
         { description: details }
       );
     },

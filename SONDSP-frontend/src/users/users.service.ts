@@ -3,7 +3,6 @@ import type { PageResponse, PaginationParams } from "@/api/types";
 import type { 
   CreateUserRequest,
   LinkSchoolClassRequest,
-  LinkSchoolRequest,
   UpdateUserRequest,
   User, 
   UserFilter, 
@@ -34,11 +33,6 @@ export async function updateUserService(id: number, data: UpdateUserRequest): Pr
 
 export async function changeUserStatusService(id: number): Promise<string> {
   const response = await api.patch<string>(`/user/${id}/changeStatus`);
-  return response.data;
-}
-
-export async function linkUserToSchoolService(id: number, data: LinkSchoolRequest): Promise<string> {
-  const response = await api.patch<string>(`/user/${id}/linkSchool`, data);
   return response.data;
 }
 

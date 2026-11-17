@@ -2,6 +2,7 @@ package br.com.sondsp.dtos.portfolio;
 
 import br.com.sondsp.dtos.SchoolClassDTO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public record StudentPortfolioDTO(
@@ -10,10 +11,10 @@ public record StudentPortfolioDTO(
     String initials,
     String currentClass,
     SchoolClassDTO currentSchoolClass,
-    String school,
     String schoolYear,
     String registration,
     Integer rowNumber,
+    String birthDate,
     String status,
     List<EnrollmentHistoryItemDTO> enrollmentHistory
 ) {

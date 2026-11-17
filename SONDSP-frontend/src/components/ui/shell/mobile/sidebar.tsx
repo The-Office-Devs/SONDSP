@@ -1,4 +1,4 @@
-import { useEffect, type ComponentType } from 'react';
+import { useEffect, useMemo, type ComponentType } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ClipboardList,
@@ -11,7 +11,7 @@ import {
 
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/auth/auth.store';
-import { administratorItems, applicationItems } from '@/lib/sidebar-utils';
+import { administratorItems, applicationItems, canAccessItem } from '@/lib/sidebar-utils';
 import { canAccess, getHomePath } from '@/auth/role-access';
 
 interface MobileShellSidebarProps {
@@ -36,11 +36,27 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
     }
   }, [open]);
 
+  const permissions = user?.role?.permissions.map(p => p.permission) || [];
+  const isAdmin = user?.role.name === 'Administrador' || (user as any)?.isAdmin;
+
+  console.log(permissions);
+  
+
+  const visibleAdminItems = useMemo(
+    () => administratorItems.filter((item) => canAccessItem(item, permissions, isAdmin)),
+    [permissions, isAdmin]
+  );
+
+  const visibleAppItems = useMemo(
+    () => applicationItems.filter((item) => canAccessItem(item, permissions, isAdmin)),
+    [permissions, isAdmin]
+  );
+
   if (!user) return null;
 
-  const homePath = getHomePath(user.role);
-  const showAdmin = canAccess(user.role, 'admin');
-  const showApplication = canAccess(user.role, 'application');
+  const homePath = getHomePath(user);
+  const showAdmin = canAccess(user, 'admin') && visibleAdminItems.length > 0;
+  const showApplication = canAccess(user, 'application') && visibleAppItems.length > 0;
 
   const goTo = (to: string) => {
     navigate(to);
@@ -55,11 +71,11 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
 
   return (
     <div className={cn(
-        'fixed inset-0 z-40 lg:hidden',
-        open ? 'pointer-events-auto' : 'pointer-events-none',
-      )}
+      'fixed inset-0 z-40 lg:hidden',
+      open ? 'pointer-events-auto' : 'pointer-events-none',
+    )}
     >
-      { /* Parte a direita quando o sidebar abre */ }
+      { /* Parte a direita quando o sidebar abre */}
       <div
         onClick={onClose}
         className={cn(
@@ -80,7 +96,7 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef4ff] text-lg font-semibold">
                 {user.name.charAt(0).toUpperCase()}
               </div>
-              <span className="pr-2 text-lg font-semibold">{user.role}</span>
+              <span className="pr-2 text-lg font-semibold">{user.role.name}</span>
             </div>
 
             <button
@@ -98,14 +114,14 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
               icon={House}
               label="Início"
               active={location.pathname === '/'}
-              onClick={() => navigate(homePath)}
+              onClick={() => goTo(homePath)}
             />
 
             {showAdmin && (
               <>
                 <MobileSidebarSection title="Área do Administrador" icon={PencilLine} />
                 <div className="space-y-1">
-                  {administratorItems.map((item) => {
+                  {visibleAdminItems.map((item) => {
                     const path = `/gerenciamento${item.to}`;
 
                     return (
@@ -126,9 +142,9 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
             {showApplication && (
               <>
                 <MobileSidebarSection title="Área do Professor" icon={ClipboardList} />
-                
+
                 <div className="space-y-1">
-                  {applicationItems.map((item) => (
+                  {visibleAppItems.map((item) => (
                     <MobileSidebarItem
                       key={item.label}
                       icon={item.icon}

@@ -9,7 +9,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 
 public interface ActivityController {
 	@Operation(
@@ -22,7 +26,7 @@ public interface ActivityController {
 			)
 		}
 	)
-	ResponseEntity<?> registerActivity(ActivityForm form);
+	ResponseEntity<?> registerActivity(@ModelAttribute ActivityForm form);
 
 	@Operation(
 		description = "Retorna a atividade com id passado.",
@@ -34,7 +38,7 @@ public interface ActivityController {
 			)
 		}
 	)
-	ResponseEntity<?> getActivityById(Integer id);
+	ResponseEntity<?> getActivityById(@PathVariable Integer id);
 
 	@Operation(
 		description = "Retorna uma lista das atividades de forma paginada com base no filtro passado. É possível passar page, size e sort na URL.",
@@ -49,7 +53,16 @@ public interface ActivityController {
 			)
 		}
 	)
-	ResponseEntity<PageResponse<ActivityDTO>> listActivities(ActivityFilter filter, Pageable pageable);
+	ResponseEntity<PageResponse<ActivityDTO>> listActivities(
+		@ModelAttribute ActivityFilter filter,
+		@SortDefault.SortDefaults(
+			{
+				@SortDefault(sort = "status", direction = Sort.Direction.DESC),
+				@SortDefault(sort = "strand.subject", direction = Sort.Direction.ASC),
+				@SortDefault(sort = "name", direction = Sort.Direction.ASC, caseSensitive = false)
+			}
+		) Pageable pageable
+	);
 
 	@Operation(
 		description = "Altera o status da atividade",
@@ -69,7 +82,7 @@ public interface ActivityController {
 			)
 		}
 	)
-	ResponseEntity<?> changeActivityStatus(Integer id);
+	ResponseEntity<?> changeActivityStatus(@PathVariable Integer id);
 
 	@Operation(
 		description = "Recupera a imagem da atividade",
@@ -89,5 +102,5 @@ public interface ActivityController {
 			)
 		}
 	)
-	ResponseEntity<?> getActivityImage(Integer id);
+	ResponseEntity<?> getActivityImage(@PathVariable Integer id);
 }

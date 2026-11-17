@@ -4,7 +4,6 @@ import { ALL_VALUE } from '@/lib/options-utils';
 const requiredId = (message: string) => z.coerce.number().int().positive(message);
 
 export const classMapSchema = z.object({
-  schoolId: requiredId("Selecione uma escola"),
   schoolClassId: requiredId("Selecione uma turma"),
   subjectId: requiredId("Selecione uma matéria"),
   strandId: requiredId("Selecione um eixo"),

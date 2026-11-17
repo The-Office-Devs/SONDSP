@@ -4,6 +4,7 @@ import type { UserListItem } from "@/users/users.types";
 import { useChangeUserStatus, useUsers } from "../use-users";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
+import { useHasPermission } from "@/auth/use-permission";
 
 import { UserUpsertPanel } from "./user-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
@@ -14,7 +15,14 @@ const columns: ColumnDef<UserListItem>[] = [
   { id: "registration", header: "Registro Funcional (RF)", width: "14%" },
   { id: "name", header: "Nome", width: "20%" },
   { id: "email", header: "Email", width: "26%" },
-  { id: "role", header: "Função", width: "16%" },
+  {
+    id: "role",
+    header: "Função",
+    width: "18%",
+    accessor: (user: UserListItem) => {
+      return user.role?.name ?? "-";
+    },
+  },
   { id: "status", header: "Status", width: "10%" }
 ];
 
@@ -28,21 +36,33 @@ export function UsersDesktop() {
   });
   const { mutate, isPending } = useChangeUserStatus();
 
+  const canManageUsers = useHasPermission("USUARIO_MANAGE");
+  const canStatusUsers = useHasPermission("USUARIO_STATUS");
+
   const [editUserId, setEditUserId] = useState<number | null>(null);
   const [statusUser, setStatusUser] = useState<UserListItem | null>(null);
 
   const actions: RowAction<UserListItem>[] = [
-    { type: "edit", onClick: (user) => setEditUserId(user.id), disabled: (user) => !user.status },
-    { type: "inactivate", onClick: (user) => setStatusUser(user), isActive: (user) => user.status },
+    {
+      type: "edit",
+      onClick: (user) => setEditUserId(user.id),
+      disabled: (user) => !user.status || !canManageUsers
+    },
+    {
+      type: "inactivate",
+      onClick: (user) => setStatusUser(user),
+      isActive: (user) => user.status,
+      disabled: () => !canStatusUsers
+    },
   ];
 
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <UserUpsertPanel
         userIdToEdit={editUserId}
-        onCancelEdit={() => setEditUserId(null)} 
+        onCancelEdit={() => setEditUserId(null)}
       />
-      
+
       <FilterBar value={filter} onChange={setFilter} />
 
       <DataTable<UserListItem>
@@ -61,15 +81,15 @@ export function UsersDesktop() {
         open={statusUser !== null}
         onOpenChange={(open) => { if (!open) setStatusUser(null); }}
         isPending={isPending}
-        onConfirm={(user) => 
+        onConfirm={(user) =>
           mutate(user.id, {
             onSuccess: () => {
               setStatusUser(null);
-              
+
               if (user.id === editUserId) {
                 setEditUserId(null);
               }
-            } 
+            }
           })
         }
       />

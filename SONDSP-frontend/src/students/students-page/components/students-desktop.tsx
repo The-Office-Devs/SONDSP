@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTableState } from "@/hooks/use-table-state";
 import { useInactivateStudent, useStudents } from "../use-students";
 import { buildPaginationProps } from "@/api/types";
+import { useHasPermission } from "@/auth/use-permission";
 
 import type { StudentListItem } from "@/students/students.types";
 import { StudentUpsertPanel } from "./student-upsert-panel";
@@ -14,7 +15,6 @@ const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "10%" },
   { id: "registration", header: "Matrícula", width: "14%", },
   { id: "name", header: "Nome", width: "20%" },
-  { id: "schoolName", header: "Escola", width: "22%", accessor: (row) => row.schoolClass ? row.schoolClass.school.name : "-" },
   { id: "schoolClass", header: "Turma", width: "12%", accessor: (row) => row.schoolClass ? row.schoolClass.name : "-" },
   { id: "status", header: "Status", width: "8%" },
 ];
@@ -29,12 +29,24 @@ export function StudentsDesktop() {
   });
   const { mutate, isPending } = useInactivateStudent();
 
+  const canManageStudents = useHasPermission("ALUNO_MANAGE");
+  const canStatusStudents = useHasPermission("ALUNO_STATUS");
+
   const [editStudentId, setEditStudentId] = useState<number | null>(null);
   const [inactivateStudent, setInactivateStudent] = useState<StudentListItem | null>(null);
 
   const actions: RowAction<StudentListItem>[] = [
-    { type: "edit", onClick: (studentItem) => setEditStudentId(studentItem.id), disabled: (studentItem) => !studentItem.status },
-    { type: "inactivate", onClick: (studentItem) => setInactivateStudent(studentItem), isActive: (studentItem) => studentItem.status }
+    {
+      type: "edit",
+      onClick: (studentItem) => setEditStudentId(studentItem.id),
+      disabled: (studentItem) => !studentItem.status || !canManageStudents
+    },
+    {
+      type: "inactivate",
+      onClick: (studentItem) => setInactivateStudent(studentItem),
+      isActive: (studentItem) => studentItem.status,
+      disabled: () => !canStatusStudents
+    }
   ];
   
   return (

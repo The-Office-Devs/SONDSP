@@ -16,7 +16,7 @@ export function HelpCenterPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const user = useAuthStore((state) => state.user);
 
-  const isAdmin = user ? canAccess(user.role, 'admin') : false;
+  const isAdmin = user ? canAccess(user, 'admin') : false;
   const moduloParam = searchParams.get('modulo');
 
   // Inicializa o módulo selecionado a partir do query param ?modulo se existir

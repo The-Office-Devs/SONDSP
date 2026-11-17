@@ -1,16 +1,11 @@
 package br.com.sondsp.services;
 
-import br.com.sondsp.entities.Role;
-import br.com.sondsp.entities.SchoolClassAnnotation;
-import br.com.sondsp.entities.SchoolClassAnnotationID;
-import br.com.sondsp.entities.User;
+import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.SchoolClassAnnotationFilter;
 import br.com.sondsp.form.SchoolClassAnnotationForm;
 import br.com.sondsp.repositories.SchoolClassAnnotationRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -102,6 +97,7 @@ public class SchoolClassAnnotationService {
                 Join<SchoolClassAnnotation, User> authorJoin = root.join("author", JoinType.INNER);
 
                 if (hasRole) {
+                    query.distinct(true);
                     Join<User, Role> roleJoin = authorJoin.join("role", JoinType.INNER);
                     predicates.add(cb.equal(roleJoin.get("name"), filter.authorRole()));
                 }

@@ -1,19 +1,11 @@
-export const UserRole = {
-  'Administrador': 'Administrador',
-  'Administrador da Escola': 'Administrador da Escola',
-  'Coordenador': 'Coordenador',
-  'Professor': 'Professor',
-  'POA' : 'Professor Orientador de Área',
-} as const;
-
-export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+import type { Role } from "@/roles/roles.types";
 
 export interface AuthUser {
   id: number;
   name: string;
   registration: string;
   email?: string;
-  role: UserRole;
+  role: Role;
   permissions: string[];
 }
 
@@ -25,7 +17,7 @@ export interface LoginRequest {
 export interface LoginResponse {
   name: string;
   registration: string;
-  role: string;
+  role: Role;
   token: string;
   permissions: string[];
   refreshToken: string;

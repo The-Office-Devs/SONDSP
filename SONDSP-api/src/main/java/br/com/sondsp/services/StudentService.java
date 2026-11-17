@@ -1,31 +1,26 @@
 package br.com.sondsp.services;
 
-import static br.com.sondsp.util.SystemMessages.*;
-
-import br.com.sondsp.entities.*;
+import br.com.sondsp.entities.SchoolClass;
+import br.com.sondsp.entities.Student;
 import br.com.sondsp.filters.StudentFilter;
 import br.com.sondsp.form.StudentForm;
 import br.com.sondsp.repositories.StudentRepository;
 import br.com.sondsp.util.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import jakarta.validation.ValidationException;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
+import java.util.*;
+
+import static br.com.sondsp.util.SystemMessages.*;
 
 @Service
 @AllArgsConstructor
@@ -33,7 +28,6 @@ public class StudentService {
 
     private StudentRepository repository;
     private SchoolClassService schoolClassService;
-    private SurveyService surveyService;
 
 	public Student createStudent(StudentForm form) {
 		validadeStudent(form, null);
@@ -122,15 +116,12 @@ public class StudentService {
                     : null;
 
             if (hasSearch) {
-                Join<SchoolClass, School> schoolJoin = schoolClassJoin.join("school", JoinType.INNER);
+
 
                 String search = filter.search().toLowerCase();
                 String searchPattern = "%" + search + "%";
 
-				Expression<String> schoolClass = criteriaBuilder.concat(
-					criteriaBuilder.concat(schoolClassJoin.get("name"), " - "),
-					schoolJoin.get("name")
-				);
+				Expression<String> schoolClass = criteriaBuilder.concat(schoolClassJoin.get("name"), " - ");
 
 				Expression<String> rowNumberString = criteriaBuilder.function(
 					"to_char",

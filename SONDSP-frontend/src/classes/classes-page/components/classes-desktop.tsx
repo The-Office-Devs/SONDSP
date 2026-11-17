@@ -4,16 +4,16 @@ import { useClasses, useInactivateClass } from "../../use-classes";
 import { useLinkUserToSchoolClass } from "@/users/users-page/use-users";
 import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
+import { useHasPermission } from "@/auth/use-permission";
 
 import type { ClassListItem } from "@/classes/classes.types";
 import { ClassUpsertPanel } from "./class-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
-import { LinkUsersDialog } from "@/schools/schools-page/components/link-users-dialog";
+import { LinkUsersDialog } from "@/classes/classes-page/components/link-users-dialog";
 import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<ClassListItem>[] = [
-  { id: "school", header: "Escola", width: "30%", accessor: (row) => row.school.name },
   { id: "name", header: "Nome", width: "10%" },
   { id: "shift", header: "Turno", width: "10%" },
   { id: "gradeLevel", header: "Ano Escolar", width: "10%" },
@@ -32,6 +32,10 @@ export function ClassesDesktop() {
   const { mutate, isPending } = useInactivateClass();
   const { mutate: linkUserToSchoolClass } = useLinkUserToSchoolClass();
 
+  const canManageClasses = useHasPermission("TURMA_MANAGE");
+  const canStatusClasses = useHasPermission("TURMA_STATUS");
+  const canLinkClass = useHasPermission("USUARIO_VINCULAR_TURMA");
+
   const [editClassId, setEditClassId] = useState<number | null>(null);
   const [inactivateClass, setInactivateClass] = useState<ClassListItem | null>(null);
   const [linkTeachersClass, setLinkTeachersClass] = useState<ClassListItem | null>(null);
@@ -42,9 +46,22 @@ export function ClassesDesktop() {
   }
 
   const actions: RowAction<ClassListItem>[] = [
-    { type: "edit", onClick: (classItem) => setEditClassId(classItem.id), disabled: (classItem) => !classItem.status },
-    { type: "link", onClick: (classItem) => setLinkTeachersClass(classItem), disabled: (classItem) => !classItem.status },
-    { type: "inactivate", onClick: (classItem) => setInactivateClass(classItem), isActive: (classItem) => classItem.status }
+    {
+      type: "edit",
+      onClick: (classItem) => setEditClassId(classItem.id),
+      disabled: (classItem) => !classItem.status || !canManageClasses
+    },
+    {
+      type: "link",
+      onClick: (classItem) => setLinkTeachersClass(classItem),
+      disabled: (classItem) => !classItem.status || !canLinkClass
+    },
+    {
+      type: "inactivate",
+      onClick: (classItem) => setInactivateClass(classItem),
+      isActive: (classItem) => classItem.status,
+      disabled: () => !canStatusClasses
+    }
   ];
   
   return (
@@ -72,7 +89,7 @@ export function ClassesDesktop() {
         onLink={handleLinkUserToSchoolClass}
         queryParams={
           linkTeachersClass
-            ? { linkedToSchoolId: linkTeachersClass.school.id, schoolClassId: linkTeachersClass.id }
+            ? { schoolClassId: linkTeachersClass.id }
             : undefined
         }
         isTeachers={true}

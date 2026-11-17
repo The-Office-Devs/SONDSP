@@ -23,8 +23,6 @@ export interface DomainPercentageItem {
 }
 
 export interface ClassMap {
-  schoolId: number | null;
-  schoolName: string | null;
   schoolClassId: number;
   schoolClassName: string;
   domainPercentage: DomainPercentageItem[];

@@ -1,10 +1,10 @@
+import { useHasPermission } from "@/auth/use-permission";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { classSchema, type ClassFormData, type ClassFormInput } from "../class.schema";
 import { useClass, useCreateClass, useUpdateClass } from "../../use-classes";
-import { useSchools } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { getTitle } from "@/lib/card-utils";
 import { gradeLevelOptions, shiftOptions } from "@/lib/options-utils";
@@ -14,7 +14,6 @@ import { TextField } from "@/components/HookForm/fields/TextField";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
 
 const defaultValues: ClassFormInput = {
-  schoolId: 0,
   name: "",
   gradeLevel: "",
   schoolYear: "",
@@ -33,10 +32,11 @@ export function ClassUpsertPanel({
   const { mutate: createClass, isPending: isCreating } = useCreateClass();
   const { mutate: updateClass, isPending: isUpdating } = useUpdateClass();
   const { data: schoolClass, isLoading: isLoadingClass } = useClass(classIdToEdit);
-  const { data: schoolsPage } = useSchools({ size: 100, status: true });
 
   const isEditMode = classIdToEdit !== null;
   const isPending = isCreating || isUpdating;
+  const canManageClasses = useHasPermission("TURMA_MANAGE");
+
 
   const title = getTitle("Turma", isEditMode, false);
   const submitType = isEditMode ? "edit" : "insert";
@@ -56,7 +56,6 @@ export function ClassUpsertPanel({
     
     if (schoolClass) {
       form.reset({ 
-        schoolId: schoolClass.school.id,
         name: schoolClass.name,
         gradeLevel: schoolClass.gradeLevel,
         schoolYear: schoolClass.schoolYear,
@@ -91,13 +90,7 @@ export function ClassUpsertPanel({
     onCancelEdit();
   };
 
-  const schoolOptions = 
-    schoolsPage?.content?.map((school) => ({
-      value: String(school.id),
-      label: school.name
-    })) ?? [];
-
-  const isSubmitDisabled = isPending || isLoadingClass || !form.formState.isValid;
+  const isSubmitDisabled = isPending || isLoadingClass || !form.formState.isValid || !canManageClasses;
   return (
     <FormProvider {...form}>
       <Card
@@ -109,13 +102,6 @@ export function ClassUpsertPanel({
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleCancelEdit}
       >
-        <SelectField
-          name="schoolId"
-          label="Escola"
-          placeholder="Selecione a escola"
-          options={schoolOptions}
-        />
-            
         <TextField name="name" label="Nome" placeholder="Nome da turma" />
 
         <SelectField

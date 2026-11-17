@@ -1,10 +1,8 @@
 import type { SurveyResultCode } from "@/lib/survey-utils";
-import type { School } from "@/schools/schools.types";
 
 export interface ClassListItem {
   id: number;
   name: string;
-  school: School;
   gradeLevel: string;
   schoolYear: string;
   shift: string;
@@ -18,7 +16,6 @@ export interface ClassFilter {
   search?: string;
   status?: boolean;
   hasStudents?: boolean;
-  schoolId?: number;
   shift?: string;
   gradeLevel?: string;
   schoolYear?: string;
@@ -34,7 +31,6 @@ export interface UseClassesOptions {
 }
 
 export interface CreateClassRequest {
-  schoolId: number;
   name: string;
   gradeLevel: string;
   schoolYear: string;

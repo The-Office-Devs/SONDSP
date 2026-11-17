@@ -6,17 +6,13 @@ import br.com.sondsp.entities.*;
 import br.com.sondsp.filters.ClassMapFilter;
 import br.com.sondsp.filters.SchoolClassFilter;
 import br.com.sondsp.form.SchoolClassForm;
-import br.com.sondsp.repositories.ActivityRepository;
-import br.com.sondsp.repositories.SchoolClassRepository;
-import br.com.sondsp.repositories.StrandRepository;
-import br.com.sondsp.repositories.StudentRepository;
-import br.com.sondsp.repositories.SurveyRepository;
+import br.com.sondsp.repositories.*;
 import br.com.sondsp.repositories.projections.SchoolClassSurveysProjection;
 import br.com.sondsp.util.SurveyPeriod;
 import br.com.sondsp.util.SurveyReportLegend;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Tuple;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +27,10 @@ import java.text.Collator;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import br.com.sondsp.util.SurveySheetGroup;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static br.com.sondsp.util.SystemMessages.*;
 
@@ -40,7 +40,6 @@ import static br.com.sondsp.util.SystemMessages.*;
 public class SchoolClassService {
 
 	private SchoolClassRepository repository;
-	private SchoolService schoolService;
 	private StudentRepository studentRepository;
 	private StrandRepository strandRepository;
 	private ActivityRepository activityRepository;
@@ -49,16 +48,13 @@ public class SchoolClassService {
 
 	public SchoolClass createSchoolClass(SchoolClassForm form) {
 		if (
-			repository.existsBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShift(
-				form.schoolId(),
+			repository.existsByNameAndGradeLevelAndSchoolYearAndShift(
 				form.name(),
 				form.gradeLevel(),
 				form.schoolYear(),
 				form.shift()
 			)
 		) throw new ValidationException(SCHOOL_CLASS_ALREADY_EXISTS);
-
-		School school = schoolService.getSchool(form.schoolId());
 
 		return repository.save(
 			SchoolClass
@@ -67,7 +63,6 @@ public class SchoolClassService {
 				.gradeLevel(form.gradeLevel())
 				.schoolYear(form.schoolYear())
 				.shift(form.shift())
-				.school(school)
 				.status(true)
 				.build()
 		);
@@ -123,8 +118,7 @@ public class SchoolClassService {
 
 	public SchoolClass updateSchoolClass(Integer id, SchoolClassForm form) {
 		if (
-			repository.existsBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShiftAndIdNot(
-				form.schoolId(),
+			repository.existsByNameAndGradeLevelAndSchoolYearAndShiftAndIdNot(
 				form.name(),
 				form.gradeLevel(),
 				form.schoolYear(),
@@ -140,20 +134,11 @@ public class SchoolClassService {
         schoolClass.setSchoolYear(form.schoolYear());
         schoolClass.setShift(form.shift());
 
-        if (!java.util.Objects.equals(schoolClass.getSchool().getId(), form.schoolId())) {
-            schoolClass.setSchool(schoolService.getSchool(form.schoolId()));
-        }
-
         return repository.save(schoolClass);
     }
 
 	public Boolean changeStatus(Integer id) {
 		SchoolClass schoolClass = getSchoolClass(id);
-
-		// Se a turma estiver inativa e a escola também
-		if (
-			!schoolClass.getStatus() && !schoolService.getSchool(schoolClass.getSchool().getId()).getStatus()
-		) throw new ValidationException(SCHOOL_CLASS_CANNOT_ACTIVATE);
 
 		List<Student> students = studentRepository.findAllBySchoolClassIdAndStatusTrue(id);
 
@@ -274,7 +259,6 @@ public class SchoolClassService {
 		);
 
 		return new ClassMapDTO(
-			schoolClass.getSchool() != null ? schoolClass.getSchool().getName() : null,
 			schoolClass.getName(),
 			domainPercentage,
 			distribution,
@@ -498,43 +482,82 @@ public class SchoolClassService {
 			if (current == null || isNewer(survey, current)) latest.put(key, survey);
 		}
 
-		if (strandNames.isEmpty()) throw new ValidationException(NULL_SURVEYS_IN_CLASS);
+		if (strandNames.isEmpty()) throw new ValidationException("Nenhuma sondagem registrada para esta turma.");
 
-		List<Integer> strandIds = strandNames
-				.keySet()
-				.stream()
-				.sorted((a, b) -> collator.compare(strandNames.get(a), strandNames.get(b)))
-				.toList();
+		Map<String, Integer> strandIdByCode = new HashMap<>();
+		strandCodes.forEach((id, code) -> strandIdByCode.putIfAbsent(SurveySheetGroup.normalize(code), id));
 
 		SurveyPeriod[] periods = SurveyPeriod.values();
-		List<SchoolClassSurveysReportDTO.StrandSheet> sheets = new ArrayList<>();
+		String gradeLevel = header.getGradeLevel();
+		List<SchoolClassSurveysReportDTO.SurveySheet> sheets = new ArrayList<>();
+		Set<SurveySheetGroup> groupsDone = EnumSet.noneOf(SurveySheetGroup.class);
 
-		for (Integer strandId : strandIds) {
-			List<SchoolClassSurveysReportDTO.StudentRow> rows = new ArrayList<>();
+		for (Integer strandId : new TreeSet<>(strandNames.keySet())) {
+			String code = strandCodes.get(strandId);
+			Optional<SurveySheetGroup> group = SurveySheetGroup.fromStrandCode(code);
 
-			for (Student student : students) {
-				List<String> results = new ArrayList<>(periods.length);
-				for (SurveyPeriod period : periods) {
-					SurveyResultDTO survey = latest.get(new ResultKey(student.getId(), strandId, period));
-					results.add(survey == null ? null : survey.result());
-				}
+			if (group.isEmpty()) {
+				sheets.add(
+						new SchoolClassSurveysReportDTO.SurveySheet(
+								strandNames.get(strandId),
+								code,
+								strandNames.get(strandId),
+								null,
+								List.of(),
+								buildLegend(code, gradeLevel),
+								buildRows(students, List.of(strandId), periods, latest)
+						)
+				);
+			} else if (groupsDone.add(group.get())) {
+				SurveySheetGroup g = group.get();
 
-				int number = student.getRowNumber() != null ? student.getRowNumber() : rows.size() + 1;
-				rows.add(new SchoolClassSurveysReportDTO.StudentRow(number, student.getName(), results));
+				List<Integer> columnStrandIds = g
+						.getMembers()
+						.stream()
+						.map(member -> strandIdByCode.get(member.strandCode()))
+						.toList();
+
+				sheets.add(
+						new SchoolClassSurveysReportDTO.SurveySheet(
+								g.getSheetName(),
+								null,
+								g.getTitle(),
+								g.getSubtitle(),
+								g.getColumnLabels(),
+								buildLegend(g.getLegendStrandCode(), gradeLevel),
+								buildRows(students, columnStrandIds, periods, latest)
+						)
+				);
 			}
-
-			sheets.add(
-					new SchoolClassSurveysReportDTO.StrandSheet(
-							strandId,
-							strandNames.get(strandId),
-							strandCodes.get(strandId),
-							buildLegend(strandCodes.get(strandId), header.getGradeLevel()),
-							rows
-					)
-			);
 		}
 
 		return new SchoolClassSurveysReportDTO(header, sheets);
+	}
+
+	private static List<SchoolClassSurveysReportDTO.StudentRow> buildRows(
+			List<Student> students,
+			List<Integer> strandIds,
+			SurveyPeriod[] periods,
+			Map<ResultKey, SurveyResultDTO> latest
+	) {
+		List<SchoolClassSurveysReportDTO.StudentRow> rows = new ArrayList<>();
+
+		for (Student student : students) {
+			List<String> results = new ArrayList<>(periods.length * strandIds.size());
+			for (SurveyPeriod period : periods) {
+				for (Integer strandId : strandIds) {
+					SurveyResultDTO survey = strandId == null
+							? null
+							: latest.get(new ResultKey(student.getId(), strandId, period));
+					results.add(survey == null ? null : survey.result());
+				}
+			}
+
+			int number = student.getRowNumber() != null ? student.getRowNumber() : rows.size() + 1;
+			rows.add(new SchoolClassSurveysReportDTO.StudentRow(number, student.getName(), results));
+		}
+
+		return rows;
 	}
 
 	private List<SchoolClassSurveysReportDTO.LegendEntry> buildLegend(String strandCode, String gradeLevel) {
@@ -567,13 +590,10 @@ public class SchoolClassService {
 			if (filter == null) return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
 			if (filter.search() != null && !filter.search().isBlank()) {
-				Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
-
 				String search = filter.search().toLowerCase();
 				String searchPattern = "%" + search + "%";
 
 				List<Predicate> orPredicates = new ArrayList<>();
-				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(schoolJoin.get("name")), searchPattern));
 				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
 				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("gradeLevel")), searchPattern));
 				orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("schoolYear")), searchPattern));
@@ -592,23 +612,6 @@ public class SchoolClassService {
 				if (status != null) orPredicates.add(criteriaBuilder.equal(root.get("status"), status));
 
 				predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[0])));
-			}
-
-			if (filter.schoolId() != null) {
-				Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
-
-				predicates.add(criteriaBuilder.equal(schoolJoin.get("id"), filter.schoolId()));
-			}
-
-			if (filter.schoolName() != null && !filter.schoolName().isBlank()) {
-				Join<SchoolClass, School> schoolJoin = root.join("school", JoinType.INNER);
-
-				predicates.add(
-					criteriaBuilder.like(
-						criteriaBuilder.lower(schoolJoin.get("name")),
-						"%" + filter.schoolName().toLowerCase() + "%"
-					)
-				);
 			}
 
 			if (filter.name() != null && !filter.name().isBlank()) {

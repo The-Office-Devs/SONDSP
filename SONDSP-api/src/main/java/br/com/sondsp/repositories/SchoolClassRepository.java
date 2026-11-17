@@ -12,18 +12,14 @@ import java.util.Optional;
 
 public interface SchoolClassRepository
 	extends JpaRepository<SchoolClass, Integer>, JpaSpecificationExecutor<SchoolClass> {
-	List<SchoolClass> findAllBySchoolId(Integer schoolId);
-
-	Boolean existsBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShift(
-		Integer schoolId,
+	Boolean existsByNameAndGradeLevelAndSchoolYearAndShift(
 		String name,
 		String gradeLevel,
 		String schoolYear,
 		String shift
 	);
 
-	Boolean existsBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShiftAndIdNot(
-		Integer schoolId,
+	Boolean existsByNameAndGradeLevelAndSchoolYearAndShiftAndIdNot(
 		String name,
 		String gradeLevel,
 		String schoolYear,
@@ -113,13 +109,10 @@ public interface SchoolClassRepository
 	@Query(value = """
 	SELECT
 		tu.ano_escolar	as gradeLevel,
-		es.nome			as schoolName,
 		null			as teacher,
 		tu.nome			as schoolClass,
 		tu.ano_letivo	as schoolYear
 	FROM turma tu
-	INNER JOIN escola es
-		ON es.id = tu.id_escola
 	WHERE tu.id = :schoolClassId
 	""", nativeQuery = true)
 	List<SchoolClassSurveysProjection> findSheetContentWithFilters(@Param("schoolClassId") Integer schoolClassId);
@@ -148,7 +141,7 @@ public interface SchoolClassRepository
 
 	Optional<SchoolClass> findByCodigoInterno(String codigoInterno);
 
-	Optional<SchoolClass> findBySchoolIdAndNameAndGradeLevelAndSchoolYearAndShiftAndCodigoInternoIsNull(
-			Integer schoolId, String name, String gradeLevel, String schoolYear, String shift);
+	Optional<SchoolClass> findByNameAndGradeLevelAndSchoolYearAndShiftAndCodigoInternoIsNull(
+			String name, String gradeLevel, String schoolYear, String shift);
 
 }

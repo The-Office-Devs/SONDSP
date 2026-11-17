@@ -1,18 +1,19 @@
 package br.com.sondsp.imports;
 
-import static br.com.sondsp.util.SystemMessages.*;
-
 import br.com.sondsp.util.DateUtils;
 import jakarta.validation.ValidationException;
+import org.apache.poi.ss.usermodel.*;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.poi.ss.usermodel.*;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
+
+import static br.com.sondsp.util.SystemMessages.*;
 
 @Component
 public class StudentImportParser {
@@ -26,7 +27,6 @@ public class StudentImportParser {
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
 
-            String[] school = codeAndName(valueAfter(sheet, "Unidade"), "Unidade");
             String[] schoolClass = codeAndName(valueAfter(sheet, "Turma"), "Turma");
             String schoolYear = valueAfter(sheet, "Ano Letivo");
             String shift = normalizeShift(valueAfter(sheet, "Turno/Duração"));
@@ -40,7 +40,7 @@ public class StudentImportParser {
             if (students.isEmpty()) throw new ValidationException(IMPORT_NO_STUDENTS);
 
             return new StudentImportFile(
-                    school[0], school[1], schoolClass[0], schoolClass[1], schoolYear, shift, students, ignored
+                    schoolClass[0], schoolClass[1], schoolYear, shift, students, ignored
             );
         } catch (ValidationException e) {
             throw e;

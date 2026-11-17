@@ -9,10 +9,10 @@ import { ForgotPasswordPage } from '@/auth/forgot-password/forgot-password-page'
 import { ActivateAccountPage } from '@/auth/activate-account/activate-account-page';
 
 import { UsersPage } from '@/users/users-page/users-page';
-import { SchoolsPage } from '@/schools/schools-page/schools-page';
 import { ClassesPage } from '@/classes/classes-page/classes-page';
 import { StudentsPage } from '@/students/students-page/students.page';
 import { ActivitiesPage } from '@/activities/activities-page/activities-page';
+import { RolesPage } from '@/roles/roles-page/roles-page';
 
 import { SurveysPage } from '@/surveys/surveys-page/surveys-page';
 import { SurveysHistoryPage } from '@/surveys/surveys-history/surveys-history-page';
@@ -23,6 +23,7 @@ import { ClassMapPage } from '@/class-map/class-map-page/class-map-page';
 import { LearningTrajectoriesPage } from '@/learning-trajectories/learning-trajectories-page/learning-trajectories-page';
 import { StudentsFilterPage } from '@/students/students-filter-page/students-filter-page';
 import { HelpCenterPage } from '@/help-center/help-center.page';
+import { DigitalSurveyPage } from '@/surveys/digital-survey/digital-survey-page';
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
     element: <ActivateAccountPage />
   },
   {
+    path: '/sondagem-digital/:id',
+    element: <DigitalSurveyPage />
+  },
+  {
     path: '/',
     element: <ProtectedRoute />,
     children: [
@@ -57,7 +62,7 @@ export const router = createBrowserRouter([
                 children: [
                   { index: true, element: <Navigate to="usuarios" replace /> },
                   { path: 'alunos', element: <StudentsPage /> },
-                  { path: 'escolas', element: <SchoolsPage /> },
+                  { path: 'funcoes', element: <RolesPage /> },
                   { path: 'modelos-atividades', element: <ActivitiesPage /> },
                   { path: 'usuarios', element: <UsersPage /> },
                   { path: 'turmas', element: <ClassesPage /> },

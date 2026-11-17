@@ -18,12 +18,15 @@ public class Permission {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "permissao")
+    @Column(name = "permissao", nullable = false, unique = true)
     private String permission;
+
+    @Column(name = "descricao")
+    private String description;
+
+    @Column(name = "area")
+    private String area;
 
     @ManyToMany(mappedBy = "permissions")
     private Set<Role> roles;
-
-    @ManyToMany(mappedBy = "permissions")
-    private Set<User> users;
 }

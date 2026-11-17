@@ -26,8 +26,7 @@ public record EnrollmentHistoryItemDTO(
             enrollment.getSchoolClass() != null ? new EnrollmentSchoolClassRefDTO(
                 enrollment.getSchoolClass().getId(),
                 enrollment.getSchoolClass().getName(),
-                enrollment.getSchoolClass().getGradeLevel(),
-                enrollment.getSchoolClass().getSchool() != null ? enrollment.getSchoolClass().getSchool().getName() : null
+                enrollment.getSchoolClass().getGradeLevel()
             ) : null,
             enrollment.getExternalDescription(),
             enrollment.getStatus(),

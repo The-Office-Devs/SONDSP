@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
 import { getSubmitLabel } from "@/lib/form-utils";
 import { studentFilterSchema, type StudentFilterFormData, type StudentFilterFormInput } from "../student-filter.schema";
 
 import { Card } from "@/components/Card/Card";
-import { SelectField } from "@/components/HookForm/fields/SelectField";
 import { ComboboxField } from "@/components/HookForm/fields/ComboBoxField";
+import { useUserClassOptions } from "@/classes/use-classes";
 
 interface StudentsFilterPanelProps {
   initialValues?: StudentFilterFormData | null;
@@ -18,7 +17,6 @@ interface StudentsFilterPanelProps {
 }
 
 const defaultValues: StudentFilterFormInput = {
-  schoolId: 0,
   schoolClassId: 0
 };
 
@@ -41,8 +39,7 @@ export function StudentsFilterPanel({
     resetOptions: { keepDefaultValues: true }
   });
 
-  const schoolId = useWatch({ control: form.control, name: "schoolId" });
-  const { schoolOptions, classOptions, isLoading: isLoadingSchools } = useUserSchoolOptions(Number(schoolId));
+  const { classOptions } = useUserClassOptions();
 
   const onSubmit = (data: StudentFilterFormData) => onSearch(data);
 
@@ -63,13 +60,6 @@ export function StudentsFilterPanel({
         onReset={handleReset}
         collapsible
       >
-        <SelectField
-          name="schoolId"
-          label="Escola"
-          placeholder={isLoadingSchools ? "Carregando escolas..." : "Selecione a escola"}
-          options={schoolOptions}
-          onValueChange={() => form.setValue("schoolClassId", 0, { shouldValidate: true })}
-        />
 
         <ComboboxField
           name="schoolClassId"
@@ -77,7 +67,6 @@ export function StudentsFilterPanel({
           placeholder="Selecione a turma"
           options={classOptions}
           emptyMessage="Nenhuma turma encontrada."
-          disabled={!schoolId}
         />
       </Card>
     </FormProvider>

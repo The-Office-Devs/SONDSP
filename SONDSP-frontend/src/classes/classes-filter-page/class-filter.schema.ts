@@ -7,10 +7,6 @@ const optionalFilter = z
   .transform((v) => (!v || v === ALL_VALUE ? undefined : v));
 
 export const classFilterSchema = z.object({
-  schoolId: z.coerce
-    .number()
-    .int()
-    .positive("Selecione uma escola"),
   shift: optionalFilter,
   gradeLevel: optionalFilter,
   schoolYear: optionalFilter

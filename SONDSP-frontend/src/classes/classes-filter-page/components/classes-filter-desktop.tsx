@@ -36,7 +36,6 @@ export function ClassesFilterDesktop() {
       size,
       status: true,
       hasStudents: true,
-      schoolId: appliedFilters?.schoolId,
       shift: appliedFilters?.shift,
       gradeLevel: appliedFilters?.gradeLevel,
       schoolYear: appliedFilters?.schoolYear,

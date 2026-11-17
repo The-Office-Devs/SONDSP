@@ -7,16 +7,16 @@ export function RoleRoute({ area }: { area: AppArea }) {
   const user = useAuthStore((state) => state.user);
 
   if (!user) return <Navigate to="/login" replace />;
-  if (!canAccess(user.role, area)) {
-    return <Navigate to={getHomePath(user.role)} replace />;
+  if (!canAccess(user, area)) {
+    return <Navigate to={getHomePath(user)} replace />;
   }
 
   return <Outlet />;
-};
+}
 
 export function HomeRedirect() {
   const user = useAuthStore((state) => state.user);
   if (!user) return <Navigate to="/login" replace />;
   
-  return <Navigate to={getHomePath(user.role)} replace />;
+  return <Navigate to={getHomePath(user)} replace />;
 }

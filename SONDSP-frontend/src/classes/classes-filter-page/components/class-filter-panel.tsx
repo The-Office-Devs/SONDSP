@@ -12,7 +12,7 @@ import { getSubmitLabel } from "@/lib/form-utils";
 
 import { Card } from "@/components/Card/Card";
 import { SelectField } from "@/components/HookForm/fields/SelectField";
-import { useUserSchoolOptions } from "@/schools/schools-page/use-schools";
+import { useUserClassOptions } from "@/classes/use-classes";
 
 interface ClassesFilterPanelProps {
   initialValues?: ClassFilterFormData | null;
@@ -22,7 +22,6 @@ interface ClassesFilterPanelProps {
 }
 
 const defaultValues: ClassFilterFormInput = {
-  schoolId: 0,
   shift: "",
   gradeLevel: "",
   schoolYear: ""
@@ -34,7 +33,7 @@ export function ClassesFilterPanel({
   onClear,
   isSearching
 }: Readonly<ClassesFilterPanelProps>) {
-  const { schoolOptions, schoolYearOptions, isLoading: isLoadingSchools } = useUserSchoolOptions();
+  const { schoolYearOptions } = useUserClassOptions();
 
   const [initialFormValues] = useState(() =>
     initialValues ? { ...defaultValues, ...initialValues } : undefined
@@ -67,13 +66,6 @@ export function ClassesFilterPanel({
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={handleReset}
       >
-        <SelectField
-          name="schoolId"
-          label="Escola"
-          placeholder={isLoadingSchools ? "Carregando escolas..." : "Selecione a escola"}
-          options={schoolOptions}
-        />
-
         <SelectField
           name="shift"
           label="Turno"
