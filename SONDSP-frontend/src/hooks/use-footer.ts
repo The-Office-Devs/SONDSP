@@ -17,19 +17,18 @@ export function useFooter(config: FooterConfig, deps: DependencyList = []) {
       : config.title.map((c) => `${c.label}:${c.to ?? ""}`).join("|");
 
   useEffect(() => {
-    const { title, leftAction, rightAction, useMobileDefaultFooter } = ref.current;
+    const { title, leftAction, rightAction } = ref.current;
 
-    setFooter({ 
-      title, 
-      useMobileDefaultFooter: useMobileDefaultFooter ?? true,
-       leftAction: leftAction && {
+    setFooter({
+      title,
+      leftAction: leftAction && {
         ...leftAction,
         onClick: () => ref.current.leftAction!.onClick(),
       },
       rightAction: rightAction && {
         ...rightAction,
         onClick: () => ref.current.rightAction!.onClick(),
-      },  
+      },
     });
     return () => setFooter(DEFAULT_FOOTER);
   }, [
@@ -38,7 +37,6 @@ export function useFooter(config: FooterConfig, deps: DependencyList = []) {
     config.leftAction?.disabled,
     config.rightAction?.label,
     config.rightAction?.disabled,
-    config.useMobileDefaultFooter,
     setFooter,
     ...deps,
   ]);

@@ -53,7 +53,7 @@ export function DigitalSurveyLinkDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="max-w-md" 
+        className="w-full max-w-[calc(100%-2rem)] sm:max-w-md"
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
         <DialogHeader className="px-6 text-center sm:text-center">
@@ -71,7 +71,7 @@ export function DigitalSurveyLinkDialog({
             type="button"
             onClick={handleCopy}
             title={copied ? "Copiado!" : "Copiar link"}
-            className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-200 hover:text-slate-700"
+            className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 sm:size-8"
           >
             {copied ? <Check className="size-4 text-emerald-600" /> : <Copy className="size-4" />}
           </button>

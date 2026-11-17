@@ -1,110 +1,46 @@
 import { cn } from "@/lib/utils";
-import { 
-  AlarmSmoke, 
-  BookOpenCheck, 
-  Check,
-  CirclePlus,
-  ClipboardList,
-  Download,
-  Eye,
-  FilePen,
-  IdCardLanyard,
-  Link2, 
-  Link2Off, 
-  List,
-  Loader2, 
-  NotebookPen, 
-  PencilLine, 
-  SquareCheckBig, 
-  X, 
-  type LucideIcon
-} from "lucide-react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 import {
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "../ui/table";
-import { Button } from "../ui/button";
 import { AppPagination } from "../ui/pagination";
+import { DataCardList } from "./DataCardList";
+import { 
+  EmptyState,
+  formatCellValue,
+  getCellValue,
+  getColumnKey,
+  getRowActions, 
+  LoadingOverlay, 
+  RowActionButton, 
+  type DataTableProps 
+} from "./DataTableShared";
 
-type RowActionType =
-  | 'apply'
-  | 'create'
-  | 'delete'
-  | 'download'
-  | 'edit'
-  | 'finish'
-  | 'finishDigitalSurvey'
-  | 'inactivate'
-  | 'link'
-  | 'list'
-  | 'normal'
-  | 'openClass'
-  | 'startDigitalSurvey'
-  | 'view'
-  | 'viewPortfolio'
 
-export type RowAction<T> = {
-  type: RowActionType;
-  onClick: (row: T) => void;
-  disabled?: boolean | ((row: T) => boolean);
-  label?: string;
-  className?: string;
-  isActive?: (row: T) => boolean;
+export type { ColumnDef, DataTableProps, RowAction, TablePagination } from "./DataTableShared";
+
+export function DataTable<T>(props: Readonly<DataTableProps<T>>) {
+  const isDesktop = useMediaQuery('(min-width: 768px)');;
+
+  return isDesktop ? <TableView {...props} /> : <DataCardList {...props} />;
 }
 
-export type ColumnDef<T> = {
-  id: keyof T | (string & {});
-  key?: string;
-  header: React.ReactNode;
-  width: string;
-  className?: string;
-  accessor?: (row: T) => unknown;
-}
-
-type TablePagination = {
-  page: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  hasNext?: boolean;
-  hasPrevious?: boolean;
-  totalElements?: number;
-  size?: number;
-};
-
-interface DataTableProps<T> {
-  data: T[];
-  columns: ColumnDef<T>[];
-  rowKey: (row: T) => React.Key;
-  actions: RowAction<T>[] | ((row: T) => RowAction<T>[]);
-  emptyMessage: string;
-  isFetching?: boolean;
-  pagination?: TablePagination;
-}
-
-export function DataTable<T>({
-  data, 
+function TableView<T>({
+  data,
   columns,
-  rowKey, 
+  rowKey,
   emptyMessage,
   actions,
   isFetching = false,
   pagination
 }: Readonly<DataTableProps<T>>) {
-  const formatCellValue = (value: unknown) => {
-    if (value === true) return "Ativo";
-    if (value === false) return "Inativo";
-    if (value === null || value === undefined || value === "") return "-";
-    return String(value);
-  };
-
-  const getRowActions = (row: T) => (typeof actions === "function" ? actions(row) : actions);
-
-  const rowActionsList = data.map(getRowActions);
+  const rowActionsList = data.map((row) => getRowActions(actions, row));
   const maxActions = Math.max(0, ...rowActionsList.map((rowActions) => rowActions.length));
 
   const labeledActions = Math.max(
@@ -113,44 +49,25 @@ export function DataTable<T>({
   );
 
   if (data.length === 0) {
-    return (
-      <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-500 shadow-sm">
-        {isFetching && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
-            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-md">
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              <span>Carregando dados...</span>
-            </div>
-          </div>
-        )}
-        {emptyMessage}
-      </div>
-    );
+    return <EmptyState message={emptyMessage} isFetching={isFetching} />;
   }
 
   return (
     <div className="space-y-4">
       <div className="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-        {isFetching && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
-            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-md">
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              <span>Carregando dados...</span>
-            </div>
-          </div>
-        )}
+        {isFetching && <LoadingOverlay />}
         <Table className={cn("w-full min-w-[820px] table-fixed transition-opacity duration-200", isFetching && "opacity-50 pointer-events-none")}>
           <colgroup>
             {columns.map((column) => (
-              <col  
-                key={column.key ?? String(column.id)}
+              <col
+                key={getColumnKey(column)}
                 style={{ width: column.width }}
               />
             ))}
-            <col style={{ 
-              width: labeledActions > 0 
-                ? `${maxActions * (labeledActions > 1 ? 10 : 8)}%` 
-                : (maxActions > 2 ? "18%" : "14%") 
+            <col style={{
+              width: labeledActions > 0
+                ? `${maxActions * (labeledActions > 1 ? 10 : 8)}%`
+                : (maxActions > 2 ? "18%" : "14%")
             }} />
           </colgroup>
 
@@ -158,7 +75,7 @@ export function DataTable<T>({
             <TableRow className="hover:bg-transparent">
               {columns.map((column) => (
                 <TableHead
-                  key={column.key ?? String(column.id)}
+                  key={getColumnKey(column)}
                   className="px-6 py-3 text-left font-semibold text-white"
                 >
                   {column.header}
@@ -174,39 +91,26 @@ export function DataTable<T>({
           </TableHeader>
 
           <TableBody>
-            {data.map((row) => (
+            {data.map((row, index) => (
               <TableRow key={rowKey(row)} className="border-slate-200">
                 {columns.map((column) => (
-                  <TableCell 
-                    key={column.key ?? String(column.id)}
+                  <TableCell
+                    key={getColumnKey(column)}
                     className={cn("px-6 py-4 text-slate-900 font-semibold truncate", column.className)}
                   >
-                    {formatCellValue(
-                      column.accessor ? column.accessor(row) : row[column.id as keyof T]
-                    )}
+                    {formatCellValue(getCellValue(row, column))}
                   </TableCell>
                 ))}
 
                 <TableCell className="px-4 py-3">
                   <div className="flex items-center justify-center gap-2 whitespace-nowrap">
-                    {getRowActions(row).map((action) => {
-                      const isDisabled = typeof action.disabled === "function"
-                          ? action.disabled(row)
-                          : action.disabled ?? false;
-
-                      const isActive = action.isActive ? action.isActive(row) : undefined;
-                      return (
-                        <ActionButton
-                          key={`${action.type}-${action.label}`}
-                          type={action.type}
-                          onClick={() => action.onClick(row)}
-                          disabled={isDisabled}
-                          label={action.label}
-                          className={action.className}
-                          isActive={isActive}
-                        />
-                      );
-                    })}
+                    {rowActionsList[index].map((action) => (
+                      <RowActionButton
+                        key={`${action.type}-${action.label}`}
+                        action={action}
+                        row={row}
+                      />
+                    ))}
                   </div>
                 </TableCell>
               </TableRow>
@@ -227,74 +131,5 @@ export function DataTable<T>({
         />
       )}
     </div>
-  );
-}
-
-type ActionAppearance = {
-  title: string;
-  icon: LucideIcon;
-  variant?: React.ComponentProps<typeof Button>["variant"];
-  className?: string;
-};
-
-const ACTION_APPEARANCE: Record<RowActionType, (isActive: boolean) => ActionAppearance> = {
-  apply: () => ({ title: "Aplicar", icon: NotebookPen }),
-  create: () => ({ title: "Criar", icon: CirclePlus }),
-  download: () => ({ title: "Gerar Relatório", icon: Download }),
-  delete: () => ({ title: "Excluir", icon: X, variant: "destructive" }),
-  edit: () => ({ title: "Editar", icon: PencilLine }),
-  finish: () => ({ title: "Finalizar", icon: BookOpenCheck }),
-  finishDigitalSurvey: () => ({ title: "Finalizar Sondagem Digital", icon: SquareCheckBig }),
-
-  link: (isLinked) =>
-    isLinked
-      ? { title: "Desvincular", icon: Link2Off, variant: "destructive" }
-      : { title: "Vincular", icon: Link2, variant: "outline" },
-
-  list: () => ({ title: "Listar", icon: List }),
-
-  inactivate: (isActive) =>
-    isActive
-      ? { title: "Inativar", icon: X, variant: "destructive" }
-      : { title: "Ativar", icon: Check, className: "bg-emerald-600 hover:bg-emerald-500 text-white border-transparent" },
-
-  normal: () => ({ title: "", icon: AlarmSmoke }),
-  openClass: () => ({ title: "Abrir Turma", icon: ClipboardList }),
-  startDigitalSurvey: () => ({ title: "Iniciar Sondagem Digital", icon: FilePen }),
-  view: () => ({ title: "Visualizar", icon: Eye, variant: "outline" }),
-  viewPortfolio: () => ({ title: "Ver Portfólio", icon: IdCardLanyard })
-}
-
-type ActionButtonProps = Readonly<{
-  type: RowActionType;
-  onClick: () => void;
-  disabled?: boolean;
-  className?: string;
-  label?: string;
-  isActive?: boolean;
-}>;
-
-function ActionButton({ 
-  type, 
-  onClick, 
-  className, 
-  label, 
-  disabled = false,
-  isActive
-}: ActionButtonProps) {
-  const { title, icon: Icon, variant, className: stateClass } = ACTION_APPEARANCE[type](isActive!);
-
-  return (
-    <Button
-      title={title}
-      aria-label={title}
-      variant={variant}
-      className={cn(label ? "w-30" : "w-14", stateClass, className)}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      <Icon className="size-4" />
-      {label}
-    </Button>
   );
 }

@@ -24,8 +24,8 @@ interface LinkUsersDialogProps {
 
 const columns: ColumnDef<UserListItem>[] = [
   { id: "registration", header: "Registro Funcional (RF)", width: "150px" },
-  { id: "name", header: "Nome", width: "250px" },
-  { id: "role", header: "Função", width: "100px" },
+  { id: "name", header: "Nome", width: "250px", mobile: "title" },
+  { id: "role", header: "Função", width: "100px", accessor: (user) => user.role?.name },
 ];
 
 export function LinkUsersDialog({ 
@@ -51,8 +51,11 @@ export function LinkUsersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
+      <DialogContent 
+        onOpenAutoFocus={(event) => event.preventDefault()} 
+        className="flex max-h-[85dvh] w-full max-w-[calc(100%-2rem)] flex-col sm:max-w-4xl"
+      >
+        <DialogHeader className="shrink-0">
           <DialogTitle>Vincular {isTeachers ? "Professores" : "Usuários"}</DialogTitle>
         </DialogHeader>
 
@@ -62,19 +65,21 @@ export function LinkUsersDialog({
           </div>
         ) : (
           <>
-            <FilterBar value={filter} onChange={setFilter} />
+            <div className="-mx-1 min-h-0 flex-1 space-y-4 overflow-y-auto px-1 pb-1">
+              <FilterBar value={filter} onChange={setFilter} />
 
-            <DataTable<UserListItem>
-              data={usersPage?.content ?? []}
-              columns={columns}
-              rowKey={(user) => user.id}
-              actions={actions}
-              emptyMessage={isTeachers ? "Nenhum professor encontrado" : "Nenhum usuário encontrado"}
-              isFetching={isFetching}
-              pagination={usersPage ? buildPaginationProps(usersPage, setPage) : undefined}
-            />
+              <DataTable<UserListItem>
+                data={usersPage?.content ?? []}
+                columns={columns}
+                rowKey={(user) => user.id}
+                actions={actions}
+                emptyMessage={isTeachers ? "Nenhum professor encontrado" : "Nenhum usuário encontrado"}
+                isFetching={isFetching}
+                pagination={usersPage ? buildPaginationProps(usersPage, setPage) : undefined}
+              />
+            </div>
 
-            <div className="flex justify-start">
+            <div className="flex shrink-0 justify-start">
               <Button
                 variant="ghost"
                 className="text-slate-600 hover:text-slate-900"

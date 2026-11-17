@@ -18,7 +18,7 @@ const SURVEYS_FILTER_KEY = "surveys-filter";
 const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "10%" },
   { id: "registration", header: "Matrícula", width: "10%", },
-  { id: "name", header: "Nome", width: "40%" }
+  { id: "name", header: "Nome", width: "40%", mobile: "title" }
 ];
 
 export function SurveysDesktop() {

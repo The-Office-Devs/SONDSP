@@ -6,6 +6,7 @@ import { useTableState } from "@/hooks/use-table-state";
 import { buildPaginationProps } from "@/api/types";
 import { useHasPermission } from "@/auth/use-permission";
 
+import type { Role } from "@/roles/roles.types";
 import type { ClassListItem } from "@/classes/classes.types";
 import { ClassUpsertPanel } from "./class-upsert-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
@@ -40,10 +41,14 @@ export function ClassesDesktop() {
   const [inactivateClass, setInactivateClass] = useState<ClassListItem | null>(null);
   const [linkTeachersClass, setLinkTeachersClass] = useState<ClassListItem | null>(null);
 
-  const handleLinkUserToSchoolClass = (userId: number, userFunction: string) => {
+  const handleLinkUserToSchoolClass = (userId: number, userFunction: Role) => {
     if (!linkTeachersClass) return;
-    linkUserToSchoolClass({ id: userId, data: { schoolClassId: linkTeachersClass.id, function: userFunction } });
-  }
+
+    linkUserToSchoolClass({
+      id: userId,
+      data: { schoolClassId: linkTeachersClass.id, function: userFunction.name },
+    });
+  };
 
   const actions: RowAction<ClassListItem>[] = [
     {

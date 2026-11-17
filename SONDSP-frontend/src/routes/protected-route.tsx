@@ -3,7 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useAuthStore } from '@/auth/auth.store';
 import { getMeService } from '@/auth/auth.service';
-import type { UserRole } from '@/auth/auth.types';
+import type { Role } from '@/roles/roles.types';
 
 export function ProtectedRoute() {
   const { token, isAuthenticated, user, setUser, logout } = useAuthStore();
@@ -37,7 +37,7 @@ export function ProtectedRoute() {
             name: userData.name,
             registration: userData.registration,
             email: userData.email,
-            role: userData.role as UserRole,
+            role: userData.role as Role,
             permissions: userData.permissions,
           });
         })

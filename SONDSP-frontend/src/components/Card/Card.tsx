@@ -1,4 +1,4 @@
-import { Children, useState } from "react";
+import { Children, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   Check, 
@@ -37,13 +37,26 @@ export function Card({
 }: Readonly<CardProps>) {
   const [open, setOpen] = useState(true);
   const isOpen = !collapsible || open;
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const [wasEditMode, setWasEditMode] = useState(isEditMode);
+  if (isEditMode !== wasEditMode) {
+    setWasEditMode(isEditMode);
+    if (isEditMode) setOpen(true);
+  }
+
+  useEffect(() => {
+    if (isEditMode) {
+      contentRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }, [isEditMode]);
 
   const fieldCount = Children.count(children);
   const inlineAtMd = fieldCount % 2 !== 0;
   const inlineAtXl = fieldCount % 3 !== 0;
 
   const actionsClass = cn(
-    "flex gap-2 justify-end md:col-start-2 xl:col-start-3",
+    "flex flex-col-reverse gap-2 md:flex-row md:justify-end md:col-start-2 xl:col-start-3",
     inlineAtMd 
       ? "md:mt-[2rem] md:self-start" 
       : "md:mt-0 md:self-auto",
@@ -57,7 +70,7 @@ export function Card({
   const form = (
     <form
       onSubmit={onSubmit} 
-      className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+      className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
     >
       {children}
 
@@ -67,6 +80,7 @@ export function Card({
             type="button"
             variant="outline"
             isRounded
+            className="w-full md:w-auto"
             onClick={onReset}
           >
             <ResetIcon className="size-4" />
@@ -77,6 +91,7 @@ export function Card({
         <Button
           type="submit"
           isRounded
+          className="w-full md:w-auto"
           disabled={isSubmitDisabled}
         >
           <SubmitIcon className="size-4" />
@@ -88,7 +103,7 @@ export function Card({
 
   return (
     <PrimitiveCard className="border-0 bg-[#efefef] px-5 py-5 shadow-sm">
-      <div className="space-y-5">
+      <div ref={contentRef} className="scroll-mt-24 space-y-5">
         {collapsible ? (
           <button 
             type="button"

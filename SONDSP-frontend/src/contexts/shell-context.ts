@@ -13,13 +13,11 @@ export type FooterConfig = {
   title: string | Breadcrumb[];
   leftAction?: FooterAction;
   rightAction?: FooterAction;
-  useMobileDefaultFooter?: boolean;
 }
 
 export type HeaderConfig = {
   title: string;
   variant?: "menu" | "back";
-  onSearch?: () => void;
 };
 
 export type ShellContextValue = {
@@ -31,5 +29,5 @@ export type ShellContextValue = {
 
 export const ShellContext = createContext<ShellContextValue | null>(null);
 
-export const DEFAULT_FOOTER: FooterConfig = { title: "", useMobileDefaultFooter: true };
+export const DEFAULT_FOOTER: FooterConfig = { title: "" };
 export const DEFAULT_HEADER: HeaderConfig = { title: "", variant: "menu" };

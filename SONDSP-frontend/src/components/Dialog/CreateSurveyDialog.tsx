@@ -91,13 +91,13 @@ export function CreateSurveyDialog({
   const { data: imageUrl, isFetching: isFetchingImage } = useActivityImage(selectedModel?.id);
 
   useEffect(() => {
-    if (!open) form.reset({ activityModelId: 0 });
+    if (!open) form.reset(defaultValues);
   }, [open, form]);
 
   const handleFilterChange = (next: ModelFilters) => {
     if (!selectedModel) return;
 
-    const filters = { subjectLabel, period: applicationPeriod, ...next };
+    const filters = { subjectLabel, bimester: applicationPeriod, ...next };
     if (!matchesFilters(selectedModel, filters)) {
       form.setValue("activityModelId", 0, { shouldValidate: true });
     }
@@ -130,7 +130,10 @@ export function CreateSurveyDialog({
   const hasSelectedActivity = form.formState.isValid;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md" onOpenAutoFocus={(event) => event.preventDefault()}>
+      <DialogContent 
+        className="max-h-[90dvh] w-full max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-md"
+        onOpenAutoFocus={(event) => event.preventDefault()}
+      >
         <DialogHeader className="border-b border-neutral-100 pb-3">
           <DialogTitle className="text-base font-bold text-slate-900"> Nova Sondagem </DialogTitle>
         </DialogHeader>

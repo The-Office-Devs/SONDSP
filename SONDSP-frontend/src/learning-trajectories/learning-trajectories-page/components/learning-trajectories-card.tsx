@@ -44,7 +44,7 @@ interface LearningTrajectoriesCardProps {
 function LevelDot({ level }: Readonly<{ level: TrajectoryLevel }>) {
   if (!isKnownLevel(level)) {
     return (
-      <span title={getResultLabel(null)} className={cn("mx-auto block size-10 rounded-full", NO_RESULT_DOT_CLASS)} />
+      <span title={getResultLabel(null)} className={cn("mx-auto block size-6 rounded-full sm:size-10", NO_RESULT_DOT_CLASS)} />
     );
   }
 
@@ -56,7 +56,7 @@ function LevelDot({ level }: Readonly<{ level: TrajectoryLevel }>) {
     <span
       title={resultLabel}
       className={cn(
-        "mx-auto flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+        "mx-auto flex size-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold sm:size-9 sm:text-xs",
         levelStyle.bg,
         levelStyle.text
       )}
@@ -129,7 +129,7 @@ export function LearningTrajectoriesCard({
           <tbody>
             {trajectories.map(({ student, results }) => (
               <tr key={student.id}>
-                <th scope="row" className="pl-2 text-left font-normal">
+                <th scope="row" className="py-3 pl-2 pr-2 text-left font-normal">
                   <Link
                     to={`/app-alunos/portfolio/aluno/${student.id}`}
                     state={{ from: "trajectories" }}
