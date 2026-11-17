@@ -8,10 +8,10 @@ export function useSessionState<T>(key: string | undefined, initialValue: T) {
   const storageKey = key ? `${STORAGE_PREFIX}${key}` : undefined;
 
   const [value, setValue] = useState<T>(() => {
-    if (!key) return initialValue;
+    if (!storageKey) return initialValue;
     
     try {
-      const saved = sessionStorage.getItem(key);
+      const saved = sessionStorage.getItem(storageKey);
       return saved === null ? initialValue : (JSON.parse(saved) as T);
     } catch {
       return initialValue;

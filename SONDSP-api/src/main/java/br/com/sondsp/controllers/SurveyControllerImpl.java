@@ -1,7 +1,10 @@
 package br.com.sondsp.controllers;
 
+import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
+
 import br.com.sondsp.dtos.*;
 import br.com.sondsp.dtos.survey.SurveyResultOptionDTO;
+import br.com.sondsp.dtos.survey.UpdateDigitalSurveyDTO;
 import br.com.sondsp.entities.Survey;
 import br.com.sondsp.entities.User;
 import br.com.sondsp.filters.SurveyFilter;
@@ -10,6 +13,8 @@ import br.com.sondsp.security.AuthenticationService;
 import br.com.sondsp.services.SurveyService;
 import br.com.sondsp.util.SystemMessages;
 import jakarta.xml.bind.ValidationException;
+import java.io.IOException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,11 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.io.IOException;
-import java.util.List;
-
-import static br.com.sondsp.util.SystemMessages.SURVEY_DELETED;
 
 @RestController
 @RequestMapping("/survey")
@@ -38,6 +38,11 @@ public class SurveyControllerImpl implements SurveyController {
 	@PreAuthorize("hasAuthority('SONDAGEM_MANAGE')")
 	public ResponseEntity<?> createSurvey(SurveyForm form) throws ValidationException, IOException {
 		return ResponseEntity.ok().body(new SurveyDTO(surveyService.createSurvey(form)));
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<SurveyDTO> getSurvey(Integer id) {
+		return ResponseEntity.ok().body(new SurveyDTO(surveyService.getSurvey(id)));
 	}
 
 	@GetMapping
@@ -76,7 +81,7 @@ public class SurveyControllerImpl implements SurveyController {
 
 	@PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
 	@PreAuthorize("hasAuthority('SONDAGEM_MANAGE')")
-	public ResponseEntity<?> updateSurvey(Integer id, SurveyForm form) throws IOException {
+	public ResponseEntity<?> updateSurvey(Integer id, SurveyForm form) throws IOException, ValidationException {
 		return ResponseEntity.ok().body(new SurveyDTO(surveyService.updateSurvey(id, form)));
 	}
 
@@ -106,5 +111,23 @@ public class SurveyControllerImpl implements SurveyController {
 	@PreAuthorize("hasAuthority('SONDAGEM_VIEW')")
 	public ResponseEntity<List<SurveyResultOptionDTO>> getResultOptions(String strandCode, String gradeLevel) {
 		return ResponseEntity.ok(surveyService.getResultOptions(strandCode, gradeLevel));
+	}
+
+	@PatchMapping("/{id}/startSurveyAsDigital")
+	@PreAuthorize("hasAuthority('SONDAGEM_DIGITAL_MANAGE')")
+	public ResponseEntity<SurveyDTO> startSurveyAsDigital(Integer id) throws ValidationException {
+		return ResponseEntity.ok().body(new SurveyDTO(surveyService.startDigitalSurvey(id)));
+	}
+
+	@PatchMapping("/{id}/updateResponse")
+	public ResponseEntity<?> updateResponse(Integer id, UpdateDigitalSurveyDTO digitalSurvey) throws ValidationException {
+		surveyService.updateResponse(id, digitalSurvey.response());
+		return ResponseEntity.ok().build();
+	}
+
+	@PatchMapping("/{id}/closeDigitalSurvey")
+	@PreAuthorize("hasAuthority('SONDAGEM_DIGITAL_MANAGE')")
+	public ResponseEntity<SurveyDTO> closeDigitalSurvey(Integer id) throws ValidationException {
+		return ResponseEntity.ok().body(new SurveyDTO(surveyService.closeDigitalSurvey(id)));
 	}
 }

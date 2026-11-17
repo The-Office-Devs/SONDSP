@@ -9,17 +9,22 @@ import type { AxiosError } from "axios";
 
 import { handleApiError } from "@/lib/utils";
 import { 
+  closeDigitalSurveyService,
   createSurveyService,
   deleteSurveyService,
   finishSurveyService, 
   getStudentSurveysService, 
-  getSurveyImageService
+  getSurveyImageService,
+  getSurveyService,
+  startDigitalSurveyService,
+  updateSurveyResponseService
 } from "./surveys.service";
-import type { CreateSurveyRequest, SurveyFilter } from "./surveys.types";
+import type { CreateSurveyRequest, SurveyFilter, SurveyListItem } from "./surveys.types";
 import type { FinishSurveyFormData } from "@/components/Dialog/FinishSurveyDialog";
 import type { PaginationParams } from "@/api/types";
 
 const SURVEYS_QUERY_KEY = ['surveys'] as const;
+export const digitalSurveyQueryKey = (surveyId: number) => ["surveys", "digital", surveyId] as const;
 
 export function useCreateSurvey() {
   const queryClient = useQueryClient();
@@ -87,5 +92,50 @@ export function useSurveyImage(surveyId?: number | null) {
     queryFn: () => getSurveyImageService(surveyId!),
     enabled: !!surveyId,
     staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useStartDigitalSurvey() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (surveyId: number) => startDigitalSurveyService(surveyId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: SURVEYS_QUERY_KEY }),
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || "Não foi possível iniciar a sondagem digital")
+  });
+}
+
+export function useFinishDigitalSurvey() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (surveyId: number) => closeDigitalSurveyService(surveyId),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SURVEYS_QUERY_KEY });
+      toast.success("Sondagem digital finalizada");
+    },
+
+    onError: (error: AxiosError<{ error: string }>) =>
+      handleApiError(error || "Não foi possível finalizar a sondagem digital")
+  });
+}
+
+export function isSurveyLocked(survey?: SurveyListItem) {
+  return !!survey && (survey.isClosed === true || survey.status);
+}
+
+export function useDigitalSurvey(surveyId: number) {
+  return useQuery({
+    queryKey: digitalSurveyQueryKey(surveyId),
+    queryFn: () => getSurveyService(surveyId),
+    enabled: Number.isFinite(surveyId),
+    refetchInterval: (query) => (isSurveyLocked(query.state.data) ? false : 10_000)
+  });
+}
+
+export function useUpdateSurveyResponse() {
+  return useMutation({
+    mutationFn: ({ surveyId, response }: { surveyId: number; response: string }) =>
+      updateSurveyResponseService(surveyId, response)
   });
 }

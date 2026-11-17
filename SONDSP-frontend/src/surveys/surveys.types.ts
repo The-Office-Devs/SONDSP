@@ -11,6 +11,8 @@ export interface SurveyListItem {
   notes?: string;
   surveyImage?: string;
   isDigital?: boolean;
+  isClosed?: boolean;
+  response?: string | null;
   status: boolean;
 };
 

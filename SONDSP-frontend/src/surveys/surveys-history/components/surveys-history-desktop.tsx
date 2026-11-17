@@ -3,25 +3,38 @@ import { useParams } from "react-router-dom";
 
 import type { SurveyListItem } from "@/surveys/surveys.types";
 import type { SurveyHistoryFormData, SurveyHistoryFormInput } from "../survey-history.schema";
-import { useDeleteSurvey, useStudentSurveys, useSurveyImage } from "@/surveys/use-surveys";
+import { 
+  useDeleteSurvey, 
+  useFinishDigitalSurvey, 
+  useStartDigitalSurvey, 
+  useStudentSurveys, 
+  useSurveyImage 
+} from "@/surveys/use-surveys";
 import { useActivityImage } from "@/activities/activities-page/use-activities";
 import { useTableState } from "@/hooks/use-table-state";
 import { useSessionState } from "@/hooks/use-session-state";
 import { buildPaginationProps } from "@/api/types";
+import { getResultLabel } from "@/lib/survey-utils";
 
 import { SurveysHistoryFilterPanel } from "./surveys-history-filter-panel";
 import { FilterBar } from "@/components/FilterBar/FilterBar";
 import { DataTable, type ColumnDef, type RowAction } from "@/components/DataTable/DataTable";
+import { ReadOnlyField } from "@/components/ReadOnlyFields/ReadOnlyField";
+import { ReadOnlyTextAreaField } from "@/components/ReadOnlyFields/ReadOnlyTextAreaField";
 import { FinishSurveyDialog } from "@/components/Dialog/FinishSurveyDialog";
 import { DeleteDialog } from "@/components/Dialog/DeleteDialog";
 import { ViewFileDialog } from "@/components/Dialog/ViewFileDialog";
-import { ReadOnlyField } from "@/components/ReadOnlyFields/ReadOnlyField";
-import { getResultLabel } from "@/lib/survey-utils";
+import { StartDigitalSurveyDialog } from "./start-digital-survey-dialog";
+import { DigitalSurveyTutorialDialog, shouldShowDigitalSurveyTutorial } from "./digital-survey-tutorial-dialog";
+import { DigitalSurveyLinkDialog } from "./digital-survey-link-dialog";
+import { FinishDigitalSurveyDialog } from "./finish-digital-survey-dialog";
 
 interface SavedSurveyHistoryFilter {
   data: SurveyHistoryFormData;
   values: SurveyHistoryFormInput;
 }
+
+type DigitalSurveyStep = "tutorial" | "link" | null;
 
 const columns: ColumnDef<SurveyListItem>[] = [
   { id: "activity", key: "activityName", header: "Modelo de Atividade", width: "20%", accessor: (row) => row.activity?.name },
@@ -47,6 +60,11 @@ export function SurveysHistoryDesktop() {
   const [surveyToDelete, setSurveyToDelete] = useState<SurveyListItem | null>(null);
   const [viewFile, setViewFile] = useState<SurveyListItem | null>(null);
 
+  const [surveyToStartDigital, setSurveyToStartDigital] = useState<SurveyListItem | null>(null);
+  const [surveyToFinishDigital, setSurveyToFinishDigital] = useState<SurveyListItem | null>(null);
+  const [digitalSurvey, setDigitalSurvey] = useState<SurveyListItem | null>(null);
+  const [digitalStep, setDigitalStep] = useState<DigitalSurveyStep>(null);
+
   const { data: surveysPage, isFetching } = useStudentSurveys(
     studentId,
     {
@@ -61,22 +79,27 @@ export function SurveysHistoryDesktop() {
   const useSurveyImg = !!viewFile && viewFile.status === true;
 
   const { mutate: deleteSurvey, isPending } = useDeleteSurvey();
+  const { mutate: startDigitalSurvey, isPending: isStartingDigital } = useStartDigitalSurvey();
+  const { mutate: finishDigitalSurvey, isPending: isFinishingDigital } = useFinishDigitalSurvey();
   const { data: activityImageUrl, isFetching: isFetchingActivity } = useActivityImage(useSurveyImg ? undefined : viewFile?.activity?.id);
   const { data: surveyImageUrl, isFetching: isFetchingSurvey } = useSurveyImage(useSurveyImg ? viewFile?.id : undefined);
 
-  const actions: RowAction<SurveyListItem>[] = [
-    { type: "view", onClick: (surveyItem) => setViewFile(surveyItem) },
-    { 
-      type: "delete", 
-      onClick: (surveyItem) => setSurveyToDelete(surveyItem),
-      disabled: (surveyItem) => surveyItem.status
+  const getActions = (surveyItem: SurveyListItem): RowAction<SurveyListItem>[] => [
+    { type: "view", onClick: (item) => setViewFile(item) },
+    {
+      type: "delete",
+      onClick: (item) => setSurveyToDelete(item),
+      disabled: surveyItem.status
     },
     { 
       type: "finish", 
       label: "Finalizar", 
       onClick: (surveyItem) => setSelectedSurvey(surveyItem), 
-      disabled: (surveyItem) => surveyItem.status 
+      disabled: surveyItem.status
     },
+    surveyItem.isDigital && surveyItem.isClosed === null
+      ? { type: "finishDigitalSurvey", onClick: (item) => setSurveyToFinishDigital(item) }
+      : { type: "startDigitalSurvey", onClick: (item) => setSurveyToStartDigital(item), disabled: surveyItem.status },
   ];
 
   const handleSearch = (data: SurveyHistoryFormData, values: SurveyHistoryFormInput) => {
@@ -90,9 +113,18 @@ export function SurveysHistoryDesktop() {
     setPage(0);
   };
 
+  const handleStartDigitalSurvey = (survey: SurveyListItem) => {
+    startDigitalSurvey(survey.id, {
+      onSuccess: () => {
+        setSurveyToStartDigital(null);
+        setDigitalSurvey(survey);
+        setDigitalStep(shouldShowDigitalSurveyTutorial() ? "tutorial" : "link");
+      }
+    });
+  };
+
   const imageUrl = useSurveyImg ? surveyImageUrl : activityImageUrl;
   const isFetchingImage = useSurveyImg ? isFetchingSurvey : isFetchingActivity;
-
   return (
     <div className="space-y-4 p-4 lg:p-6">
       <SurveysHistoryFilterPanel
@@ -109,7 +141,7 @@ export function SurveysHistoryDesktop() {
         data={surveysPage?.content ?? []}
         columns={columns}
         rowKey={(surveyItem) => surveyItem.id}
-        actions={actions}
+        actions={getActions}
         emptyMessage="Nenhuma sondagem encontrada."
         isFetching={isFetching}
         pagination={surveysPage ? buildPaginationProps(surveysPage, setPage) : undefined}
@@ -118,6 +150,7 @@ export function SurveysHistoryDesktop() {
       <ViewFileDialog
         fileUrl={imageUrl}
         title={isFetchingImage ? "Carregando arquivo..." : (viewFile?.activity.name ?? "")}
+        subtitle={viewFile?.result ? `${viewFile?.studentName}` : undefined}
         open={viewFile !== null}
         onOpenChange={(open) => { if (!open) setViewFile(null) }}
       >
@@ -125,7 +158,7 @@ export function SurveysHistoryDesktop() {
           <>
             <ReadOnlyField label="Resultado" value={getResultLabel(viewFile.result)} />
             {viewFile.notes && (
-              <ReadOnlyField label="Observações" value={viewFile.notes} />
+              <ReadOnlyTextAreaField label="Observações" value={viewFile.notes} />
             )}
           </>
         )}
@@ -147,6 +180,35 @@ export function SurveysHistoryDesktop() {
         data={selectedSurvey}
         open={!!selectedSurvey}
         onOpenChange={(open) => !open && setSelectedSurvey(null)}
+      />
+
+      <StartDigitalSurveyDialog
+        data={surveyToStartDigital}
+        open={!!surveyToStartDigital}
+        onOpenChange={(open) => !open && !isStartingDigital && setSurveyToStartDigital(null)}
+        isPending={isStartingDigital}
+        onConfirm={handleStartDigitalSurvey}
+      />
+
+      <DigitalSurveyTutorialDialog
+        open={digitalStep === "tutorial"}
+        onOpenChange={(open) => !open && setDigitalStep("link")}
+      />
+
+      <DigitalSurveyLinkDialog
+        surveyId={digitalSurvey?.id ?? null}
+        open={digitalStep === "link"}
+        onOpenChange={(open) => !open && setDigitalStep(null)}
+      />
+
+      <FinishDigitalSurveyDialog
+        data={surveyToFinishDigital}
+        open={!!surveyToFinishDigital}
+        onOpenChange={(open) => !open && !isFinishingDigital && setSurveyToFinishDigital(null)}
+        isPending={isFinishingDigital}
+        onConfirm={(survey) => finishDigitalSurvey(survey.id, {
+          onSuccess: () => setSurveyToFinishDigital(null)
+        })}
       />
     </div>
   );

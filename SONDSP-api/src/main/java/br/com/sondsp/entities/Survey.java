@@ -1,20 +1,8 @@
 package br.com.sondsp.entities;
 
 import br.com.sondsp.form.SurveyForm;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -66,8 +54,14 @@ public class Survey {
 	@Column(name = "bimestre_aplicacao")
 	private String applicationPeriod;
 
-    @Column(name = "data")
-    private LocalDateTime date;
+	@Column(name = "data")
+	private LocalDateTime date;
+
+	@Column(name = "resposta")
+	private String response;
+
+	@Column(name = "ind_fechada")
+	private Boolean isClosed;
 
 	public Survey(SurveyForm form, User administrator, Student student, Activity activity) {
 		this.administrator = administrator;
@@ -76,10 +70,11 @@ public class Survey {
 		this.schoolClass = student != null ? student.getSchoolClass() : null;
 		this.result = form.result();
 		this.notes = form.notes();
-		this.isDigital = form.isDigital();
+		this.isDigital = false;
 		this.status = false;
+		this.isClosed = false;
 		this.applicationPeriod = form.applicationPeriod();
-        this.date = LocalDateTime.now();
+		this.date = LocalDateTime.now();
 	}
 
 	public Survey(SurveyForm form, User administrator, Student student, Activity activity, SchoolClass schoolClass) {

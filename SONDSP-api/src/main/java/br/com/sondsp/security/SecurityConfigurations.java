@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -41,6 +42,8 @@ public class SecurityConfigurations {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
+					.requestMatchers(HttpMethod.GET, "/api/survey/{id}").permitAll()
+					.requestMatchers(HttpMethod.PATCH, "/api/survey/{id}/updateResponse").permitAll()
 					.requestMatchers("/api/auth/me")
 					.authenticated()
 					.requestMatchers("/api/auth/**")
