@@ -14,7 +14,7 @@ import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 const columns: ColumnDef<StudentListItem>[] = [
   { id: "rowNumber", header: "N° Chamada", width: "10%" },
   { id: "registration", header: "Matrícula", width: "14%", },
-  { id: "name", header: "Nome", width: "20%" },
+  { id: "name", header: "Nome", width: "20%", mobile: "title" },
   { id: "schoolClass", header: "Turma", width: "12%", accessor: (row) => row.schoolClass ? row.schoolClass.name : "-" },
   { id: "status", header: "Status", width: "8%" },
 ];

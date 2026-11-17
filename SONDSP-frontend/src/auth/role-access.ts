@@ -1,6 +1,6 @@
 import type { AuthUser } from "./auth.types";
 import { administratorItems, applicationItems, canAccessItem } from "@/lib/sidebar-utils";
-import type { Role } from "@/roles/roles.types";
+import type { Permission, Role } from "@/roles/roles.types";
 
 export type AppArea = 'admin' | 'application';
 
@@ -19,10 +19,10 @@ export function canAccess(target: AuthUser | Role | null | undefined, area: AppA
   }
 
   const user = target;
-  const isAdmin = user.role.isAdmin;
+  const isAdmin = user?.role?.isAdmin;
   if (isAdmin) return true;
 
-  const permissions = user?.role?.permissions.map(p => p.permission) || [];
+  const permissions = user?.role?.permissions.map((p: Permission) => p.permission) || [];
 
   if (area === 'admin') {
     return administratorItems.some((item) => canAccessItem(item, permissions, false));

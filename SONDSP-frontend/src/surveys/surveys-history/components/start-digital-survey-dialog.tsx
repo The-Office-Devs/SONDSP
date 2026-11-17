@@ -31,7 +31,7 @@ export function StartDigitalSurveyDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-md">
         <DialogHeader>
           <DialogTitle> Deseja realizar a sondagem digitalmente? </DialogTitle>
         </DialogHeader>
@@ -42,7 +42,7 @@ export function StartDigitalSurveyDialog({
             size="lg"
             onClick={() => onOpenChange(false)}
             disabled={isPending}
-            className="flex-1 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700"
+            className="border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-700 sm:flex-1"
           >
             Não
           </Button>
@@ -51,11 +51,10 @@ export function StartDigitalSurveyDialog({
             size="lg"
             onClick={handleConfirm}
             disabled={isPending}
-            className="flex-1 border-transparent bg-emerald-600 text-white hover:bg-emerald-700"
+            className="border-transparent bg-emerald-600 text-white hover:bg-emerald-700 sm:flex-1"
           >
             Sim
           </Button>
-
         </DialogFooter>
       </DialogContent>
     </Dialog>

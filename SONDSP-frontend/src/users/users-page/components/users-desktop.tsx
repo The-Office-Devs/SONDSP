@@ -13,7 +13,7 @@ import { InactivateDialog } from "@/components/Dialog/InactivateDialog";
 
 const columns: ColumnDef<UserListItem>[] = [
   { id: "registration", header: "Registro Funcional (RF)", width: "14%" },
-  { id: "name", header: "Nome", width: "20%" },
+  { id: "name", header: "Nome", width: "20%", mobile: "title" },
   { id: "email", header: "Email", width: "26%" },
   {
     id: "role",

@@ -43,15 +43,15 @@ export function RolePermissionsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-6 overflow-hidden">
-        <DialogHeader className="border-b pb-4 shrink-0">
-          <div className="flex items-center justify-between gap-3 pr-6">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+     <DialogContent className="flex max-h-[85dvh] w-full max-w-[calc(100%-2rem)] flex-col overflow-hidden p-4 sm:max-w-2xl sm:p-6">
+        <DialogHeader className="shrink-0 border-b pb-4 text-left sm:text-left">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 pr-6">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <ShieldCheck className="size-5" />
               </div>
               <div>
-                <DialogTitle className="text-xl font-bold text-slate-900">
+                <DialogTitle className="text-lg font-bold text-slate-900 sm:text-xl">
                   {role.name}
                 </DialogTitle>
                 <DialogDescription className="text-xs text-muted-foreground mt-0.5">

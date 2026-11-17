@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useHeader } from "@/hooks/use-header";
 import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { TimelineSurveyItem } from "../student-portfolio.types";
@@ -12,6 +13,7 @@ import { StudentTimelineCard } from "./student-timeline-card";
 import { ViewEvidenceDialog } from "./view-evidence-dialog";
 
 export function StudentPortfolioMobile() {
+  useHeader({ title: "Portfólio do Aluno" })
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const studentId = id ? Number(id) : null;

@@ -43,7 +43,7 @@ export function DigitalSurveyTutorialDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md" aria-describedby={undefined}>
+      <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader className="border-b border-neutral-100 pb-3">
           <DialogTitle className="text-base font-bold text-slate-900">
             Como abrir a sondagem no tablet
@@ -54,7 +54,7 @@ export function DigitalSurveyTutorialDialog({
           Tutorial de como abrir a sondagem no tablet
         </div>
 
-        <DialogFooter className="flex flex-row items-center justify-between gap-3 sm:justify-between">
+        <DialogFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
             <input
               type="checkbox"
@@ -68,7 +68,7 @@ export function DigitalSurveyTutorialDialog({
           <Button
             size="lg"
             onClick={() => handleOpenChange(false)}
-            className="w-auto min-w-32 border-transparent bg-emerald-600 text-white hover:bg-emerald-700"
+            className="border-transparent bg-emerald-600 text-white hover:bg-emerald-700 sm:w-auto sm:min-w-32"
           >
             Entendi
           </Button>

@@ -35,6 +35,9 @@ interface EvolutionComparativeCardProps {
 
 const TITLE = "Evoluções e Declínios em relação à última sondagem";
 
+const Y_AXIS_WIDTH = 50;
+const CHART_MARGIN = { top: 12, right: 12, bottom: 4, left: 8 };
+
 const DELTA_ICON_SIZE = 12;
 const DELTA_ICON_GAP = 2;
 const DELTA_DIGIT_WIDTH = 7;
@@ -142,6 +145,8 @@ export function EvolutionComparativeCard({
     ? new Map(items.map((item) => [item.level, item.after - item.before]))
     : null;
 
+  const axisTitle = strandName ? `Níveis de ${strandName}` : "Níveis da Sondagem";
+
   return (
     <ContentCard
       title={TITLE}
@@ -159,7 +164,7 @@ export function EvolutionComparativeCard({
 
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={items} margin={{ top: 12, right: 12, bottom: 36, left: 8 }}>
+            <ComposedChart data={items} margin={CHART_MARGIN}>
               <defs>
                 <linearGradient id={AFTER_FILL_ID} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={AFTER_COLOR} stopOpacity={0.2} />
@@ -176,6 +181,7 @@ export function EvolutionComparativeCard({
                 tick={createLevelTick(deltaByLevel)}
                 interval={0}
                 padding={{ left: 16, right: 16 }}
+                height={36}
                 label={{
                   value: strandName ? `Níveis de ${strandName}` : "Níveis da Sondagem",
                   position: "insideBottom",
@@ -189,7 +195,7 @@ export function EvolutionComparativeCard({
                 domain={[0, "dataMax + 1"]}
                 tickLine={false}
                 axisLine={false}
-                width={50}
+                width={Y_AXIS_WIDTH}
                 tick={{ fill: AXIS_TEXT_COLOR, fontSize: 12 }}
                 label={{
                   value: "Quantidade de Alunos",
@@ -248,6 +254,13 @@ export function EvolutionComparativeCard({
             </ComposedChart>
           </ResponsiveContainer>
         </div>
+
+        <p
+          className="text-center text-sm text-slate-500"
+          style={{ paddingLeft: Y_AXIS_WIDTH + CHART_MARGIN.left, paddingRight: CHART_MARGIN.right }}
+        >
+          {axisTitle}
+        </p>
 
         <ul className="mt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm text-slate-700">
           {SERIES.map((series) => (

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type ComponentType } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ClipboardList,
@@ -11,8 +11,11 @@ import {
 
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/auth/auth.store';
-import { administratorItems, applicationItems, canAccessItem } from '@/lib/sidebar-utils';
+import { administratorItems, applicationItems, canAccessItem, isPathActive } from '@/lib/sidebar-utils';
 import { canAccess, getHomePath } from '@/auth/role-access';
+import { SidebarItem } from '../desktop/sidebar';
+
+type SectionKey = 'admin' | 'application';
 
 interface MobileShellSidebarProps {
   open: boolean;
@@ -25,6 +28,8 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
 
+  const [openSections, setOpenSections] = useState<Partial<Record<SectionKey, boolean>>>({});
+
   // Evita scroll enquanto o sidebar ta aberto
   useEffect(() => {
     if (open) {
@@ -36,11 +41,12 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
     }
   }, [open]);
 
-  const permissions = user?.role?.permissions.map(p => p.permission) || [];
+  const rolePermissions = user?.role?.permissions;
+  const permissions = useMemo(
+    () => rolePermissions?.map((p) => p.permission) ?? [],
+    [rolePermissions]
+  );
   const isAdmin = user?.role.name === 'Administrador' || (user as any)?.isAdmin;
-
-  console.log(permissions);
-  
 
   const visibleAdminItems = useMemo(
     () => administratorItems.filter((item) => canAccessItem(item, permissions, isAdmin)),
@@ -57,6 +63,20 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
   const homePath = getHomePath(user);
   const showAdmin = canAccess(user, 'admin') && visibleAdminItems.length > 0;
   const showApplication = canAccess(user, 'application') && visibleAppItems.length > 0;
+
+  const adminHasActiveChild = visibleAdminItems.some((item) =>
+    isPathActive(location.pathname, `/gerenciamento${item.to}`),
+  );
+  const applicationHasActiveChild = visibleAppItems.some((item) =>
+    isPathActive(location.pathname, item.to),
+  );
+
+  const isSectionOpen = (key: SectionKey, hasActiveChild: boolean) =>
+    openSections[key] ?? hasActiveChild;
+
+  const toggleSection = (key: SectionKey, hasActiveChild: boolean) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !(prev[key] ?? hasActiveChild) }));
+  };
 
   const goTo = (to: string) => {
     navigate(to);
@@ -86,11 +106,11 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
 
       <aside
         className={cn(
-          'absolute left-0 top-0 flex h-full w-[18rem] max-w-[85%] flex-col overflow-y-auto bg-primary text-white shadow-xl transition-transform duration-300 ease-out',
+          'absolute left-0 top-0 flex h-full w-[16.5rem] max-w-[85%] flex-col overflow-hidden bg-primary text-white shadow-xl transition-transform duration-300 ease-out',
           open ? 'translate-x-0' : '-translate-x-full',
         )}
       >
-        <div className="flex flex-col gap-8 px-3 py-6">
+        <div className="flex h-full min-h-0 flex-col gap-8 px-3 py-6">
           <div className="flex items-center justify-between">
             <div className="flex w-fit items-center gap-3 rounded-full bg-white px-2 py-1 text-primary shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef4ff] text-lg font-semibold">
@@ -109,101 +129,93 @@ export function MobileShellSidebar({ open, onClose }: MobileShellSidebarProps) {
             </button>
           </div>
 
-          <nav className="flex flex-1 flex-col gap-3">
-            <MobileSidebarItem
+          <nav
+            className={cn(
+              'flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden text-white',
+              '[scrollbar-width:none]',
+              '[-ms-overflow-style:none]',
+              '[&::-webkit-scrollbar]:hidden',
+            )}
+          >
+            <SidebarItem
               icon={House}
               label="Início"
-              active={location.pathname === '/'}
+              expanded
+              active={isPathActive(location.pathname, homePath, true)}
               onClick={() => goTo(homePath)}
             />
 
             {showAdmin && (
-              <>
-                <MobileSidebarSection title="Área do Administrador" icon={PencilLine} />
-                <div className="space-y-1">
-                  {visibleAdminItems.map((item) => {
-                    const path = `/gerenciamento${item.to}`;
+              <div>
+                <SidebarItem
+                  icon={PencilLine}
+                  label="Área do Administrador"
+                  expanded
+                  onClick={() => toggleSection('admin', adminHasActiveChild)}
+                  className={cn(adminHasActiveChild && 'bg-white/10')}
+                />
+                {isSectionOpen('admin', adminHasActiveChild) && (
+                  <div className="mt-3 flex flex-col gap-3">
+                    {visibleAdminItems.map((item) => {
+                      const path = `/gerenciamento${item.to}`;
 
-                    return (
-                      <MobileSidebarItem
-                        key={item.label}
-                        icon={item.icon}
-                        label={item.label}
-                        indent
-                        active={location.pathname === path}
-                        onClick={() => goTo(path)}
-                      />
-                    );
-                  })}
-                </div>
-              </>
+                      return (
+                        <SidebarItem
+                          key={item.label}
+                          icon={item.icon}
+                          label={item.label}
+                          expanded
+                          indent
+                          active={isPathActive(location.pathname, path)}
+                          onClick={() => goTo(path)}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             )}
 
             {showApplication && (
-              <>
-                <MobileSidebarSection title="Área do Professor" icon={ClipboardList} />
-
-                <div className="space-y-1">
-                  {visibleAppItems.map((item) => (
-                    <MobileSidebarItem
-                      key={item.label}
-                      icon={item.icon}
-                      label={item.label}
-                      indent
-                      active={location.pathname === item.to}
-                      onClick={() => goTo(item.to)}
-                    />
-                  ))}
-                </div>
-              </>
+              <div>
+                <SidebarItem
+                  icon={ClipboardList}
+                  label="Área do Professor"
+                  expanded
+                  onClick={() => toggleSection('application', applicationHasActiveChild)}
+                  className={cn(applicationHasActiveChild && 'bg-white/10')}
+                />
+                {isSectionOpen('application', applicationHasActiveChild) && (
+                  <div className="mt-3 flex flex-col gap-3">
+                    {visibleAppItems.map((item) => (
+                      <SidebarItem
+                        key={item.label}
+                        icon={item.icon}
+                        label={item.label}
+                        expanded
+                        indent
+                        active={isPathActive(location.pathname, item.to)}
+                        onClick={() => goTo(item.to)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
 
-            <div className="mt-2 space-y-1">
-              <MobileSidebarItem icon={CircleHelp} label="Ajuda" onClick={onClose} />
-              <MobileSidebarItem icon={LogOut} label="Sair" onClick={handleLogout} />
+            <div className="flex flex-col gap-3">
+              <SidebarItem
+                icon={CircleHelp}
+                label="Ajuda"
+                expanded
+                active={isPathActive(location.pathname, '/ajuda')}
+                onClick={() => goTo('/ajuda')}
+              />
+              <SidebarItem icon={LogOut} label="Sair" expanded onClick={handleLogout} />
             </div>
           </nav>
         </div>
       </aside>
-    </div>
-  );
-}
-
-interface MobileSidebarItemProps {
-  icon: ComponentType<{ className?: string }>;
-  label: string;
-  indent?: boolean;
-  active?: boolean;
-  onClick?: () => void;
-}
-
-function MobileSidebarItem({ icon: Icon, label, indent = false, active = false, onClick }: MobileSidebarItemProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors',
-        active ? 'bg-white/12 text-white' : 'text-white/95 hover:bg-white/10',
-        indent && 'pl-5',
-      )}
-    >
-      <Icon className="size-6 shrink-0" />
-      <span className="truncate text-[1.05rem] font-medium">{label}</span>
-    </button>
-  );
-}
-
-interface MobileSidebarSectionProps {
-  icon: ComponentType<{ className?: string }>;
-  title: string;
-}
-
-function MobileSidebarSection({ icon: Icon, title }: MobileSidebarSectionProps) {
-  return (
-    <div className="mt-3 flex items-start gap-3 px-3 text-white/90">
-      <Icon className="mt-0.5 size-5 shrink-0" />
-      <span className="whitespace-nowrap text-[0.95rem] font-medium leading-tight">{title}</span>
     </div>
   );
 }
