@@ -321,6 +321,56 @@ export const HELP_MODULES: HelpModule[] = [
         ],
       },
       {
+        id: 'iniciar-sondagem-digital',
+        title: 'Como iniciar uma sondagem digital',
+        steps: [
+          'Dentro do histórico do aluno, localize a sondagem e clique no botão azul com ícone de folha e caneta.',
+          'Na janela "Deseja realizar a sondagem digitalmente?", clique em "Sim".',
+          'Leia as instruções e clique em "Entendi". (Marque "Não exibir novamente" para pular essa etapa nas próximas vezes).',
+          'Na janela seguinte aparecem o QR Code e o link para abrir a sondagem no tablet do aluno.',
+        ],
+      },
+      {
+        id: 'abrir-sondagem-tablet',
+        title: 'Como abrir a sondagem no tablet do aluno',
+        steps: [
+          'Na janela com o QR Code e o link, escolha uma das formas abaixo:',
+          'Pelo QR Code (mais rápido): abra a câmera do tablet, aponte para o QR Code na tela e toque no link que aparecer.',
+          'Copiando o link: clique no ícone de copiar ao lado do endereço para enviá-lo ao tablet (por WhatsApp, e-mail ou aplicativo de mensagens).',
+          'Digitando no navegador: abra o navegador do tablet (Chrome, Safari, etc.) e digite exatamente o endereço exibido na tela.',
+        ],
+        alert: {
+          type: 'info',
+          message: 'Assim que o aluno abrir o link, a sondagem já estará pronta para responder.',
+        },
+      },
+      {
+        id: 'responder-sondagem-tablet',
+        title: 'Como o aluno responde no tablet',
+        steps: [
+          'O aluno digita a resposta no teclado da própria tela: letras nas atividades de Português e números nas de Matemática.',
+          'O botão de apagar remove a última letra ou número digitado.',
+          'A resposta é salva automaticamente a cada toque. Não é preciso clicar em salvar.',
+        ],
+        alert: {
+          type: 'info',
+          message: 'Se a internet do tablet cair, a tela avisa e tenta salvar a resposta de novo sozinha.',
+        },
+      },
+      {
+        id: 'finalizar-sondagem-digital',
+        title: 'Como finalizar uma sondagem digital',
+        steps: [
+          'Quando o aluno terminar, volte ao histórico do aluno e localize a sondagem.',
+          'Clique no botão azul com ícone de quadrado com um visto (✓).',
+          'Na janela "Deseja finalizar a sondagem digital?", clique em "Sim".',
+        ],
+        alert: {
+          type: 'warning',
+          message: 'Depois de finalizada, a resposta fica travada e o aluno não consegue mais alterá-la no tablet.',
+        },
+      },
+      {
         id: 'finalizar-inserir-resultados',
         title: 'Como finalizar e inserir resultados',
         steps: [
