@@ -18,7 +18,10 @@ Antes de iniciar a aplicação, preencha no arquivo `.env` as variáveis necess�
 * `JWT_SECRET` — chave usada para assinar os tokens;
 * `PORT` — porta da aplicação, com valor padrão `8081`;
 * `FRONTEND_URL` — endereço do front-end para as configurações de integração;
-* `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD` e `MAIL_FROM` — envio de e-mails de recuperação e ativação de conta.
+* `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD` e `MAIL_FROM` — envio de e-mails de recuperação e ativação de conta;
+* `PASSWORD_RESET_EXPIRATION_MINUTES` — tempo de expiração do link de recuperação de senha, em minutos, com valor padrão 15;
+* `ACCOUNT_ACTIVATION_EXPIRATION_DAYS` — tempo de validade do código de primeiro acesso e ativação de conta, em dias, com valor padrão 3;
+* `SUPABASE_URL, SUPABASE_KEY e SUPABASE_BUCKET` — armazenamento de imagens no Supabase (endereço da API, chave de acesso e nome do bucket).
 
 Comandos úteis:
 
