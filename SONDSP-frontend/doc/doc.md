@@ -82,7 +82,7 @@ O redirecionamento inicial depende do perfil: usuários administrativos vão par
 ```text
 src/
 ├── api/                    # Instância Axios e tipos de paginação
-├── assets/                 # Brasão de SP e background da tela inicial
+├── assets/                 # Brasão de SP, background da tela inicial e imagens de suporte
 ├── auth/                   # Login, conta, senha, store e autorização
 ├── activities/             # Modelos de atividades
 ├── class-map/              # Mapa de classe

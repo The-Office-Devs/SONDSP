@@ -118,11 +118,12 @@ export function HelpCenterPage() {
 
         const matchingTopics = module.topics.filter((topic) => {
           const inTitle = topic.title.toLowerCase().includes(query);
+          const inIntro = topic.intro?.toLowerCase().includes(query);
           const inSteps = topic.steps.some((step) =>
             step.toLowerCase().includes(query),
           );
           const inAlert = topic.alert?.message.toLowerCase().includes(query);
-          return inTitle || inSteps || inAlert;
+          return inTitle || inIntro || inSteps || inAlert;
         });
 
         return {
