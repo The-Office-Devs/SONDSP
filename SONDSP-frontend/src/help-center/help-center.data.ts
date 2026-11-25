@@ -332,7 +332,7 @@ export const HELP_MODULES: HelpModule[] = [
       },
       {
         id: 'visualizar-evidencia-sondagem',
-        title: 'Como visualizar e baixar a evidência da sondagem',
+        title: 'Como Visualizar e Baixar a Evidência da Sondagem',
         intro: 'Ao clicar em "Ver evidência", a janela "Evidência da Sondagem" é exibida na tela:',
         steps: [
           '**Visualize a Atividade:** Confira a foto da atividade realizada pelo estudante diretamente na área central da janela.',
