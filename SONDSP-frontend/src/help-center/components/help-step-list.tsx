@@ -2,13 +2,20 @@ import { ClipboardList } from 'lucide-react';
 
 interface HelpStepListProps {
   steps: string[];
+  intro?: string;
 }
 
 function renderFormattedStep(text: string) {
-  // Destaca termos entre aspas duplas (nomes de botões/menus) e parênteses informativos
-  const parts = text.split(/(".*?"|\(.*?\))/g);
+  const parts = text.split(/(\*\*.*?\*\*|".*?"|\(.*?\))/g);
 
   return parts.map((part, index) => {
+    if (part.length > 4 && part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={index} className="font-semibold text-slate-900">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
     if (part.startsWith('"') && part.endsWith('"')) {
       return (
         <span key={index} className="font-semibold text-slate-900">
@@ -27,13 +34,19 @@ function renderFormattedStep(text: string) {
   });
 }
 
-export function HelpStepList({ steps }: HelpStepListProps) {
+export function HelpStepList({ steps, intro }: HelpStepListProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2.5 text-base font-semibold text-slate-900">
         <ClipboardList className="size-5 text-[#0a4b93]" />
         <span>Passo a passo</span>
       </div>
+
+      {intro && (
+        <p className="text-[0.975rem] leading-relaxed text-slate-700 lg:text-base">
+          {renderFormattedStep(intro)}
+        </p>
+      )}
 
       <ol className="space-y-3.5">
         {steps.map((step, index) => (

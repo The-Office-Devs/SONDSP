@@ -50,22 +50,30 @@ Rotas públicas:
 | Rota | Tela |
 | --- | --- |
 | `/login` | Login |
-| `/ativar-conta` | Ativação de conta |
-| `/esqueci-senha` | Recuperação de senha |
-| `/redefinir-senha` | Redefinição de senha |
+| `/ativar-conta` | Ativação de Conta |
+| `/esqueci-senha` | Recuperação de Senha |
+| `/redefinir-senha` | Redefinição de Senha |
+| `/sondagem-digital/:id` | Realização da Sondagem Digital |
 
 Rotas protegidas:
 
 | Rota | Área |
 | --- | --- |
-| `/gerenciamento/usuarios` | Usuários |
-| `/gerenciamento/turmas` | Turmas |
 | `/gerenciamento/alunos` | Alunos |
-| `/gerenciamento/eixos` | Eixos |
-| `/gerenciamento/modelos-atividades` | Modelos de atividades |
-| `/app-turmas` | Seleção de turmas |
+| `/gerenciamento/funcoes` | Funções da Aplicação |
+| `/gerenciamento/modelos-atividades` | Modelos de Atividade |
+| `/gerenciamento/turmas` | Turmas |
+| `/gerenciamento/usuarios` | Usuários |
+| `/app-alunos` | Seleção de Alunos |
+| `/app-alunos/portfolio/aluno/:id` | Portfólio de um Aluno |
+| `/app-mapa-classe` | Mapa de Classe |
 | `/app-sondagens` | Sondagens |
-| `/app-sondagens/historico/aluno/:id` | Histórico do aluno |
+| `/app-sondagens/historico/aluno/:id` | Histórico de Sondagens do Aluno |
+| `/app-trajetorias-aprendizagem` | Trajetórias de Aprendizagem dos Alunos |
+| `/app-turmas` | Seleção de Turmas |
+| `/app-turmas/turma/:id` | Detalhes de uma Turma |
+| `/ajuda` | Tutoriais de Usabilidade |
+
 
 O redirecionamento inicial depende do perfil: usuários administrativos vão para o gerenciamento de usuários; usuários da aplicação vão para a seleção de turmas.
 
@@ -73,20 +81,25 @@ O redirecionamento inicial depende do perfil: usuários administrativos vão par
 
 ```text
 src/
-├── api/                  # Instância Axios e tipos de paginação
-├── auth/                 # Login, conta, senha, store e autorização
-├── activities/           # Modelos de atividades
-├── classes/              # Turmas e filtro de turmas
-├── strands/              # Eixos
-├── students/             # Alunos
-├── surveys/              # Sondagens e histórico
-├── users/                # Usuários
-├── components/           # Componentes compartilhados e UI
-├── contexts/             # Contexto do shell da aplicação
-├── hooks/                # Hooks reutilizáveis
-├── layouts/              # Layout autenticado
-├── lib/                  # Utilitários
-└── routes/               # Rotas e guards
+├── api/                    # Instância Axios e tipos de paginação
+├── assets/                 # Brasão de SP, background da tela inicial e imagens de suporte
+├── auth/                   # Login, conta, senha, store e autorização
+├── activities/             # Modelos de atividades
+├── class-map/              # Mapa de classe
+├── classes/                # Turmas e filtro de turmas
+├── help-center/            # Ajuda
+├── learning-trajectories/  # Trajetórias de aprendizagem
+├── roles/                  # Funções
+├── strands/                # Eixos
+├── students/               # Alunos
+├── surveys/                # Sondagens e histórico
+├── users/                  # Usuários
+├── components/             # Componentes compartilhados e UI
+├── contexts/               # Contexto do shell da aplicação
+├── hooks/                  # Hooks reutilizáveis
+├── layouts/                # Layout autenticado
+├── lib/                    # Utilitários
+└── routes/                 # Rotas e guards
 ```
 
 Cada domínio deve concentrar seus `types`, `service`, `schema`, hooks e páginas. Componentes específicos ficam dentro do domínio; componentes genéricos ficam em `components/`.

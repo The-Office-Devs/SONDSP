@@ -15,12 +15,19 @@ export interface HelpAlert {
   message: string;
 }
 
+export interface HelpImage {
+  src: string;
+  alt: string;
+}
+
 export interface HelpTopic {
   id: string;
   title: string;
+  intro?: string;
   steps: string[];
   alert?: HelpAlert;
   materials?: HelpMaterial[];
+  image?: HelpImage;
 }
 
 export interface HelpModule {

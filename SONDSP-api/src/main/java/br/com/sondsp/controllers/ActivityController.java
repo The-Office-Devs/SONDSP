@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.io.IOException;
+
 public interface ActivityController {
 	@Operation(
 		description = "Registra uma nova atividade",
@@ -26,7 +28,7 @@ public interface ActivityController {
 			)
 		}
 	)
-	ResponseEntity<?> registerActivity(@ModelAttribute ActivityForm form);
+	ResponseEntity<?> registerActivity(@ModelAttribute ActivityForm form) throws IOException;
 
 	@Operation(
 		description = "Retorna a atividade com id passado.",

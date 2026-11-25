@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/activity")
-public class ActivityControllerImpl {
+public class ActivityControllerImpl implements ActivityController {
 
 	@Autowired
 	private ActivityService activityService;
@@ -48,7 +48,7 @@ public class ActivityControllerImpl {
 	}
 
 	@GetMapping
-	public ResponseEntity<PageResponse<ActivityDTO>> listActivity(ActivityFilter filter, Pageable pageable) {
+	public ResponseEntity<PageResponse<ActivityDTO>> listActivities(ActivityFilter filter, Pageable pageable) {
 		Page<Activity> activityPage = activityService.getActivities(filter, pageable);
 
 		List<ActivityDTO> contentDTO = activityPage.getContent().stream().map(ActivityDTO::new).toList();

@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import type { HelpTopic } from '../help-center.types';
 import { HelpStepList } from './help-step-list';
 import { HelpAlertBox } from './help-alert-box';
+import { HelpTopicImage } from './help-topic-image';
 import { HelpMaterialsList } from './help-materials-list';
 import { cn } from '@/lib/utils';
 
@@ -35,7 +36,7 @@ export function HelpAccordionItem({
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-2xl border border-slate-200/90 bg-[#f0f2f5] transition-all duration-200',
+        'overflow-hidden rounded-2xl border border-slate-200/90 bg-white transition-all duration-200',
         isOpen
           ? 'shadow-sm ring-1 ring-slate-300/80'
           : 'hover:bg-slate-200/60 shadow-2xs',
@@ -65,10 +66,13 @@ export function HelpAccordionItem({
           id={`help-content-${topic.id}`}
           role="region"
           aria-labelledby={`help-header-${topic.id}`}
-          className="border-t border-slate-200/80 bg-[#f0f2f5] px-7 py-6 space-y-6 lg:px-8 lg:py-7"
+          className="border-t border-slate-200/80 bg-white px-7 py-6 space-y-6 lg:px-8 lg:py-7"
         >
           {/* Passo a passo */}
-          <HelpStepList steps={topic.steps} />
+          <HelpStepList intro={topic.intro} steps={topic.steps} />
+
+          {/* Imagem ilustrativa (se houver) */}
+          {topic.image && <HelpTopicImage image={topic.image} />}
 
           {/* Alertas de Atenção/Importante */}
           {topic.alert && <HelpAlertBox alert={topic.alert} />}
